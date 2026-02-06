@@ -1,0 +1,210 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+        x:Class="FrapaClonia.UI.Views.ServerConfigView"
+        x:DataType="vm:ServerConfigViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Server Configuration">
+
+    <Design.DataContext>
+        <vm:ServerConfigViewModel />
+    </Design.DataContext>
+
+    <ScrollViewer>
+        <StackPanel Margin="20" Spacing="15">
+            <!-- Header -->
+            <TextBlock Text="Server Connection" FontSize="24" FontWeight="Bold" />
+
+            <TextBlock Text="Configure your frpc server connection settings below"
+                       Foreground="Gray" Margin="0,0,0,10" />
+
+            <!-- Server Address -->
+            <StackPanel Spacing="5">
+                <TextBlock Text="Server Address *" FontWeight="Bold" />
+                <TextBox Text="{Binding ServerAddr}" Watermark="e.g., 127.0.0.1 or your-server.com" />
+                <TextBlock Text="The address of the frps server"
+                           FontSize="12" Foreground="Gray" />
+            </StackPanel>
+
+            <!-- Server Port -->
+            <StackPanel Spacing="5">
+                <TextBlock Text="Server Port *" FontWeight="Bold" />
+                <NumericUpDown Value="{Binding ServerPort}" Minimum="1" Maximum="65535"
+                              Increment="1" FormatString="0" />
+                <TextBlock Text="The port of the frps server (default: 7000)"
+                           FontSize="12" Foreground="Gray" />
+            </StackPanel>
+
+            <!-- User -->
+            <StackPanel Spacing="5">
+                <TextBlock Text="User" FontWeight="Bold" />
+                <TextBox Text="{Binding User}" Watermark="Optional user name" />
+                <TextBlock Text="Optional user name to avoid proxy name conflicts"
+                           FontSize="12" Foreground="Gray" />
+            </StackPanel>
+
+            <Border Background="LightGray" Height="1" Margin="0,10" />
+
+            <!-- Authentication -->
+            <TextBlock Text="Authentication" FontSize="18" FontWeight="Bold" Margin="0,0,10,0" />
+
+            <!-- Auth Method -->
+            <StackPanel Spacing="5">
+                <TextBlock Text="Authentication Method" FontWeight="Bold" />
+                <ComboBox SelectedIndex="{Binding AuthMethodIndex}" MinWidth="200">
+                    <ComboBoxItem>Token</ComboBoxItem>
+                    <ComboBoxItem>OIDC</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+
+            <!-- Token Auth -->
+            <StackPanel Spacing="5" IsVisible="{Binding !IsOidcAuth}">
+                <TextBlock Text="Token" FontWeight="Bold" />
+                <TextBox Text="{Binding Token}" PasswordChar="*"
+                         Watermark="Enter your authentication token" />
+            </StackPanel>
+
+            <!-- OIDC Auth -->
+            <StackPanel Spacing="5" IsVisible="{Binding IsOidcAuth}">
+                <TextBlock Text="OIDC Client ID *" FontWeight="Bold" />
+                <TextBox Text="{Binding OidcClientId}" />
+
+                <TextBlock Text="OIDC Client Secret *" FontWeight="Bold" Margin="0,10,0,0" />
+                <TextBox Text="{Binding OidcClientSecret}" PasswordChar="*" />
+
+                <TextBlock Text="Token Endpoint URL *" FontWeight="Bold" Margin="0,10,0,0" />
+                <TextBox Text="{Binding OidcTokenEndpointUrl}" />
+
+                <TextBlock Text="Audience" FontWeight="Bold" Margin="0,10,0,0" />
+                <TextBox Text="{Binding OidcAudience}" Watermark="Optional audience" />
+
+                <TextBlock Text="Scope" FontWeight="Bold" Margin="0,10,0,0" />
+                <TextBox Text="{Binding OidcScope}" Watermark="e.g., openid profile" />
+            </StackPanel>
+
+            <Border Background="LightGray" Height="1" Margin="0,10" />
+
+            <!-- Transport -->
+            <TextBlock Text="Transport" FontSize="18" FontWeight="Bold" Margin="0,0,10,0" />
+
+            <!-- Protocol -->
+            <StackPanel Spacing="5">
+                <TextBlock Text="Protocol" FontWeight="Bold" />
+                <ComboBox SelectedIndex="{Binding TransportProtocolIndex}" MinWidth="200">
+                    <ComboBoxItem>TCP</ComboBoxItem>
+                    <ComboBoxItem>KCP</ComboBoxItem>
+                    <ComboBoxItem>QUIC</ComboBoxItem>
+                    <ComboBoxItem>WebSocket</ComboBoxItem>
+                    <ComboBoxItem>Secure WebSocket (WSS)</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+
+            <Grid ColumnDefinitions="100,*" Margin="0,10,0,0">
+                <StackPanel Grid.Column="0" Spacing="5">
+                    <TextBlock Text="Dial Timeout (s)" FontWeight="Bold" />
+                    <NumericUpDown Value="{Binding DialServerTimeout}" Minimum="1" Maximum="300"
+                                  Increment="1" FormatString="0" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="5">
+                    <TextBlock Text="TCP Mux" FontWeight="Bold" />
+                    <CheckBox IsChecked="{Binding TcpMux}" />
+                </StackPanel>
+            </Grid>
+
+            <Grid ColumnDefinitions="100,*" Margin="0,10,0,0">
+                <StackPanel Grid.Column="0" Spacing="5">
+                    <TextBlock Text="Heartbeat Interval (s)" FontWeight="Bold" />
+                    <NumericUpDown Value="{Binding HeartbeatInterval}" Minimum="5" Maximum="300"
+                                  Increment="5" FormatString="0" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="5">
+                    <TextBlock Text="Heartbeat Timeout (s)" FontWeight="Bold" />
+                    <NumericUpDown Value="{Binding HeartbeatTimeout}" Minimum="5" Maximum="600"
+                                  Increment="5" FormatString="0" />
+                </StackPanel>
+            </Grid>
+
+            <CheckBox IsChecked="{Binding TlsEnabled}" Margin="0,10,0,0">
+                <TextBlock Text="Enable TLS" FontWeight="Normal" />
+            </CheckBox>
+
+            <Border Background="LightGray" Height="1" Margin="0,10" />
+
+            <!-- DNS -->
+            <TextBlock Text="DNS" FontSize="18" FontWeight="Bold" Margin="0,0,10,0" />
+
+            <StackPanel Spacing="5">
+                <TextBlock Text="DNS Server" FontWeight="Bold" />
+                <TextBox Text="{Binding DnsServer}" Watermark="e.g., 8.8.8.8:53" />
+                <TextBlock Text="Custom DNS server for resolving domain names (optional)"
+                           FontSize="12" Foreground="Gray" />
+            </StackPanel>
+
+            <Border Background="LightGray" Height="1" Margin="0,10" />
+
+            <!-- Logging -->
+            <TextBlock Text="Logging" FontSize="18" FontWeight="Bold" Margin="0,0,10,0" />
+
+            <Grid ColumnDefinitions="100,*" Margin="0,10,0,0">
+                <StackPanel Grid.Column="0" Spacing="5">
+                    <TextBlock Text="Log Level" FontWeight="Bold" />
+                    <ComboBox SelectedIndex="{Binding LogLevelIndex}" MinWidth="200">
+                        <ComboBoxItem>Trace</ComboBoxItem>
+                        <ComboBoxItem>Debug</ComboBoxItem>
+                        <ComboBoxItem>Info</ComboBoxItem>
+                        <ComboBoxItem>Warn</ComboBoxItem>
+                        <ComboBoxItem>Error</ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="5">
+                    <TextBlock Text="Max Days" FontWeight="Bold" />
+                    <NumericUpDown Value="{Binding LogMaxDays}" Minimum="1" Maximum="365"
+                                  Increment="1" FormatString="0" />
+                </StackPanel>
+            </Grid>
+
+            <StackPanel Spacing="5">
+                <TextBlock Text="Log To" FontWeight="Bold" />
+                <TextBox Text="{Binding LogTo}" Watermark="e.g., console, /path/to/logfile" />
+            </StackPanel>
+
+            <Border Background="LightGray" Height="1" Margin="0,20" />
+
+            <!-- Validation -->
+            <StackPanel Spacing="5">
+                <TextBlock Text="Status" FontWeight="Bold" />
+
+                <TextBlock Text="{Binding ValidationError}" Foreground="Red"
+                           TextWrapping="Wrap" IsVisible="{Binding HasValidationError}" />
+                <TextBlock Text="{Binding ValidationWarning}" Foreground="Orange"
+                           TextWrapping="Wrap" IsVisible="{Binding HasValidationWarning}" />
+                <TextBlock Text="Configuration is valid" Foreground="Green"
+                           IsVisible="{Binding IsValid}" />
+            </StackPanel>
+
+            <!-- Buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
+                <Button Content="Reset to Defaults"
+                        Command="{Binding ResetCommand}"
+                        Padding="15,8"
+                        IsEnabled="{Binding !IsSaving}" />
+                <Button Content="Save Configuration"
+                        Command="{Binding SaveCommand}"
+                        Padding="15,8"
+                        IsEnabled="{Binding !IsSaving}"
+                        Background="#007ACC"
+                        Foreground="White">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock Text="Save" />
+                        <ProgressBar IsIndeterminate="True"
+                                     Width="20" Height="20"
+                                     IsVisible="{Binding IsSaving}" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

@@ -1,0 +1,120 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
+        x:Class="FrapaClonia.UI.Views.VisitorEditorView"
+        x:DataType="vm:VisitorEditorViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Edit Visitor"
+        Width="600"
+        Height="500">
+
+    <Design.DataContext>
+        <vm:VisitorEditorViewModel />
+    </Design.DataContext>
+
+    <ScrollViewer>
+        <StackPanel Margin="20" Spacing="15">
+            <!-- Header -->
+            <TextBlock Text="Visitor Configuration" FontSize="24" FontWeight="Bold" />
+
+            <TextBlock Text="Configure a visitor to connect to STCP/XTCP/SUDP proxies"
+                       Foreground="Gray" />
+
+            <!-- Basic Settings -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="15">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Basic Settings" FontSize="16" FontWeight="Bold" />
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Visitor Name *" FontWeight="Bold" />
+                        <TextBox Text="{Binding VisitorName}" Watermark="e.g., my-ssh-visitor" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Visitor Type *" FontWeight="Bold" />
+                        <ComboBox ItemsSource="{Binding VisitorTypes}"
+                                  SelectedItem="{Binding VisitorType}"
+                                  MinWidth="200" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Server Name *" FontWeight="Bold" />
+                        <TextBox Text="{Binding ServerName}"
+                                 Watermark="Name of the proxy this visitor connects to" />
+                        <TextBlock Text="The name of the STCP/XTCP/SUDP proxy to visit"
+                                   FontSize="12" Foreground="Gray" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Secret Key *" FontWeight="Bold" />
+                        <TextBox Text="{Binding SecretKey}"
+                                 PasswordChar="*"
+                                 Watermark="Shared secret key (must match proxy)" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Bind Settings -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="15">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Bind Settings" FontSize="16" FontWeight="Bold" />
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Bind Address" FontWeight="Bold" />
+                        <TextBox Text="{Binding BindAddr}" Watermark="127.0.0.1" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Bind Port *" FontWeight="Bold" />
+                        <NumericUpDown Value="{Binding BindPort}"
+                                      Minimum="1"
+                                      Maximum="65535"
+                                      Increment="1"
+                                      FormatString="0" />
+                        <TextBlock Text="Local port to listen on for incoming connections"
+                                   FontSize="12" Foreground="Gray" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Bind IP (Optional)" FontWeight="Bold" />
+                        <TextBox Text="{Binding BindIp}"
+                                 Watermark="Specific IP to bind to (optional)" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Validation Status -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="15"
+                    IsVisible="{Binding HasValidationError}">
+                <TextBlock Text="{Binding ValidationError}"
+                           Foreground="Red"
+                           TextWrapping="Wrap" />
+            </Border>
+
+            <!-- Buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
+                <Button Content="Cancel"
+                        Command="{Binding CancelCommand}"
+                        Padding="15,8"
+                        IsEnabled="{Binding !IsSaving}" />
+
+                <Button Content="Save"
+                        Command="{Binding SaveCommand}"
+                        Padding="15,8"
+                        IsEnabled="{Binding !IsSaving}"
+                        Background="#007ACC"
+                        Foreground="White">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock Text="Save" />
+                        <ProgressBar IsIndeterminate="True"
+                                     Width="20" Height="20"
+                                     IsVisible="{Binding IsSaving}" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

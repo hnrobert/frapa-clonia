@@ -1,0 +1,117 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="FrapaClonia.UI.Views.VisitorListView"
+             x:DataType="vm:VisitorListViewModel">
+
+    <Design.DataContext>
+        <vm:VisitorListViewModel />
+    </Design.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#F5F5F5" Padding="15">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Spacing="5">
+                    <TextBlock Text="Visitor Management" FontSize="24" FontWeight="Bold" />
+                    <TextBlock Text="Manage visitors for STCP/XTCP/SUDP proxies" FontSize="14" Foreground="Gray" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                    <Button Content="Refresh"
+                            Command="{Binding RefreshCommand}"
+                            Padding="10,5"
+                            IsEnabled="{Binding !IsLoading}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Toolbar -->
+        <Border Grid.Row="1" Background="White" Padding="15,10" BorderBrush="LightGray" BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="Visitors allow you to connect to secure tunnel proxies (STCP/XTCP/SUDP)"
+                           VerticalAlignment="Center"
+                           Foreground="Gray" />
+
+                <Button Grid.Column="1"
+                        Content="Add Visitor"
+                        Command="{Binding AddVisitorCommand}"
+                        Padding="15,8"
+                        Background="#007ACC"
+                        Foreground="White">
+                    <StackPanel Orientation="Horizontal" Spacing="5">
+                        <TextBlock Text="+" FontSize="16" />
+                        <TextBlock Text="Add Visitor" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Visitor List -->
+        <Border Grid.Row="2" Background="White" Padding="15">
+            <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding Visitors}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="#F9F9F9"
+                                    CornerRadius="5"
+                                    Padding="15"
+                                    Margin="0,0,0,10"
+                                    BorderBrush="LightGray"
+                                    BorderThickness="1">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <!-- Visitor Info -->
+                                    <StackPanel Grid.Column="0" Spacing="5">
+                                        <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="16" />
+                                        <Grid ColumnDefinitions="Auto,Auto,Auto,Auto">
+                                            <Border Grid.Column="0" Background="#9C27B0" CornerRadius="3" Padding="5,2"
+                                                    Margin="0,0,5,0">
+                                                <TextBlock Text="{Binding Type}" Foreground="White" FontSize="12" />
+                                            </Border>
+                                            <TextBlock Grid.Column="1" Text="Server:" Margin="0,0,5,0"
+                                                       Foreground="Gray" />
+                                            <TextBlock Grid.Column="2" Text="{Binding ServerName}" Foreground="Gray" />
+                                        </Grid>
+                                        <StackPanel Orientation="Horizontal" Spacing="15" Margin="0,5,0,0">
+                                            <StackPanel Spacing="2">
+                                                <TextBlock Text="Bind Address" FontSize="11" Foreground="Gray" />
+                                                <TextBlock Text="{Binding BindAddr}" FontSize="13"
+                                                           FontWeight="SemiBold" />
+                                            </StackPanel>
+                                            <StackPanel Spacing="2">
+                                                <TextBlock Text="Bind Port" FontSize="11" Foreground="Gray" />
+                                                <TextBlock Text="{Binding BindPort}" FontSize="13"
+                                                           FontWeight="SemiBold" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <!-- Actions -->
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="5">
+                                        <Button Content="Edit" Padding="10,5" FontSize="12" />
+                                        <Button Content="Delete"
+                                                Padding="10,5"
+                                                FontSize="12"
+                                                Background="LightCoral"
+                                                Foreground="White" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>
+

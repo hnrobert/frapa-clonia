@@ -1,0 +1,284 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="700"
+        x:Class="FrapaClonia.UI.Views.ProxyEditorView"
+        x:DataType="vm:ProxyEditorViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Edit Proxy"
+        Width="700"
+        Height="700">
+
+    <Design.DataContext>
+        <vm:ProxyEditorViewModel />
+    </Design.DataContext>
+
+    <ScrollViewer>
+        <StackPanel Margin="20" Spacing="15">
+            <!-- Header -->
+            <TextBlock Text="Proxy Configuration" FontSize="24" FontWeight="Bold" />
+
+            <!-- Basic Settings -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="15">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Basic Settings" FontSize="16" FontWeight="Bold" />
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Proxy Name *" FontWeight="Bold" />
+                        <TextBox Text="{Binding ProxyName}" Watermark="e.g., my-web-server" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Proxy Type *" FontWeight="Bold" />
+                        <ComboBox ItemsSource="{Binding ProxyTypes}"
+                                  SelectedItem="{Binding ProxyType}"
+                                  MinWidth="200" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Local Settings -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="15">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Local Settings" FontSize="16" FontWeight="Bold" />
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Local IP" FontWeight="Bold" />
+                        <TextBox Text="{Binding LocalIP}" Watermark="127.0.0.1" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Local Port *" FontWeight="Bold" />
+                        <NumericUpDown Value="{Binding LocalPort}"
+                                      Minimum="1"
+                                      Maximum="65535"
+                                      Increment="1"
+                                      FormatString="0" />
+                    </StackPanel>
+
+                    <!-- Remote Port (for TCP/UDP) -->
+                    <StackPanel Spacing="5" IsVisible="{Binding IsTcpOrUdp}">
+                        <TextBlock Text="Remote Port *" FontWeight="Bold" />
+                        <NumericUpDown Value="{Binding RemotePort}"
+                                      Minimum="1"
+                                      Maximum="65535"
+                                      Increment="1"
+                                      FormatString="0" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Domain Settings (for HTTP/HTTPS/TCPMUX) -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="15" IsVisible="{Binding NeedsDomain}">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Domain Settings" FontSize="16" FontWeight="Bold" />
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Custom Domains" FontWeight="Bold" />
+                        <TextBox Text="{Binding CustomDomains}"
+                                 Watermark="e.g., www.example.com, api.example.com" />
+                        <TextBlock Text="Comma-separated list of domains" FontSize="12" Foreground="Gray" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Subdomain" FontWeight="Bold" />
+                        <TextBox Text="{Binding Subdomain}"
+                                 Watermark="e.g., myapp (for myapp.yourdomain.com)" />
+                    </StackPanel>
+
+                    <!-- HTTP/HTTPS specific settings -->
+                    <StackPanel Spacing="5" IsVisible="{Binding IsHttpOrHttps}">
+                        <TextBlock Text="HTTP Authentication" FontWeight="Bold" Margin="0,10,0,0" />
+                        <Grid ColumnDefinitions="*,*">
+                            <StackPanel Grid.Column="0" Spacing="5">
+                                <TextBlock Text="Username" />
+                                <TextBox Text="{Binding HttpUser}" Watermark="Optional" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Spacing="5" Margin="10,0,0,0">
+                                <TextBlock Text="Password" />
+                                <TextBox Text="{Binding HttpPassword}"
+                                         PasswordChar="*"
+                                         Watermark="Optional" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- STCP/XTCP/SUDP Settings -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="15" IsVisible="{Binding IsStcpOrXtcpOrSudp}">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Secure Tunnel Settings" FontSize="16" FontWeight="Bold" />
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Secret Key *" FontWeight="Bold" />
+                        <TextBox Text="{Binding SecretKey}"
+                                 PasswordChar="*"
+                                 Watermark="Shared secret for this tunnel" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Allowed Users" FontWeight="Bold" />
+                        <TextBox Text="{Binding AllowUsers}"
+                                 Watermark="Comma-separated list of allowed users" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- TCPMUX Settings -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="15" IsVisible="{Binding IsTcpmux}">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="TCP Multiplexer Settings" FontSize="16" FontWeight="Bold" />
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Multiplexer Name" FontWeight="Bold" />
+                        <TextBox Text="{Binding Multiplexer}"
+                                 Watermark="Name of the multiplexer" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Transport Settings -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="15">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Transport Options" FontSize="16" FontWeight="Bold" />
+
+                    <CheckBox IsChecked="{Binding UseEncryption}">
+                        <TextBlock Text="Use Encryption" />
+                    </CheckBox>
+
+                    <CheckBox IsChecked="{Binding UseCompression}">
+                        <TextBlock Text="Use Compression" />
+                    </CheckBox>
+
+                    <StackPanel Spacing="5" IsVisible="{Binding BandwidthLimit}">
+                        <TextBlock Text="Bandwidth Limit" FontWeight="Bold" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <NumericUpDown Grid.Column="0"
+                                          Value="{Binding BandwidthLimit}"
+                                          Minimum="1"
+                                          Maximum="10000"
+                                          Increment="1" />
+                            <ComboBox Grid.Column="1"
+                                      ItemsSource="{Binding BandwidthUnits}"
+                                      SelectedItem="{Binding BandwidthLimitUnit}"
+                                      MinWidth="80"
+                                      Margin="10,0,0,0" />
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Health Check -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="15">
+                <StackPanel Spacing="10">
+                    <CheckBox IsChecked="{Binding HealthCheckEnabled}">
+                        <TextBlock Text="Enable Health Check" FontSize="16" FontWeight="Bold" />
+                    </CheckBox>
+
+                    <StackPanel Spacing="10" IsVisible="{Binding HealthCheckEnabled}">
+                        <Grid ColumnDefinitions="*,*">
+                            <StackPanel Grid.Column="0" Spacing="5">
+                                <TextBlock Text="Type" FontWeight="Bold" />
+                                <ComboBox ItemsSource="{Binding HealthCheckTypes}"
+                                          SelectedItem="{Binding HealthCheckType}"
+                                          MinWidth="150" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Spacing="5">
+                                <TextBlock Text="Timeout (seconds)" FontWeight="Bold" />
+                                <NumericUpDown Value="{Binding HealthCheckTimeoutSeconds}"
+                                              Minimum="1"
+                                              Maximum="300"
+                                              Increment="1"
+                                              FormatString="0" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,*">
+                            <StackPanel Grid.Column="0" Spacing="5">
+                                <TextBlock Text="Max Failed" FontWeight="Bold" />
+                                <NumericUpDown Value="{Binding HealthCheckMaxFailed}"
+                                              Minimum="1"
+                                              Maximum="100"
+                                              Increment="1"
+                                              FormatString="0" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Spacing="5">
+                                <TextBlock Text="Interval (seconds)" FontWeight="Bold" />
+                                <NumericUpDown Value="{Binding HealthCheckIntervalSeconds}"
+                                              Minimum="1"
+                                              Maximum="3600"
+                                              Increment="1"
+                                              FormatString="0" />
+                            </StackPanel>
+                        </Grid>
+
+                        <StackPanel Spacing="5" IsVisible="{Binding IsHttpOrHttps}">
+                            <TextBlock Text="Path" FontWeight="Bold" />
+                            <TextBox Text="{Binding HealthCheckPath}" Watermark="/health" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="5" IsVisible="{Binding IsHttpOrHttps}">
+                            <TextBlock Text="Headers" FontWeight="Bold" />
+                            <TextBox Text="{Binding HealthCheckHeaders}"
+                                     Watermark='Header-Name: value'
+                                     AcceptsReturn="True"
+                                     TextWrapping="Wrap"
+                                     Height="60" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Plugin -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="15">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Plugin (Optional)" FontSize="16" FontWeight="Bold" />
+
+                    <ComboBox ItemsSource="{Binding PluginTypes}"
+                              SelectedItem="{Binding PluginType}"
+                              MinWidth="200"
+                              PlaceholderText="Select plugin type..." />
+
+                    <StackPanel Spacing="5" IsVisible="{Binding PluginType}">
+                        <TextBlock Text="Command" FontWeight="Bold" />
+                        <TextBox Text="{Binding PluginCommand}"
+                                 Watermark="Plugin command to execute" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Validation Status -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="15"
+                    IsVisible="{Binding HasValidationError}">
+                <TextBlock Text="{Binding ValidationError}"
+                           Foreground="Red"
+                           TextWrapping="Wrap" />
+            </Border>
+
+            <!-- Buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
+                <Button Content="Cancel"
+                        Command="{Binding CancelCommand}"
+                        Padding="15,8"
+                        IsEnabled="{Binding !IsSaving}" />
+
+                <Button Content="Save"
+                        Command="{Binding SaveCommand}"
+                        Padding="15,8"
+                        IsEnabled="{Binding !IsSaving}"
+                        Background="#007ACC"
+                        Foreground="White">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock Text="Save" />
+                        <ProgressBar IsIndeterminate="True"
+                                     Width="20" Height="20"
+                                     IsVisible="{Binding IsSaving}" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

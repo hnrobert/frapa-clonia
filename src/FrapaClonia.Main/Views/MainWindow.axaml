@@ -1,26 +1,143 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+        xmlns:views="clr-namespace:FrapaClonia.UI.Views;assembly=FrapaClonia.UI"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
         x:Class="FrapaClonia.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="FrapaClonia">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <!-- TODO: Implement main UI layout in later phases -->
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-        <TextBlock Text="Welcome to FrapaClonia" FontSize="24" FontWeight="Bold"/>
-        <TextBlock Text="frpc visual client" FontSize="14" Margin="0,10,0,0"/>
-        <TextBlock Text="Phase 1: Project initialization complete" Margin="0,20,0,0"/>
-        <TextBlock Text="More features coming in Phase 2+" Margin="0,5,0,0"/>
-    </StackPanel>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar Navigation -->
+        <Border Grid.Column="0" Background="#2C3E50">
+            <StackPanel Spacing="5" Margin="10">
+                <!-- App Title -->
+                <TextBlock Text="FrapaClonia"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           Margin="0,0,0,20" />
+
+                <!-- Navigation Items -->
+                <Button Content="Dashboard"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Padding="15,10"
+                        Background="Transparent"
+                        Foreground="White"
+                        BorderThickness="0">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="#34495E" />
+                        </Style>
+                    </Button.Styles>
+                </Button>
+
+                <Button Content="Server Config"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Padding="15,10"
+                        Background="Transparent"
+                        Foreground="White"
+                        BorderThickness="0">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="#34495E" />
+                        </Style>
+                    </Button.Styles>
+                </Button>
+
+                <Button Content="Proxies"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Padding="15,10"
+                        Background="Transparent"
+                        Foreground="White"
+                        BorderThickness="0">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="#34495E" />
+                        </Style>
+                    </Button.Styles>
+                </Button>
+
+                <Button Content="Deployment"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Padding="15,10"
+                        Background="Transparent"
+                        Foreground="White"
+                        BorderThickness="0">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="#34495E" />
+                        </Style>
+                    </Button.Styles>
+                </Button>
+
+                <Button Content="Logs"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Padding="15,10"
+                        Background="Transparent"
+                        Foreground="White"
+                        BorderThickness="0">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="#34495E" />
+                        </Style>
+                    </Button.Styles>
+                </Button>
+
+                <Button Content="Settings"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Padding="15,10"
+                        Background="Transparent"
+                        Foreground="White"
+                        BorderThickness="0">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="#34495E" />
+                        </Style>
+                    </Button.Styles>
+                </Button>
+
+                <Separator Margin="0,10,0,10" Foreground="#34495E" />
+
+                <Button Content="About"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Padding="15,10"
+                        Background="Transparent"
+                        Foreground="White"
+                        BorderThickness="0">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="#34495E" />
+                        </Style>
+                    </Button.Styles>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Border Grid.Column="1" Background="#ECF0F1">
+            <!-- Default content: Dashboard -->
+            <views:DashboardView />
+        </Border>
+    </Grid>
 
 </Window>
