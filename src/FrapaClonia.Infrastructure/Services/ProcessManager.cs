@@ -1,5 +1,9 @@
 using FrapaClonia.Core.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System.Runtime.InteropServices;
 
 namespace FrapaClonia.Infrastructure.Services;
 
@@ -9,7 +13,7 @@ namespace FrapaClonia.Infrastructure.Services;
 public class ProcessManager : IProcessManager
 {
     private readonly ILogger<ProcessManager> _logger;
-    private readonly Dictionary<int, IObservable<string>> _processOutputs = new();
+    private readonly Dictionary<int, ProcessOutputSubject> _processOutputs = new();
 
     public ProcessManager(ILogger<ProcessManager> logger)
     {
@@ -18,61 +22,303 @@ public class ProcessManager : IProcessManager
 
     public Task<ProcessHandle?> StartProcessAsync(ProcessStartOptions startInfo, CancellationToken cancellationToken = default)
     {
-        // TODO: Implement in Phase 4
-        _logger.LogInformation("Starting process {FileName} with arguments {Arguments}", startInfo.FileName, startInfo.Arguments);
-        return Task.FromResult<ProcessHandle?>(new ProcessHandle { ProcessId = 1, ProcessName = startInfo.FileName });
+        try
+        {
+            _logger.LogInformation("Starting process: {FileName} {Arguments}", startInfo.FileName, startInfo.Arguments);
+
+            var process = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = startInfo.FileName,
+                    Arguments = startInfo.Arguments,
+                    WorkingDirectory = startInfo.WorkingDirectory,
+                    RedirectStandardOutput = startInfo.RedirectStandardOutput,
+                    RedirectStandardError = startInfo.RedirectStandardError,
+                    UseShellExecute = startInfo.UseShellExecute
+                }
+            };
+
+            // Set environment variables if provided
+            if (startInfo.EnvironmentVariables != null)
+            {
+                foreach (var kvp in startInfo.EnvironmentVariables)
+                {
+                    process.StartInfo.Environment[kvp.Key] = kvp.Value;
+                }
+            }
+
+            process.Start();
+
+            var handle = new ProcessHandle
+            {
+                ProcessId = process.Id,
+                ProcessName = process.ProcessName,
+                HasExited = false
+            };
+
+            // Create output subject for this process
+            _processOutputs[process.Id] = new ProcessOutputSubject(process, _logger);
+
+            // Monitor process exit
+            _ = Task.Run(() =>
+            {
+                process.WaitForExit();
+                if (_processOutputs.TryGetValue(process.Id, out var subject))
+                {
+                    subject.OnCompleted();
+                }
+            });
+
+            _logger.LogInformation("Process started with PID {ProcessId}", handle.ProcessId);
+            return Task.FromResult<ProcessHandle?>(handle);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error starting process {FileName}", startInfo.FileName);
+            return Task.FromResult<ProcessHandle?>(null);
+        }
     }
 
     public Task<bool> StopProcessAsync(int processId, CancellationToken cancellationToken = default)
     {
-        // TODO: Implement in Phase 4
-        _logger.LogInformation("Stopping process {ProcessId}", processId);
-        return Task.FromResult(true);
+        try
+        {
+            _logger.LogInformation("Stopping process {ProcessId}", processId);
+
+            var process = System.Diagnostics.Process.GetProcessById(processId);
+            process.Kill(entireProcessTree: true);
+
+            // Wait for exit
+            process.WaitForExit(5000);
+
+            var stopped = process.HasExited;
+            if (stopped)
+            {
+                _logger.LogInformation("Process {ProcessId} stopped successfully", processId);
+            }
+            else
+            {
+                _logger.LogWarning("Process {ProcessId} did not stop gracefully", processId);
+            }
+
+            return Task.FromResult(stopped);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error stopping process {ProcessId}", processId);
+            return Task.FromResult(false);
+        }
     }
 
     public Task<bool> IsProcessRunningAsync(int processId, CancellationToken cancellationToken = default)
     {
-        // TODO: Implement in Phase 4
-        return Task.FromResult(false);
+        try
+        {
+            var process = System.Diagnostics.Process.GetProcessById(processId);
+            var isRunning = !process.HasExited;
+
+            if (!isRunning)
+            {
+                // Clean up the output subject
+                _processOutputs.Remove(processId);
+            }
+
+            return Task.FromResult(isRunning);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "Process {ProcessId} not found", processId);
+            return Task.FromResult(false);
+        }
     }
 
     public IObservable<string> GetProcessOutput(int processId)
     {
-        // TODO: Implement in Phase 4 - using delegate-based observable pattern
-        return new ProcessOutputObservable();
+        if (_processOutputs.TryGetValue(processId, out var subject))
+        {
+            return subject;
+        }
+
+        // Return an empty observable if process not found
+        return System.Reactive.Linq.Observable.Empty<string>();
     }
 
     public Task<bool> IsPortAvailableAsync(int port, CancellationToken cancellationToken = default)
     {
-        // TODO: Implement in Phase 4
-        _logger.LogInformation("Checking if port {Port} is available", port);
-        return Task.FromResult(true);
+        try
+        {
+            _logger.LogDebug("Checking if port {Port} is available", port);
+
+            // Try to bind to the port
+            var listener = new TcpListener(IPAddress.Loopback, port);
+            listener.Start();
+
+            // If we got here, the port is available
+            listener.Stop();
+            return Task.FromResult(true);
+        }
+        catch (SocketException ex) when (ex.SocketErrorCode == SocketError.AddressAlreadyInUse)
+        {
+            _logger.LogDebug("Port {Port} is already in use", port);
+            return Task.FromResult(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Error checking port {Port}", port);
+            return Task.FromResult(false);
+        }
     }
 
     public Task<int?> GetAvailablePortAsync(int minPort, int maxPort, CancellationToken cancellationToken = default)
     {
-        // TODO: Implement in Phase 4
-        _logger.LogInformation("Finding available port between {MinPort} and {MaxPort}", minPort, maxPort);
-        return Task.FromResult<int?>(minPort);
-    }
-}
+        _logger.LogDebug("Finding available port between {MinPort} and {MaxPort}", minPort, maxPort);
 
-/// <summary>
-/// Simple observable for process output
-/// </summary>
-internal class ProcessOutputObservable : IObservable<string>
-{
-    public IDisposable Subscribe(IObserver<string> observer)
+        // Common ports that might be in use
+        var commonPorts = new HashSet<int>
+        {
+            80, 443, 22, 21, 23, 25, 53, 110, 143, 3306,
+            3389, 5432, 6379, 7000, 7001, 8000, 8080, 8888
+        };
+
+        // Try to find an available port
+        for (int port = minPort; port <= maxPort; port++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // Skip common ports to avoid conflicts
+            if (commonPorts.Contains(port))
+                continue;
+
+            if (IsPortAvailable(port))
+            {
+                _logger.LogDebug("Found available port: {Port}", port);
+                return Task.FromResult<int?>(port);
+            }
+        }
+
+        _logger.LogWarning("No available port found between {MinPort} and {MaxPort}", minPort, maxPort);
+        return Task.FromResult<int?>(null);
+    }
+
+    private bool IsPortAvailable(int port)
     {
-        // TODO: Implement in Phase 4
-        return new StubDisposable();
-    }
-}
+        // Check TCP
+        var ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
+        var tcpConnections = ipGlobalProperties.GetActiveTcpConnections();
+        var tcpListeners = ipGlobalProperties.GetActiveTcpListeners();
 
-/// <summary>
-/// Stub disposable
-/// </summary>
-internal class StubDisposable : IDisposable
-{
-    public void Dispose() { }
+        var isInUse = tcpConnections.Any(c => c.LocalEndPoint.Port == port)
+            || tcpListeners.Any(l => l.Port == port);
+
+        if (isInUse)
+            return false;
+
+        // Try to bind to be sure
+        try
+        {
+            using var listener = new TcpListener(IPAddress.Loopback, port);
+            listener.Start();
+            listener.Stop();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Subject for process output that implements IObservable
+    /// </summary>
+    private class ProcessOutputSubject : IObservable<string>, IDisposable
+    {
+        private readonly System.Diagnostics.Process _process;
+        private readonly ILogger<ProcessManager> _logger;
+        private readonly List<IObserver<string>> _observers = new();
+        private readonly CancellationTokenSource _cts = new();
+
+        public ProcessOutputSubject(System.Diagnostics.Process process, ILogger<ProcessManager> logger)
+        {
+            _process = process;
+            _logger = logger;
+            _ = Task.Run(() => ReadOutputAsync(_cts.Token));
+        }
+
+        public IDisposable Subscribe(IObserver<string> observer)
+        {
+            _observers.Add(observer);
+            return new Unsubscriber(this, observer);
+        }
+
+        public void OnCompleted()
+        {
+            foreach (var observer in _observers)
+            {
+                observer.OnCompleted();
+            }
+            _observers.Clear();
+        }
+
+        private async Task ReadOutputAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                // Read standard output
+                while (!_process.HasExited && !cancellationToken.IsCancellationRequested)
+                {
+                    var line = await _process.StandardOutput.ReadLineAsync();
+                    if (line == null) break;
+
+                    foreach (var observer in _observers.ToList())
+                    {
+                        observer.OnNext(line);
+                    }
+                }
+
+                // Read standard error
+                while (!_process.HasExited && !cancellationToken.IsCancellationRequested)
+                {
+                    var line = await _process.StandardError.ReadLineAsync();
+                    if (line == null) break;
+
+                    foreach (var observer in _observers.ToList())
+                    {
+                        observer.OnNext(line);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Error reading process output");
+            }
+            finally
+            {
+                OnCompleted();
+            }
+        }
+
+        public void Dispose()
+        {
+            _cts.Cancel();
+            OnCompleted();
+        }
+
+        private class Unsubscriber : IDisposable
+        {
+            private readonly ProcessOutputSubject _subject;
+            private readonly IObserver<string> _observer;
+
+            public Unsubscriber(ProcessOutputSubject subject, IObserver<string> observer)
+            {
+                _subject = subject;
+                _observer = observer;
+            }
+
+            public void Dispose()
+            {
+                _subject._observers.Remove(_observer);
+            }
+        }
+    }
 }
