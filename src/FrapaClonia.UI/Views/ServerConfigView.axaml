@@ -6,7 +6,6 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
         x:Class="FrapaClonia.UI.Views.ServerConfigView"
         x:DataType="vm:ServerConfigViewModel"
-        Icon="/Assets/avalonia-logo.ico"
         Title="Server Configuration">
 
     <Design.DataContext>
@@ -191,8 +190,7 @@
                         Command="{Binding ResetCommand}"
                         Padding="15,8"
                         IsEnabled="{Binding !IsSaving}" />
-                <Button Content="Save Configuration"
-                        Command="{Binding SaveCommand}"
+                <Button Command="{Binding SaveCommand}"
                         Padding="15,8"
                         IsEnabled="{Binding !IsSaving}"
                         Background="#007ACC"

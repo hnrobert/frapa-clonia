@@ -6,7 +6,6 @@
         mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="700"
         x:Class="FrapaClonia.UI.Views.ProxyEditorView"
         x:DataType="vm:ProxyEditorViewModel"
-        Icon="/Assets/avalonia-logo.ico"
         Title="Edit Proxy"
         Width="700"
         Height="700">
@@ -21,7 +20,7 @@
             <TextBlock Text="Proxy Configuration" FontSize="24" FontWeight="Bold" />
 
             <!-- Basic Settings -->
-            <Border Background="#F5F5F5" CornerRadius="8" Padding="15">
+            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15">
                 <StackPanel Spacing="10">
                     <TextBlock Text="Basic Settings" FontSize="16" FontWeight="Bold" />
 
@@ -40,7 +39,7 @@
             </Border>
 
             <!-- Local Settings -->
-            <Border Background="#F5F5F5" CornerRadius="8" Padding="15">
+            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15">
                 <StackPanel Spacing="10">
                     <TextBlock Text="Local Settings" FontSize="16" FontWeight="Bold" />
 
@@ -71,7 +70,7 @@
             </Border>
 
             <!-- Domain Settings (for HTTP/HTTPS/TCPMUX) -->
-            <Border Background="#F5F5F5" CornerRadius="8" Padding="15" IsVisible="{Binding NeedsDomain}">
+            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15" IsVisible="{Binding NeedsDomain}">
                 <StackPanel Spacing="10">
                     <TextBlock Text="Domain Settings" FontSize="16" FontWeight="Bold" />
 
@@ -108,7 +107,7 @@
             </Border>
 
             <!-- STCP/XTCP/SUDP Settings -->
-            <Border Background="#F5F5F5" CornerRadius="8" Padding="15" IsVisible="{Binding IsStcpOrXtcpOrSudp}">
+            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15" IsVisible="{Binding IsStcpOrXtcpOrSudp}">
                 <StackPanel Spacing="10">
                     <TextBlock Text="Secure Tunnel Settings" FontSize="16" FontWeight="Bold" />
 
@@ -128,7 +127,7 @@
             </Border>
 
             <!-- TCPMUX Settings -->
-            <Border Background="#F5F5F5" CornerRadius="8" Padding="15" IsVisible="{Binding IsTcpmux}">
+            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15" IsVisible="{Binding IsTcpmux}">
                 <StackPanel Spacing="10">
                     <TextBlock Text="TCP Multiplexer Settings" FontSize="16" FontWeight="Bold" />
 
@@ -141,7 +140,7 @@
             </Border>
 
             <!-- Transport Settings -->
-            <Border Background="#F5F5F5" CornerRadius="8" Padding="15">
+            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15">
                 <StackPanel Spacing="10">
                     <TextBlock Text="Transport Options" FontSize="16" FontWeight="Bold" />
 
@@ -156,14 +155,12 @@
                     <StackPanel Spacing="5" IsVisible="{Binding BandwidthLimit}">
                         <TextBlock Text="Bandwidth Limit" FontWeight="Bold" />
                         <Grid ColumnDefinitions="*,Auto">
-                            <NumericUpDown Grid.Column="0"
-                                          Value="{Binding BandwidthLimit}"
-                                          Minimum="1"
-                                          Maximum="10000"
-                                          Increment="1" />
+                            <TextBox Grid.Column="0"
+                                     Text="{Binding BandwidthLimit}"
+                                     Watermark="e.g., 1MB, 256KB" />
                             <ComboBox Grid.Column="1"
-                                      ItemsSource="{Binding BandwidthUnits}"
-                                      SelectedItem="{Binding BandwidthLimitUnit}"
+                                      ItemsSource="{Binding BandwidthLimitModes}"
+                                      SelectedItem="{Binding BandwidthLimitMode}"
                                       MinWidth="80"
                                       Margin="10,0,0,0" />
                         </Grid>
@@ -172,7 +169,7 @@
             </Border>
 
             <!-- Health Check -->
-            <Border Background="#F5F5F5" CornerRadius="8" Padding="15">
+            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15">
                 <StackPanel Spacing="10">
                     <CheckBox IsChecked="{Binding HealthCheckEnabled}">
                         <TextBlock Text="Enable Health Check" FontSize="16" FontWeight="Bold" />
@@ -233,25 +230,87 @@
             </Border>
 
             <!-- Plugin -->
-            <Border Background="#F5F5F5" CornerRadius="8" Padding="15">
+            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15" IsVisible="{Binding PluginType}">
                 <StackPanel Spacing="10">
-                    <TextBlock Text="Plugin (Optional)" FontSize="16" FontWeight="Bold" />
+                    <TextBlock Text="Plugin Configuration" FontSize="16" FontWeight="Bold" />
 
                     <ComboBox ItemsSource="{Binding PluginTypes}"
                               SelectedItem="{Binding PluginType}"
-                              MinWidth="200"
-                              PlaceholderText="Select plugin type..." />
+                              MinWidth="200" />
 
-                    <StackPanel Spacing="5" IsVisible="{Binding PluginType}">
-                        <TextBlock Text="Command" FontWeight="Bold" />
-                        <TextBox Text="{Binding PluginCommand}"
-                                 Watermark="Plugin command to execute" />
+                    <!-- HTTP Proxy Plugin -->
+                    <StackPanel Spacing="5" IsVisible="{Binding PluginHttpProxyUrl, FallbackValue=False}">
+                        <TextBlock Text="HTTP Proxy URL" FontWeight="Bold" />
+                        <TextBox Text="{Binding PluginHttpProxyUrl}"
+                                 Watermark="http://proxy.example.com:8080" />
+                    </StackPanel>
+
+                    <!-- SOCKS5 Plugin -->
+                    <StackPanel Spacing="5" IsVisible="{Binding PluginSocks5Url, FallbackValue=False}">
+                        <TextBlock Text="SOCKS5 URL" FontWeight="Bold" />
+                        <TextBox Text="{Binding PluginSocks5Url}"
+                                 Watermark="socks5://proxy.example.com:1080" />
+                    </StackPanel>
+
+                    <!-- Static File Plugin -->
+                    <StackPanel Spacing="10" IsVisible="{Binding PluginStaticFilePath, FallbackValue=False}">
+                        <TextBlock Text="Static File Plugin Settings" FontWeight="Bold" />
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="Local Path" />
+                            <TextBox Text="{Binding PluginStaticFilePath}"
+                                     Watermark="/path/to/files" />
+                        </StackPanel>
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="URL Prefix" />
+                            <TextBox Text="{Binding PluginStaticFilePrefixUrl}"
+                                     Watermark="/files" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- HTTPS to HTTP Plugin -->
+                    <StackPanel Spacing="10" IsVisible="{Binding PluginHttps2httpLocalAddr, FallbackValue=False}">
+                        <TextBlock Text="HTTPS to HTTP Plugin Settings" FontWeight="Bold" />
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="Local Address" />
+                            <TextBox Text="{Binding PluginHttps2httpLocalAddr}"
+                                     Watermark="127.0.0.1:80" />
+                        </StackPanel>
+                        <Grid ColumnDefinitions="*,*">
+                            <StackPanel Grid.Column="0" Spacing="5">
+                                <TextBlock Text="CRT Path" />
+                                <TextBox Text="{Binding PluginHttps2httpCrtPath}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Spacing="5" Margin="10,0,0,0">
+                                <TextBlock Text="Key Path" />
+                                <TextBox Text="{Binding PluginHttps2httpKeyPath}" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- HTTP to HTTPS Plugin -->
+                    <StackPanel Spacing="10" IsVisible="{Binding PluginHttp2httpsLocalAddr, FallbackValue=False}">
+                        <TextBlock Text="HTTP to HTTPS Plugin Settings" FontWeight="Bold" />
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="Local Address" />
+                            <TextBox Text="{Binding PluginHttp2httpsLocalAddr}"
+                                     Watermark="127.0.0.1:443" />
+                        </StackPanel>
+                        <Grid ColumnDefinitions="*,*">
+                            <StackPanel Grid.Column="0" Spacing="5">
+                                <TextBlock Text="CRT Path" />
+                                <TextBox Text="{Binding PluginHttp2httpsCrtPath}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Spacing="5" Margin="10,0,0,0">
+                                <TextBlock Text="Key Path" />
+                                <TextBox Text="{Binding PluginHttp2httpsKeyPath}" />
+                            </StackPanel>
+                        </Grid>
                     </StackPanel>
                 </StackPanel>
             </Border>
 
             <!-- Validation Status -->
-            <Border Background="#F5F5F5" CornerRadius="8" Padding="15"
+            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15"
                     IsVisible="{Binding HasValidationError}">
                 <TextBlock Text="{Binding ValidationError}"
                            Foreground="Red"
@@ -260,13 +319,11 @@
 
             <!-- Buttons -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
-                <Button Content="Cancel"
-                        Command="{Binding CancelCommand}"
+                <Button Command="{Binding CancelCommand}"
                         Padding="15,8"
                         IsEnabled="{Binding !IsSaving}" />
 
-                <Button Content="Save"
-                        Command="{Binding SaveCommand}"
+                <Button Command="{Binding SaveCommand}"
                         Padding="15,8"
                         IsEnabled="{Binding !IsSaving}"
                         Background="#007ACC"
