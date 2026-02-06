@@ -5,30 +5,42 @@ namespace FrapaClonia.Domain.Models;
 /// </summary>
 public class ProxyConfig
 {
-    public required string Name { get; init; }
-    public required string Type { get; init; }  // tcp, udp, http, https, tcpmux, stcp, sudp, xtcp
-    public Dictionary<string, string>? Annotations { get; init; }
-    public ProxyTransport? Transport { get; init; }
-    public Dictionary<string, string>? Metadatas { get; init; }
-    public LoadBalancerConfig? LoadBalancer { get; init; }
-    public HealthCheckConfig? HealthCheck { get; init; }
-    public ProxyBackend? Backend { get; init; }
+    public string Name { get; set; } = "";
+    public string Type { get; set; } = "tcp";  // tcp, udp, http, https, tcpmux, stcp, sudp, xtcp
+    public Dictionary<string, string>? Annotations { get; set; }
+    public ProxyTransport? Transport { get; set; }
+    public Dictionary<string, string>? Metadatas { get; set; }
+    public LoadBalancerConfig? LoadBalancer { get; set; }
+    public HealthCheckConfig? HealthCheck { get; set; }
+
+    // Backend (local service) configuration - flat for TOML compatibility
+    public string LocalIP { get; set; } = "127.0.0.1";
+    public int LocalPort { get; set; }
+    public ClientPluginOptions? Plugin { get; set; }
+
+    // Computed backend property for code convenience
+    public ProxyBackend Backend => new ProxyBackend
+    {
+        LocalIP = LocalIP,
+        LocalPort = LocalPort,
+        Plugin = Plugin
+    };
 
     // Type-specific properties
-    public int? RemotePort { get; init; }  // TCP, UDP
-    public List<string>? CustomDomains { get; init; }  // HTTP, HTTPS, TCPMUX
-    public string? Subdomain { get; init; }  // HTTP, HTTPS, TCPMUX
-    public List<string>? Locations { get; init; }  // HTTP
-    public string? HttpUser { get; init; }  // HTTP, TCPMUX
-    public string? HttpPassword { get; init; }  // HTTP, TCPMUX
-    public string? HostHeaderRewrite { get; init; }  // HTTP
-    public HeaderOperations? RequestHeaders { get; init; }  // HTTP
-    public HeaderOperations? ResponseHeaders { get; init; }  // HTTP
-    public string? RouteByHTTPUser { get; init; }  // HTTP, TCPMUX
-    public string? SecretKey { get; init; }  // STCP, XTCP, SUDP
-    public List<string>? AllowUsers { get; init; }  // STCP, XTCP, SUDP
-    public NatTraversalConfig? NatTraversal { get; init; }  // XTCP
-    public string? Multiplexer { get; init; }  // TCPMUX
+    public int? RemotePort { get; set; }  // TCP, UDP
+    public List<string>? CustomDomains { get; set; }  // HTTP, HTTPS, TCPMUX
+    public string? Subdomain { get; set; }  // HTTP, HTTPS, TCPMUX
+    public List<string>? Locations { get; set; }  // HTTP
+    public string? HttpUser { get; set; }  // HTTP, TCPMUX
+    public string? HttpPassword { get; set; }  // HTTP, TCPMUX
+    public string? HostHeaderRewrite { get; set; }  // HTTP
+    public HeaderOperations? RequestHeaders { get; set; }  // HTTP
+    public HeaderOperations? ResponseHeaders { get; set; }  // HTTP
+    public string? RouteByHTTPUser { get; set; }  // HTTP, TCPMUX
+    public string? SecretKey { get; set; }  // STCP, XTCP, SUDP
+    public List<string>? AllowUsers { get; set; }  // STCP, XTCP, SUDP
+    public NatTraversalConfig? NatTraversal { get; set; }  // XTCP
+    public string? Multiplexer { get; set; }  // TCPMUX
 }
 
 /// <summary>
@@ -134,13 +146,13 @@ public class NatTraversalConfig
 /// </summary>
 public class VisitorConfig
 {
-    public required string Name { get; init; }
-    public required string Type { get; init; }  // stcp, xtcp, sudp
-    public required string ServerName { get; init; }
-    public required string SecretKey { get; init; }
-    public required string BindAddr { get; init; }
-    public required int BindPort { get; init; }
-    public string? BindIp { get; init; }
-    public ClientTransportConfig? Transport { get; init; }
-    public Dictionary<string, string>? Metadatas { get; init; }
+    public string Name { get; set; } = "";
+    public string Type { get; set; } = "stcp";  // stcp, xtcp, sudp
+    public string ServerName { get; set; } = "";
+    public string SecretKey { get; set; } = "";
+    public string BindAddr { get; set; } = "127.0.0.1";
+    public int BindPort { get; set; }
+    public string? BindIp { get; set; }
+    public ClientTransportConfig? Transport { get; set; }
+    public Dictionary<string, string>? Metadatas { get; set; }
 }
