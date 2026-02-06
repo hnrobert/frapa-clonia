@@ -17,7 +17,7 @@
             <TextBlock Text="FrapaClonia Dashboard" FontSize="32" FontWeight="Bold" />
 
             <!-- Status Card -->
-            <Border Background="#F5F5F5" CornerRadius="8" Padding="20">
+            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="20">
                 <StackPanel Spacing="10">
                     <TextBlock Text="Status" FontSize="18" FontWeight="Bold" />
 
@@ -35,7 +35,7 @@
             </Border>
 
             <!-- Quick Actions -->
-            <Border Background="#F5F5F5" CornerRadius="8" Padding="20">
+            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="20">
                 <StackPanel Spacing="10">
                     <TextBlock Text="Quick Actions" FontSize="18" FontWeight="Bold" />
 
@@ -64,7 +64,7 @@
             </Border>
 
             <!-- Configuration Summary -->
-            <Border Background="#F5F5F5" CornerRadius="8" Padding="20">
+            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="20">
                 <StackPanel Spacing="10">
                     <TextBlock Text="Configuration Summary" FontSize="18" FontWeight="Bold" />
 
@@ -83,10 +83,10 @@
 
             <Grid ColumnDefinitions="*,*" RowDefinitions="*,*">
                 <!-- Server Configuration -->
-                <Border Grid.Row="0" Grid.Column="0" Background="#E3F2FD" CornerRadius="8" Padding="20" Margin="0,0,5,5">
+                <Border Grid.Row="0" Grid.Column="0" Background="{DynamicResource SystemControlAccentColor1Brush}" CornerRadius="8" Padding="20" Margin="0,0,5,5">
                     <StackPanel Spacing="10">
                         <TextBlock Text="Server Connection" FontSize="16" FontWeight="Bold" />
-                        <TextBlock Text="Configure frpc server connection settings" TextWrapping="Wrap" Foreground="Gray" />
+                        <TextBlock Text="Configure frpc server connection settings" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                         <Button Content="Configure"
                                 Command="{Binding NavigateToServerConfigCommand}"
                                 HorizontalAlignment="Left"
@@ -95,10 +95,10 @@
                 </Border>
 
                 <!-- Proxy Management -->
-                <Border Grid.Row="0" Grid.Column="1" Background="#E8F5E9" CornerRadius="8" Padding="20" Margin="5,0,0,5">
+                <Border Grid.Row="0" Grid.Column="1" Background="{DynamicResource SystemControlAccentColor2Brush}" CornerRadius="8" Padding="20" Margin="5,0,0,5">
                     <StackPanel Spacing="10">
                         <TextBlock Text="Proxy Management" FontSize="16" FontWeight="Bold" />
-                        <TextBlock Text="Manage and configure your proxies" TextWrapping="Wrap" Foreground="Gray" />
+                        <TextBlock Text="Manage and configure your proxies" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                         <Button Content="Manage Proxies"
                                 Command="{Binding NavigateToProxyListCommand}"
                                 HorizontalAlignment="Left"
@@ -107,10 +107,10 @@
                 </Border>
 
                 <!-- Deployment -->
-                <Border Grid.Row="1" Grid.Column="0" Background="#FFF3E0" CornerRadius="8" Padding="20" Margin="0,5,5,0">
+                <Border Grid.Row="1" Grid.Column="0" Background="{DynamicResource SystemControlAccentColor3Brush}" CornerRadius="8" Padding="20" Margin="0,5,5,0">
                     <StackPanel Spacing="10">
                         <TextBlock Text="Frpc Deployment" FontSize="16" FontWeight="Bold" />
-                        <TextBlock Text="Download and configure frpc binary" TextWrapping="Wrap" Foreground="Gray" />
+                        <TextBlock Text="Download and configure frpc binary" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                         <Button Content="Deploy Frpc"
                                 Command="{Binding NavigateToDeploymentCommand}"
                                 HorizontalAlignment="Left"
@@ -119,10 +119,10 @@
                 </Border>
 
                 <!-- Logs -->
-                <Border Grid.Row="1" Grid.Column="1" Background="#F3E5F5" CornerRadius="8" Padding="20" Margin="5,5,0,0">
+                <Border Grid.Row="1" Grid.Column="1" Background="{DynamicResource SystemControlAccentColor4Brush}" CornerRadius="8" Padding="20" Margin="5,5,0,0">
                     <StackPanel Spacing="10">
                         <TextBlock Text="Log Viewer" FontSize="16" FontWeight="Bold" />
-                        <TextBlock Text="View frpc logs in real-time" TextWrapping="Wrap" Foreground="Gray" />
+                        <TextBlock Text="View frpc logs in real-time" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                         <Button Content="View Logs"
                                 Command="{Binding NavigateToLogsCommand}"
                                 HorizontalAlignment="Left"
@@ -132,10 +132,10 @@
             </Grid>
 
             <!-- Recent Log -->
-            <Border Background="#F5F5F5" CornerRadius="8" Padding="20">
+            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="20">
                 <StackPanel Spacing="10">
                     <TextBlock Text="Recent Activity" FontSize="18" FontWeight="Bold" />
-                    <Border Background="White" CornerRadius="4" Padding="10">
+                    <Border Background="{DynamicResource SystemControlPageBackgroundTransparent}" CornerRadius="4" Padding="10">
                         <TextBlock Text="{Binding LastLogLine}" FontFamily="Monospace" TextWrapping="Wrap" />
                     </Border>
                 </StackPanel>

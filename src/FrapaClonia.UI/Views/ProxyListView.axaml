@@ -19,11 +19,11 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Border Grid.Row="0" Background="#F5F5F5" Padding="15">
+        <Border Grid.Row="0" Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" Padding="15">
             <Grid ColumnDefinitions="*,Auto">
                 <StackPanel Grid.Column="0" Spacing="5">
                     <TextBlock Text="Proxy Management" FontSize="24" FontWeight="Bold" />
-                    <TextBlock Text="Manage your frpc proxy configurations" FontSize="14" Foreground="Gray" />
+                    <TextBlock Text="Manage your frpc proxy configurations" FontSize="14" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
@@ -50,7 +50,7 @@
         </Border>
 
         <!-- Toolbar -->
-        <Border Grid.Row="1" Background="White" Padding="15,10" BorderBrush="LightGray" BorderThickness="0,0,0,1">
+        <Border Grid.Row="1" Background="{DynamicResource SystemControlPageBackgroundTransparent}" Padding="15,10" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}" BorderThickness="0,0,0,1">
             <Grid ColumnDefinitions="*,Auto,Auto">
                 <!-- Search -->
                 <TextBox Grid.Column="0"
@@ -76,7 +76,6 @@
 
                 <!-- Add Proxy -->
                 <Button Grid.Column="2"
-                        Content="Add Proxy"
                         Command="{Binding AddProxyCommand}"
                         Padding="15,8"
                         Background="#007ACC"
@@ -91,16 +90,16 @@
         </Border>
 
         <!-- Proxy List -->
-        <Border Grid.Row="2" Background="White" Padding="15">
+        <Border Grid.Row="2" Background="{DynamicResource SystemControlPageBackgroundTransparent}" Padding="15">
             <ScrollViewer>
                 <ItemsControl ItemsSource="{Binding Proxies}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Background="#F9F9F9"
+                            <Border Background="{DynamicResource SystemControlPageBackgroundAltLowBrush}"
                                     CornerRadius="5"
                                     Padding="15"
                                     Margin="0,0,0,10"
-                                    BorderBrush="LightGray"
+                                    BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
                                     BorderThickness="1">
                                 <Grid ColumnDefinitions="*,Auto,Auto">
                                     <!-- Proxy Info -->
@@ -110,18 +109,14 @@
                                             <Border Grid.Column="0" Background="#007ACC" CornerRadius="3" Padding="5,2" Margin="0,0,5,0">
                                                 <TextBlock Text="{Binding Type}" Foreground="White" FontSize="12" />
                                             </Border>
-                                            <TextBlock Grid.Column="1" Text="{Binding LocalIP}" Margin="0,0,5,0" Foreground="Gray" />
-                                            <TextBlock Grid.Column="2" Text=":" Foreground="Gray" Margin="0,0,5,0" />
-                                            <TextBlock Grid.Column="3" Text="{Binding LocalPort}" Foreground="Gray" />
+                                            <TextBlock Grid.Column="1" Text="{Binding LocalIP}" Margin="0,0,5,0" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                                            <TextBlock Grid.Column="2" Text=":" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,0,5,0" />
+                                            <TextBlock Grid.Column="3" Text="{Binding LocalPort}" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                                         </Grid>
                                         <StackPanel Orientation="Horizontal" Spacing="15" Margin="0,5,0,0">
                                             <StackPanel Spacing="2">
-                                                <TextBlock Text="Remote Port" FontSize="11" Foreground="Gray" />
+                                                <TextBlock Text="Remote Port" FontSize="11" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                                                 <TextBlock Text="{Binding RemotePort, TargetNullValue='N/A'}" FontSize="13" FontWeight="SemiBold" />
-                                            </StackPanel>
-                                            <StackPanel Spacing="2">
-                                                <TextBlock Text="Domains" FontSize="11" Foreground="Gray" />
-                                                <TextBlock Text="{Binding CustomDomains}" FontSize="13" FontWeight="SemiBold" />
                                             </StackPanel>
                                         </StackPanel>
                                     </StackPanel>
@@ -136,13 +131,20 @@
 
                                     <!-- Actions -->
                                     <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="5">
-                                        <Button Content="Edit" Padding="10,5" FontSize="12" />
-                                        <Button Content="Duplicate" Padding="10,5" FontSize="12" />
+                                        <Button Content="Edit"
+                                                Padding="10,5"
+                                                FontSize="12"
+                                                Command="{Binding $parent[UserControl].EditProxyCommand}" />
+                                        <Button Content="Duplicate"
+                                                Padding="10,5"
+                                                FontSize="12"
+                                                Command="{Binding $parent[UserControl].DuplicateProxyCommand}" />
                                         <Button Content="Delete"
                                                 Padding="10,5"
                                                 FontSize="12"
                                                 Background="LightCoral"
-                                                Foreground="White" />
+                                                Foreground="White"
+                                                Command="{Binding $parent[UserControl].DeleteProxyCommand}" />
                                     </StackPanel>
                                 </Grid>
                             </Border>

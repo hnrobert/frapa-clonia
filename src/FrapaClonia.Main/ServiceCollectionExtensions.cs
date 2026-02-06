@@ -2,6 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.Infrastructure.Services;
+using FrapaClonia.UI.Services;
+using FrapaClonia.UI.ViewModels;
 using Serilog;
 using System.IO;
 
@@ -25,6 +27,17 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<INativeDeploymentService, NativeDeploymentService>();
         services.AddSingleton<ITomlSerializer, TomlSerializer>();
         services.AddSingleton<IProcessManager, ProcessManager>();
+
+        // Services
+        services.AddSingleton<NavigationService>();
+
+        // ViewModels
+        services.AddSingleton<MainWindowViewModel>();
+        services.AddSingleton<DashboardViewModel>();
+        services.AddSingleton<ServerConfigViewModel>();
+        services.AddSingleton<ProxyListViewModel>();
+        services.AddSingleton<VisitorListViewModel>();
+        services.AddSingleton<SettingsViewModel>();
 
         // Logging
         Log.Logger = new LoggerConfiguration()

@@ -4,6 +4,7 @@
         "clonia",
         "frapa",
         "frpc",
-        "Mvvm"
+        "Mvvm",
+        "Serilog"
     ]
 }

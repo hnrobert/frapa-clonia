@@ -7,7 +7,6 @@
         mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
         x:Class="FrapaClonia.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
         Title="FrapaClonia">
 
     <Design.DataContext>
@@ -21,122 +20,141 @@
         </Grid.ColumnDefinitions>
 
         <!-- Sidebar Navigation -->
-        <Border Grid.Column="0" Background="#2C3E50">
+        <Border Grid.Column="0" Background="{DynamicResource SystemAltMediumHighBackgroundColor}">
             <StackPanel Spacing="5" Margin="10">
                 <!-- App Title -->
                 <TextBlock Text="FrapaClonia"
                            FontSize="20"
                            FontWeight="Bold"
-                           Foreground="White"
+                           Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
                            Margin="0,0,0,20" />
 
                 <!-- Navigation Items -->
-                <Button Content="Dashboard"
+                <Button Command="{Binding NavigateToDashboardCommand}"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Left"
                         Padding="15,10"
                         Background="Transparent"
-                        Foreground="White"
+                        Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
                         BorderThickness="0">
                     <Button.Styles>
                         <Style Selector="Button:pointerover">
-                            <Setter Property="Background" Value="#34495E" />
+                            <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
                         </Style>
                     </Button.Styles>
+                    <TextBlock Text="Dashboard" />
                 </Button>
 
-                <Button Content="Server Config"
+                <Button Command="{Binding NavigateToServerConfigCommand}"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Left"
                         Padding="15,10"
                         Background="Transparent"
-                        Foreground="White"
+                        Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
                         BorderThickness="0">
                     <Button.Styles>
                         <Style Selector="Button:pointerover">
-                            <Setter Property="Background" Value="#34495E" />
+                            <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
                         </Style>
                     </Button.Styles>
+                    <TextBlock Text="Server Config" />
                 </Button>
 
-                <Button Content="Proxies"
+                <Button Command="{Binding NavigateToProxiesCommand}"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Left"
                         Padding="15,10"
                         Background="Transparent"
-                        Foreground="White"
+                        Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
                         BorderThickness="0">
                     <Button.Styles>
                         <Style Selector="Button:pointerover">
-                            <Setter Property="Background" Value="#34495E" />
+                            <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
                         </Style>
                     </Button.Styles>
+                    <TextBlock Text="Proxies" />
                 </Button>
 
-                <Button Content="Deployment"
+                <Button Command="{Binding NavigateToVisitorsCommand}"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Left"
                         Padding="15,10"
                         Background="Transparent"
-                        Foreground="White"
+                        Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
                         BorderThickness="0">
                     <Button.Styles>
                         <Style Selector="Button:pointerover">
-                            <Setter Property="Background" Value="#34495E" />
+                            <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
                         </Style>
                     </Button.Styles>
+                    <TextBlock Text="Visitors" />
                 </Button>
 
-                <Button Content="Logs"
-                        HorizontalAlignment="Stretch"
+                <Button HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Left"
                         Padding="15,10"
                         Background="Transparent"
-                        Foreground="White"
+                        Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
                         BorderThickness="0">
                     <Button.Styles>
                         <Style Selector="Button:pointerover">
-                            <Setter Property="Background" Value="#34495E" />
+                            <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
                         </Style>
                     </Button.Styles>
+                    <TextBlock Text="Deployment" />
                 </Button>
 
-                <Button Content="Settings"
-                        HorizontalAlignment="Stretch"
+                <Button HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Left"
                         Padding="15,10"
                         Background="Transparent"
-                        Foreground="White"
+                        Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
                         BorderThickness="0">
                     <Button.Styles>
                         <Style Selector="Button:pointerover">
-                            <Setter Property="Background" Value="#34495E" />
+                            <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
                         </Style>
                     </Button.Styles>
+                    <TextBlock Text="Logs" />
                 </Button>
 
-                <Separator Margin="0,10,0,10" Foreground="#34495E" />
-
-                <Button Content="About"
+                <Button Command="{Binding NavigateToSettingsCommand}"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Left"
                         Padding="15,10"
                         Background="Transparent"
-                        Foreground="White"
+                        Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
                         BorderThickness="0">
                     <Button.Styles>
                         <Style Selector="Button:pointerover">
-                            <Setter Property="Background" Value="#34495E" />
+                            <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
                         </Style>
                     </Button.Styles>
+                    <TextBlock Text="Settings" />
+                </Button>
+
+                <Separator Margin="0,10,0,10" Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+
+                <Button HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Padding="15,10"
+                        Background="Transparent"
+                        Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
+                        BorderThickness="0">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+                        </Style>
+                    </Button.Styles>
+                    <TextBlock Text="About" />
                 </Button>
             </StackPanel>
         </Border>
 
         <!-- Main Content Area -->
-        <Border Grid.Column="1" Background="#ECF0F1">
-            <!-- Default content: Dashboard -->
-            <views:DashboardView />
+        <Border Grid.Column="1" Background="{DynamicResource SystemControlPageBackgroundTransparent}">
+            <!-- Dynamic content based on navigation -->
+            <ContentControl Content="{Binding CurrentView}" />
         </Border>
     </Grid>
 

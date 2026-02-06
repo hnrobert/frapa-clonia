@@ -6,7 +6,6 @@
         mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
         x:Class="FrapaClonia.UI.Views.VisitorEditorView"
         x:DataType="vm:VisitorEditorViewModel"
-        Icon="/Assets/avalonia-logo.ico"
         Title="Edit Visitor"
         Width="600"
         Height="500">
@@ -24,7 +23,7 @@
                        Foreground="Gray" />
 
             <!-- Basic Settings -->
-            <Border Background="#F5F5F5" CornerRadius="8" Padding="15">
+            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15">
                 <StackPanel Spacing="10">
                     <TextBlock Text="Basic Settings" FontSize="16" FontWeight="Bold" />
 
@@ -58,7 +57,7 @@
             </Border>
 
             <!-- Bind Settings -->
-            <Border Background="#F5F5F5" CornerRadius="8" Padding="15">
+            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15">
                 <StackPanel Spacing="10">
                     <TextBlock Text="Bind Settings" FontSize="16" FontWeight="Bold" />
 
@@ -87,7 +86,7 @@
             </Border>
 
             <!-- Validation Status -->
-            <Border Background="#F5F5F5" CornerRadius="8" Padding="15"
+            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15"
                     IsVisible="{Binding HasValidationError}">
                 <TextBlock Text="{Binding ValidationError}"
                            Foreground="Red"
@@ -96,13 +95,11 @@
 
             <!-- Buttons -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
-                <Button Content="Cancel"
-                        Command="{Binding CancelCommand}"
+                <Button Command="{Binding CancelCommand}"
                         Padding="15,8"
                         IsEnabled="{Binding !IsSaving}" />
 
-                <Button Content="Save"
-                        Command="{Binding SaveCommand}"
+                <Button Command="{Binding SaveCommand}"
                         Padding="15,8"
                         IsEnabled="{Binding !IsSaving}"
                         Background="#007ACC"

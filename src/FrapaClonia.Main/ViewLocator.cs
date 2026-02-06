@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using FrapaClonia.ViewModels;
 
 namespace FrapaClonia;
 
@@ -18,7 +17,7 @@ public class ViewLocator : IDataTemplate
     {
         if (param is null)
             return null;
-        
+
         var name = param.GetType().FullName!.Replace("ViewModel", "View", StringComparison.Ordinal);
         var type = Type.GetType(name);
 
@@ -26,12 +25,17 @@ public class ViewLocator : IDataTemplate
         {
             return (Control)Activator.CreateInstance(type)!;
         }
-        
+
         return new TextBlock { Text = "Not Found: " + name };
     }
 
     public bool Match(object? data)
     {
-        return data is ViewModelBase;
+        // Match any type that ends with ViewModel
+        if (data is null)
+            return false;
+
+        var typeName = data.GetType().FullName ?? "";
+        return typeName.EndsWith("ViewModel", StringComparison.Ordinal);
     }
 }

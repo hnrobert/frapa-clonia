@@ -4,6 +4,7 @@ using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Markup.Xaml;
+using Microsoft.Extensions.DependencyInjection;
 using FrapaClonia.UI.ViewModels;
 using FrapaClonia.Views;
 
@@ -11,6 +12,8 @@ namespace FrapaClonia;
 
 public partial class App : Application
 {
+    private ServiceProvider? _serviceProvider;
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -20,14 +23,20 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            // Set up DI container
+            var services = new ServiceCollection();
+            services.AddApplicationServices();
+            _serviceProvider = services.BuildServiceProvider();
+
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit.
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
-            // TODO: Set up DI container and resolve MainWindowViewModel from it
-            // For now, we'll create a simple stub
+
+            // Resolve MainWindow and its ViewModel from DI container
+            var mainWindowViewModel = _serviceProvider.GetRequiredService<MainWindowViewModel>();
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new object(), // Placeholder
+                DataContext = mainWindowViewModel
             };
         }
 

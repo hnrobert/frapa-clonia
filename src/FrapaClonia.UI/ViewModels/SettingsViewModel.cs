@@ -16,7 +16,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IAutoStartService _autoStartService;
 
     [ObservableProperty]
-    private string _selectedLanguage = "en";
+    private LanguageOption? _selectedLanguage;
 
     [ObservableProperty]
     private bool _autoStartEnabled;
@@ -61,7 +61,9 @@ public partial class SettingsViewModel : ObservableObject
 
         _localizationService.CultureChanged += (s, e) =>
         {
-            SelectedLanguage = _localizationService.CurrentCulture.Name;
+            var cultureCode = _localizationService.CurrentCulture.Name;
+            SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == cultureCode)
+                ?? AvailableLanguages.First();
         };
 
         _ = Task.Run(LoadSettingsAsync);
@@ -71,7 +73,9 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            SelectedLanguage = _localizationService.CurrentCulture.Name;
+            var cultureCode = _localizationService.CurrentCulture.Name;
+            SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == cultureCode)
+                ?? AvailableLanguages.First();
             AutoStartEnabled = await _autoStartService.IsAutoStartEnabledAsync();
             PortableMode = DetectPortableMode();
             ConfigLocation = GetConfigLocation();
@@ -91,9 +95,9 @@ public partial class SettingsViewModel : ObservableObject
             IsSaving = true;
 
             // Apply language change
-            if (SelectedLanguage != _localizationService.CurrentCulture.Name)
+            if (SelectedLanguage != null && SelectedLanguage.Code != _localizationService.CurrentCulture.Name)
             {
-                _localizationService.SetCulture(SelectedLanguage);
+                _localizationService.SetCulture(SelectedLanguage.Code);
             }
 
             // Apply auto-start setting

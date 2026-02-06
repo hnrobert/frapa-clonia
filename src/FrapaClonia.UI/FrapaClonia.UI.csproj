@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FrapaClonia.Core\FrapaClonia.Core.csproj" />
+    <ProjectReference Include="..\FrapaClonia.Infrastructure\FrapaClonia.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

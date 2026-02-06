@@ -205,6 +205,23 @@ public partial class ProxyEditorViewModel : ObservableObject
         _ = ValidateAsync();
     }
 
+    partial void OnPluginTypeChanged(string? value)
+    {
+        OnPropertyChanged(nameof(HasPlugin));
+        OnPropertyChanged(nameof(IsHttpProxyPlugin));
+        OnPropertyChanged(nameof(IsSocks5Plugin));
+        OnPropertyChanged(nameof(IsStaticFilePlugin));
+        OnPropertyChanged(nameof(IsHttps2httpPlugin));
+        OnPropertyChanged(nameof(IsHttp2httpsPlugin));
+    }
+
+    public bool HasPlugin => !string.IsNullOrWhiteSpace(PluginType);
+    public bool IsHttpProxyPlugin => PluginType == "http_proxy";
+    public bool IsSocks5Plugin => PluginType == "socks5";
+    public bool IsStaticFilePlugin => PluginType == "static_file";
+    public bool IsHttps2httpPlugin => PluginType == "https2http";
+    public bool IsHttp2httpsPlugin => PluginType == "http2https";
+
     private void LoadFromProxy(ProxyConfig proxy)
     {
         ProxyName = proxy.Name;
