@@ -3,7 +3,7 @@
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="600"
              x:Class="FrapaClonia.UI.Views.SettingsView"
              x:DataType="vm:SettingsViewModel">
 
@@ -11,112 +11,226 @@
         <vm:SettingsViewModel />
     </Design.DataContext>
 
-    <ScrollViewer>
-        <StackPanel Margin="20" Spacing="20">
-            <!-- Header -->
-            <TextBlock Text="Application Settings" FontSize="24" FontWeight="Bold" />
+    <UserControl.Styles>
+        <Style Selector="Border.settings-card">
+            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="20" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
 
-            <!-- Language Settings -->
-            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15">
-                <StackPanel Spacing="10">
-                    <TextBlock Text="Language" FontSize="16" FontWeight="Bold" />
+        <Style Selector="Border.settings-card:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltLowBrush}" />
+        </Style>
 
-                    <StackPanel Spacing="5">
-                        <TextBlock Text="Interface Language" FontWeight="Bold" />
-                        <ComboBox ItemsSource="{Binding AvailableLanguages}"
-                                  SelectedItem="{Binding SelectedLanguage}"
-                                  MinWidth="200">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Name}" />
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-                        <TextBlock Text="Changes will take effect after restarting the application"
-                                   FontSize="12" Foreground="Gray" />
+        <Style Selector="TextBlock.section-header">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,0,0,16" />
+        </Style>
+
+        <Style Selector="TextBlock.field-label">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="Margin" Value="0,0,0,6" />
+        </Style>
+
+        <Style Selector="TextBlock.hint-text">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="0,4,0,0" />
+        </Style>
+
+        <Style Selector="TextBlock.readonly-value">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontFamily" Value="{DynamicResource MonoFontFamily}" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style Selector="Button.action-button">
+            <Setter Property="MinWidth" Value="100" />
+            <Setter Property="Padding" Value="20,10" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+
+        <Style Selector="Button.action-button.primary">
+            <Setter Property="Background" Value="{DynamicResource SystemControlAccentColor1Brush}" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundAltHighBrush}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style Selector="Button.action-button.primary:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SystemControlAccentColor2Brush}" />
+        </Style>
+
+        <Style Selector="CheckBox.settings-checkbox">
+            <Setter Property="Margin" Value="0,8,0,0" />
+        </Style>
+
+        <Style Selector="CheckBox.settings-checkbox > ContentPresenter">
+            <Setter Property="Margin" Value="8,0,0,0" />
+        </Style>
+
+        <Style Selector="ComboBox.settings-dropdown">
+            <Setter Property="MinWidth" Value="240" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+        <Panel Margin="24">
+            <StackPanel Spacing="24" MaxWidth="650">
+                <!-- Header -->
+                <TextBlock Text="Settings"
+                           FontSize="28"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+
+                <!-- Language Settings -->
+                <Border Classes="settings-card">
+                    <StackPanel Spacing="0">
+                        <TextBlock Text="Language &amp; Region"
+                                   Classes="section-header" />
+
+                        <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto">
+                            <TextBlock Grid.Row="0" Grid.Column="0"
+                                       Text="Interface Language"
+                                       Classes="field-label" />
+                            <ComboBox Grid.Row="0" Grid.Column="1"
+                                      ItemsSource="{Binding AvailableLanguages}"
+                                      SelectedItem="{Binding SelectedLanguage}"
+                                      Classes="settings-dropdown"
+                                      AutomationProperties.Name="Interface Language">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                       Text="Changes will take effect after restarting the application"
+                                       Classes="hint-text" />
+                        </Grid>
                     </StackPanel>
-                </StackPanel>
-            </Border>
+                </Border>
 
-            <!-- Startup Settings -->
-            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15">
-                <StackPanel Spacing="10">
-                    <TextBlock Text="Startup" FontSize="16" FontWeight="Bold" />
+                <!-- Startup Settings -->
+                <Border Classes="settings-card">
+                    <StackPanel Spacing="0">
+                        <TextBlock Text="System Integration"
+                                   Classes="section-header" />
 
-                    <CheckBox IsChecked="{Binding AutoStartEnabled}">
-                        <StackPanel Spacing="2">
-                            <TextBlock Text="Start on system boot" FontWeight="SemiBold" />
-                            <TextBlock Text="Automatically start FrapaClonia when you log in"
-                                       FontSize="12" Foreground="Gray" />
+                        <CheckBox IsChecked="{Binding AutoStartEnabled}"
+                                  Classes="settings-checkbox"
+                                  AutomationProperties.Name="Start on system boot">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Start on system boot"
+                                           FontSize="13"
+                                           FontWeight="Medium" />
+                                <TextBlock Text="Automatically launch FrapaClonia when you sign in"
+                                           Classes="hint-text" />
+                            </StackPanel>
+                        </CheckBox>
+                    </StackPanel>
+                </Border>
+
+                <!-- Application Mode -->
+                <Border Classes="settings-card">
+                    <StackPanel Spacing="0">
+                        <TextBlock Text="Application Mode"
+                                   Classes="section-header" />
+
+                        <CheckBox IsChecked="{Binding PortableMode}"
+                                  IsEnabled="False"
+                                  Classes="settings-checkbox"
+                                  AutomationProperties.Name="Portable Mode">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Portable Mode"
+                                           FontSize="13"
+                                           FontWeight="Medium" />
+                                <TextBlock Text="Configuration stored in application directory (requires portable.txt)"
+                                           Classes="hint-text" />
+                            </StackPanel>
+                        </CheckBox>
+
+                        <Border BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                BorderThickness="0,1,0,0"
+                                Margin="0,16,0,0"
+                                Padding="0,16,0,0">
+                            <StackPanel Spacing="0">
+                                <TextBlock Text="Configuration Location"
+                                           Classes="field-label" />
+                                <TextBlock Text="{Binding ConfigLocation}"
+                                           Classes="readonly-value"
+                                           AutomationProperties.Name="Configuration Location" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- About Information -->
+                <Border Classes="settings-card">
+                    <StackPanel Spacing="0">
+                        <TextBlock Text="About"
+                                   Classes="section-header" />
+
+                        <Grid ColumnDefinitions="120,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
+                            <TextBlock Grid.Row="0" Grid.Column="0"
+                                       Text="Version"
+                                       Classes="field-label" />
+                            <TextBlock Grid.Row="0" Grid.Column="1"
+                                       Text="0.1.0"
+                                       VerticalAlignment="Center" />
+
+                            <TextBlock Grid.Row="1" Grid.Column="0"
+                                       Text="Build"
+                                       Classes="field-label" />
+                            <TextBlock Grid.Row="1" Grid.Column="1"
+                                       Text="Development"
+                                       VerticalAlignment="Center" />
+
+                            <TextBlock Grid.Row="2" Grid.Column="0"
+                                       Text=".NET Runtime"
+                                       Classes="field-label" />
+                            <TextBlock Grid.Row="2" Grid.Column="1"
+                                       Text="10.0"
+                                       VerticalAlignment="Center" />
+
+                            <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                                       Text="A cross-platform frpc visual client built with Avalonia UI"
+                                       Classes="hint-text"
+                                       Margin="0,12,0,0" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Action Buttons -->
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Spacing="12"
+                            Margin="0,8,0,0">
+                    <Button Command="{Binding ResetCommand}"
+                            Content="Reset to Defaults"
+                            Classes="action-button"
+                            IsEnabled="{Binding !IsSaving}"
+                            AutomationProperties.Name="Reset to Defaults" />
+
+                    <Button Command="{Binding SaveCommand}"
+                            Classes="action-button primary"
+                            IsEnabled="{Binding !IsSaving}"
+                            AutomationProperties.Name="Save Settings">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="Save Settings" />
+                            <ProgressBar IsIndeterminate="True"
+                                          Width="16"
+                                          Height="16"
+                                          IsVisible="{Binding IsSaving}" />
                         </StackPanel>
-                    </CheckBox>
+                    </Button>
                 </StackPanel>
-            </Border>
-
-            <!-- Application Mode -->
-            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15">
-                <StackPanel Spacing="10">
-                    <TextBlock Text="Application Mode" FontSize="16" FontWeight="Bold" />
-
-                    <CheckBox IsChecked="{Binding PortableMode}" IsEnabled="False">
-                        <StackPanel Spacing="2">
-                            <TextBlock Text="Portable Mode" FontWeight="SemiBold" />
-                            <TextBlock Text="Store configuration in application directory (requires portable.txt)"
-                                       FontSize="12" Foreground="Gray" />
-                        </StackPanel>
-                    </CheckBox>
-
-                    <StackPanel Spacing="5" Margin="0,10,0,0">
-                        <TextBlock Text="Configuration Location:" FontWeight="Bold" />
-                        <TextBlock Text="{Binding ConfigLocation}" FontFamily="Monospace" Foreground="Gray" />
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-
-            <!-- About Information -->
-            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15">
-                <StackPanel Spacing="10">
-                    <TextBlock Text="About" FontSize="16" FontWeight="Bold" />
-
-                    <Grid ColumnDefinitions="Auto,*">
-                        <TextBlock Grid.Column="0" Text="Version:" FontWeight="Bold" Margin="0,0,10,0" />
-                        <TextBlock Grid.Column="1" Text="0.1.0" />
-                    </Grid>
-
-                    <Grid ColumnDefinitions="Auto,*">
-                        <TextBlock Grid.Column="0" Text="Build:" FontWeight="Bold" Margin="0,0,10,0" />
-                        <TextBlock Grid.Column="1" Text="Development" />
-                    </Grid>
-
-                    <Grid ColumnDefinitions="Auto,*">
-                        <TextBlock Grid.Column="0" Text=".NET:" FontWeight="Bold" Margin="0,0,10,0" />
-                        <TextBlock Grid.Column="1" Text="10.0" />
-                    </Grid>
-
-                    <TextBlock Text="A cross-platform frpc visual client"
-                               Foreground="Gray" Margin="0,10,0,0" />
-                </StackPanel>
-            </Border>
-
-            <!-- Buttons -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
-                <Button Command="{Binding ResetCommand}"
-                        Padding="15,8"
-                        IsEnabled="{Binding !IsSaving}" />
-
-                <Button Command="{Binding SaveCommand}"
-                        Padding="15,8"
-                        IsEnabled="{Binding !IsSaving}"
-                        Background="#007ACC"
-                        Foreground="White">
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <TextBlock Text="Save" />
-                        <ProgressBar IsIndeterminate="True"
-                                     Width="20" Height="20"
-                                     IsVisible="{Binding IsSaving}" />
-                    </StackPanel>
-                </Button>
             </StackPanel>
-        </StackPanel>
+        </Panel>
     </ScrollViewer>
 </UserControl>

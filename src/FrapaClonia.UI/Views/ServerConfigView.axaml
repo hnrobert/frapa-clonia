@@ -3,206 +3,540 @@
         xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="700"
         x:Class="FrapaClonia.UI.Views.ServerConfigView"
         x:DataType="vm:ServerConfigViewModel"
-        Title="Server Configuration">
+        Title="Server Configuration"
+        MinWidth="600"
+        MinHeight="500"
+        Width="800"
+        Height="700">
 
     <Design.DataContext>
         <vm:ServerConfigViewModel />
     </Design.DataContext>
 
-    <ScrollViewer>
-        <StackPanel Margin="20" Spacing="15">
-            <!-- Header -->
-            <TextBlock Text="Server Connection" FontSize="24" FontWeight="Bold" />
+    <Window.Styles>
+        <!-- Section card style -->
+        <Style Selector="Border.section-card">
+            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="20" />
+        </Style>
 
-            <TextBlock Text="Configure your frpc server connection settings below"
-                       Foreground="Gray" Margin="0,0,0,10" />
+        <!-- Section header style -->
+        <Style Selector="TextBlock.section-header">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,0,0,16" />
+        </Style>
 
-            <!-- Server Address -->
-            <StackPanel Spacing="5">
-                <TextBlock Text="Server Address *" FontWeight="Bold" />
-                <TextBox Text="{Binding ServerAddr}" Watermark="e.g., 127.0.0.1 or your-server.com" />
-                <TextBlock Text="The address of the frps server"
-                           FontSize="12" Foreground="Gray" />
+        <!-- Label style -->
+        <Style Selector="TextBlock.field-label">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="Margin" Value="0,0,0,4" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <!-- Description style -->
+        <Style Selector="TextBlock.field-description">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+            <Setter Property="Margin" Value="4,0,0,0" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <!-- Input control style -->
+        <Style Selector="TextBox.input-control">
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="8,6" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="ComboBox.input-control">
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="NumericUpDown.input-control">
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+        </Style>
+
+        <!-- Primary button style -->
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorForegroundBrush}" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="20,10" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="MinWidth" Value="100" />
+        </Style>
+
+        <!-- Secondary button style -->
+        <Style Selector="Button.secondary">
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="20,10" />
+            <Setter Property="MinWidth" Value="100" />
+        </Style>
+
+        <!-- Required field indicator style -->
+        <Style Selector="TextBlock.required-indicator">
+            <Setter Property="Text" Value="*" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Margin" Value="4,0,0,0" />
+        </Style>
+
+        <!-- Status message styles -->
+        <Style Selector="TextBlock.status-error">
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style Selector="TextBlock.status-warning">
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlCautionTextForegroundBrush}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style Selector="TextBlock.status-success">
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlSuccessTextForegroundBrush}" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Header Row -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
+                Padding="20,16"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                BorderThickness="0,0,0,1">
+            <StackPanel Spacing="4">
+                <TextBlock Text="Server Connection"
+                           FontSize="20"
+                           FontWeight="SemiBold" />
+                <TextBlock Text="Configure your frpc server connection settings"
+                           FontSize="13"
+                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
             </StackPanel>
+        </Border>
 
-            <!-- Server Port -->
-            <StackPanel Spacing="5">
-                <TextBlock Text="Server Port *" FontWeight="Bold" />
-                <NumericUpDown Value="{Binding ServerPort}" Minimum="1" Maximum="65535"
-                              Increment="1" FormatString="0" />
-                <TextBlock Text="The port of the frps server (default: 7000)"
-                           FontSize="12" Foreground="Gray" />
+        <!-- Main Content Row -->
+        <ScrollViewer Grid.Row="1">
+            <StackPanel Margin="20" Spacing="20">
+
+                <!-- Server Connection Section -->
+                <Border Classes="section-card">
+                    <StackPanel Spacing="16">
+                        <TextBlock Text="Connection Settings"
+                                   Classes="section-header" />
+
+                        <!-- Server Address -->
+                        <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,Auto">
+                            <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" Spacing="0">
+                                <TextBlock Text="Server Address" Classes="field-label" Margin="0" />
+                                <TextBlock Classes="required-indicator" />
+                            </StackPanel>
+                            <TextBox Grid.Column="1"
+                                     Grid.Row="0"
+                                     Text="{Binding ServerAddr}"
+                                     Watermark="e.g., 127.0.0.1 or your-server.com"
+                                     Classes="input-control" />
+                            <TextBlock Grid.Column="1"
+                                       Grid.Row="1"
+                                       Text="The address of the frps server"
+                                       Classes="field-description" />
+                        </Grid>
+
+                        <!-- Server Port -->
+                        <Grid ColumnDefinitions="140,120,*" RowDefinitions="Auto,Auto">
+                            <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" Spacing="0">
+                                <TextBlock Text="Server Port" Classes="field-label" Margin="0" />
+                                <TextBlock Classes="required-indicator" />
+                            </StackPanel>
+                            <NumericUpDown Grid.Column="1"
+                                           Grid.Row="0"
+                                           Value="{Binding ServerPort}"
+                                           Minimum="1"
+                                           Maximum="65535"
+                                           Increment="1"
+                                           FormatString="0"
+                                           Classes="input-control" />
+                            <TextBlock Grid.Column="2"
+                                       Grid.Row="0"
+                                       Text="Default: 7000"
+                                       Classes="field-description" />
+                        </Grid>
+
+                        <!-- User -->
+                        <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Grid.Row="0"
+                                       Text="User"
+                                       Classes="field-label" />
+                            <TextBox Grid.Column="1"
+                                     Grid.Row="0"
+                                     Text="{Binding User}"
+                                     Watermark="Optional user name"
+                                     Classes="input-control" />
+                            <TextBlock Grid.Column="1"
+                                       Grid.Row="1"
+                                       Text="Optional user name to avoid proxy name conflicts"
+                                       Classes="field-description" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Authentication Section -->
+                <Border Classes="section-card">
+                    <StackPanel Spacing="16">
+                        <TextBlock Text="Authentication"
+                                   Classes="section-header" />
+
+                        <!-- Auth Method -->
+                        <Grid ColumnDefinitions="140,180,*" RowDefinitions="Auto">
+                            <TextBlock Grid.Column="0"
+                                       Grid.Row="0"
+                                       Text="Method"
+                                       Classes="field-label" />
+                            <ComboBox Grid.Column="1"
+                                      Grid.Row="0"
+                                      SelectedIndex="{Binding AuthMethodIndex}"
+                                      Classes="input-control">
+                                <ComboBoxItem>Token</ComboBoxItem>
+                                <ComboBoxItem>OIDC</ComboBoxItem>
+                            </ComboBox>
+                        </Grid>
+
+                        <!-- Token Auth -->
+                        <StackPanel Spacing="12"
+                                    IsVisible="{Binding !IsOidcAuth}">
+                            <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
+                                <TextBlock Grid.Column="0"
+                                           Grid.Row="0"
+                                           Text="Token"
+                                           Classes="field-label" />
+                                <TextBox Grid.Column="1"
+                                         Grid.Row="0"
+                                         Text="{Binding Token}"
+                                         PasswordChar="*"
+                                         Watermark="Enter your authentication token"
+                                         Classes="input-control" />
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- OIDC Auth -->
+                        <StackPanel Spacing="12"
+                                    IsVisible="{Binding IsOidcAuth}">
+                            <!-- Client ID -->
+                            <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
+                                <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" Spacing="0">
+                                    <TextBlock Text="Client ID" Classes="field-label" Margin="0" />
+                                    <TextBlock Classes="required-indicator" />
+                                </StackPanel>
+                                <TextBox Grid.Column="1"
+                                         Grid.Row="0"
+                                         Text="{Binding OidcClientId}"
+                                         Classes="input-control" />
+                            </Grid>
+
+                            <!-- Client Secret -->
+                            <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
+                                <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" Spacing="0">
+                                    <TextBlock Text="Client Secret" Classes="field-label" Margin="0" />
+                                    <TextBlock Classes="required-indicator" />
+                                </StackPanel>
+                                <TextBox Grid.Column="1"
+                                         Grid.Row="0"
+                                         Text="{Binding OidcClientSecret}"
+                                         PasswordChar="*"
+                                         Classes="input-control" />
+                            </Grid>
+
+                            <!-- Token Endpoint -->
+                            <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
+                                <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" Spacing="0">
+                                    <TextBlock Text="Token Endpoint" Classes="field-label" Margin="0" />
+                                    <TextBlock Classes="required-indicator" />
+                                </StackPanel>
+                                <TextBox Grid.Column="1"
+                                         Grid.Row="0"
+                                         Text="{Binding OidcTokenEndpointUrl}"
+                                         Watermark="https://"
+                                         Classes="input-control" />
+                            </Grid>
+
+                            <!-- Audience -->
+                            <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
+                                <TextBlock Grid.Column="0"
+                                           Grid.Row="0"
+                                           Text="Audience"
+                                           Classes="field-label" />
+                                <TextBox Grid.Column="1"
+                                         Grid.Row="0"
+                                         Text="{Binding OidcAudience}"
+                                         Watermark="Optional audience"
+                                         Classes="input-control" />
+                            </Grid>
+
+                            <!-- Scope -->
+                            <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
+                                <TextBlock Grid.Column="0"
+                                           Grid.Row="0"
+                                           Text="Scope"
+                                           Classes="field-label" />
+                                <TextBox Grid.Column="1"
+                                         Grid.Row="0"
+                                         Text="{Binding OidcScope}"
+                                         Watermark="e.g., openid profile"
+                                         Classes="input-control" />
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Transport Section -->
+                <Border Classes="section-card">
+                    <StackPanel Spacing="16">
+                        <TextBlock Text="Transport Settings"
+                                   Classes="section-header" />
+
+                        <!-- Protocol -->
+                        <Grid ColumnDefinitions="140,180,*" RowDefinitions="Auto">
+                            <TextBlock Grid.Column="0"
+                                       Grid.Row="0"
+                                       Text="Protocol"
+                                       Classes="field-label" />
+                            <ComboBox Grid.Column="1"
+                                      Grid.Row="0"
+                                      SelectedIndex="{Binding TransportProtocolIndex}"
+                                      Classes="input-control">
+                                <ComboBoxItem>TCP</ComboBoxItem>
+                                <ComboBoxItem>KCP</ComboBoxItem>
+                                <ComboBoxItem>QUIC</ComboBoxItem>
+                                <ComboBoxItem>WebSocket</ComboBoxItem>
+                                <ComboBoxItem>Secure WebSocket (WSS)</ComboBoxItem>
+                            </ComboBox>
+                        </Grid>
+
+                        <!-- Timeout and Mux -->
+                        <Grid ColumnDefinitions="140,120,20,100,*"
+                              RowDefinitions="Auto,Auto">
+                            <!-- Dial Timeout -->
+                            <TextBlock Grid.Column="0"
+                                       Grid.Row="0"
+                                       Text="Dial Timeout"
+                                       Classes="field-label" />
+                            <NumericUpDown Grid.Column="1"
+                                           Grid.Row="0"
+                                           Value="{Binding DialServerTimeout}"
+                                           Minimum="1"
+                                           Maximum="300"
+                                           Increment="1"
+                                           FormatString="0"
+                                           Classes="input-control" />
+                            <TextBlock Grid.Column="2"
+                                       Grid.Row="0"
+                                       Text="seconds"
+                                       Classes="field-description" />
+
+                            <!-- TCP Mux -->
+                            <TextBlock Grid.Column="3"
+                                       Grid.Row="0"
+                                       Text="TCP Mux"
+                                       Classes="field-label" />
+                            <CheckBox Grid.Column="4"
+                                      Grid.Row="0"
+                                      IsChecked="{Binding TcpMux}"
+                                      VerticalAlignment="Center" />
+                        </Grid>
+
+                        <!-- Heartbeat -->
+                        <Grid ColumnDefinitions="140,120,20,120,*"
+                              RowDefinitions="Auto,Auto">
+                            <!-- Heartbeat Interval -->
+                            <TextBlock Grid.Column="0"
+                                       Grid.Row="0"
+                                       Text="Heartbeat Interval"
+                                       Classes="field-label" />
+                            <NumericUpDown Grid.Column="1"
+                                           Grid.Row="0"
+                                           Value="{Binding HeartbeatInterval}"
+                                           Minimum="5"
+                                           Maximum="300"
+                                           Increment="5"
+                                           FormatString="0"
+                                           Classes="input-control" />
+                            <TextBlock Grid.Column="2"
+                                       Grid.Row="0"
+                                       Text="seconds"
+                                       Classes="field-description" />
+
+                            <!-- Heartbeat Timeout -->
+                            <TextBlock Grid.Column="3"
+                                       Grid.Row="0"
+                                       Text="Heartbeat Timeout"
+                                       Classes="field-label" />
+                            <NumericUpDown Grid.Column="4"
+                                           Grid.Row="0"
+                                           Value="{Binding HeartbeatTimeout}"
+                                           Minimum="5"
+                                           Maximum="600"
+                                           Increment="5"
+                                           FormatString="0"
+                                           Classes="input-control" />
+                        </Grid>
+
+                        <!-- TLS -->
+                        <CheckBox IsChecked="{Binding TlsEnabled}"
+                                  Margin="0,4,0,0">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Enable TLS"
+                                           FontWeight="Medium"
+                                           FontSize="13" />
+                                <TextBlock Text="Encrypt communication with the frps server"
+                                           Classes="field-description"
+                                           Margin="0" />
+                            </StackPanel>
+                        </CheckBox>
+                    </StackPanel>
+                </Border>
+
+                <!-- DNS Section -->
+                <Border Classes="section-card">
+                    <StackPanel Spacing="16">
+                        <TextBlock Text="DNS Configuration"
+                                   Classes="section-header" />
+
+                        <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Grid.Row="0"
+                                       Text="DNS Server"
+                                       Classes="field-label" />
+                            <TextBox Grid.Column="1"
+                                     Grid.Row="0"
+                                     Text="{Binding DnsServer}"
+                                     Watermark="e.g., 8.8.8.8:53"
+                                     Classes="input-control" />
+                            <TextBlock Grid.Column="1"
+                                       Grid.Row="1"
+                                       Text="Custom DNS server for resolving domain names (optional)"
+                                       Classes="field-description" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Logging Section -->
+                <Border Classes="section-card">
+                    <StackPanel Spacing="16">
+                        <TextBlock Text="Logging"
+                                   Classes="section-header" />
+
+                        <!-- Log Level and Max Days -->
+                        <Grid ColumnDefinitions="140,180,20,Auto,120,*"
+                              RowDefinitions="Auto">
+                            <!-- Log Level -->
+                            <TextBlock Grid.Column="0"
+                                       Grid.Row="0"
+                                       Text="Log Level"
+                                       Classes="field-label" />
+                            <ComboBox Grid.Column="1"
+                                      Grid.Row="0"
+                                      SelectedIndex="{Binding LogLevelIndex}"
+                                      Classes="input-control">
+                                <ComboBoxItem>Trace</ComboBoxItem>
+                                <ComboBoxItem>Debug</ComboBoxItem>
+                                <ComboBoxItem>Info</ComboBoxItem>
+                                <ComboBoxItem>Warn</ComboBoxItem>
+                                <ComboBoxItem>Error</ComboBoxItem>
+                            </ComboBox>
+
+                            <!-- Max Days -->
+                            <TextBlock Grid.Column="3"
+                                       Grid.Row="0"
+                                       Text="Max Days"
+                                       Classes="field-label" />
+                            <NumericUpDown Grid.Column="4"
+                                           Grid.Row="0"
+                                           Value="{Binding LogMaxDays}"
+                                           Minimum="1"
+                                           Maximum="365"
+                                           Increment="1"
+                                           FormatString="0"
+                                           Classes="input-control" />
+                        </Grid>
+
+                        <!-- Log To -->
+                        <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
+                            <TextBlock Grid.Column="0"
+                                       Grid.Row="0"
+                                       Text="Log To"
+                                       Classes="field-label" />
+                            <TextBox Grid.Column="1"
+                                     Grid.Row="0"
+                                     Text="{Binding LogTo}"
+                                     Watermark="e.g., console, /path/to/logfile"
+                                     Classes="input-control" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Status Section -->
+                <Border Classes="section-card"
+                        IsVisible="{Binding IsValid}">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Status"
+                                   Classes="section-header" />
+
+                        <TextBlock Text="{Binding ValidationError}"
+                                   Classes="status-error"
+                                   IsVisible="{Binding HasValidationError}" />
+
+                        <TextBlock Text="{Binding ValidationWarning}"
+                                   Classes="status-warning"
+                                   IsVisible="{Binding HasValidationWarning}" />
+
+                        <TextBlock Text="Configuration is valid"
+                                   Classes="status-success"
+                                   IsVisible="{Binding IsValid}" />
+                    </StackPanel>
+                </Border>
             </StackPanel>
+        </ScrollViewer>
 
-            <!-- User -->
-            <StackPanel Spacing="5">
-                <TextBlock Text="User" FontWeight="Bold" />
-                <TextBox Text="{Binding User}" Watermark="Optional user name" />
-                <TextBlock Text="Optional user name to avoid proxy name conflicts"
-                           FontSize="12" Foreground="Gray" />
-            </StackPanel>
-
-            <Border Background="LightGray" Height="1" Margin="0,10" />
-
-            <!-- Authentication -->
-            <TextBlock Text="Authentication" FontSize="18" FontWeight="Bold" Margin="0,0,10,0" />
-
-            <!-- Auth Method -->
-            <StackPanel Spacing="5">
-                <TextBlock Text="Authentication Method" FontWeight="Bold" />
-                <ComboBox SelectedIndex="{Binding AuthMethodIndex}" MinWidth="200">
-                    <ComboBoxItem>Token</ComboBoxItem>
-                    <ComboBoxItem>OIDC</ComboBoxItem>
-                </ComboBox>
-            </StackPanel>
-
-            <!-- Token Auth -->
-            <StackPanel Spacing="5" IsVisible="{Binding !IsOidcAuth}">
-                <TextBlock Text="Token" FontWeight="Bold" />
-                <TextBox Text="{Binding Token}" PasswordChar="*"
-                         Watermark="Enter your authentication token" />
-            </StackPanel>
-
-            <!-- OIDC Auth -->
-            <StackPanel Spacing="5" IsVisible="{Binding IsOidcAuth}">
-                <TextBlock Text="OIDC Client ID *" FontWeight="Bold" />
-                <TextBox Text="{Binding OidcClientId}" />
-
-                <TextBlock Text="OIDC Client Secret *" FontWeight="Bold" Margin="0,10,0,0" />
-                <TextBox Text="{Binding OidcClientSecret}" PasswordChar="*" />
-
-                <TextBlock Text="Token Endpoint URL *" FontWeight="Bold" Margin="0,10,0,0" />
-                <TextBox Text="{Binding OidcTokenEndpointUrl}" />
-
-                <TextBlock Text="Audience" FontWeight="Bold" Margin="0,10,0,0" />
-                <TextBox Text="{Binding OidcAudience}" Watermark="Optional audience" />
-
-                <TextBlock Text="Scope" FontWeight="Bold" Margin="0,10,0,0" />
-                <TextBox Text="{Binding OidcScope}" Watermark="e.g., openid profile" />
-            </StackPanel>
-
-            <Border Background="LightGray" Height="1" Margin="0,10" />
-
-            <!-- Transport -->
-            <TextBlock Text="Transport" FontSize="18" FontWeight="Bold" Margin="0,0,10,0" />
-
-            <!-- Protocol -->
-            <StackPanel Spacing="5">
-                <TextBlock Text="Protocol" FontWeight="Bold" />
-                <ComboBox SelectedIndex="{Binding TransportProtocolIndex}" MinWidth="200">
-                    <ComboBoxItem>TCP</ComboBoxItem>
-                    <ComboBoxItem>KCP</ComboBoxItem>
-                    <ComboBoxItem>QUIC</ComboBoxItem>
-                    <ComboBoxItem>WebSocket</ComboBoxItem>
-                    <ComboBoxItem>Secure WebSocket (WSS)</ComboBoxItem>
-                </ComboBox>
-            </StackPanel>
-
-            <Grid ColumnDefinitions="100,*" Margin="0,10,0,0">
-                <StackPanel Grid.Column="0" Spacing="5">
-                    <TextBlock Text="Dial Timeout (s)" FontWeight="Bold" />
-                    <NumericUpDown Value="{Binding DialServerTimeout}" Minimum="1" Maximum="300"
-                                  Increment="1" FormatString="0" />
-                </StackPanel>
-                <StackPanel Grid.Column="1" Spacing="5">
-                    <TextBlock Text="TCP Mux" FontWeight="Bold" />
-                    <CheckBox IsChecked="{Binding TcpMux}" />
-                </StackPanel>
-            </Grid>
-
-            <Grid ColumnDefinitions="100,*" Margin="0,10,0,0">
-                <StackPanel Grid.Column="0" Spacing="5">
-                    <TextBlock Text="Heartbeat Interval (s)" FontWeight="Bold" />
-                    <NumericUpDown Value="{Binding HeartbeatInterval}" Minimum="5" Maximum="300"
-                                  Increment="5" FormatString="0" />
-                </StackPanel>
-                <StackPanel Grid.Column="1" Spacing="5">
-                    <TextBlock Text="Heartbeat Timeout (s)" FontWeight="Bold" />
-                    <NumericUpDown Value="{Binding HeartbeatTimeout}" Minimum="5" Maximum="600"
-                                  Increment="5" FormatString="0" />
-                </StackPanel>
-            </Grid>
-
-            <CheckBox IsChecked="{Binding TlsEnabled}" Margin="0,10,0,0">
-                <TextBlock Text="Enable TLS" FontWeight="Normal" />
-            </CheckBox>
-
-            <Border Background="LightGray" Height="1" Margin="0,10" />
-
-            <!-- DNS -->
-            <TextBlock Text="DNS" FontSize="18" FontWeight="Bold" Margin="0,0,10,0" />
-
-            <StackPanel Spacing="5">
-                <TextBlock Text="DNS Server" FontWeight="Bold" />
-                <TextBox Text="{Binding DnsServer}" Watermark="e.g., 8.8.8.8:53" />
-                <TextBlock Text="Custom DNS server for resolving domain names (optional)"
-                           FontSize="12" Foreground="Gray" />
-            </StackPanel>
-
-            <Border Background="LightGray" Height="1" Margin="0,10" />
-
-            <!-- Logging -->
-            <TextBlock Text="Logging" FontSize="18" FontWeight="Bold" Margin="0,0,10,0" />
-
-            <Grid ColumnDefinitions="100,*" Margin="0,10,0,0">
-                <StackPanel Grid.Column="0" Spacing="5">
-                    <TextBlock Text="Log Level" FontWeight="Bold" />
-                    <ComboBox SelectedIndex="{Binding LogLevelIndex}" MinWidth="200">
-                        <ComboBoxItem>Trace</ComboBoxItem>
-                        <ComboBoxItem>Debug</ComboBoxItem>
-                        <ComboBoxItem>Info</ComboBoxItem>
-                        <ComboBoxItem>Warn</ComboBoxItem>
-                        <ComboBoxItem>Error</ComboBoxItem>
-                    </ComboBox>
-                </StackPanel>
-                <StackPanel Grid.Column="1" Spacing="5">
-                    <TextBlock Text="Max Days" FontWeight="Bold" />
-                    <NumericUpDown Value="{Binding LogMaxDays}" Minimum="1" Maximum="365"
-                                  Increment="1" FormatString="0" />
-                </StackPanel>
-            </Grid>
-
-            <StackPanel Spacing="5">
-                <TextBlock Text="Log To" FontWeight="Bold" />
-                <TextBox Text="{Binding LogTo}" Watermark="e.g., console, /path/to/logfile" />
-            </StackPanel>
-
-            <Border Background="LightGray" Height="1" Margin="0,20" />
-
-            <!-- Validation -->
-            <StackPanel Spacing="5">
-                <TextBlock Text="Status" FontWeight="Bold" />
-
-                <TextBlock Text="{Binding ValidationError}" Foreground="Red"
-                           TextWrapping="Wrap" IsVisible="{Binding HasValidationError}" />
-                <TextBlock Text="{Binding ValidationWarning}" Foreground="Orange"
-                           TextWrapping="Wrap" IsVisible="{Binding HasValidationWarning}" />
-                <TextBlock Text="Configuration is valid" Foreground="Green"
-                           IsVisible="{Binding IsValid}" />
-            </StackPanel>
-
-            <!-- Buttons -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
+        <!-- Footer Row with Actions -->
+        <Border Grid.Row="2"
+                Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
+                Padding="20"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                BorderThickness="0,1,0,0">
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="8">
                 <Button Content="Reset to Defaults"
                         Command="{Binding ResetCommand}"
-                        Padding="15,8"
+                        Classes="secondary"
                         IsEnabled="{Binding !IsSaving}" />
+
                 <Button Command="{Binding SaveCommand}"
-                        Padding="15,8"
-                        IsEnabled="{Binding !IsSaving}"
-                        Background="#007ACC"
-                        Foreground="White">
-                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        Classes="primary"
+                        IsEnabled="{Binding !IsSaving}">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
                         <TextBlock Text="Save" />
                         <ProgressBar IsIndeterminate="True"
-                                     Width="20" Height="20"
+                                     Width="16"
+                                     Height="16"
                                      IsVisible="{Binding IsSaving}" />
                     </StackPanel>
                 </Button>
             </StackPanel>
-        </StackPanel>
-    </ScrollViewer>
+        </Border>
+    </Grid>
 </Window>
