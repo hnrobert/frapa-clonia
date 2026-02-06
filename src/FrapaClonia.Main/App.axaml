@@ -2,12 +2,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="FrapaClonia.App"
              xmlns:local="using:FrapaClonia"
+             xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
+
+    <Application.Resources>
+        <converters:TypeToColorConverter x:Key="TypeToColorConverter" />
+        <converters:NotNullConverter x:Key="NotNullConverter" />
+        <converters:EmptyCollectionConverter x:Key="EmptyCollectionConverter" />
+    </Application.Resources>
 
     <Application.Styles>
         <FluentTheme />

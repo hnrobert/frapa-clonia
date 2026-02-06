@@ -3,7 +3,7 @@
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
              x:Class="FrapaClonia.UI.Views.ProxyListView"
              x:DataType="vm:ProxyListViewModel">
 
@@ -11,147 +11,394 @@
         <vm:ProxyListViewModel />
     </Design.DataContext>
 
+    <UserControl.Resources>
+        <!-- Spacing Tokens -->
+        <x:Double x:Key="SpacingXS">4</x:Double>
+        <x:Double x:Key="SpacingS">8</x:Double>
+        <x:Double x:Key="SpacingM">12</x:Double>
+        <x:Double x:Key="SpacingL">16</x:Double>
+        <x:Double x:Key="SpacingXL">24</x:Double>
+        <x:Double x:Key="SpacingXXL">32</x:Double>
+
+        <!-- CornerRadius Tokens -->
+        <CornerRadius x:Key="CornerRadiusS">4</CornerRadius>
+        <CornerRadius x:Key="CornerRadiusM">6</CornerRadius>
+        <CornerRadius x:Key="CornerRadiusL">8</CornerRadius>
+
+        <!-- Thickness Tokens -->
+        <Thickness x:Key="ThicknessM">0,0,0,12</Thickness>
+        <Thickness x:Key="ThicknessRightM">0,0,16,0</Thickness>
+        <Thickness x:Key="ThicknessTopS">0,8,0,0</Thickness>
+
+        <!-- Status Indicator Brushes -->
+        <SolidColorBrush x:Key="StatusActiveBrush" Color="#10B981" />
+        <SolidColorBrush x:Key="StatusInactiveBrush" Color="#6B7280" />
+        <SolidColorBrush x:Key="StatusErrorBrush" Color="#EF4444" />
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+
+        <!-- Primary Action Button Style -->
+        <Style Selector="Button.primaryAction">
+            <Setter Property="Height" Value="36" />
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="MinWidth" Value="120" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusM}" />
+        </Style>
+
+        <!-- Secondary Action Button Style -->
+        <Style Selector="Button.secondaryAction">
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="MinWidth" Value="80" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusM}" />
+        </Style>
+
+        <!-- Icon Button Style for item actions -->
+        <Style Selector="Button.iconButton">
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Height" Value="36" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusS}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+
+        <Style Selector="Button.iconButton:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
+        </Style>
+
+        <Style Selector="Button.iconButton:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseMediumLowBrush}" />
+        </Style>
+
+        <!-- Destructive icon button style -->
+        <Style Selector="Button.iconButton.destructive:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#FEE2E2" />
+        </Style>
+
+        <!-- Proxy Card Style -->
+        <Style Selector="Border.proxyCard">
+            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltLowBrush}" />
+            <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusM}" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="Margin" Value="0,0,0,12" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style Selector="Border.proxyCard:pointerover">
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentColor}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <!-- Type Badge Style -->
+        <Style Selector="Border.typeBadge">
+            <Setter Property="Background" Value="{DynamicResource AccentColor}" />
+            <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusS}" />
+            <Setter Property="Padding" Value="6,3" />
+        </Style>
+
+        <Style Selector="Border.typeBadge TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource AccentColorForegroundBrush}" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <!-- Destructive Action Style -->
+        <Style Selector="Button.destructive">
+            <Setter Property="Foreground" Value="#DC2626" />
+        </Style>
+
+        <Style Selector="Button.destructive:pointerover">
+            <Setter Property="Background" Value="#FEE2E2" />
+        </Style>
+    </UserControl.Styles>
+
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <Border Grid.Row="0" Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" Padding="15">
+        <!-- Page Header -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
+                Padding="24,16"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                BorderThickness="0,0,0,1">
             <Grid ColumnDefinitions="*,Auto">
-                <StackPanel Grid.Column="0" Spacing="5">
-                    <TextBlock Text="Proxy Management" FontSize="24" FontWeight="Bold" />
-                    <TextBlock Text="Manage your frpc proxy configurations" FontSize="14" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                <StackPanel Grid.Column="0" Spacing="{StaticResource SpacingS}">
+                    <TextBlock Text="Proxy Management"
+                               FontSize="22"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                    <TextBlock Text="Configure and manage your frpc proxy configurations"
+                               FontSize="13"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                 </StackPanel>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
-                    <Button Content="Refresh"
-                            Command="{Binding RefreshCommand}"
-                            Padding="10,5"
-                            IsEnabled="{Binding !IsLoading}" />
+                <!-- Loading Indicator and Count -->
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            Spacing="{StaticResource SpacingM}"
+                            VerticalAlignment="Center">
+                    <StackPanel Spacing="0" Orientation="Horizontal">
+                        <ProgressBar IsIndeterminate="True"
+                                     Width="16" Height="16"
+                                     IsVisible="{Binding IsLoading}"
+                                     VerticalAlignment="Center" />
+                        <TextBlock Text="Loading..."
+                                   FontSize="12"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   IsVisible="{Binding IsLoading}"
+                                   VerticalAlignment="Center"
+                                   Margin="8,0,0,0" />
+                    </StackPanel>
 
-                    <Button Content="Export All"
-                            Command="{Binding ExportAllCommand}"
-                            Padding="10,5" />
-
-                    <Button Content="Import"
-                            Command="{Binding ImportCommand}"
-                            Padding="10,5" />
-
-                    <Button Content="Clear All"
-                            Command="{Binding ClearAllCommand}"
-                            Padding="10,5"
-                            Background="Red"
-                            Foreground="White" />
+                    <TextBlock Text="{Binding Proxies.Count, StringFormat='{}{0} proxies'}"
+                               FontSize="13"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                               VerticalAlignment="Center"
+                               Margin="12,0,0,0" />
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- Toolbar -->
-        <Border Grid.Row="1" Background="{DynamicResource SystemControlPageBackgroundTransparent}" Padding="15,10" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}" BorderThickness="0,0,0,1">
-            <Grid ColumnDefinitions="*,Auto,Auto">
-                <!-- Search -->
-                <TextBox Grid.Column="0"
-                         Text="{Binding SearchQuery}"
-                         Watermark="Search proxies..."
-                         MinWidth="200" />
+        <!-- Primary Actions Toolbar -->
+        <Border Grid.Row="1"
+                Background="{DynamicResource SystemControlPageBackgroundTransparent}"
+                Padding="24,16">
+            <Grid ColumnDefinitions="*,Auto">
+                <!-- Search and Filter -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
+                    <!-- Search Box -->
+                    <TextBox Text="{Binding SearchQuery}"
+                             Watermark="Search by name..."
+                             MinWidth="240"
+                             Height="36"
+                             VerticalAlignment="Center" />
 
-                <!-- Type Filter -->
-                <ComboBox Grid.Column="1"
-                          SelectedIndex="0"
-                          MinWidth="150"
-                          Margin="10,0,0,0">
-                    <ComboBoxItem Content="All Types" />
-                    <ComboBoxItem Content="TCP" />
-                    <ComboBoxItem Content="UDP" />
-                    <ComboBoxItem Content="HTTP" />
-                    <ComboBoxItem Content="HTTPS" />
-                    <ComboBoxItem Content="STCP" />
-                    <ComboBoxItem Content="XTCP" />
-                    <ComboBoxItem Content="SUDP" />
-                    <ComboBoxItem Content="TCPMUX" />
-                </ComboBox>
+                    <!-- Type Filter -->
+                    <ComboBox ItemsSource="{Binding ProxyTypes}"
+                              SelectedItem="{Binding FilterType}"
+                              MinWidth="140"
+                              Height="36"
+                              PlaceholderText="All Types"
+                              VerticalAlignment="Center" />
+                </StackPanel>
 
-                <!-- Add Proxy -->
-                <Button Grid.Column="2"
+                <!-- Primary Action - Add Proxy -->
+                <Button Grid.Column="1"
                         Command="{Binding AddProxyCommand}"
-                        Padding="15,8"
-                        Background="#007ACC"
-                        Foreground="White"
-                        Margin="10,0,0,0">
-                    <StackPanel Orientation="Horizontal" Spacing="5">
-                        <TextBlock Text="+" FontSize="16" />
+                        Classes="Primary"
+                        HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+                        <TextBlock Text="+" FontSize="16" FontWeight="Bold" />
                         <TextBlock Text="Add Proxy" />
                     </StackPanel>
                 </Button>
             </Grid>
         </Border>
 
+        <!-- Bulk Actions Toolbar -->
+        <Border Grid.Row="2"
+                Background="{DynamicResource SystemControlPageBackgroundAltLowBrush}"
+                Padding="24,12,24,12"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                BorderThickness="0,0,0,1"
+                IsVisible="{Binding Proxies.Count, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingM}" HorizontalAlignment="Right">
+                <Button Content="Refresh"
+                        Command="{Binding RefreshCommand}"
+                        Classes="secondaryAction"
+                        IsEnabled="{Binding !IsLoading}" />
+
+                <Button Content="Export All"
+                        Command="{Binding ExportAllCommand}"
+                        Classes="secondaryAction" />
+
+                <Button Content="Import"
+                        Command="{Binding ImportCommand}"
+                        Classes="secondaryAction" />
+
+                <Button Content="Clear All"
+                        Command="{Binding ClearAllCommand}"
+                        Classes="destructive,secondaryAction" />
+            </StackPanel>
+        </Border>
+
         <!-- Proxy List -->
-        <Border Grid.Row="2" Background="{DynamicResource SystemControlPageBackgroundTransparent}" Padding="15">
-            <ScrollViewer>
-                <ItemsControl ItemsSource="{Binding Proxies}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border Background="{DynamicResource SystemControlPageBackgroundAltLowBrush}"
-                                    CornerRadius="5"
-                                    Padding="15"
-                                    Margin="0,0,0,10"
-                                    BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                                    BorderThickness="1">
-                                <Grid ColumnDefinitions="*,Auto,Auto">
-                                    <!-- Proxy Info -->
-                                    <StackPanel Grid.Column="0" Spacing="5">
-                                        <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="16" />
-                                        <Grid ColumnDefinitions="Auto,Auto,Auto,Auto">
-                                            <Border Grid.Column="0" Background="#007ACC" CornerRadius="3" Padding="5,2" Margin="0,0,5,0">
-                                                <TextBlock Text="{Binding Type}" Foreground="White" FontSize="12" />
-                                            </Border>
-                                            <TextBlock Grid.Column="1" Text="{Binding LocalIP}" Margin="0,0,5,0" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-                                            <TextBlock Grid.Column="2" Text=":" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,0,5,0" />
-                                            <TextBlock Grid.Column="3" Text="{Binding LocalPort}" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-                                        </Grid>
-                                        <StackPanel Orientation="Horizontal" Spacing="15" Margin="0,5,0,0">
-                                            <StackPanel Spacing="2">
-                                                <TextBlock Text="Remote Port" FontSize="11" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-                                                <TextBlock Text="{Binding RemotePort, TargetNullValue='N/A'}" FontSize="13" FontWeight="SemiBold" />
+        <Border Grid.Row="3"
+                Background="{DynamicResource SystemControlPageBackgroundTransparent}"
+                Padding="24,16">
+            <Grid>
+                <!-- Empty State -->
+                <Border IsVisible="{Binding Proxies.Count, Converter={x:Static ObjectConverters.IsNull}}"
+                        Background="{DynamicResource SystemControlPageBackgroundAltLowBrush}"
+                        CornerRadius="{StaticResource CornerRadiusL}"
+                        Padding="32"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                    <StackPanel Spacing="12" HorizontalAlignment="Center">
+                        <TextBlock Text="&#xF5E7;"
+                                   FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                   FontSize="48"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="No proxies configured"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="Create your first proxy configuration to get started"
+                                   FontSize="13"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   HorizontalAlignment="Center" />
+                        <Button Content="+ Create Proxy"
+                                Command="{Binding AddProxyCommand}"
+                                Classes="Primary"
+                                HorizontalAlignment="Center"
+                                Margin="0,16,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Proxy Items -->
+                <ScrollViewer IsVisible="{Binding Proxies.Count, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <ItemsControl ItemsSource="{Binding Proxies}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Classes="proxyCard">
+                                    <Grid ColumnDefinitions="*,Auto,Auto">
+                                        <!-- Proxy Information -->
+                                        <StackPanel Grid.Column="0" Spacing="{StaticResource SpacingS}">
+                                            <!-- Name and Type Badge -->
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <TextBlock Grid.Column="0"
+                                                           Text="{Binding Name}"
+                                                           FontSize="15"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                                                           VerticalAlignment="Center" />
+
+                                                <Border Grid.Column="1"
+                                                        Classes="typeBadge"
+                                                        Margin="12,0,0,0"
+                                                        VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Type}" />
+                                                </Border>
+                                            </Grid>
+
+                                            <!-- Connection Details -->
+                                            <StackPanel Spacing="{StaticResource SpacingXS}" Margin="0,8,0,0">
+                                                <!-- Local Endpoint -->
+                                                <Grid ColumnDefinitions="Auto,Auto,Auto">
+                                                    <TextBlock Grid.Column="0"
+                                                               Text="Local:"
+                                                               FontSize="12"
+                                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                               VerticalAlignment="Center" />
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{Binding LocalIP}"
+                                                               FontSize="13"
+                                                               FontFamily="Monospace"
+                                                               Margin="8,0,0,0"
+                                                               VerticalAlignment="Center" />
+                                                    <TextBlock Grid.Column="2"
+                                                               Text="{Binding LocalPort, StringFormat=':{}{0}'}"
+                                                               FontSize="13"
+                                                               FontFamily="Monospace"
+                                                               Margin="8,0,0,0"
+                                                               VerticalAlignment="Center" />
+                                                </Grid>
+
+                                                <!-- Remote Port (if applicable) -->
+                                                <Grid ColumnDefinitions="Auto,Auto"
+                                                      IsVisible="{Binding RemotePort, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                                    <TextBlock Grid.Column="0"
+                                                               Text="Remote Port:"
+                                                               FontSize="12"
+                                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                               VerticalAlignment="Center" />
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{Binding RemotePort}"
+                                                               FontSize="13"
+                                                               FontFamily="Monospace"
+                                                               Margin="8,0,0,0"
+                                                               FontWeight="SemiBold"
+                                                               VerticalAlignment="Center" />
+                                                </Grid>
+                                            </StackPanel>
+
+                                            <!-- Additional Info (Optional) -->
+                                            <StackPanel Orientation="Horizontal" Spacing="16"
+                                                        IsVisible="{Binding CustomDomains, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                        Margin="0,8,0,0">
+                                                <TextBlock FontSize="11"
+                                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+                                                    <Run Text="&#xF8E2;" FontFamily="{DynamicResource SymbolThemeFontFamily}" />
+                                                    <Run Text="{Binding CustomDomains}" />
+                                                </TextBlock>
                                             </StackPanel>
                                         </StackPanel>
-                                    </StackPanel>
 
-                                    <!-- Status Indicator -->
-                                    <Ellipse Grid.Column="1"
-                                             Width="12"
-                                             Height="12"
-                                             Fill="Green"
-                                             Margin="0,0,20,0"
-                                             VerticalAlignment="Center" />
+                                        <!-- Status Indicator -->
+                                        <Border Grid.Column="1"
+                                                Width="40"
+                                                Height="40"
+                                                CornerRadius="20"
+                                                Background="{StaticResource StatusActiveBrush}"
+                                                Margin="0,0,16,0"
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="&#xE8FB;"
+                                                       FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                                       FontSize="16"
+                                                       Foreground="White"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center" />
+                                        </Border>
 
-                                    <!-- Actions -->
-                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="5">
-                                        <Button Content="Edit"
-                                                Padding="10,5"
-                                                FontSize="12"
-                                                Command="{Binding $parent[UserControl].EditProxyCommand}" />
-                                        <Button Content="Duplicate"
-                                                Padding="10,5"
-                                                FontSize="12"
-                                                Command="{Binding $parent[UserControl].DuplicateProxyCommand}" />
-                                        <Button Content="Delete"
-                                                Padding="10,5"
-                                                FontSize="12"
-                                                Background="LightCoral"
-                                                Foreground="White"
-                                                Command="{Binding $parent[UserControl].DeleteProxyCommand}" />
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+                                        <!-- Action Buttons -->
+                                        <StackPanel Grid.Column="2"
+                                                    Orientation="Horizontal"
+                                                    Spacing="8"
+                                                    VerticalAlignment="Center">
+                                            <Button Click="OnEditClick"
+                                                    ToolTip.Tip="Edit Proxy"
+                                                    Classes="iconButton">
+                                                <TextBlock Text="&#xE70F;"
+                                                           FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                                           FontSize="14" />
+                                            </Button>
+
+                                            <Button Click="OnDuplicateClick"
+                                                    ToolTip.Tip="Duplicate Proxy"
+                                                    Classes="iconButton">
+                                                <TextBlock Text="&#xF817;"
+                                                           FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                                           FontSize="14" />
+                                            </Button>
+
+                                            <Button Click="OnDeleteClick"
+                                                    ToolTip.Tip="Delete Proxy"
+                                                    Classes="iconButton,destructive">
+                                                <TextBlock Text="&#xE74D;"
+                                                           FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                                           FontSize="14" />
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

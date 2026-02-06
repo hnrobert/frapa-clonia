@@ -3,115 +3,330 @@
         xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
+        mc:Ignorable="d" d:DesignWidth="650" d:DesignHeight="580"
         x:Class="FrapaClonia.UI.Views.VisitorEditorView"
         x:DataType="vm:VisitorEditorViewModel"
         Title="Edit Visitor"
-        Width="600"
-        Height="500">
+        Width="650"
+        Height="580"
+        MinWidth="550"
+        MinHeight="450">
 
     <Design.DataContext>
         <vm:VisitorEditorViewModel />
     </Design.DataContext>
 
-    <ScrollViewer>
-        <StackPanel Margin="20" Spacing="15">
-            <!-- Header -->
-            <TextBlock Text="Visitor Configuration" FontSize="24" FontWeight="Bold" />
+    <Window.Styles>
+        <!-- Section Border Style -->
+        <Style Selector="Border.section-border">
+            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
 
-            <TextBlock Text="Configure a visitor to connect to STCP/XTCP/SUDP proxies"
-                       Foreground="Gray" />
+        <!-- Section Header Style -->
+        <Style Selector="TextBlock.section-header">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+            <Setter Property="Margin" Value="0,0,0,12" />
+        </Style>
 
-            <!-- Basic Settings -->
-            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15">
-                <StackPanel Spacing="10">
-                    <TextBlock Text="Basic Settings" FontSize="16" FontWeight="Bold" />
+        <!-- Form Label Style -->
+        <Style Selector="TextBlock.form-label">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+        </Style>
 
-                    <StackPanel Spacing="5">
-                        <TextBlock Text="Visitor Name *" FontWeight="Bold" />
-                        <TextBox Text="{Binding VisitorName}" Watermark="e.g., my-ssh-visitor" />
+        <!-- Form Hint Style -->
+        <Style Selector="TextBlock.form-hint">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <!-- Form Field StackPanel Style -->
+        <Style Selector="StackPanel.form-field">
+            <Setter Property="Spacing" Value="4" />
+        </Style>
+
+        <!-- Primary Button Style -->
+        <Style Selector="Button.primary-button">
+            <Setter Property="MinHeight" Value="36" />
+            <Setter Property="MinWidth" Value="100" />
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundAltHighBrush}" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+
+        <!-- Secondary Button Style -->
+        <Style Selector="Button.secondary-button">
+            <Setter Property="MinHeight" Value="36" />
+            <Setter Property="MinWidth" Value="100" />
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+
+        <!-- Error Border Style -->
+        <Style Selector="Border.error-border">
+            <Setter Property="Background" Value="{DynamicResource SystemControlErrorToastForegroundBrush}" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Header Section -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="24,16">
+            <StackPanel Spacing="4">
+                <TextBlock Text="Visitor Configuration"
+                           FontSize="20"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                <TextBlock Text="Configure a visitor to connect to STCP, XTCP, or SUDP proxies"
+                           FontSize="13"
+                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content -->
+        <ScrollViewer Grid.Row="1"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="24" Spacing="16">
+
+                <!-- Basic Settings Section -->
+                <Border Classes="section-border">
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                          ColumnDefinitions="120,*"
+                          RowSpacing="12"
+                          ColumnSpacing="12">
+
+                        <!-- Section Header -->
+                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
+                                   Classes="section-header"
+                                   Text="Basic Settings" />
+
+                        <!-- Visitor Name -->
+                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                   Classes="form-label"
+                                   Text="Visitor Name"
+                                   VerticalAlignment="Top" />
+                        <StackPanel Grid.Row="1" Grid.Column="1"
+                                   Classes="form-field">
+                            <TextBox Text="{Binding VisitorName}"
+                                    MinHeight="32"
+                                    Padding="8,6"
+                                    FontSize="13"
+                                    Watermark="e.g., my-ssh-visitor"
+                                    AutomationProperties.Name="Visitor Name input field"
+                                    AutomationProperties.HelpText="Enter a unique name for this visitor configuration" />
+                            <TextBlock Classes="form-hint"
+                                       Text="Required" />
+                        </StackPanel>
+
+                        <!-- Visitor Type -->
+                        <TextBlock Grid.Row="2" Grid.Column="0"
+                                   Classes="form-label"
+                                   Text="Visitor Type"
+                                   VerticalAlignment="Top" />
+                        <StackPanel Grid.Row="2" Grid.Column="1"
+                                   Classes="form-field">
+                            <ComboBox ItemsSource="{Binding VisitorTypes}"
+                                      SelectedItem="{Binding VisitorType}"
+                                      MinHeight="32"
+                                      Padding="8,4"
+                                      FontSize="13"
+                                      HorizontalAlignment="Stretch"
+                                      AutomationProperties.Name="Visitor Type selector"
+                                      AutomationProperties.HelpText="Select the type of visitor: STCP, XTCP, or SUDP" />
+                            <TextBlock Classes="form-hint"
+                                       Text="Required" />
+                        </StackPanel>
+
+                        <!-- Server Name -->
+                        <TextBlock Grid.Row="3" Grid.Column="0"
+                                   Classes="form-label"
+                                   Text="Server Name"
+                                   VerticalAlignment="Top" />
+                        <StackPanel Grid.Row="3" Grid.Column="1"
+                                   Classes="form-field">
+                            <TextBox Text="{Binding ServerName}"
+                                    MinHeight="32"
+                                    Padding="8,6"
+                                    FontSize="13"
+                                    Watermark="Name of the proxy this visitor connects to"
+                                    AutomationProperties.Name="Server Name input field"
+                                    AutomationProperties.HelpText="Enter the name of the STCP, XTCP, or SUDP proxy to visit" />
+                            <TextBlock Classes="form-hint"
+                                       Text="The name of the STCP/XTCP/SUDP proxy to visit" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Security Settings Section -->
+                <Border Classes="section-border">
+                    <Grid RowDefinitions="Auto,Auto"
+                          ColumnDefinitions="120,*"
+                          RowSpacing="12"
+                          ColumnSpacing="12">
+
+                        <!-- Section Header -->
+                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
+                                   Classes="section-header"
+                                   Text="Security Settings" />
+
+                        <!-- Secret Key -->
+                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                   Classes="form-label"
+                                   Text="Secret Key"
+                                   VerticalAlignment="Top" />
+                        <StackPanel Grid.Row="1" Grid.Column="1"
+                                   Classes="form-field">
+                            <TextBox Text="{Binding SecretKey}"
+                                    MinHeight="32"
+                                    Padding="8,6"
+                                    FontSize="13"
+                                    PasswordChar="*"
+                                    Watermark="Shared secret key (must match proxy)"
+                                    AutomationProperties.Name="Secret Key input field"
+                                    AutomationProperties.HelpText="Enter the shared secret key that matches the proxy configuration" />
+                            <TextBlock Classes="form-hint"
+                                       Text="Required. Must match the secret key configured on the proxy" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Bind Settings Section -->
+                <Border Classes="section-border">
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                          ColumnDefinitions="120,*"
+                          RowSpacing="12"
+                          ColumnSpacing="12">
+
+                        <!-- Section Header -->
+                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
+                                   Classes="section-header"
+                                   Text="Bind Settings" />
+
+                        <!-- Bind Address -->
+                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                   Classes="form-label"
+                                   Text="Bind Address"
+                                   VerticalAlignment="Top" />
+                        <StackPanel Grid.Row="1" Grid.Column="1"
+                                   Classes="form-field">
+                            <TextBox Text="{Binding BindAddr}"
+                                    MinHeight="32"
+                                    Padding="8,6"
+                                    FontSize="13"
+                                    Watermark="127.0.0.1"
+                                    AutomationProperties.Name="Bind Address input field"
+                                    AutomationProperties.HelpText="Enter the IP address to bind to" />
+                        </StackPanel>
+
+                        <!-- Bind Port -->
+                        <TextBlock Grid.Row="2" Grid.Column="0"
+                                   Classes="form-label"
+                                   Text="Bind Port"
+                                   VerticalAlignment="Top" />
+                        <StackPanel Grid.Row="2" Grid.Column="1"
+                                   Classes="form-field">
+                            <NumericUpDown Value="{Binding BindPort}"
+                                          MinHeight="32"
+                                          Padding="8,4"
+                                          FontSize="13"
+                                          Minimum="1"
+                                          Maximum="65535"
+                                          Increment="1"
+                                          FormatString="0"
+                                          HorizontalAlignment="Stretch"
+                                          AutomationProperties.Name="Bind Port input field"
+                                          AutomationProperties.HelpText="Enter the local port to listen on for incoming connections" />
+                            <TextBlock Classes="form-hint"
+                                       Text="Local port to listen on for incoming connections (1-65535)" />
+                        </StackPanel>
+
+                        <!-- Bind IP (Optional) -->
+                        <TextBlock Grid.Row="3" Grid.Column="0"
+                                   Classes="form-label"
+                                   Text="Bind IP"
+                                   VerticalAlignment="Top" />
+                        <StackPanel Grid.Row="3" Grid.Column="1"
+                                   Classes="form-field">
+                            <TextBox Text="{Binding BindIp}"
+                                    MinHeight="32"
+                                    Padding="8,6"
+                                    FontSize="13"
+                                    Watermark="Specific IP to bind to"
+                                    AutomationProperties.Name="Bind IP input field"
+                                    AutomationProperties.HelpText="Optional: Enter a specific IP address to bind to" />
+                            <TextBlock Classes="form-hint"
+                                       Text="Optional. Leave empty to bind to all interfaces" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Validation Status (Conditional) -->
+                <Border Classes="error-border"
+                        IsVisible="{Binding HasValidationError}">
+                    <StackPanel Spacing="8">
+                        <TextBlock FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Foreground="White">
+                            <Run Text="Configuration Error" />
+                        </TextBlock>
+                        <TextBlock Text="{Binding ValidationError}"
+                                   FontSize="11"
+                                   Foreground="White"
+                                   TextWrapping="Wrap" />
                     </StackPanel>
+                </Border>
 
-                    <StackPanel Spacing="5">
-                        <TextBlock Text="Visitor Type *" FontWeight="Bold" />
-                        <ComboBox ItemsSource="{Binding VisitorTypes}"
-                                  SelectedItem="{Binding VisitorType}"
-                                  MinWidth="200" />
-                    </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
 
-                    <StackPanel Spacing="5">
-                        <TextBlock Text="Server Name *" FontWeight="Bold" />
-                        <TextBox Text="{Binding ServerName}"
-                                 Watermark="Name of the proxy this visitor connects to" />
-                        <TextBlock Text="The name of the STCP/XTCP/SUDP proxy to visit"
-                                   FontSize="12" Foreground="Gray" />
-                    </StackPanel>
-
-                    <StackPanel Spacing="5">
-                        <TextBlock Text="Secret Key *" FontWeight="Bold" />
-                        <TextBox Text="{Binding SecretKey}"
-                                 PasswordChar="*"
-                                 Watermark="Shared secret key (must match proxy)" />
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-
-            <!-- Bind Settings -->
-            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15">
-                <StackPanel Spacing="10">
-                    <TextBlock Text="Bind Settings" FontSize="16" FontWeight="Bold" />
-
-                    <StackPanel Spacing="5">
-                        <TextBlock Text="Bind Address" FontWeight="Bold" />
-                        <TextBox Text="{Binding BindAddr}" Watermark="127.0.0.1" />
-                    </StackPanel>
-
-                    <StackPanel Spacing="5">
-                        <TextBlock Text="Bind Port *" FontWeight="Bold" />
-                        <NumericUpDown Value="{Binding BindPort}"
-                                      Minimum="1"
-                                      Maximum="65535"
-                                      Increment="1"
-                                      FormatString="0" />
-                        <TextBlock Text="Local port to listen on for incoming connections"
-                                   FontSize="12" Foreground="Gray" />
-                    </StackPanel>
-
-                    <StackPanel Spacing="5">
-                        <TextBlock Text="Bind IP (Optional)" FontWeight="Bold" />
-                        <TextBox Text="{Binding BindIp}"
-                                 Watermark="Specific IP to bind to (optional)" />
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-
-            <!-- Validation Status -->
-            <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" CornerRadius="8" Padding="15"
-                    IsVisible="{Binding HasValidationError}">
-                <TextBlock Text="{Binding ValidationError}"
-                           Foreground="Red"
-                           TextWrapping="Wrap" />
-            </Border>
-
-            <!-- Buttons -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
+        <!-- Action Bar -->
+        <Border Grid.Row="2"
+                Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="24,12"
+                CornerRadius="0,0,8,8">
+            <StackPanel Orientation="Horizontal"
+                       HorizontalAlignment="Right"
+                       Spacing="12">
                 <Button Command="{Binding CancelCommand}"
-                        Padding="15,8"
-                        IsEnabled="{Binding !IsSaving}" />
+                        Classes="secondary-button"
+                        Content="Cancel"
+                        IsEnabled="{Binding !IsSaving}"
+                        AutomationProperties.Name="Cancel button"
+                        AutomationProperties.HelpText="Discard changes and close the editor" />
 
                 <Button Command="{Binding SaveCommand}"
-                        Padding="15,8"
+                        Classes="primary-button"
                         IsEnabled="{Binding !IsSaving}"
-                        Background="#007ACC"
-                        Foreground="White">
-                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        AutomationProperties.Name="Save button"
+                        AutomationProperties.HelpText="Save the visitor configuration">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="Save" />
                         <ProgressBar IsIndeterminate="True"
-                                     Width="20" Height="20"
-                                     IsVisible="{Binding IsSaving}" />
+                                    Width="16" Height="16"
+                                    IsVisible="{Binding IsSaving}" />
                     </StackPanel>
                 </Button>
             </StackPanel>
-        </StackPanel>
-    </ScrollViewer>
+        </Border>
+    </Grid>
 </Window>

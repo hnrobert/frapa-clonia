@@ -27,9 +27,19 @@ public partial class VisitorListViewModel : ObservableObject
     [ObservableProperty]
     private bool _isSaving;
 
+    [ObservableProperty]
+    private string? _searchQuery;
+
+    [ObservableProperty]
+    private int _selectedTypeFilter;
+
+    [ObservableProperty]
+    private int _activeCount;
+
     public IRelayCommand AddVisitorCommand { get; }
     public IRelayCommand EditVisitorCommand { get; }
     public IRelayCommand DeleteVisitorCommand { get; }
+    public IRelayCommand DuplicateVisitorCommand { get; }
     public IRelayCommand RefreshCommand { get; }
 
     public List<string> VisitorTypes { get; } = new()
@@ -49,6 +59,7 @@ public partial class VisitorListViewModel : ObservableObject
         AddVisitorCommand = new RelayCommand(() => AddVisitor());
         EditVisitorCommand = new RelayCommand(() => EditVisitor(), () => SelectedVisitor != null);
         DeleteVisitorCommand = new RelayCommand(async () => await DeleteVisitorAsync(), () => SelectedVisitor != null);
+        DuplicateVisitorCommand = new RelayCommand(async () => await DuplicateVisitorAsync(), () => SelectedVisitor != null);
         RefreshCommand = new RelayCommand(async () => await LoadVisitorsAsync());
 
         _ = Task.Run(LoadVisitorsAsync);
@@ -127,6 +138,51 @@ public partial class VisitorListViewModel : ObservableObject
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting visitor");
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+
+    private async Task DuplicateVisitorAsync()
+    {
+        if (SelectedVisitor == null) return;
+
+        _logger.LogInformation("Duplicate visitor: {VisitorName}", SelectedVisitor.Name);
+
+        try
+        {
+            IsSaving = true;
+
+            var configPath = _configurationService.GetDefaultConfigPath();
+            var config = await _configurationService.LoadConfigurationAsync(configPath);
+
+            if (config != null)
+            {
+                var duplicate = new VisitorConfig
+                {
+                    Name = $"{SelectedVisitor.Name} (Copy)",
+                    Type = SelectedVisitor.Type,
+                    ServerName = SelectedVisitor.ServerName,
+                    SecretKey = SelectedVisitor.SecretKey,
+                    BindAddr = SelectedVisitor.BindAddr,
+                    BindPort = SelectedVisitor.BindPort + 1,
+                    BindIp = SelectedVisitor.BindIp,
+                    Transport = SelectedVisitor.Transport
+                };
+
+                config.Visitors.Add(duplicate);
+                await _configurationService.SaveConfigurationAsync(configPath, config);
+
+                await LoadVisitorsAsync();
+
+                _logger.LogInformation("Visitor duplicated successfully");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error duplicating visitor");
         }
         finally
         {
