@@ -1,0 +1,262 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using FrapaClonia.Core.Interfaces;
+using FrapaClonia.Domain.Models;
+using Microsoft.Extensions.Logging;
+
+namespace FrapaClonia.UI.ViewModels;
+
+/// <summary>
+/// View model for proxy list management
+/// </summary>
+public partial class ProxyListViewModel : ObservableObject
+{
+    private readonly ILogger<ProxyListViewModel> _logger;
+    private readonly IConfigurationService _configurationService;
+    private readonly IValidationService _validationService;
+
+    [ObservableProperty]
+    private List<ProxyConfig> _proxies = new();
+
+    [ObservableProperty]
+    private ProxyConfig? _selectedProxy;
+
+    [ObservableProperty]
+    private string _searchQuery = "";
+
+    [ObservableProperty]
+    private string _filterType = "All";
+
+    [ObservableProperty]
+    private bool _isLoading;
+
+    [ObservableProperty]
+    private bool _isSaving;
+
+    public IRelayCommand AddProxyCommand { get; }
+    public IRelayCommand EditProxyCommand { get; }
+    public IRelayCommand DeleteProxyCommand { get; }
+    public IRelayCommand DuplicateProxyCommand { get; }
+    public IRelayCommand RefreshCommand { get; }
+    public IRelayCommand ExportAllCommand { get; }
+    public IRelayCommand ImportCommand { get; }
+    public IRelayCommand ClearAllCommand { get; }
+
+    public List<string> ProxyTypes { get; } = new()
+    {
+        "All", "tcp", "udp", "http", "https", "stcp", "xtcp", "sudp", "tcpmux"
+    };
+
+    public ProxyListViewModel(
+        ILogger<ProxyListViewModel> logger,
+        IConfigurationService configurationService,
+        IValidationService validationService)
+    {
+        _logger = logger;
+        _configurationService = configurationService;
+        _validationService = validationService;
+
+        AddProxyCommand = new RelayCommand(() => AddProxy());
+        EditProxyCommand = new RelayCommand(() => EditProxy(), () => SelectedProxy != null);
+        DeleteProxyCommand = new RelayCommand(async () => await DeleteProxyAsync(), () => SelectedProxy != null);
+        DuplicateProxyCommand = new RelayCommand(() => DuplicateProxy(), () => SelectedProxy != null);
+        RefreshCommand = new RelayCommand(async () => await LoadProxiesAsync());
+        ExportAllCommand = new RelayCommand(async () => await ExportAllAsync());
+        ImportCommand = new RelayCommand(async () => await ImportAsync());
+        ClearAllCommand = new RelayCommand(async () => await ClearAllAsync(), () => Proxies.Count > 0);
+
+        _ = Task.Run(LoadProxiesAsync);
+    }
+
+    partial void OnSelectedProxyChanged(ProxyConfig? value)
+    {
+        EditProxyCommand.NotifyCanExecuteChanged();
+        DeleteProxyCommand.NotifyCanExecuteChanged();
+        DuplicateProxyCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnProxiesChanged(List<ProxyConfig> value)
+    {
+        ClearAllCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnSearchQueryChanged(string value)
+    {
+        FilterProxies();
+    }
+
+    partial void OnFilterTypeChanged(string value)
+    {
+        FilterProxies();
+    }
+
+    private void FilterProxies()
+    {
+        // TODO: Implement filtering and searching
+        // For now, just trigger a refresh
+        _ = Task.Run(LoadProxiesAsync);
+    }
+
+    public async Task LoadProxiesAsync()
+    {
+        try
+        {
+            IsLoading = true;
+
+            var configPath = _configurationService.GetDefaultConfigPath();
+            var config = await _configurationService.LoadConfigurationAsync(configPath);
+
+            if (config != null)
+            {
+                var allProxies = config.Proxies;
+
+                // Apply filters
+                var filtered = allProxies.AsEnumerable();
+
+                if (!string.IsNullOrWhiteSpace(SearchQuery))
+                {
+                    var query = SearchQuery.ToLower();
+                    filtered = filtered.Where(p =>
+                        p.Name.ToLower().Contains(query) ||
+                        p.Type.ToLower().Contains(query));
+                }
+
+                if (FilterType != "All")
+                {
+                    filtered = filtered.Where(p => p.Type == FilterType);
+                }
+
+                Proxies = filtered.ToList();
+
+                _logger.LogInformation("Loaded {Count} proxies", Proxies.Count);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading proxies");
+            Proxies = new List<ProxyConfig>();
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void AddProxy()
+    {
+        _logger.LogInformation("Add proxy clicked");
+        // TODO: Navigate to proxy editor with new proxy
+    }
+
+    private void EditProxy()
+    {
+        if (SelectedProxy == null) return;
+        _logger.LogInformation("Edit proxy: {ProxyName}", SelectedProxy.Name);
+        // TODO: Navigate to proxy editor with selected proxy
+    }
+
+    private async Task DeleteProxyAsync()
+    {
+        if (SelectedProxy == null) return;
+
+        _logger.LogInformation("Delete proxy: {ProxyName}", SelectedProxy.Name);
+
+        try
+        {
+            IsSaving = true;
+
+            var configPath = _configurationService.GetDefaultConfigPath();
+            var config = await _configurationService.LoadConfigurationAsync(configPath);
+
+            if (config != null)
+            {
+                config.Proxies.RemoveAll(p => p.Name == SelectedProxy.Name);
+                await _configurationService.SaveConfigurationAsync(configPath, config);
+
+                await LoadProxiesAsync();
+                SelectedProxy = null;
+
+                _logger.LogInformation("Proxy deleted successfully");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting proxy");
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+
+    private void DuplicateProxy()
+    {
+        if (SelectedProxy == null) return;
+
+        _logger.LogInformation("Duplicate proxy: {ProxyName}", SelectedProxy.Name);
+
+        var newProxy = new ProxyConfig
+        {
+            Name = $"{SelectedProxy.Name} (Copy)",
+            Type = SelectedProxy.Type,
+            LocalIP = SelectedProxy.LocalIP,
+            LocalPort = SelectedProxy.LocalPort,
+            RemotePort = SelectedProxy.RemotePort,
+            CustomDomains = SelectedProxy.CustomDomains,
+            Subdomain = SelectedProxy.Subdomain,
+            Transport = SelectedProxy.Transport,
+            HealthCheck = SelectedProxy.HealthCheck,
+            Plugin = SelectedProxy.Plugin,
+            // Copy other properties as needed
+        };
+
+        Proxies.Add(newProxy);
+
+        _logger.LogInformation("Proxy duplicated: {NewProxyName}", newProxy.Name);
+    }
+
+    private async Task ExportAllAsync()
+    {
+        _logger.LogInformation("Export all proxies");
+        // TODO: Implement export functionality
+        await Task.CompletedTask;
+    }
+
+    private async Task ImportAsync()
+    {
+        _logger.LogInformation("Import proxies");
+        // TODO: Implement import functionality
+        await Task.CompletedTask;
+    }
+
+    private async Task ClearAllAsync()
+    {
+        _logger.LogInformation("Clear all proxies");
+
+        try
+        {
+            IsSaving = true;
+
+            var configPath = _configurationService.GetDefaultConfigPath();
+            var config = await _configurationService.LoadConfigurationAsync(configPath);
+
+            if (config != null)
+            {
+                config.Proxies.Clear();
+                await _configurationService.SaveConfigurationAsync(configPath, config);
+
+                await LoadProxiesAsync();
+
+                _logger.LogInformation("All proxies cleared");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error clearing proxies");
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+}

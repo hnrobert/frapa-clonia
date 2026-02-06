@@ -17,6 +17,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IValidationService, ValidationService>();
         services.AddSingleton<IProfileService, ProfileService>();
         services.AddSingleton<IAutoStartService, AutoStartService>();
+        services.AddSingleton<ILocalizationService, LocalizationService>();
 
         // Infrastructure Services
         services.AddSingleton<IFrpcDownloader, FrpcDownloader>();

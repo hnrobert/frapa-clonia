@@ -1,0 +1,145 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="FrapaClonia.UI.Views.DashboardView"
+             x:DataType="vm:DashboardViewModel">
+
+    <Design.DataContext>
+        <vm:DashboardViewModel />
+    </Design.DataContext>
+
+    <ScrollViewer>
+        <StackPanel Margin="20" Spacing="20">
+            <!-- Header -->
+            <TextBlock Text="FrapaClonia Dashboard" FontSize="32" FontWeight="Bold" />
+
+            <!-- Status Card -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="20">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Status" FontSize="18" FontWeight="Bold" />
+
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Frpc Status:" FontWeight="Bold" Margin="0,0,10,0" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding StatusMessage}" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Process ID:" FontWeight="Bold" Margin="0,0,10,0" />
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding FrpcProcessId, TargetNullValue='N/A'}" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Configuration:" FontWeight="Bold" Margin="0,0,10,0" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding ServerAddress}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Quick Actions -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="20">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Quick Actions" FontSize="18" FontWeight="Bold" />
+
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button Content="Start Frpc"
+                                Command="{Binding StartFrpcCommand}"
+                                Padding="15,8"
+                                Background="Green"
+                                Foreground="White" />
+
+                        <Button Content="Stop Frpc"
+                                Command="{Binding StopFrpcCommand}"
+                                Padding="15,8"
+                                Background="Red"
+                                Foreground="White"
+                                IsEnabled="{Binding IsFrpcRunning}" />
+
+                        <Button Content="Restart Frpc"
+                                Command="{Binding RestartFrpcCommand}"
+                                Padding="15,8"
+                                Background="Orange"
+                                Foreground="White"
+                                IsEnabled="{Binding IsFrpcRunning}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Configuration Summary -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="20">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Configuration Summary" FontSize="18" FontWeight="Bold" />
+
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Server Address:" FontWeight="Bold" Margin="0,0,10,0" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ServerAddress}" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Proxy Count:" FontWeight="Bold" Margin="0,0,10,0" />
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ProxyCount}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Navigation Cards -->
+            <TextBlock Text="Configuration" FontSize="18" FontWeight="Bold" />
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="*,*">
+                <!-- Server Configuration -->
+                <Border Grid.Row="0" Grid.Column="0" Background="#E3F2FD" CornerRadius="8" Padding="20" Margin="0,0,5,5">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Server Connection" FontSize="16" FontWeight="Bold" />
+                        <TextBlock Text="Configure frpc server connection settings" TextWrapping="Wrap" Foreground="Gray" />
+                        <Button Content="Configure"
+                                Command="{Binding NavigateToServerConfigCommand}"
+                                HorizontalAlignment="Left"
+                                Padding="10,5" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Proxy Management -->
+                <Border Grid.Row="0" Grid.Column="1" Background="#E8F5E9" CornerRadius="8" Padding="20" Margin="5,0,0,5">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Proxy Management" FontSize="16" FontWeight="Bold" />
+                        <TextBlock Text="Manage and configure your proxies" TextWrapping="Wrap" Foreground="Gray" />
+                        <Button Content="Manage Proxies"
+                                Command="{Binding NavigateToProxyListCommand}"
+                                HorizontalAlignment="Left"
+                                Padding="10,5" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Deployment -->
+                <Border Grid.Row="1" Grid.Column="0" Background="#FFF3E0" CornerRadius="8" Padding="20" Margin="0,5,5,0">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Frpc Deployment" FontSize="16" FontWeight="Bold" />
+                        <TextBlock Text="Download and configure frpc binary" TextWrapping="Wrap" Foreground="Gray" />
+                        <Button Content="Deploy Frpc"
+                                Command="{Binding NavigateToDeploymentCommand}"
+                                HorizontalAlignment="Left"
+                                Padding="10,5" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Logs -->
+                <Border Grid.Row="1" Grid.Column="1" Background="#F3E5F5" CornerRadius="8" Padding="20" Margin="5,5,0,0">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Log Viewer" FontSize="16" FontWeight="Bold" />
+                        <TextBlock Text="View frpc logs in real-time" TextWrapping="Wrap" Foreground="Gray" />
+                        <Button Content="View Logs"
+                                Command="{Binding NavigateToLogsCommand}"
+                                HorizontalAlignment="Left"
+                                Padding="10,5" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Recent Log -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="20">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Recent Activity" FontSize="18" FontWeight="Bold" />
+                    <Border Background="White" CornerRadius="4" Padding="10">
+                        <TextBlock Text="{Binding LastLogLine}" FontFamily="Monospace" TextWrapping="Wrap" />
+                    </Border>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

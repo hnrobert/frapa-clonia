@@ -1,0 +1,155 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="FrapaClonia.UI.Views.ProxyListView"
+             x:DataType="vm:ProxyListViewModel">
+
+    <Design.DataContext>
+        <vm:ProxyListViewModel />
+    </Design.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#F5F5F5" Padding="15">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Spacing="5">
+                    <TextBlock Text="Proxy Management" FontSize="24" FontWeight="Bold" />
+                    <TextBlock Text="Manage your frpc proxy configurations" FontSize="14" Foreground="Gray" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                    <Button Content="Refresh"
+                            Command="{Binding RefreshCommand}"
+                            Padding="10,5"
+                            IsEnabled="{Binding !IsLoading}" />
+
+                    <Button Content="Export All"
+                            Command="{Binding ExportAllCommand}"
+                            Padding="10,5" />
+
+                    <Button Content="Import"
+                            Command="{Binding ImportCommand}"
+                            Padding="10,5" />
+
+                    <Button Content="Clear All"
+                            Command="{Binding ClearAllCommand}"
+                            Padding="10,5"
+                            Background="Red"
+                            Foreground="White" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Toolbar -->
+        <Border Grid.Row="1" Background="White" Padding="15,10" BorderBrush="LightGray" BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <!-- Search -->
+                <TextBox Grid.Column="0"
+                         Text="{Binding SearchQuery}"
+                         Watermark="Search proxies..."
+                         MinWidth="200" />
+
+                <!-- Type Filter -->
+                <ComboBox Grid.Column="1"
+                          SelectedIndex="0"
+                          MinWidth="150"
+                          Margin="10,0,0,0">
+                    <ComboBoxItem Content="All Types" />
+                    <ComboBoxItem Content="TCP" />
+                    <ComboBoxItem Content="UDP" />
+                    <ComboBoxItem Content="HTTP" />
+                    <ComboBoxItem Content="HTTPS" />
+                    <ComboBoxItem Content="STCP" />
+                    <ComboBoxItem Content="XTCP" />
+                    <ComboBoxItem Content="SUDP" />
+                    <ComboBoxItem Content="TCPMUX" />
+                </ComboBox>
+
+                <!-- Add Proxy -->
+                <Button Grid.Column="2"
+                        Content="Add Proxy"
+                        Command="{Binding AddProxyCommand}"
+                        Padding="15,8"
+                        Background="#007ACC"
+                        Foreground="White"
+                        Margin="10,0,0,0">
+                    <StackPanel Orientation="Horizontal" Spacing="5">
+                        <TextBlock Text="+" FontSize="16" />
+                        <TextBlock Text="Add Proxy" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Proxy List -->
+        <Border Grid.Row="2" Background="White" Padding="15">
+            <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding Proxies}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="#F9F9F9"
+                                    CornerRadius="5"
+                                    Padding="15"
+                                    Margin="0,0,0,10"
+                                    BorderBrush="LightGray"
+                                    BorderThickness="1">
+                                <Grid ColumnDefinitions="*,Auto,Auto">
+                                    <!-- Proxy Info -->
+                                    <StackPanel Grid.Column="0" Spacing="5">
+                                        <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="16" />
+                                        <Grid ColumnDefinitions="Auto,Auto,Auto,Auto">
+                                            <Border Grid.Column="0" Background="#007ACC" CornerRadius="3" Padding="5,2" Margin="0,0,5,0">
+                                                <TextBlock Text="{Binding Type}" Foreground="White" FontSize="12" />
+                                            </Border>
+                                            <TextBlock Grid.Column="1" Text="{Binding LocalIP}" Margin="0,0,5,0" Foreground="Gray" />
+                                            <TextBlock Grid.Column="2" Text=":" Foreground="Gray" Margin="0,0,5,0" />
+                                            <TextBlock Grid.Column="3" Text="{Binding LocalPort}" Foreground="Gray" />
+                                        </Grid>
+                                        <StackPanel Orientation="Horizontal" Spacing="15" Margin="0,5,0,0">
+                                            <StackPanel Spacing="2">
+                                                <TextBlock Text="Remote Port" FontSize="11" Foreground="Gray" />
+                                                <TextBlock Text="{Binding RemotePort, TargetNullValue='N/A'}" FontSize="13" FontWeight="SemiBold" />
+                                            </StackPanel>
+                                            <StackPanel Spacing="2">
+                                                <TextBlock Text="Domains" FontSize="11" Foreground="Gray" />
+                                                <TextBlock Text="{Binding CustomDomains}" FontSize="13" FontWeight="SemiBold" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <!-- Status Indicator -->
+                                    <Ellipse Grid.Column="1"
+                                             Width="12"
+                                             Height="12"
+                                             Fill="Green"
+                                             Margin="0,0,20,0"
+                                             VerticalAlignment="Center" />
+
+                                    <!-- Actions -->
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="5">
+                                        <Button Content="Edit" Padding="10,5" FontSize="12" />
+                                        <Button Content="Duplicate" Padding="10,5" FontSize="12" />
+                                        <Button Content="Delete"
+                                                Padding="10,5"
+                                                FontSize="12"
+                                                Background="LightCoral"
+                                                Foreground="White" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>

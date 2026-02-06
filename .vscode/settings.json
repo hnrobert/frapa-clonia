@@ -3,6 +3,7 @@
         "avalonia",
         "clonia",
         "frapa",
-        "frpc"
+        "frpc",
+        "Mvvm"
     ]
 }

@@ -1,0 +1,124 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
+             x:Class="FrapaClonia.UI.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+    <Design.DataContext>
+        <vm:SettingsViewModel />
+    </Design.DataContext>
+
+    <ScrollViewer>
+        <StackPanel Margin="20" Spacing="20">
+            <!-- Header -->
+            <TextBlock Text="Application Settings" FontSize="24" FontWeight="Bold" />
+
+            <!-- Language Settings -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="15">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Language" FontSize="16" FontWeight="Bold" />
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Interface Language" FontWeight="Bold" />
+                        <ComboBox ItemsSource="{Binding AvailableLanguages}"
+                                  SelectedIndex="0"
+                                  MinWidth="200">
+                            <ComboBox.DataTemplates>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </ComboBox.DataTemplates>
+                        </ComboBox>
+                        <TextBlock Text="Changes will take effect after restarting the application"
+                                   FontSize="12" Foreground="Gray" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Startup Settings -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="15">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Startup" FontSize="16" FontWeight="Bold" />
+
+                    <CheckBox IsChecked="{Binding AutoStartEnabled}">
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="Start on system boot" FontWeight="SemiBold" />
+                            <TextBlock Text="Automatically start FrapaClonia when you log in"
+                                       FontSize="12" Foreground="Gray" />
+                        </StackPanel>
+                    </CheckBox>
+                </StackPanel>
+            </Border>
+
+            <!-- Application Mode -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="15">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Application Mode" FontSize="16" FontWeight="Bold" />
+
+                    <CheckBox IsChecked="{Binding PortableMode}" IsEnabled="False">
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="Portable Mode" FontWeight="SemiBold" />
+                            <TextBlock Text="Store configuration in application directory (requires portable.txt)"
+                                       FontSize="12" Foreground="Gray" />
+                        </StackPanel>
+                    </CheckBox>
+
+                    <StackPanel Spacing="5" Margin="0,10,0,0">
+                        <TextBlock Text="Configuration Location:" FontWeight="Bold" />
+                        <TextBlock Text="{Binding ConfigLocation}" FontFamily="Monospace" Foreground="Gray" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- About Information -->
+            <Border Background="#F5F5F5" CornerRadius="8" Padding="15">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="About" FontSize="16" FontWeight="Bold" />
+
+                    <Grid ColumnDefinitions="Auto,*">
+                        <TextBlock Grid.Column="0" Text="Version:" FontWeight="Bold" Margin="0,0,10,0" />
+                        <TextBlock Grid.Column="1" Text="0.1.0" />
+                    </Grid>
+
+                    <Grid ColumnDefinitions="Auto,*">
+                        <TextBlock Grid.Column="0" Text="Build:" FontWeight="Bold" Margin="0,0,10,0" />
+                        <TextBlock Grid.Column="1" Text="Development" />
+                    </Grid>
+
+                    <Grid ColumnDefinitions="Auto,*">
+                        <TextBlock Grid.Column="0" Text=".NET:" FontWeight="Bold" Margin="0,0,10,0" />
+                        <TextBlock Grid.Column="1" Text="10.0" />
+                    </Grid>
+
+                    <TextBlock Text="A cross-platform frpc visual client"
+                               Foreground="Gray" Margin="0,10,0,0" />
+                </StackPanel>
+            </Border>
+
+            <!-- Buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
+                <Button Content="Reset to Defaults"
+                        Command="{Binding ResetCommand}"
+                        Padding="15,8"
+                        IsEnabled="{Binding !IsSaving}" />
+
+                <Button Content="Save Settings"
+                        Command="{Binding SaveCommand}"
+                        Padding="15,8"
+                        IsEnabled="{Binding !IsSaving}"
+                        Background="#007ACC"
+                        Foreground="White">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock Text="Save" />
+                        <ProgressBar IsIndeterminate="True"
+                                     Width="20" Height="20"
+                                     IsVisible="{Binding IsSaving}" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
