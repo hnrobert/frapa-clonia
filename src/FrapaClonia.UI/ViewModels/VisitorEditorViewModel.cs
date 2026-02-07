@@ -99,7 +99,7 @@ public partial class VisitorEditorViewModel : ObservableObject
     private Task ValidateAsync()
     {
         var visitor = CreateVisitorConfig();
-        // TODO: Add validation for visitors
+        // Validate required fields
         IsValid = !string.IsNullOrWhiteSpace(VisitorName) &&
                    !string.IsNullOrWhiteSpace(ServerName) &&
                    !string.IsNullOrWhiteSpace(SecretKey) &&

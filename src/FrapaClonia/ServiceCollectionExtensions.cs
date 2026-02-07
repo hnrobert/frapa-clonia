@@ -38,6 +38,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ServerConfigViewModel>();
         services.AddSingleton<ProxyListViewModel>();
         services.AddSingleton<VisitorListViewModel>();
+        services.AddSingleton<DeploymentViewModel>();
+        services.AddSingleton<LogsViewModel>();
         services.AddSingleton<SettingsViewModel>();
 
         // Logging

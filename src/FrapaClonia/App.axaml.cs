@@ -7,12 +7,14 @@ using Microsoft.Extensions.DependencyInjection;
 using FrapaClonia.UI.ViewModels;
 using FrapaClonia.Views;
 using System.Diagnostics.CodeAnalysis;
+using System;
 
 namespace FrapaClonia;
 
 public class App : Application
 {
     private ServiceProvider? _serviceProvider;
+    public static IServiceProvider Services => ((App)Current!)!._serviceProvider!;
 
     public override void Initialize()
     {
