@@ -30,6 +30,7 @@ public static class ServiceCollectionExtensions
 
         // Services
         services.AddSingleton<NavigationService>();
+        services.AddSingleton<ThemeService>();
 
         // ViewModels
         services.AddSingleton<MainWindowViewModel>();

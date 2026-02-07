@@ -1,0 +1,159 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="FrapaClonia.App"
+             xmlns:local="using:FrapaClonia"
+             xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
+             RequestedThemeVariant="Default">
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+
+    <Application.Resources>
+        <converters:TypeToColorConverter x:Key="TypeToColorConverter" />
+        <converters:NotNullConverter x:Key="NotNullConverter" />
+        <converters:EmptyCollectionConverter x:Key="EmptyCollectionConverter" />
+
+        <!-- App Theme Colors -->
+        <SolidColorBrush x:Key="AppPrimaryBrush" Color="#6366F1" />
+        <SolidColorBrush x:Key="AppPrimaryHoverBrush" Color="#4F46E5" />
+        <SolidColorBrush x:Key="AppSecondaryBrush" Color="#64748B" />
+        <SolidColorBrush x:Key="AppSuccessBrush" Color="#10B981" />
+        <SolidColorBrush x:Key="AppWarningBrush" Color="#F59E0B" />
+        <SolidColorBrush x:Key="AppErrorBrush" Color="#EF4444" />
+        <SolidColorBrush x:Key="AppInfoBrush" Color="#3B82F6" />
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+
+        <!-- Card Style -->
+        <Style Selector="Border.card, Border.section-card, Border.settings-card">
+            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="16" />
+        </Style>
+
+        <Style Selector="Border.card:pointerover, Border.section-card:pointerover, Border.settings-card:pointerover">
+            <Setter Property="BorderBrush" Value="{DynamicResource AppPrimaryBrush}" />
+        </Style>
+
+        <!-- Text Styles -->
+        <Style Selector="TextBlock.pageTitle, TextBlock.heading">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.sectionTitle, TextBlock.section-header">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.label, TextBlock.field-label">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.value">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.hint, TextBlock.field-description, TextBlock.hint-text">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <!-- Button Styles -->
+        <Style Selector="Button.primary, Button.action-button.primary, Button.primaryButton, Button.primaryAction">
+            <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="MinHeight" Value="36" />
+        </Style>
+
+        <Style Selector="Button.primary:pointerover, Button.action-button.primary:pointerover, Button.primaryButton:pointerover, Button.primaryAction:pointerover">
+            <Setter Property="Background" Value="{DynamicResource AppPrimaryHoverBrush}" />
+        </Style>
+
+        <Style Selector="Button.secondary, Button.action-button, Button.secondaryButton, Button.secondaryAction">
+            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltLowBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="MinHeight" Value="36" />
+        </Style>
+
+        <Style Selector="Button.secondary:pointerover, Button.action-button:pointerover, Button.secondaryButton:pointerover, Button.secondaryAction:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+        </Style>
+
+        <!-- Destructive Button -->
+        <Style Selector="Button.destructive">
+            <Setter Property="Foreground" Value="{DynamicResource AppErrorBrush}" />
+        </Style>
+
+        <Style Selector="Button.destructive:pointerover">
+            <Setter Property="Background" Value="{DynamicResource AppErrorBrush}" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
+        <!-- Input Styles -->
+        <Style Selector="TextBox.input-control, ComboBox.input-control, NumericUpDown.input-control">
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="8,6" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <!-- Status Colors -->
+        <Style Selector="Border.statusIndicator, Border.status-indicator">
+            <Setter Property="Width" Value="8" />
+            <Setter Property="Height" Value="8" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+
+        <Style Selector="Border.statusIndicator.running, Border.status-indicator.running">
+            <Setter Property="Background" Value="{DynamicResource AppSuccessBrush}" />
+        </Style>
+
+        <Style Selector="Border.statusIndicator.stopped, Border.status-indicator.stopped">
+            <Setter Property="Background" Value="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.status-error">
+            <Setter Property="Foreground" Value="{DynamicResource AppErrorBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.status-warning">
+            <Setter Property="Foreground" Value="{DynamicResource AppWarningBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.status-success">
+            <Setter Property="Foreground" Value="{DynamicResource AppSuccessBrush}" />
+        </Style>
+
+        <!-- Badge Styles -->
+        <Style Selector="Border.typeBadge">
+            <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="6,3" />
+        </Style>
+
+        <Style Selector="Border.typeBadge TextBlock">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </Application.Styles>
+</Application>
