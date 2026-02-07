@@ -2,27 +2,21 @@ using FrapaClonia.Core.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace FrapaClonia.Infrastructure.Services;
 
 /// <summary>
 /// Service for native executable deployment of frpc
 /// </summary>
-public class NativeDeploymentService : INativeDeploymentService
+public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : INativeDeploymentService
 {
-    private readonly ILogger<NativeDeploymentService> _logger;
-
-    public NativeDeploymentService(ILogger<NativeDeploymentService> logger)
-    {
-        _logger = logger;
-    }
-
-    public async Task<string> DeployFromArchiveAsync(string archivePath, string targetDirectory, CancellationToken cancellationToken = default)
+    public async Task<string> DeployFromArchiveAsync(string archivePath, string targetDirectory,
+        CancellationToken cancellationToken = default)
     {
         try
         {
-            _logger.LogInformation("Deploying frpc from archive {ArchivePath} to {TargetDirectory}", archivePath, targetDirectory);
+            logger.LogInformation("Deploying frpc from archive {ArchivePath} to {TargetDirectory}", archivePath,
+                targetDirectory);
 
             // Ensure target directory exists
             Directory.CreateDirectory(targetDirectory);
@@ -48,22 +42,23 @@ public class NativeDeploymentService : INativeDeploymentService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deploying frpc from archive {ArchivePath}", archivePath);
+            logger.LogError(ex, "Error deploying frpc from archive {ArchivePath}", archivePath);
             throw;
         }
     }
 
-    public async Task<bool> VerifyBinaryAsync(string binaryPath, string? expectedChecksum = null, CancellationToken cancellationToken = default)
+    public async Task<bool> VerifyBinaryAsync(string binaryPath, string? expectedChecksum = null,
+        CancellationToken cancellationToken = default)
     {
         try
         {
             if (!File.Exists(binaryPath))
             {
-                _logger.LogWarning("Binary file does not exist: {BinaryPath}", binaryPath);
+                logger.LogWarning("Binary file does not exist: {BinaryPath}", binaryPath);
                 return false;
             }
 
-            _logger.LogInformation("Verifying frpc binary at {BinaryPath}", binaryPath);
+            logger.LogInformation("Verifying frpc binary at {BinaryPath}", binaryPath);
 
             // If checksum provided, verify it
             if (!string.IsNullOrEmpty(expectedChecksum))
@@ -73,7 +68,7 @@ public class NativeDeploymentService : INativeDeploymentService
 
                 if (!matches)
                 {
-                    _logger.LogWarning("Checksum mismatch for {BinaryPath}. Expected: {Expected}, Actual: {Actual}",
+                    logger.LogWarning("Checksum mismatch for {BinaryPath}. Expected: {Expected}, Actual: {Actual}",
                         binaryPath, expectedChecksum, actualChecksum);
                 }
 
@@ -84,7 +79,7 @@ public class NativeDeploymentService : INativeDeploymentService
             var fileInfo = new FileInfo(binaryPath);
             if (fileInfo.Length == 0)
             {
-                _logger.LogWarning("Binary file is empty: {BinaryPath}", binaryPath);
+                logger.LogWarning("Binary file is empty: {BinaryPath}", binaryPath);
                 return false;
             }
 
@@ -113,7 +108,7 @@ public class NativeDeploymentService : INativeDeploymentService
                 }
                 catch
                 {
-                    _logger.LogWarning("Could not execute {BinaryPath} to verify", binaryPath);
+                    logger.LogWarning("Could not execute {BinaryPath} to verify", binaryPath);
                     return false;
                 }
             }
@@ -122,7 +117,7 @@ public class NativeDeploymentService : INativeDeploymentService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error verifying binary at {BinaryPath}", binaryPath);
+            logger.LogError(ex, "Error verifying binary at {BinaryPath}", binaryPath);
             return false;
         }
     }
@@ -139,18 +134,13 @@ public class NativeDeploymentService : INativeDeploymentService
         return !string.IsNullOrEmpty(binaryPath) && File.Exists(binaryPath);
     }
 
-    public async Task<string?> GetDeployedBinaryPathAsync(CancellationToken cancellationToken = default)
+    public Task<string> GetDeployedBinaryPathAsync(CancellationToken cancellationToken = default)
     {
         var binDir = GetDefaultDeploymentDirectory();
         var exeName = "frpc" + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : "");
         var binaryPath = Path.Combine(binDir, exeName);
 
-        if (File.Exists(binaryPath))
-        {
-            return binaryPath;
-        }
-
-        return null;
+        return File.Exists(binaryPath) ? Task.FromResult(binaryPath) : Task.FromResult(string.Empty);
     }
 
     public Task SetExecutablePermissionsAsync(string binaryPath, CancellationToken cancellationToken = default)
@@ -163,7 +153,7 @@ public class NativeDeploymentService : INativeDeploymentService
                 return Task.CompletedTask;
             }
 
-            _logger.LogInformation("Setting executable permissions on {BinaryPath}", binaryPath);
+            logger.LogInformation("Setting executable permissions on {BinaryPath}", binaryPath);
 
             // Use chmod +x to make the binary executable
             var process = new System.Diagnostics.Process
@@ -183,7 +173,7 @@ public class NativeDeploymentService : INativeDeploymentService
 
             if (process.ExitCode != 0)
             {
-                _logger.LogWarning("chmod failed with exit code {ExitCode}: {Error}",
+                logger.LogWarning("chmod failed with exit code {ExitCode}: {Error}",
                     process.ExitCode, process.StandardError.ReadToEnd());
             }
 
@@ -191,12 +181,13 @@ public class NativeDeploymentService : INativeDeploymentService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error setting executable permissions on {BinaryPath}", binaryPath);
+            logger.LogError(ex, "Error setting executable permissions on {BinaryPath}", binaryPath);
             return Task.CompletedTask;
         }
     }
 
-    private async Task<string> ExtractTarGzAsync(string archivePath, string targetDirectory, CancellationToken cancellationToken)
+    private async Task<string> ExtractTarGzAsync(string archivePath, string targetDirectory,
+        CancellationToken cancellationToken)
     {
         // For .tar.gz files, we need to extract them
         // This is a simple implementation - for production, use a proper TAR library
@@ -270,13 +261,20 @@ public class NativeDeploymentService : INativeDeploymentService
             // Clean up temp directory
             if (Directory.Exists(tempDir))
             {
-                try { Directory.Delete(tempDir, true); }
-                catch { /* Ignore cleanup errors */ }
+                try
+                {
+                    Directory.Delete(tempDir, true);
+                }
+                catch
+                {
+                    /* Ignore cleanup errors */
+                }
             }
         }
     }
 
-    private async Task<string> ExtractZipAsync(string archivePath, string targetDirectory, CancellationToken cancellationToken)
+    private async Task<string> ExtractZipAsync(string archivePath, string targetDirectory,
+        CancellationToken cancellationToken)
     {
         // For Windows or systems where tar is not available, just copy the file
         // In production, use a proper ZIP extraction library
@@ -288,10 +286,10 @@ public class NativeDeploymentService : INativeDeploymentService
         return destPath;
     }
 
-    private async Task<string> ComputeSha256ChecksumAsync(string filePath, CancellationToken cancellationToken)
+    private static async Task<string> ComputeSha256ChecksumAsync(string filePath, CancellationToken cancellationToken)
     {
         using var sha256 = SHA256.Create();
-        using var stream = File.OpenRead(filePath);
+        await using var stream = File.OpenRead(filePath);
 
         var hash = await sha256.ComputeHashAsync(stream, cancellationToken);
         return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();

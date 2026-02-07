@@ -4,7 +4,6 @@ using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
-using System.Globalization;
 
 namespace FrapaClonia.UI.ViewModels;
 
@@ -52,11 +51,11 @@ public partial class SettingsViewModel : ObservableObject
         _autoStartService = autoStartService;
         _themeService = themeService;
 
-        SaveCommand = new RelayCommand(async () => await SaveAsync());
-        ResetCommand = new RelayCommand(async () => await LoadSettingsAsync());
+        SaveCommand = new RelayCommand(async void () => await SaveAsync());
+        ResetCommand = new RelayCommand(async void () => await LoadSettingsAsync());
 
-        AvailableLanguages = new List<LanguageOption>
-        {
+        AvailableLanguages =
+        [
             new("en", "English"),
             new("zh-CN", "简体中文"),
             new("ja", "日本語"),
@@ -65,7 +64,7 @@ public partial class SettingsViewModel : ObservableObject
             new("fr", "Français"),
             new("de", "Deutsch"),
             new("ru", "Русский")
-        };
+        ];
 
         // Initialize theme from ThemeService
         ThemeIndex = _themeService.CurrentTheme.ToString() switch
@@ -75,7 +74,7 @@ public partial class SettingsViewModel : ObservableObject
             _ => 2
         };
 
-        _localizationService.CultureChanged += (s, e) =>
+        _localizationService.CultureChanged += (_, _) =>
         {
             var cultureCode = _localizationService.CurrentCulture.Name;
             SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == cultureCode)
@@ -152,7 +151,7 @@ public partial class SettingsViewModel : ObservableObject
         }
     }
 
-    private bool DetectPortableMode()
+    private static bool DetectPortableMode()
     {
         // Check if running in portable mode
         // Portable mode is detected if the executable is in a directory with a config file

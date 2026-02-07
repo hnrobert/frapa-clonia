@@ -11,7 +11,7 @@ namespace FrapaClonia;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    public static void AddApplicationServices(this IServiceCollection services)
     {
         // Core Services
         services.AddSingleton<IConfigurationService, ConfigurationService>();
@@ -52,8 +52,6 @@ public static class ServiceCollectionExtensions
             builder.ClearProviders();
             builder.AddSerilog(dispose: true);
         });
-
-        return services;
     }
 
     private static string GetAppDataDirectory()

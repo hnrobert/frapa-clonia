@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.Domain.Models;
 using Microsoft.Extensions.Logging;
+// ReSharper disable UnusedParameterInPartialMethod
 
 namespace FrapaClonia.UI.ViewModels;
 
@@ -13,10 +14,9 @@ public partial class ProxyListViewModel : ObservableObject
 {
     private readonly ILogger<ProxyListViewModel> _logger;
     private readonly IConfigurationService _configurationService;
-    private readonly IValidationService _validationService;
 
     [ObservableProperty]
-    private List<ProxyConfig> _proxies = new();
+    private List<ProxyConfig> _proxies = [];
 
     [ObservableProperty]
     private ProxyConfig? _selectedProxy;
@@ -42,28 +42,73 @@ public partial class ProxyListViewModel : ObservableObject
     public IRelayCommand ImportCommand { get; }
     public IRelayCommand ClearAllCommand { get; }
 
-    public List<string> ProxyTypes { get; } = new()
-    {
-        "All", "tcp", "udp", "http", "https", "stcp", "xtcp", "sudp", "tcpmux"
-    };
+    public List<string> ProxyTypes { get; } = ["All", "tcp", "udp", "http", "https", "stcp", "xtcp", "sudp", "tcpmux"];
 
     public ProxyListViewModel(
         ILogger<ProxyListViewModel> logger,
-        IConfigurationService configurationService,
-        IValidationService validationService)
+        IConfigurationService configurationService)
     {
         _logger = logger;
         _configurationService = configurationService;
-        _validationService = validationService;
 
-        AddProxyCommand = new RelayCommand(() => AddProxy());
-        EditProxyCommand = new RelayCommand(() => EditProxy(), () => SelectedProxy != null);
-        DeleteProxyCommand = new RelayCommand(async () => await DeleteProxyAsync(), () => SelectedProxy != null);
-        DuplicateProxyCommand = new RelayCommand(() => DuplicateProxy(), () => SelectedProxy != null);
-        RefreshCommand = new RelayCommand(async () => await LoadProxiesAsync());
-        ExportAllCommand = new RelayCommand(async () => await ExportAllAsync());
-        ImportCommand = new RelayCommand(async () => await ImportAsync());
-        ClearAllCommand = new RelayCommand(async () => await ClearAllAsync(), () => Proxies.Count > 0);
+        AddProxyCommand = new RelayCommand(AddProxy);
+        EditProxyCommand = new RelayCommand(EditProxy, () => SelectedProxy != null);
+        DeleteProxyCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await DeleteProxyAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error deleting proxy");
+            }
+        }, () => SelectedProxy != null);
+        DuplicateProxyCommand = new RelayCommand(DuplicateProxy, () => SelectedProxy != null);
+        RefreshCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await LoadProxiesAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error loading proxies");
+            }
+        });
+        ExportAllCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await ExportAllAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error exporting all proxies");
+            }
+        });
+        ImportCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await ImportAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error importing proxies");
+            }
+        });
+        ClearAllCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await ClearAllAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error deleting all proxies");
+            }
+        }, () => Proxies.Count > 0);
 
         _ = Task.Run(LoadProxiesAsync);
     }
@@ -134,7 +179,7 @@ public partial class ProxyListViewModel : ObservableObject
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading proxies");
-            Proxies = new List<ProxyConfig>();
+            Proxies = [];
         }
         finally
         {

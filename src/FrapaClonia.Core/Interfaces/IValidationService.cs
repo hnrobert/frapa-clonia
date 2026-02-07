@@ -29,8 +29,8 @@ public interface IValidationService
 public class ValidationResult
 {
     public bool IsValid { get; init; }
-    public List<string> Errors { get; init; } = new();
-    public List<string> Warnings { get; init; } = new();
+    public List<string> Errors { get; init; } = [];
+    public List<string> Warnings { get; init; } = [];
 
     public static ValidationResult Success => new() { IsValid = true };
 
@@ -48,7 +48,7 @@ public class ValidationResult
         return new ValidationResult
         {
             IsValid = false,
-            Errors = Errors.Concat(new[] { error }).ToList(),
+            Errors = Errors.Concat([error]).ToList(),
             Warnings = Warnings
         };
     }
@@ -59,7 +59,7 @@ public class ValidationResult
         {
             IsValid = IsValid,
             Errors = Errors,
-            Warnings = Warnings.Concat(new[] { warning }).ToList()
+            Warnings = Warnings.Concat([warning]).ToList()
         };
     }
 }

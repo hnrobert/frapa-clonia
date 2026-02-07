@@ -49,10 +49,7 @@ public partial class VisitorEditorViewModel : ObservableObject
     public IRelayCommand SaveCommand { get; }
     public IRelayCommand CancelCommand { get; }
 
-    public List<string> VisitorTypes { get; } = new()
-    {
-        "stcp", "xtcp", "sudp"
-    };
+    public List<string> VisitorTypes { get; } = ["stcp", "xtcp", "sudp"];
 
     public bool HasValidationError => !string.IsNullOrWhiteSpace(ValidationError);
 
@@ -67,7 +64,17 @@ public partial class VisitorEditorViewModel : ObservableObject
         _validationService = validationService;
         _originalVisitor = visitorToEdit;
 
-        SaveCommand = new RelayCommand(async () => await SaveAsync(), () => !IsSaving);
+        SaveCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await SaveAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error saving visitor");
+            }
+        }, () => !IsSaving);
         CancelCommand = new RelayCommand(() => _logger.LogInformation("Cancel edit"));
 
         if (visitorToEdit != null)
@@ -89,7 +96,7 @@ public partial class VisitorEditorViewModel : ObservableObject
         // Those are specific to ProxyTransport
     }
 
-    private async Task ValidateAsync()
+    private Task ValidateAsync()
     {
         var visitor = CreateVisitorConfig();
         // TODO: Add validation for visitors
@@ -98,6 +105,7 @@ public partial class VisitorEditorViewModel : ObservableObject
                    !string.IsNullOrWhiteSpace(SecretKey) &&
                    BindPort > 0;
         ValidationError = IsValid ? null : "Please fill in all required fields";
+        return Task.CompletedTask;
     }
 
     private VisitorConfig CreateVisitorConfig()

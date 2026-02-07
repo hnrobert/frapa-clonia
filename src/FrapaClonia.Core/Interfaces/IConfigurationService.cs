@@ -1,5 +1,4 @@
 using FrapaClonia.Domain.Models;
-using Microsoft.Extensions.Logging;
 
 namespace FrapaClonia.Core.Interfaces;
 

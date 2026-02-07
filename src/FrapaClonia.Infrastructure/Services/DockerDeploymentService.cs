@@ -7,20 +7,13 @@ namespace FrapaClonia.Infrastructure.Services;
 /// <summary>
 /// Service for Docker deployment of frpc
 /// </summary>
-public class DockerDeploymentService : IDockerDeploymentService
+public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : IDockerDeploymentService
 {
-    private readonly ILogger<DockerDeploymentService> _logger;
-
-    public DockerDeploymentService(ILogger<DockerDeploymentService> logger)
-    {
-        _logger = logger;
-    }
-
     public async Task<bool> IsDockerAvailableAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            _logger.LogInformation("Checking if Docker is available");
+            logger.LogInformation("Checking if Docker is available");
 
             var process = new System.Diagnostics.Process
             {
@@ -38,22 +31,23 @@ public class DockerDeploymentService : IDockerDeploymentService
             await process.WaitForExitAsync(cancellationToken);
 
             var available = process.ExitCode == 0;
-            _logger.LogInformation("Docker is {Status}", available ? "available" : "not available");
+            logger.LogInformation("Docker is {Status}", available ? "available" : "not available");
 
             return available;
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Error checking Docker availability");
+            logger.LogWarning(ex, "Error checking Docker availability");
             return false;
         }
     }
 
-    public async Task<string> GenerateDockerComposeAsync(string outputPath, FrpcDockerConfig config, CancellationToken cancellationToken = default)
+    public async Task<string> GenerateDockerComposeAsync(string outputPath, FrpcDockerConfig config,
+        CancellationToken cancellationToken = default)
     {
         try
         {
-            _logger.LogInformation("Generating docker-compose.yml at {OutputPath}", outputPath);
+            logger.LogInformation("Generating docker-compose.yml at {OutputPath}", outputPath);
 
             var composeContent = GenerateDockerComposeContent(config);
 
@@ -65,27 +59,28 @@ public class DockerDeploymentService : IDockerDeploymentService
             }
 
             await File.WriteAllTextAsync(outputPath, composeContent, cancellationToken);
-            _logger.LogInformation("docker-compose.yml generated successfully");
+            logger.LogInformation("docker-compose.yml generated successfully");
 
             return outputPath;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error generating docker-compose.yml at {OutputPath}", outputPath);
+            logger.LogError(ex, "Error generating docker-compose.yml at {OutputPath}", outputPath);
             throw;
         }
     }
 
-    public async Task<bool> StartDockerComposeAsync(string composeDirectory, CancellationToken cancellationToken = default)
+    public async Task<bool> StartDockerComposeAsync(string composeDirectory,
+        CancellationToken cancellationToken = default)
     {
         try
         {
-            _logger.LogInformation("Starting docker-compose in {Directory}", composeDirectory);
+            logger.LogInformation("Starting docker-compose in {Directory}", composeDirectory);
 
             var composeFile = Path.Combine(composeDirectory, "docker-compose.yml");
             if (!File.Exists(composeFile))
             {
-                _logger.LogError("docker-compose.yml not found in {Directory}", composeDirectory);
+                logger.LogError("docker-compose.yml not found in {Directory}", composeDirectory);
                 return false;
             }
 
@@ -108,32 +103,33 @@ public class DockerDeploymentService : IDockerDeploymentService
             var success = process.ExitCode == 0;
             if (success)
             {
-                _logger.LogInformation("docker-compose started successfully");
+                logger.LogInformation("docker-compose started successfully");
             }
             else
             {
-                _logger.LogError("docker-compose start failed: {Error}", process.StandardError.ReadToEnd());
+                logger.LogError("docker-compose start failed: {Error}", process.StandardError.ReadToEnd());
             }
 
             return success;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error starting docker-compose in {Directory}", composeDirectory);
+            logger.LogError(ex, "Error starting docker-compose in {Directory}", composeDirectory);
             return false;
         }
     }
 
-    public async Task<bool> StopDockerComposeAsync(string composeDirectory, CancellationToken cancellationToken = default)
+    public async Task<bool> StopDockerComposeAsync(string composeDirectory,
+        CancellationToken cancellationToken = default)
     {
         try
         {
-            _logger.LogInformation("Stopping docker-compose in {Directory}", composeDirectory);
+            logger.LogInformation("Stopping docker-compose in {Directory}", composeDirectory);
 
             var composeFile = Path.Combine(composeDirectory, "docker-compose.yml");
             if (!File.Exists(composeFile))
             {
-                _logger.LogWarning("docker-compose.yml not found in {Directory}", composeDirectory);
+                logger.LogWarning("docker-compose.yml not found in {Directory}", composeDirectory);
                 return false;
             }
 
@@ -156,18 +152,18 @@ public class DockerDeploymentService : IDockerDeploymentService
             var success = process.ExitCode == 0;
             if (success)
             {
-                _logger.LogInformation("docker-compose stopped successfully");
+                logger.LogInformation("docker-compose stopped successfully");
             }
             else
             {
-                _logger.LogWarning("docker-compose stop failed: {Error}", process.StandardError.ReadToEnd());
+                logger.LogWarning("docker-compose stop failed: {Error}", process.StandardError.ReadToEnd());
             }
 
             return success;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error stopping docker-compose in {Directory}", composeDirectory);
+            logger.LogError(ex, "Error stopping docker-compose in {Directory}", composeDirectory);
             return false;
         }
     }
@@ -176,7 +172,7 @@ public class DockerDeploymentService : IDockerDeploymentService
     {
         try
         {
-            _logger.LogInformation("Checking if container {ContainerName} is running", containerName);
+            logger.LogInformation("Checking if container {ContainerName} is running", containerName);
 
             var process = new System.Diagnostics.Process
             {
@@ -196,29 +192,29 @@ public class DockerDeploymentService : IDockerDeploymentService
             var output = process.StandardOutput.ReadToEnd().Trim();
             var isRunning = !string.IsNullOrEmpty(output);
 
-            _logger.LogInformation("Container {ContainerName} is {Status}",
+            logger.LogInformation("Container {ContainerName} is {Status}",
                 containerName, isRunning ? "running" : "not running");
 
             return isRunning;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error checking container {ContainerName} status", containerName);
+            logger.LogError(ex, "Error checking container {ContainerName} status", containerName);
             return false;
         }
     }
 
-    private string GetDockerCommand()
+    private static string GetDockerCommand()
     {
         return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "docker.exe" : "docker";
     }
 
-    private string GetDockerComposeCommand()
+    private static string GetDockerComposeCommand()
     {
         return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "docker-compose.exe" : "docker-compose";
     }
 
-    private string GenerateDockerComposeContent(FrpcDockerConfig config)
+    private static string GenerateDockerComposeContent(FrpcDockerConfig config)
     {
         var sb = new System.Text.StringBuilder();
 

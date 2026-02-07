@@ -69,7 +69,7 @@ public partial class ThemeService : ObservableObject
             CurrentTheme = Application.Current?.ActualThemeVariant == ThemeVariant.Light ? ThemeVariant.Dark : ThemeVariant.Light;
     }
 
-    private void ApplyTheme(ThemeVariant theme)
+    private static void ApplyTheme(ThemeVariant theme)
     {
         if (Application.Current?.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
         {

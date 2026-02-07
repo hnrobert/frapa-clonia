@@ -3,28 +3,21 @@ using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Runtime.InteropServices;
 
 namespace FrapaClonia.Infrastructure.Services;
 
 /// <summary>
 /// Cross-platform process management service
 /// </summary>
-public class ProcessManager : IProcessManager
+public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
 {
-    private readonly ILogger<ProcessManager> _logger;
     private readonly Dictionary<int, ProcessOutputSubject> _processOutputs = new();
-
-    public ProcessManager(ILogger<ProcessManager> logger)
-    {
-        _logger = logger;
-    }
 
     public Task<ProcessHandle?> StartProcessAsync(ProcessStartOptions startInfo, CancellationToken cancellationToken = default)
     {
         try
         {
-            _logger.LogInformation("Starting process: {FileName} {Arguments}", startInfo.FileName, startInfo.Arguments);
+            logger.LogInformation("Starting process: {FileName} {Arguments}", startInfo.FileName, startInfo.Arguments);
 
             var process = new System.Diagnostics.Process
             {
@@ -58,7 +51,7 @@ public class ProcessManager : IProcessManager
             };
 
             // Create output subject for this process
-            _processOutputs[process.Id] = new ProcessOutputSubject(process, _logger);
+            _processOutputs[process.Id] = new ProcessOutputSubject(process, logger);
 
             // Monitor process exit
             _ = Task.Run(() =>
@@ -70,12 +63,12 @@ public class ProcessManager : IProcessManager
                 }
             });
 
-            _logger.LogInformation("Process started with PID {ProcessId}", handle.ProcessId);
+            logger.LogInformation("Process started with PID {ProcessId}", handle.ProcessId);
             return Task.FromResult<ProcessHandle?>(handle);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error starting process {FileName}", startInfo.FileName);
+            logger.LogError(ex, "Error starting process {FileName}", startInfo.FileName);
             return Task.FromResult<ProcessHandle?>(null);
         }
     }
@@ -84,7 +77,7 @@ public class ProcessManager : IProcessManager
     {
         try
         {
-            _logger.LogInformation("Stopping process {ProcessId}", processId);
+            logger.LogInformation("Stopping process {ProcessId}", processId);
 
             var process = System.Diagnostics.Process.GetProcessById(processId);
             process.Kill(entireProcessTree: true);
@@ -95,18 +88,18 @@ public class ProcessManager : IProcessManager
             var stopped = process.HasExited;
             if (stopped)
             {
-                _logger.LogInformation("Process {ProcessId} stopped successfully", processId);
+                logger.LogInformation("Process {ProcessId} stopped successfully", processId);
             }
             else
             {
-                _logger.LogWarning("Process {ProcessId} did not stop gracefully", processId);
+                logger.LogWarning("Process {ProcessId} did not stop gracefully", processId);
             }
 
             return Task.FromResult(stopped);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error stopping process {ProcessId}", processId);
+            logger.LogError(ex, "Error stopping process {ProcessId}", processId);
             return Task.FromResult(false);
         }
     }
@@ -128,7 +121,7 @@ public class ProcessManager : IProcessManager
         }
         catch (Exception ex)
         {
-            _logger.LogDebug(ex, "Process {ProcessId} not found", processId);
+            logger.LogDebug(ex, "Process {ProcessId} not found", processId);
             return Task.FromResult(false);
         }
     }
@@ -148,7 +141,7 @@ public class ProcessManager : IProcessManager
     {
         try
         {
-            _logger.LogDebug("Checking if port {Port} is available", port);
+            logger.LogDebug("Checking if port {Port} is available", port);
 
             // Try to bind to the port
             var listener = new TcpListener(IPAddress.Loopback, port);
@@ -160,19 +153,19 @@ public class ProcessManager : IProcessManager
         }
         catch (SocketException ex) when (ex.SocketErrorCode == SocketError.AddressAlreadyInUse)
         {
-            _logger.LogDebug("Port {Port} is already in use", port);
+            logger.LogDebug("Port {Port} is already in use", port);
             return Task.FromResult(false);
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Error checking port {Port}", port);
+            logger.LogWarning(ex, "Error checking port {Port}", port);
             return Task.FromResult(false);
         }
     }
 
     public Task<int?> GetAvailablePortAsync(int minPort, int maxPort, CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Finding available port between {MinPort} and {MaxPort}", minPort, maxPort);
+        logger.LogDebug("Finding available port between {MinPort} and {MaxPort}", minPort, maxPort);
 
         // Common ports that might be in use
         var commonPorts = new HashSet<int>
@@ -192,16 +185,16 @@ public class ProcessManager : IProcessManager
 
             if (IsPortAvailable(port))
             {
-                _logger.LogDebug("Found available port: {Port}", port);
+                logger.LogDebug("Found available port: {Port}", port);
                 return Task.FromResult<int?>(port);
             }
         }
 
-        _logger.LogWarning("No available port found between {MinPort} and {MaxPort}", minPort, maxPort);
+        logger.LogWarning("No available port found between {MinPort} and {MaxPort}", minPort, maxPort);
         return Task.FromResult<int?>(null);
     }
 
-    private bool IsPortAvailable(int port)
+    private static bool IsPortAvailable(int port)
     {
         // Check TCP
         var ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
@@ -290,7 +283,7 @@ public class ProcessManager : IProcessManager
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Error reading process output");
+                _logger.LogError(ex, "Error reading process output");
             }
             finally
             {
@@ -304,20 +297,11 @@ public class ProcessManager : IProcessManager
             OnCompleted();
         }
 
-        private class Unsubscriber : IDisposable
+        private class Unsubscriber(ProcessOutputSubject subject, IObserver<string> observer) : IDisposable
         {
-            private readonly ProcessOutputSubject _subject;
-            private readonly IObserver<string> _observer;
-
-            public Unsubscriber(ProcessOutputSubject subject, IObserver<string> observer)
-            {
-                _subject = subject;
-                _observer = observer;
-            }
-
             public void Dispose()
             {
-                _subject._observers.Remove(_observer);
+                subject._observers.Remove(observer);
             }
         }
     }

@@ -16,7 +16,7 @@ public partial class VisitorListViewModel : ObservableObject
     private readonly IValidationService _validationService;
 
     [ObservableProperty]
-    private List<VisitorConfig> _visitors = new();
+    private List<VisitorConfig> _visitors = [];
 
     [ObservableProperty]
     private VisitorConfig? _selectedVisitor;
@@ -37,15 +37,13 @@ public partial class VisitorListViewModel : ObservableObject
     private int _activeCount;
 
     public IRelayCommand AddVisitorCommand { get; }
-    public IRelayCommand EditVisitorCommand { get; }
-    public IRelayCommand DeleteVisitorCommand { get; }
+    private IRelayCommand EditVisitorCommand { get; }
+    private IRelayCommand DeleteVisitorCommand { get; }
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public IRelayCommand DuplicateVisitorCommand { get; }
     public IRelayCommand RefreshCommand { get; }
 
-    public List<string> VisitorTypes { get; } = new()
-    {
-        "stcp", "xtcp", "sudp"
-    };
+    public List<string> VisitorTypes { get; } = ["stcp", "xtcp", "sudp"];
 
     public VisitorListViewModel(
         ILogger<VisitorListViewModel> logger,
@@ -56,22 +54,53 @@ public partial class VisitorListViewModel : ObservableObject
         _configurationService = configurationService;
         _validationService = validationService;
 
-        AddVisitorCommand = new RelayCommand(() => AddVisitor());
-        EditVisitorCommand = new RelayCommand(() => EditVisitor(), () => SelectedVisitor != null);
-        DeleteVisitorCommand = new RelayCommand(async () => await DeleteVisitorAsync(), () => SelectedVisitor != null);
-        DuplicateVisitorCommand = new RelayCommand(async () => await DuplicateVisitorAsync(), () => SelectedVisitor != null);
-        RefreshCommand = new RelayCommand(async () => await LoadVisitorsAsync());
+        AddVisitorCommand = new RelayCommand(AddVisitor);
+        EditVisitorCommand = new RelayCommand(EditVisitor, () => SelectedVisitor != null);
+        DeleteVisitorCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await DeleteVisitorAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error deleting visitor");
+            }
+        }, () => SelectedVisitor != null);
+        DuplicateVisitorCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await DuplicateVisitorAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error deleting visitor");
+            }
+        }, () => SelectedVisitor != null);
+        RefreshCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await LoadVisitorsAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error loading visitors");
+            }
+        });
 
         _ = Task.Run(LoadVisitorsAsync);
     }
 
+    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnSelectedVisitorChanged(VisitorConfig? value)
     {
         EditVisitorCommand.NotifyCanExecuteChanged();
         DeleteVisitorCommand.NotifyCanExecuteChanged();
     }
 
-    public async Task LoadVisitorsAsync()
+    private async Task LoadVisitorsAsync()
     {
         try
         {
@@ -90,7 +119,7 @@ public partial class VisitorListViewModel : ObservableObject
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading visitors");
-            Visitors = new List<VisitorConfig>();
+            Visitors = [];
         }
         finally
         {

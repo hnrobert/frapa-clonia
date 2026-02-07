@@ -21,17 +21,17 @@ public class LocalizationService : ILocalizationService
     {
         _logger = logger;
 
-        SupportedCultures = new List<CultureInfo>
-        {
-            new("en"),    // English
+        SupportedCultures =
+        [
+            new("en"), // English
             new("zh-CN"), // Chinese Simplified
-            new("ja"),    // Japanese
-            new("ko"),    // Korean
-            new("es"),    // Spanish
-            new("fr"),    // French
-            new("de"),    // German
-            new("ru")     // Russian
-        };
+            new("ja"), // Japanese
+            new("ko"), // Korean
+            new("es"), // Spanish
+            new("fr"), // French
+            new("de"), // German
+            new("ru")
+        ];
 
         _localizationData = new Dictionary<string, Dictionary<string, string>>();
         InitializeLocalizationData();

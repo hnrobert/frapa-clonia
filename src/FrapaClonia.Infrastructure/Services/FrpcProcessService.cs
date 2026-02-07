@@ -1,6 +1,5 @@
 using FrapaClonia.Core.Interfaces;
 using Microsoft.Extensions.Logging;
-using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 
 namespace FrapaClonia.Infrastructure.Services;
@@ -8,21 +7,14 @@ namespace FrapaClonia.Infrastructure.Services;
 /// <summary>
 /// Service for managing the frpc process
 /// </summary>
-public class FrpcProcessService : IFrpcProcessService
+public class FrpcProcessService(ILogger<FrpcProcessService> logger, IProcessManager processManager)
+    : IFrpcProcessService
 {
-    private readonly ILogger<FrpcProcessService> _logger;
-    private readonly IProcessManager _processManager;
     private System.Diagnostics.Process? _currentProcess;
     private readonly CancellationTokenSource _cts = new();
     private readonly SemaphoreSlim _processLock = new(1, 1);
 
-    public FrpcProcessService(ILogger<FrpcProcessService> logger, IProcessManager processManager)
-    {
-        _logger = logger;
-        _processManager = processManager;
-    }
-
-    public bool IsRunning => _currentProcess != null && !_currentProcess.HasExited;
+    public bool IsRunning => _currentProcess is { HasExited: false };
     public int? ProcessId => _currentProcess?.Id;
 
     public event EventHandler<ProcessStateChangedEventArgs>? ProcessStateChanged;
@@ -37,26 +29,26 @@ public class FrpcProcessService : IFrpcProcessService
             // Check if already running
             if (IsRunning)
             {
-                _logger.LogWarning("Frpc is already running");
+                logger.LogWarning("Frpc is already running");
                 return false;
             }
 
             // Verify config file exists
             if (!File.Exists(configPath))
             {
-                _logger.LogError("Config file not found: {ConfigPath}", configPath);
+                logger.LogError("Config file not found: {ConfigPath}", configPath);
                 return false;
             }
 
             // Get the frpc binary path
-            var binaryPath = await GetFrpcBinaryPathAsync(cancellationToken);
+            var binaryPath = await GetFrpcBinaryPathAsync();
             if (string.IsNullOrEmpty(binaryPath) || !File.Exists(binaryPath))
             {
-                _logger.LogError("Frpc binary not found at {BinaryPath}", binaryPath ?? "(null)");
+                logger.LogError("Frpc binary not found at {BinaryPath}", binaryPath ?? "(null)");
                 return false;
             }
 
-            _logger.LogInformation("Starting frpc with config {ConfigPath}", configPath);
+            logger.LogInformation("Starting frpc with config {ConfigPath}", configPath);
 
             var startInfo = new ProcessStartOptions
             {
@@ -68,10 +60,10 @@ public class FrpcProcessService : IFrpcProcessService
                 UseShellExecute = false
             };
 
-            var handle = await _processManager.StartProcessAsync(startInfo, cancellationToken);
+            var handle = await processManager.StartProcessAsync(startInfo, cancellationToken);
             if (handle == null)
             {
-                _logger.LogError("Failed to start frpc process");
+                logger.LogError("Failed to start frpc process");
                 return false;
             }
 
@@ -81,7 +73,7 @@ public class FrpcProcessService : IFrpcProcessService
             _currentProcess.Exited += OnProcessExited;
 
             // Start reading output
-            _ = Task.Run(() => ReadProcessOutputAsync(_cts.Token));
+            _ = Task.Run(() => ReadProcessOutputAsync(_cts.Token), cancellationToken);
 
             OnProcessStateChanged(new ProcessStateChangedEventArgs
             {
@@ -89,12 +81,12 @@ public class FrpcProcessService : IFrpcProcessService
                 ProcessId = handle.ProcessId
             });
 
-            _logger.LogInformation("Frpc started with PID {ProcessId}", handle.ProcessId);
+            logger.LogInformation("Frpc started with PID {ProcessId}", handle.ProcessId);
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error starting frpc");
+            logger.LogError(ex, "Error starting frpc");
             return false;
         }
         finally
@@ -111,14 +103,14 @@ public class FrpcProcessService : IFrpcProcessService
         {
             if (!IsRunning)
             {
-                _logger.LogWarning("Frpc is not running");
+                logger.LogWarning("Frpc is not running");
                 return;
             }
 
-            _logger.LogInformation("Stopping frpc (PID {ProcessId})", _currentProcess!.Id);
+            logger.LogInformation("Stopping frpc (PID {ProcessId})", _currentProcess!.Id);
 
             // Cancel the output reading
-            _cts.Cancel();
+            await _cts.CancelAsync();
 
             // Try graceful shutdown first
             if (!_currentProcess.HasExited)
@@ -133,7 +125,7 @@ public class FrpcProcessService : IFrpcProcessService
                 }
                 catch (OperationCanceledException)
                 {
-                    _logger.LogWarning("Frpc did not exit gracefully, forcing termination");
+                    logger.LogWarning("Frpc did not exit gracefully, forcing termination");
                     _currentProcess.Kill(entireProcessTree: true);
                 }
             }
@@ -146,11 +138,11 @@ public class FrpcProcessService : IFrpcProcessService
             });
 
             _currentProcess = null;
-            _logger.LogInformation("Frpc stopped");
+            logger.LogInformation("Frpc stopped");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error stopping frpc");
+            logger.LogError(ex, "Error stopping frpc");
         }
         finally
         {
@@ -160,7 +152,7 @@ public class FrpcProcessService : IFrpcProcessService
 
     public async Task<bool> RestartAsync(string configPath, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Restarting frpc");
+        logger.LogInformation("Restarting frpc");
         await StopAsync(cancellationToken);
 
         // Wait a bit for the process to fully stop
@@ -172,7 +164,7 @@ public class FrpcProcessService : IFrpcProcessService
     private void OnProcessExited(object? sender, EventArgs e)
     {
         var processId = _currentProcess?.Id;
-        _logger.LogInformation("Frpc process (PID {ProcessId}) exited", processId);
+        logger.LogInformation("Frpc process (PID {ProcessId}) exited", processId);
 
         OnProcessStateChanged(new ProcessStateChangedEventArgs
         {
@@ -182,10 +174,10 @@ public class FrpcProcessService : IFrpcProcessService
         });
     }
 
-    private async Task ReadProcessOutputAsync(CancellationToken cancellationToken)
+    private Task ReadProcessOutputAsync(CancellationToken cancellationToken)
     {
         if (_currentProcess == null)
-            return;
+            return Task.CompletedTask;
 
         try
         {
@@ -196,7 +188,7 @@ public class FrpcProcessService : IFrpcProcessService
                 {
                     while (!_currentProcess.HasExited && !cancellationToken.IsCancellationRequested)
                     {
-                        var line = await _currentProcess.StandardOutput.ReadLineAsync();
+                        var line = await _currentProcess.StandardOutput.ReadLineAsync(cancellationToken);
                         if (line != null)
                         {
                             OnLogLineReceived(line, LogLevel.Information);
@@ -205,7 +197,7 @@ public class FrpcProcessService : IFrpcProcessService
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogDebug(ex, "Error reading stdout");
+                    logger.LogDebug(ex, "Error reading stdout");
                 }
             }, cancellationToken);
 
@@ -216,28 +208,28 @@ public class FrpcProcessService : IFrpcProcessService
                 {
                     while (!_currentProcess.HasExited && !cancellationToken.IsCancellationRequested)
                     {
-                        var line = await _currentProcess.StandardError.ReadLineAsync();
-                        if (line != null)
-                        {
-                            // Parse log level from frpc output
-                            var logLevel = ParseLogLevel(line);
-                            OnLogLineReceived(line, logLevel);
-                        }
+                        var line = await _currentProcess.StandardError.ReadLineAsync(cancellationToken);
+                        if (line == null) continue;
+                        // Parse log level from frpc output
+                        var logLevel = ParseLogLevel(line);
+                        OnLogLineReceived(line, logLevel);
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogDebug(ex, "Error reading stderr");
+                    logger.LogDebug(ex, "Error reading stderr");
                 }
             }, cancellationToken);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error in ReadProcessOutputAsync");
+            logger.LogError(ex, "Error in ReadProcessOutputAsync");
         }
+
+        return Task.CompletedTask;
     }
 
-    private LogLevel ParseLogLevel(string logLine)
+    private static LogLevel ParseLogLevel(string logLine)
     {
         var lower = logLine.ToLower();
         if (lower.Contains("error") || lower.Contains("err")) return LogLevel.Error;
@@ -263,16 +255,17 @@ public class FrpcProcessService : IFrpcProcessService
         });
     }
 
-    private async Task<string?> GetFrpcBinaryPathAsync(CancellationToken cancellationToken)
+    private static Task<string?> GetFrpcBinaryPathAsync()
     {
         // Try to find the frpc binary
-        var binDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FrapaClonia", "bin");
+        var binDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "FrapaClonia", "bin");
         var exeName = "frpc" + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : "");
         var binaryPath = Path.Combine(binDir, exeName);
 
         if (File.Exists(binaryPath))
         {
-            return binaryPath;
+            return Task.FromResult<string?>(binaryPath);
         }
 
         // Try to find frpc in PATH
@@ -287,7 +280,7 @@ public class FrpcProcessService : IFrpcProcessService
                     var testPath = Path.Combine(path, exeName);
                     if (File.Exists(testPath))
                     {
-                        return testPath;
+                        return Task.FromResult<string?>(testPath);
                     }
                 }
             }
@@ -297,6 +290,6 @@ public class FrpcProcessService : IFrpcProcessService
             // Ignore PATH search errors
         }
 
-        return null;
+        return Task.FromResult<string?>(null);
     }
 }

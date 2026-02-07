@@ -2,6 +2,5 @@
 
 namespace FrapaClonia.ViewModels;
 
-public abstract class ViewModelBase : ObservableObject
-{
-}
+// ReSharper disable once UnusedType.Global
+public abstract class ViewModelBase : ObservableObject;
