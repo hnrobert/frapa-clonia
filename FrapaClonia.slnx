@@ -9,8 +9,6 @@
     <Project Path="src/FrapaClonia.Domain/FrapaClonia.Domain.csproj" />
     <Project Path="src/FrapaClonia.Infrastructure/FrapaClonia.Infrastructure.csproj" />
     <Project Path="src/FrapaClonia.UI/FrapaClonia.UI.csproj" />
-  </Folder>
-  <Folder Name="/src/FrapaClonia.Main/">
-    <Project Path="src/FrapaClonia.Main/FrapaClonia.csproj" />
+    <Project Path="src/FrapaClonia/FrapaClonia.csproj" />
   </Folder>
 </Solution>

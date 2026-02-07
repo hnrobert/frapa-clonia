@@ -1,6 +1,8 @@
+using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
+using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
 
@@ -14,6 +16,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ILogger<SettingsViewModel> _logger;
     private readonly ILocalizationService _localizationService;
     private readonly IAutoStartService _autoStartService;
+    private readonly ThemeService _themeService;
 
     [ObservableProperty]
     private LanguageOption? _selectedLanguage;
@@ -30,6 +33,9 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool _isSaving;
 
+    [ObservableProperty]
+    private int _themeIndex;
+
     public IRelayCommand SaveCommand { get; }
     public IRelayCommand ResetCommand { get; }
 
@@ -38,11 +44,13 @@ public partial class SettingsViewModel : ObservableObject
     public SettingsViewModel(
         ILogger<SettingsViewModel> logger,
         ILocalizationService localizationService,
-        IAutoStartService autoStartService)
+        IAutoStartService autoStartService,
+        ThemeService themeService)
     {
         _logger = logger;
         _localizationService = localizationService;
         _autoStartService = autoStartService;
+        _themeService = themeService;
 
         SaveCommand = new RelayCommand(async () => await SaveAsync());
         ResetCommand = new RelayCommand(async () => await LoadSettingsAsync());
@@ -59,6 +67,14 @@ public partial class SettingsViewModel : ObservableObject
             new("ru", "Русский")
         };
 
+        // Initialize theme from ThemeService
+        ThemeIndex = _themeService.CurrentTheme.ToString() switch
+        {
+            "Light" => 0,
+            "Dark" => 1,
+            _ => 2
+        };
+
         _localizationService.CultureChanged += (s, e) =>
         {
             var cultureCode = _localizationService.CurrentCulture.Name;
@@ -67,6 +83,17 @@ public partial class SettingsViewModel : ObservableObject
         };
 
         _ = Task.Run(LoadSettingsAsync);
+    }
+
+    partial void OnThemeIndexChanged(int value)
+    {
+        var theme = value switch
+        {
+            0 => ThemeVariant.Light,
+            1 => ThemeVariant.Dark,
+            _ => ThemeVariant.Default
+        };
+        _themeService.CurrentTheme = theme;
     }
 
     private async Task LoadSettingsAsync()

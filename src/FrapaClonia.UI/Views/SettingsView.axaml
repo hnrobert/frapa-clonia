@@ -136,6 +136,30 @@
                     </StackPanel>
                 </Border>
 
+                <!-- Appearance Settings -->
+                <Border Classes="settings-card">
+                    <StackPanel Spacing="0">
+                        <TextBlock Text="Appearance"
+                                   Classes="section-header" />
+
+                        <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto">
+                            <TextBlock Grid.Row="0" Grid.Column="0"
+                                       Text="Theme"
+                                       Classes="field-label" />
+                            <ComboBox Grid.Row="0" Grid.Column="1"
+                                      Classes="settings-dropdown"
+                                      SelectedIndex="{Binding ThemeIndex}">
+                                <ComboBoxItem>Light</ComboBoxItem>
+                                <ComboBoxItem>Dark</ComboBoxItem>
+                                <ComboBoxItem>System Default</ComboBoxItem>
+                            </ComboBox>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                       Text="Choose your preferred color theme"
+                                       Classes="hint-text" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
                 <!-- Application Mode -->
                 <Border Classes="settings-card">
                     <StackPanel Spacing="0">

@@ -1,0 +1,80 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+
+    <!-- NativeAOT: Enabled by default for smaller size -->
+    <!-- Disable with: -p:PublishAot=false if needed -->
+    <PublishAot>true</PublishAot>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>partial</TrimMode>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <IlcOptimizationPreference>Size</IlcOptimizationPreference>
+    <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
+    <StackTraceSupport>false</StackTraceSupport>
+    <IsAotCompatible>true</IsAotCompatible>
+    <EnableAotAnalyzer>true</EnableAotAnalyzer>
+
+    <!-- Workaround for NativeAOT assembly loading issues -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+
+    <!-- Copy project references to obj directory for ILCompiler -->
+    <CopyProjectReferencesToOutputDirectory>true</CopyProjectReferencesToOutputDirectory>
+    <OutDir>$(BaseOutputPath)</OutDir>
+  </PropertyGroup>
+
+  <!-- Override NativeAOT settings when explicitly disabled -->
+  <PropertyGroup Condition="'$(PublishAot)' == 'false'">
+    <PublishTrimmed>false</PublishTrimmed>
+  </PropertyGroup>
+
+  <!-- Preserve root assemblies for trimming (when enabled) -->
+  <!-- Note: Use actual assembly names, not project names -->
+  <ItemGroup Condition="'$(PublishTrimmed)' == 'true' Or '$(PublishAot)' == 'true'">
+    <TrimmerRootAssembly Include="FrapaClonia" />
+    <TrimmerRootAssembly Include="FrapaClonia.UI" />
+    <TrimmerRootAssembly Include="FrapaClonia.Core" />
+    <TrimmerRootAssembly Include="FrapaClonia.Infrastructure" />
+    <TrimmerRootAssembly Include="FrapaClonia.Domain" />
+  </ItemGroup>
+
+  <!-- Target to copy project-referenced assemblies for NativeAOT -->
+  <Target Name="CopyProjectReferencesForNativeAot" BeforeTargets="IlcCompile" Condition="'$(PublishAot)' == 'true'">
+    <Copy SourceFiles="@(ProjectReference->'%(RootDir)%(Directory)bin\$(Configuration)\$(TargetFramework)\%(Filename).dll')"
+          DestinationFolder="$(IntermediateOutputPath)"
+          SkipUnchangedFiles="true"
+          Condition="Exists('%(RootDir)%(Directory)bin\$(Configuration)\$(TargetFramework)\%(Filename).dll')" />
+  </Target>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.11" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.11" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.11" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.11" />
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.11">
+      <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+      <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.2" />
+    <PackageReference Include="Serilog" Version="4.2.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FrapaClonia.UI\FrapaClonia.UI.csproj" />
+    <ProjectReference Include="..\FrapaClonia.Infrastructure\FrapaClonia.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

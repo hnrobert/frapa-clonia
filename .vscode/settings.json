@@ -1,10 +1,15 @@
 {
     "cSpell.words": [
+        "Analyzer",
         "avalonia",
         "clonia",
+        "Color",
+        "Colors",
         "frapa",
         "frpc",
+        "mscorlib",
         "Mvvm",
+        "pointerover",
         "Serilog"
     ]
 }
