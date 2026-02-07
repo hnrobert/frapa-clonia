@@ -19,7 +19,7 @@ public class ProxyConfig
     public ClientPluginOptions? Plugin { get; set; }
 
     // Computed backend property for code convenience
-    public ProxyBackend Backend => new ProxyBackend
+    public ProxyBackend Backend => new()
     {
         LocalIP = LocalIP,
         LocalPort = LocalPort,
@@ -36,7 +36,7 @@ public class ProxyConfig
     public string? HostHeaderRewrite { get; set; }  // HTTP
     public HeaderOperations? RequestHeaders { get; set; }  // HTTP
     public HeaderOperations? ResponseHeaders { get; set; }  // HTTP
-    public string? RouteByHTTPUser { get; set; }  // HTTP, TCPMUX
+    public string? RouteByHttpUser { get; set; }  // HTTP, TCPMUX
     public string? SecretKey { get; set; }  // STCP, XTCP, SUDP
     public List<string>? AllowUsers { get; set; }  // STCP, XTCP, SUDP
     public NatTraversalConfig? NatTraversal { get; set; }  // XTCP
@@ -84,13 +84,13 @@ public class HealthCheckConfig
     public int MaxFailed { get; init; } = 1;
     public int IntervalSeconds { get; init; } = 10;
     public string? Path { get; init; }  // for http type
-    public List<HTTPHeader>? HttpHeaders { get; init; }
+    public List<HttpHeader>? HttpHeaders { get; init; }
 }
 
 /// <summary>
 /// HTTP header
 /// </summary>
-public class HTTPHeader
+public class HttpHeader
 {
     public required string Name { get; init; }
     public required string Value { get; init; }
@@ -122,14 +122,14 @@ public class ClientPluginOptions
     public string? StaticFilePrefixUrl { get; init; }
 
     // HTTPS to HTTP
-    public string? Https2httpLocalAddr { get; init; }
-    public string? Https2httpCrtPath { get; init; }
-    public string? Https2httpKeyPath { get; init; }
+    public string? Https2HttpLocalAddr { get; init; }
+    public string? Https2HttpCrtPath { get; init; }
+    public string? Https2HttpKeyPath { get; init; }
 
     // HTTP to HTTPS
-    public string? Http2httpsLocalAddr { get; init; }
-    public string? Http2httpsCrtPath { get; init; }
-    public string? Http2httpsKeyPath { get; init; }
+    public string? Http2HttpsLocalAddr { get; init; }
+    public string? Http2HttpsCrtPath { get; init; }
+    public string? Http2HttpsKeyPath { get; init; }
 }
 
 /// <summary>

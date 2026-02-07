@@ -37,7 +37,7 @@ public partial class MainWindowViewModel : ObservableObject
         NavigateToSettingsCommand = new RelayCommand(() => Navigate("settings"));
 
         // Subscribe to navigation changes
-        _navigation.PageChanged += (s, e) =>
+        _navigation.PageChanged += (_, _) =>
         {
             CurrentView = _navigation.CurrentView;
         };

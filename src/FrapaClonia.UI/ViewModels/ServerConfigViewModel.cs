@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.Domain.Models;
 using Microsoft.Extensions.Logging;
+// ReSharper disable UnusedParameterInPartialMethod
 
 namespace FrapaClonia.UI.ViewModels;
 
@@ -156,8 +157,28 @@ public partial class ServerConfigViewModel : ObservableObject
         _validationService = validationService;
         _logger = logger;
 
-        SaveCommand = new RelayCommand(async () => await SaveConfigurationAsync(), () => !IsSaving);
-        ResetCommand = new RelayCommand(async () => await LoadConfigurationAsync(), () => !IsSaving && !IsLoading);
+        SaveCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await SaveConfigurationAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Could not save configuration");
+            }
+        }, () => !IsSaving);
+        ResetCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await LoadConfigurationAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Could not load configuration");
+            }
+        }, () => !IsSaving && !IsLoading);
 
         // Load saved configuration if exists
         _ = Task.Run(LoadConfigurationAsync);
@@ -198,7 +219,7 @@ public partial class ServerConfigViewModel : ObservableObject
     public bool HasValidationError => !string.IsNullOrWhiteSpace(ValidationError);
     public bool HasValidationWarning => !string.IsNullOrWhiteSpace(ValidationWarning);
 
-    public async Task LoadConfigurationAsync()
+    private async Task LoadConfigurationAsync()
     {
         try
         {
@@ -219,7 +240,7 @@ public partial class ServerConfigViewModel : ObservableObject
                 // Load auth
                 if (cc.Auth != null)
                 {
-                    AuthMethod = cc.Auth.Method ?? "token";
+                    AuthMethod = cc.Auth.Method;
                     Token = cc.Auth.Token ?? "";
                     OidcClientId = cc.Auth.Oidc?.ClientId;
                     OidcClientSecret = cc.Auth.Oidc?.ClientSecret;
@@ -231,7 +252,7 @@ public partial class ServerConfigViewModel : ObservableObject
                 // Load transport
                 if (cc.Transport != null)
                 {
-                    TransportProtocol = cc.Transport.Protocol ?? "tcp";
+                    TransportProtocol = cc.Transport.Protocol;
                     DialServerTimeout = cc.Transport.DialServerTimeout;
                     TcpMux = cc.Transport.TcpMux;
                     HeartbeatInterval = cc.Transport.HeartbeatInterval;
@@ -245,7 +266,7 @@ public partial class ServerConfigViewModel : ObservableObject
                 // Load log
                 if (cc.Log != null)
                 {
-                    LogLevel = cc.Log.Level ?? "info";
+                    LogLevel = cc.Log.Level;
                     LogTo = cc.Log.To;
                     LogMaxDays = cc.Log.MaxDays;
                 }
@@ -266,7 +287,7 @@ public partial class ServerConfigViewModel : ObservableObject
         }
     }
 
-    public async Task<bool> SaveConfigurationAsync()
+    private async Task SaveConfigurationAsync()
     {
         try
         {
@@ -293,7 +314,7 @@ public partial class ServerConfigViewModel : ObservableObject
             if (!validation.IsValid)
             {
                 ValidationError = validation.Errors.FirstOrDefault() ?? "Validation failed";
-                return false;
+                return;
             }
 
             // Save configuration
@@ -301,13 +322,11 @@ public partial class ServerConfigViewModel : ObservableObject
             await _configurationService.SaveConfigurationAsync(configPath, config);
 
             _logger.LogInformation("Configuration saved successfully");
-            return true;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error saving configuration");
             ValidationError = "Failed to save configuration";
-            return false;
         }
         finally
         {
@@ -315,7 +334,7 @@ public partial class ServerConfigViewModel : ObservableObject
         }
     }
 
-    private async Task ValidateAsync()
+    private Task ValidateAsync()
     {
         var config = new FrpClientConfig
         {
@@ -333,6 +352,7 @@ public partial class ServerConfigViewModel : ObservableObject
         IsValid = validation.IsValid;
         ValidationError = validation.Errors.FirstOrDefault();
         ValidationWarning = validation.Warnings.FirstOrDefault();
+        return Task.CompletedTask;
     }
 
     private AuthConfig? CreateAuthConfig()
@@ -352,14 +372,12 @@ public partial class ServerConfigViewModel : ObservableObject
                 }
             };
         }
-        else
+
+        return string.IsNullOrWhiteSpace(Token) ? null : new AuthConfig
         {
-            return string.IsNullOrWhiteSpace(Token) ? null : new AuthConfig
-            {
-                Method = "token",
-                Token = Token
-            };
-        }
+            Method = "token",
+            Token = Token
+        };
     }
 
     private ClientTransportConfig CreateTransportConfig()
@@ -378,7 +396,7 @@ public partial class ServerConfigViewModel : ObservableObject
         };
     }
 
-    private LogConfig? CreateLogConfig()
+    private LogConfig CreateLogConfig()
     {
         return new LogConfig
         {

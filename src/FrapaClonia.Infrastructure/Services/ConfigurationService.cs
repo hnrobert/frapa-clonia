@@ -1,4 +1,5 @@
 using FrapaClonia.Core.Interfaces;
+using FrapaClonia.Domain;
 using FrapaClonia.Domain.Models;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
@@ -8,27 +9,19 @@ namespace FrapaClonia.Infrastructure.Services;
 /// <summary>
 /// Service for managing frp client configurations
 /// </summary>
-public class ConfigurationService : IConfigurationService
+public class ConfigurationService(ILogger<ConfigurationService> logger, ITomlSerializer tomlSerializer)
+    : IConfigurationService
 {
-    private readonly ILogger<ConfigurationService> _logger;
-    private readonly ITomlSerializer _tomlSerializer;
-
-    public ConfigurationService(ILogger<ConfigurationService> logger, ITomlSerializer tomlSerializer)
-    {
-        _logger = logger;
-        _tomlSerializer = tomlSerializer;
-    }
-
     public Task<FrpClientConfig?> LoadConfigurationAsync(string filePath, CancellationToken cancellationToken = default)
     {
         try
         {
-            _logger.LogInformation("Loading configuration from {FilePath}", filePath);
-            return _tomlSerializer.DeserializeFromFileAsync(filePath, cancellationToken);
+            logger.LogInformation("Loading configuration from {FilePath}", filePath);
+            return tomlSerializer.DeserializeFromFileAsync(filePath, cancellationToken);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error loading configuration from {FilePath}", filePath);
+            logger.LogError(ex, "Error loading configuration from {FilePath}", filePath);
             return Task.FromResult<FrpClientConfig?>(null);
         }
     }
@@ -37,12 +30,12 @@ public class ConfigurationService : IConfigurationService
     {
         try
         {
-            _logger.LogInformation("Saving configuration to {FilePath}", filePath);
-            return _tomlSerializer.SerializeToFileAsync(filePath, configuration, cancellationToken);
+            logger.LogInformation("Saving configuration to {FilePath}", filePath);
+            return tomlSerializer.SerializeToFileAsync(filePath, configuration, cancellationToken);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error saving configuration to {FilePath}", filePath);
+            logger.LogError(ex, "Error saving configuration to {FilePath}", filePath);
             return Task.CompletedTask;
         }
     }
@@ -51,17 +44,12 @@ public class ConfigurationService : IConfigurationService
     {
         try
         {
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
-            var json = JsonSerializer.Serialize(configuration, options);
+            var json = JsonSerializer.Serialize(configuration, FrpClientConfigContext.Default.FrpClientConfig);
             return Task.FromResult(json);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error exporting configuration to JSON");
+            logger.LogError(ex, "Error exporting configuration to JSON");
             return Task.FromResult("{}");
         }
     }
@@ -70,17 +58,12 @@ public class ConfigurationService : IConfigurationService
     {
         try
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
-            var config = JsonSerializer.Deserialize<FrpClientConfig>(json, options);
+            var config = JsonSerializer.Deserialize(json, FrpClientConfigContext.Default.FrpClientConfig);
             return Task.FromResult(config);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error importing configuration from JSON");
+            logger.LogError(ex, "Error importing configuration from JSON");
             return Task.FromResult<FrpClientConfig?>(null);
         }
     }

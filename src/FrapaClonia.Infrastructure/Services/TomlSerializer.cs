@@ -1,24 +1,15 @@
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.Domain.Models;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace FrapaClonia.Infrastructure.Services;
 
 /// <summary>
 /// Service for serializing/deserializing frpc.toml files
 /// </summary>
-public class TomlSerializer : ITomlSerializer
+public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
 {
-    private readonly ILogger<TomlSerializer> _logger;
-
-    public TomlSerializer(ILogger<TomlSerializer> logger)
-    {
-        _logger = logger;
-    }
-
     public Task<FrpClientConfig?> DeserializeAsync(string tomlContent, CancellationToken cancellationToken = default)
     {
         try
@@ -28,7 +19,7 @@ public class TomlSerializer : ITomlSerializer
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deserializing TOML content");
+            logger.LogError(ex, "Error deserializing TOML content");
             return Task.FromResult<FrpClientConfig?>(null);
         }
     }
@@ -38,12 +29,12 @@ public class TomlSerializer : ITomlSerializer
         try
         {
             var tomlContent = File.ReadAllText(filePath);
-            _logger.LogInformation("Deserializing TOML file at {FilePath}", filePath);
+            logger.LogInformation("Deserializing TOML file at {FilePath}", filePath);
             return DeserializeAsync(tomlContent, cancellationToken);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error reading TOML file at {FilePath}", filePath);
+            logger.LogError(ex, "Error reading TOML file at {FilePath}", filePath);
             return Task.FromResult<FrpClientConfig?>(null);
         }
     }
@@ -78,7 +69,7 @@ public class TomlSerializer : ITomlSerializer
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error serializing configuration to TOML");
+            logger.LogError(ex, "Error serializing configuration to TOML");
             return Task.FromResult(string.Empty);
         }
     }
@@ -95,12 +86,12 @@ public class TomlSerializer : ITomlSerializer
 
             var content = SerializeAsync(configuration, cancellationToken).Result;
             File.WriteAllText(filePath, content);
-            _logger.LogInformation("Serialized configuration to file at {FilePath}", filePath);
+            logger.LogInformation("Serialized configuration to file at {FilePath}", filePath);
             return Task.CompletedTask;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error writing TOML file at {FilePath}", filePath);
+            logger.LogError(ex, "Error writing TOML file at {FilePath}", filePath);
             return Task.CompletedTask;
         }
     }
@@ -223,7 +214,7 @@ public class TomlSerializer : ITomlSerializer
         }
     }
 
-    private void SetProxyValue(ProxyConfig proxy, string key, object value)
+    private static void SetProxyValue(ProxyConfig proxy, string key, object value)
     {
         switch (key)
         {
@@ -238,7 +229,7 @@ public class TomlSerializer : ITomlSerializer
         }
     }
 
-    private void SetVisitorValue(VisitorConfig visitor, string key, object value)
+    private static void SetVisitorValue(VisitorConfig visitor, string key, object value)
     {
         switch (key)
         {
@@ -251,7 +242,7 @@ public class TomlSerializer : ITomlSerializer
         }
     }
 
-    private void SetAuthValue(AuthConfig auth, string key, object value)
+    private static void SetAuthValue(AuthConfig auth, string key, object value)
     {
         switch (key)
         {
@@ -261,7 +252,7 @@ public class TomlSerializer : ITomlSerializer
         }
     }
 
-    private void SetCommonConfigValue(ClientCommonConfig config, string key, object value)
+    private static void SetCommonConfigValue(ClientCommonConfig config, string key, object value)
     {
         switch (key)
         {
@@ -332,7 +323,7 @@ public class TomlSerializer : ITomlSerializer
         return sb.ToString().TrimEnd();
     }
 
-    private string EscapeString(string? value)
+    private static string EscapeString(string? value)
     {
         if (value == null) return "";
         return value.Replace("\\", "\\\\").Replace("\"", "\\\"");

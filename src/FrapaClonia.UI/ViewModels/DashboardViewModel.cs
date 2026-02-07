@@ -37,6 +37,7 @@ public partial class DashboardViewModel : ObservableObject
     public IRelayCommand NavigateToServerConfigCommand { get; }
     public IRelayCommand NavigateToProxyListCommand { get; }
     public IRelayCommand NavigateToDeploymentCommand { get; }
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public IRelayCommand NavigateToSettingsCommand { get; }
     public IRelayCommand NavigateToLogsCommand { get; }
     public IRelayCommand StartFrpcCommand { get; }
@@ -56,9 +57,39 @@ public partial class DashboardViewModel : ObservableObject
         NavigateToSettingsCommand = new RelayCommand(() => _logger.LogInformation("Navigate to Settings"));
         NavigateToLogsCommand = new RelayCommand(() => _logger.LogInformation("Navigate to Logs"));
 
-        StartFrpcCommand = new RelayCommand(async () => await StartFrpcAsync(), () => !IsFrpcRunning);
-        StopFrpcCommand = new RelayCommand(async () => await StopFrpcAsync(), () => IsFrpcRunning);
-        RestartFrpcCommand = new RelayCommand(async () => await RestartFrpcAsync(), () => IsFrpcRunning);
+        StartFrpcCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await StartFrpcAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Could not start frpc");
+            }
+        }, () => !IsFrpcRunning);
+        StopFrpcCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await StopFrpcAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Could not stop frpc");
+            }
+        }, () => IsFrpcRunning);
+        RestartFrpcCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await RestartFrpcAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Could not restart frpc");
+            }
+        }, () => IsFrpcRunning);
 
         // Subscribe to process state changes
         _frpcProcessService.ProcessStateChanged += OnProcessStateChanged;

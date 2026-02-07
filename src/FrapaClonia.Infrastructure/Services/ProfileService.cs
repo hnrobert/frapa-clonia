@@ -6,14 +6,10 @@ namespace FrapaClonia.Infrastructure.Services;
 /// <summary>
 /// Service for managing configuration profiles
 /// </summary>
-public class ProfileService : IProfileService
+public class ProfileService(ILogger<ProfileService> logger) : IProfileService
 {
-    private readonly ILogger<ProfileService> _logger;
-
-    public ProfileService(ILogger<ProfileService> logger)
-    {
-        _logger = logger;
-    }
+    // ReSharper disable once UnusedMember.Local
+    private readonly ILogger<ProfileService> _logger = logger;
 
     public Task<IReadOnlyList<ProfileInfo>> GetProfilesAsync(CancellationToken cancellationToken = default)
     {

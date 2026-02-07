@@ -488,7 +488,7 @@
                             </StackPanel>
 
                             <!-- HTTPS to HTTP Plugin -->
-                            <StackPanel IsVisible="{Binding PluginHttps2httpLocalAddr, FallbackValue=False}" Spacing="16">
+                            <StackPanel IsVisible="{Binding PluginHttps2HttpLocalAddr, FallbackValue=False}" Spacing="16">
                                 <TextBlock Text="HTTPS to HTTP Plugin Settings"
                                            FontSize="14"
                                            FontWeight="SemiBold"
@@ -496,28 +496,28 @@
                                 <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="16">
                                     <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
                                         <TextBlock Text="Local Address" Classes="fieldLabel" />
-                                        <TextBox Text="{Binding PluginHttps2httpLocalAddr}"
+                                        <TextBox Text="{Binding PluginHttps2HttpLocalAddr}"
                                                  Classes="fieldControl"
                                                  Watermark="127.0.0.1:80"
-                                                 Name="PluginHttps2httpLocalAddrTextBox" />
+                                                 Name="PluginHttps2HttpLocalAddrTextBox" />
                                     </StackPanel>
                                     <StackPanel Grid.Row="1" Grid.Column="0">
                                         <TextBlock Text="CRT Path" Classes="fieldLabel" />
-                                        <TextBox Text="{Binding PluginHttps2httpCrtPath}"
+                                        <TextBox Text="{Binding PluginHttps2HttpCrtPath}"
                                                  Classes="fieldControl"
-                                                 Name="PluginHttps2httpCrtPathTextBox" />
+                                                 Name="PluginHttps2HttpCrtPathTextBox" />
                                     </StackPanel>
                                     <StackPanel Grid.Row="1" Grid.Column="1">
                                         <TextBlock Text="Key Path" Classes="fieldLabel" />
-                                        <TextBox Text="{Binding PluginHttps2httpKeyPath}"
+                                        <TextBox Text="{Binding PluginHttps2HttpKeyPath}"
                                                  Classes="fieldControl"
-                                                 Name="PluginHttps2httpKeyPathTextBox" />
+                                                 Name="PluginHttps2HttpKeyPathTextBox" />
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
 
                             <!-- HTTP to HTTPS Plugin -->
-                            <StackPanel IsVisible="{Binding PluginHttp2httpsLocalAddr, FallbackValue=False}" Spacing="16">
+                            <StackPanel IsVisible="{Binding PluginHttp2HttpsLocalAddr, FallbackValue=False}" Spacing="16">
                                 <TextBlock Text="HTTP to HTTPS Plugin Settings"
                                            FontSize="14"
                                            FontWeight="SemiBold"
@@ -525,22 +525,22 @@
                                 <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="16">
                                     <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
                                         <TextBlock Text="Local Address" Classes="fieldLabel" />
-                                        <TextBox Text="{Binding PluginHttp2httpsLocalAddr}"
+                                        <TextBox Text="{Binding PluginHttp2HttpsLocalAddr}"
                                                  Classes="fieldControl"
                                                  Watermark="127.0.0.1:443"
-                                                 Name="PluginHttp2httpsLocalAddrTextBox" />
+                                                 Name="PluginHttp2HttpsLocalAddrTextBox" />
                                     </StackPanel>
                                     <StackPanel Grid.Row="1" Grid.Column="0">
                                         <TextBlock Text="CRT Path" Classes="fieldLabel" />
-                                        <TextBox Text="{Binding PluginHttp2httpsCrtPath}"
+                                        <TextBox Text="{Binding PluginHttp2HttpsCrtPath}"
                                                  Classes="fieldControl"
-                                                 Name="PluginHttp2httpsCrtPathTextBox" />
+                                                 Name="PluginHttp2HttpsCrtPathTextBox" />
                                     </StackPanel>
                                     <StackPanel Grid.Row="1" Grid.Column="1">
                                         <TextBlock Text="Key Path" Classes="fieldLabel" />
-                                        <TextBox Text="{Binding PluginHttp2httpsKeyPath}"
+                                        <TextBox Text="{Binding PluginHttp2HttpsKeyPath}"
                                                  Classes="fieldControl"
-                                                 Name="PluginHttp2httpsKeyPathTextBox" />
+                                                 Name="PluginHttp2HttpsKeyPathTextBox" />
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>

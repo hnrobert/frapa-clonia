@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.Domain.Models;
 using Microsoft.Extensions.Logging;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace FrapaClonia.UI.ViewModels;
 
@@ -113,22 +114,22 @@ public partial class ProxyEditorViewModel : ObservableObject
     private string? _pluginStaticFilePrefixUrl;
 
     [ObservableProperty]
-    private string? _pluginHttps2httpLocalAddr;
+    private string? _pluginHttps2HttpLocalAddr;
 
     [ObservableProperty]
-    private string? _pluginHttps2httpCrtPath;
+    private string? _pluginHttps2HttpCrtPath;
 
     [ObservableProperty]
-    private string? _pluginHttps2httpKeyPath;
+    private string? _pluginHttps2HttpKeyPath;
 
     [ObservableProperty]
-    private string? _pluginHttp2httpsLocalAddr;
+    private string? _pluginHttp2HttpsLocalAddr;
 
     [ObservableProperty]
-    private string? _pluginHttp2httpsCrtPath;
+    private string? _pluginHttp2HttpsCrtPath;
 
     [ObservableProperty]
-    private string? _pluginHttp2httpsKeyPath;
+    private string? _pluginHttp2HttpsKeyPath;
 
     [ObservableProperty]
     private bool _isValid = true;
@@ -144,29 +145,17 @@ public partial class ProxyEditorViewModel : ObservableObject
     public IRelayCommand AddLocationCommand { get; }
     public IRelayCommand AddAllowUserCommand { get; }
 
-    public List<string> ProxyTypes { get; } = new()
-    {
-        "tcp", "udp", "http", "https", "stcp", "xtcp", "sudp", "tcpmux"
-    };
+    public List<string> ProxyTypes { get; } = ["tcp", "udp", "http", "https", "stcp", "xtcp", "sudp", "tcpmux"];
 
-    public List<string> HealthCheckTypes { get; } = new()
-    {
-        "tcp", "http"
-    };
+    public List<string> HealthCheckTypes { get; } = ["tcp", "http"];
 
-    public List<string> BandwidthLimitModes { get; } = new()
-    {
-        "client", "server"
-    };
+    public List<string> BandwidthLimitModes { get; } = ["client", "server"];
 
-    public List<string> PluginTypes { get; } = new()
-    {
-        "http_proxy", "socks5", "static_file", "https2http", "http2https"
-    };
+    public List<string> PluginTypes { get; } = ["http_proxy", "socks5", "static_file", "https2http", "http2https"];
 
-    public bool IsTcpOrUdp => ProxyType == "tcp" || ProxyType == "udp";
-    public bool IsHttpOrHttps => ProxyType == "http" || ProxyType == "https";
-    public bool IsStcpOrXtcpOrSudp => ProxyType == "stcp" || ProxyType == "xtcp" || ProxyType == "sudp";
+    public bool IsTcpOrUdp => ProxyType is "tcp" or "udp";
+    public bool IsHttpOrHttps => ProxyType is "http" or "https";
+    public bool IsStcpOrXtcpOrSudp => ProxyType is "stcp" or "xtcp" or "sudp";
     public bool IsTcpmux => ProxyType == "tcpmux";
     public bool NeedsRemotePort => IsTcpOrUdp;
     public bool NeedsDomain => IsHttpOrHttps || IsTcpmux;
@@ -183,10 +172,20 @@ public partial class ProxyEditorViewModel : ObservableObject
         _validationService = validationService;
         _originalProxy = proxyToEdit;
 
-        SaveCommand = new RelayCommand(async () => await SaveAsync(), () => !IsSaving);
+        SaveCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await SaveAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error saving proxy");
+            }
+        }, () => !IsSaving);
         CancelCommand = new RelayCommand(() => _logger.LogInformation("Cancel edit"));
-        AddLocationCommand = new RelayCommand(() => AddLocation());
-        AddAllowUserCommand = new RelayCommand(() => AddAllowUser());
+        AddLocationCommand = new RelayCommand(AddLocation);
+        AddAllowUserCommand = new RelayCommand(AddAllowUser);
 
         if (proxyToEdit != null)
         {
@@ -194,6 +193,7 @@ public partial class ProxyEditorViewModel : ObservableObject
         }
     }
 
+    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnProxyTypeChanged(string value)
     {
         OnPropertyChanged(nameof(IsTcpOrUdp));
@@ -205,22 +205,23 @@ public partial class ProxyEditorViewModel : ObservableObject
         _ = ValidateAsync();
     }
 
+    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnPluginTypeChanged(string? value)
     {
         OnPropertyChanged(nameof(HasPlugin));
         OnPropertyChanged(nameof(IsHttpProxyPlugin));
         OnPropertyChanged(nameof(IsSocks5Plugin));
         OnPropertyChanged(nameof(IsStaticFilePlugin));
-        OnPropertyChanged(nameof(IsHttps2httpPlugin));
-        OnPropertyChanged(nameof(IsHttp2httpsPlugin));
+        OnPropertyChanged(nameof(IsHttps2HTTPPlugin));
+        OnPropertyChanged(nameof(IsHttp2HttpsPlugin));
     }
 
     public bool HasPlugin => !string.IsNullOrWhiteSpace(PluginType);
     public bool IsHttpProxyPlugin => PluginType == "http_proxy";
     public bool IsSocks5Plugin => PluginType == "socks5";
     public bool IsStaticFilePlugin => PluginType == "static_file";
-    public bool IsHttps2httpPlugin => PluginType == "https2http";
-    public bool IsHttp2httpsPlugin => PluginType == "http2https";
+    public bool IsHttps2HTTPPlugin => PluginType == "https2http";
+    public bool IsHttp2HttpsPlugin => PluginType == "http2https";
 
     private void LoadFromProxy(ProxyConfig proxy)
     {
@@ -246,7 +247,7 @@ public partial class ProxyEditorViewModel : ObservableObject
         if (proxy.HealthCheck != null)
         {
             HealthCheckEnabled = true;
-            HealthCheckType = proxy.HealthCheck.Type ?? "tcp";
+            HealthCheckType = proxy.HealthCheck.Type;
             HealthCheckTimeoutSeconds = proxy.HealthCheck.TimeoutSeconds;
             HealthCheckMaxFailed = proxy.HealthCheck.MaxFailed;
             HealthCheckIntervalSeconds = proxy.HealthCheck.IntervalSeconds;
@@ -264,21 +265,22 @@ public partial class ProxyEditorViewModel : ObservableObject
             PluginSocks5Url = proxy.Plugin.Socks5Url;
             PluginStaticFilePath = proxy.Plugin.StaticFileLocalPath;
             PluginStaticFilePrefixUrl = proxy.Plugin.StaticFilePrefixUrl;
-            PluginHttps2httpLocalAddr = proxy.Plugin.Https2httpLocalAddr;
-            PluginHttps2httpCrtPath = proxy.Plugin.Https2httpCrtPath;
-            PluginHttps2httpKeyPath = proxy.Plugin.Https2httpKeyPath;
-            PluginHttp2httpsLocalAddr = proxy.Plugin.Http2httpsLocalAddr;
-            PluginHttp2httpsCrtPath = proxy.Plugin.Http2httpsCrtPath;
-            PluginHttp2httpsKeyPath = proxy.Plugin.Http2httpsKeyPath;
+            PluginHttps2HttpLocalAddr = proxy.Plugin.Https2HttpLocalAddr;
+            PluginHttps2HttpCrtPath = proxy.Plugin.Https2HttpCrtPath;
+            PluginHttps2HttpKeyPath = proxy.Plugin.Https2HttpKeyPath;
+            PluginHttp2HttpsLocalAddr = proxy.Plugin.Http2HttpsLocalAddr;
+            PluginHttp2HttpsCrtPath = proxy.Plugin.Http2HttpsCrtPath;
+            PluginHttp2HttpsKeyPath = proxy.Plugin.Http2HttpsKeyPath;
         }
     }
 
-    private async Task ValidateAsync()
+    private Task ValidateAsync()
     {
         var proxy = CreateProxyConfig();
         var validation = _validationService.ValidateProxy(proxy);
         IsValid = validation.IsValid;
         ValidationError = validation.Errors.FirstOrDefault();
+        return Task.CompletedTask;
     }
 
     private ProxyConfig CreateProxyConfig()
@@ -293,23 +295,23 @@ public partial class ProxyEditorViewModel : ObservableObject
                 Socks5Url = PluginSocks5Url,
                 StaticFileLocalPath = PluginStaticFilePath,
                 StaticFilePrefixUrl = PluginStaticFilePrefixUrl,
-                Https2httpLocalAddr = PluginHttps2httpLocalAddr,
-                Https2httpCrtPath = PluginHttps2httpCrtPath,
-                Https2httpKeyPath = PluginHttps2httpKeyPath,
-                Http2httpsLocalAddr = PluginHttp2httpsLocalAddr,
-                Http2httpsCrtPath = PluginHttp2httpsCrtPath,
-                Http2httpsKeyPath = PluginHttp2httpsKeyPath
+                Https2HttpLocalAddr = PluginHttps2HttpLocalAddr,
+                Https2HttpCrtPath = PluginHttps2HttpCrtPath,
+                Https2HttpKeyPath = PluginHttps2HttpKeyPath,
+                Http2HttpsLocalAddr = PluginHttp2HttpsLocalAddr,
+                Http2HttpsCrtPath = PluginHttp2HttpsCrtPath,
+                Http2HttpsKeyPath = PluginHttp2HttpsKeyPath
             };
         }
 
-        List<HTTPHeader>? httpHeaders = null;
+        List<HttpHeader>? httpHeaders = null;
         if (!string.IsNullOrWhiteSpace(HealthCheckHeaders))
         {
             httpHeaders = HealthCheckHeaders.Split('\n', StringSplitOptions.RemoveEmptyEntries)
                 .Select(line =>
                 {
                     var parts = line.Split(':', 2);
-                    return parts.Length == 2 ? new HTTPHeader { Name = parts[0].Trim(), Value = parts[1].Trim() } : null;
+                    return parts.Length == 2 ? new HttpHeader { Name = parts[0].Trim(), Value = parts[1].Trim() } : null;
                 })
                 .Where(h => h != null)
                 .ToList()!;
@@ -351,7 +353,7 @@ public partial class ProxyEditorViewModel : ObservableObject
         };
     }
 
-    private List<string>? ParseList(string? value)
+    private static List<string>? ParseList(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
             return null;
@@ -359,7 +361,7 @@ public partial class ProxyEditorViewModel : ObservableObject
         return value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
     }
 
-    public async Task SaveAsync()
+    private async Task SaveAsync()
     {
         try
         {

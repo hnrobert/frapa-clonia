@@ -7,14 +7,10 @@ namespace FrapaClonia.Infrastructure.Services;
 /// <summary>
 /// Service for validating frp configurations
 /// </summary>
-public class ValidationService : IValidationService
+public class ValidationService(ILogger<ValidationService> logger) : IValidationService
 {
-    private readonly ILogger<ValidationService> _logger;
-
-    public ValidationService(ILogger<ValidationService> logger)
-    {
-        _logger = logger;
-    }
+    // ReSharper disable once UnusedMember.Local
+    private readonly ILogger<ValidationService> _logger = logger;
 
     public ValidationResult ValidateConfiguration(FrpClientConfig configuration)
     {
@@ -64,13 +60,13 @@ public class ValidationService : IValidationService
         }
 
         // Port validation
-        if (proxy.LocalPort <= 0 || proxy.LocalPort > 65535)
+        if (proxy.LocalPort is <= 0 or > 65535)
         {
             errors.Add($"Invalid local port: {proxy.LocalPort}. Port must be between 1 and 65535");
         }
 
         // Type-specific validation
-        var type = proxy.Type?.ToLower() ?? "";
+        var type = proxy.Type.ToLower();
         switch (type)
         {
             case "tcp":
@@ -128,7 +124,7 @@ public class ValidationService : IValidationService
         }
 
         // Server port validation
-        if (serverConfig.ServerPort <= 0 || serverConfig.ServerPort > 65535)
+        if (serverConfig.ServerPort is <= 0 or > 65535)
         {
             errors.Add($"Invalid server port: {serverConfig.ServerPort}. Port must be between 1 and 65535");
         }
@@ -181,12 +177,12 @@ public class ValidationService : IValidationService
         };
     }
 
-    private bool IsValidIpAddress(string ip)
+    private static bool IsValidIpAddress(string ip)
     {
         return System.Net.IPAddress.TryParse(ip, out _);
     }
 
-    private bool IsValidHostname(string hostname)
+    private static bool IsValidHostname(string hostname)
     {
         if (hostname.Length > 253)
             return false;
@@ -197,7 +193,7 @@ public class ValidationService : IValidationService
 
         return parts.All(part =>
         {
-            if (part.Length < 1 || part.Length > 63)
+            if (part.Length is < 1 or > 63)
                 return false;
 
             // Each part must start and end with alphanumeric character

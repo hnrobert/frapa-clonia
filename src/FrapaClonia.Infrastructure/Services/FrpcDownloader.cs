@@ -2,7 +2,6 @@ using FrapaClonia.Core.Interfaces;
 using Microsoft.Extensions.Logging;
 using Octokit;
 using System.Runtime.InteropServices;
-using System.Text.Json;
 using IO = System.IO;
 
 namespace FrapaClonia.Infrastructure.Services;
@@ -10,22 +9,16 @@ namespace FrapaClonia.Infrastructure.Services;
 /// <summary>
 /// Service for downloading frpc binaries
 /// </summary>
-public class FrpcDownloader : IFrpcDownloader
+public class FrpcDownloader(ILogger<FrpcDownloader> logger) : IFrpcDownloader
 {
-    private readonly ILogger<FrpcDownloader> _logger;
-    private readonly GitHubClient _gitHubClient;
-
-    public FrpcDownloader(ILogger<FrpcDownloader> logger)
-    {
-        _logger = logger;
-        _gitHubClient = new GitHubClient(new ProductHeaderValue("FrapaClonia"));
-    }
+    private static readonly HttpClient HttpClient = new();
+    private readonly GitHubClient _gitHubClient = new(new ProductHeaderValue("FrapaClonia"));
 
     public async Task<IReadOnlyList<FrpRelease>> GetAvailableVersionsAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            _logger.LogInformation("Fetching available frpc versions from GitHub");
+            logger.LogInformation("Fetching available frpc versions from GitHub");
             var releases = await _gitHubClient.Repository.Release.GetAll("fatedier", "frp");
 
             return releases.Select(r => new FrpRelease
@@ -46,7 +39,7 @@ public class FrpcDownloader : IFrpcDownloader
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error fetching available versions from GitHub");
+            logger.LogError(ex, "Error fetching available versions from GitHub");
             return new List<FrpRelease>();
         }
     }
@@ -62,7 +55,7 @@ public class FrpcDownloader : IFrpcDownloader
 
         if (asset == null)
         {
-            _logger.LogWarning("Could not find matching asset for platform {Platform} and architecture {Arch}", platform, arch);
+            logger.LogWarning("Could not find matching asset for platform {Platform} and architecture {Arch}", platform, arch);
             // Try to find any compatible asset
             asset = release.Assets.FirstOrDefault(a => a.Platform == platform)
                 ?? release.Assets.FirstOrDefault();
@@ -73,7 +66,7 @@ public class FrpcDownloader : IFrpcDownloader
             throw new InvalidOperationException($"No suitable asset found in release {release.TagName}");
         }
 
-        _logger.LogInformation("Downloading frpc {Version} for {Platform}-{Arch} from {Url}",
+        logger.LogInformation("Downloading frpc {Version} for {Platform}-{Arch} from {Url}",
             release.Version, platform, arch, asset.DownloadUrl);
 
         // Ensure target directory exists
@@ -83,16 +76,15 @@ public class FrpcDownloader : IFrpcDownloader
         var filePath = Path.Combine(targetDirectory, fileName);
 
         // Download the file
-        using var httpClient = new HttpClient();
-        var response = await httpClient.GetAsync(asset.DownloadUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        var response = await HttpClient.GetAsync(asset.DownloadUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var totalBytes = response.Content.Headers.ContentLength ?? 0;
         var buffer = new byte[8192];
         var totalRead = 0L;
 
-        using var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using var fileStream = new FileStream(filePath, IO.FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
+        await using var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        await using var fileStream = new FileStream(filePath, IO.FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
 
         int bytesRead;
         while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
@@ -106,7 +98,7 @@ public class FrpcDownloader : IFrpcDownloader
             }
         }
 
-        _logger.LogInformation("Downloaded frpc to {FilePath}", filePath);
+        logger.LogInformation("Downloaded frpc to {FilePath}", filePath);
         return filePath;
     }
 
@@ -114,7 +106,7 @@ public class FrpcDownloader : IFrpcDownloader
     {
         try
         {
-            _logger.LogInformation("Fetching latest frpc version from GitHub");
+            logger.LogInformation("Fetching latest frpc version from GitHub");
             var latest = await _gitHubClient.Repository.Release.GetLatest("fatedier", "frp");
 
             return new FrpRelease
@@ -135,7 +127,7 @@ public class FrpcDownloader : IFrpcDownloader
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error fetching latest version from GitHub");
+            logger.LogError(ex, "Error fetching latest version from GitHub");
             return null;
         }
     }
@@ -144,7 +136,7 @@ public class FrpcDownloader : IFrpcDownloader
     {
         try
         {
-            _logger.LogInformation("Downloading frpc from mirror {MirrorUrl}", mirrorUrl);
+            logger.LogInformation("Downloading frpc from mirror {MirrorUrl}", mirrorUrl);
 
             // Ensure target directory exists
             Directory.CreateDirectory(targetDirectory);
@@ -161,8 +153,8 @@ public class FrpcDownloader : IFrpcDownloader
             var buffer = new byte[8192];
             var totalRead = 0L;
 
-            using var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-            using var fileStream = new FileStream(filePath, IO.FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
+            await using var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            await using var fileStream = new FileStream(filePath, IO.FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
 
             int bytesRead;
             while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
@@ -176,17 +168,17 @@ public class FrpcDownloader : IFrpcDownloader
                 }
             }
 
-            _logger.LogInformation("Downloaded frpc from mirror to {FilePath}", filePath);
+            logger.LogInformation("Downloaded frpc from mirror to {FilePath}", filePath);
             return filePath;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error downloading frpc from mirror {MirrorUrl}", mirrorUrl);
+            logger.LogError(ex, "Error downloading frpc from mirror {MirrorUrl}", mirrorUrl);
             throw;
         }
     }
 
-    private string GetPlatformIdentifier()
+    private static string GetPlatformIdentifier()
     {
         return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "windows" :
                RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "darwin" :
@@ -194,7 +186,7 @@ public class FrpcDownloader : IFrpcDownloader
                "unknown";
     }
 
-    private string GetPlatformFromAssetName(string assetName)
+    private static string GetPlatformFromAssetName(string assetName)
     {
         var lower = assetName.ToLowerInvariant();
         if (lower.Contains("windows") || lower.Contains("win")) return "windows";
@@ -203,7 +195,7 @@ public class FrpcDownloader : IFrpcDownloader
         return "unknown";
     }
 
-    private List<string> GetArchitectureFromAssetName(string assetName)
+    private static List<string> GetArchitectureFromAssetName(string assetName)
     {
         var lower = assetName.ToLowerInvariant();
         var archs = new List<string>();
@@ -214,6 +206,6 @@ public class FrpcDownloader : IFrpcDownloader
         if (lower.Contains("386") || lower.Contains("i386")) archs.Add("386");
         if (lower.Contains("mips")) archs.Add("mips");
 
-        return archs.Count > 0 ? archs : new List<string> { "unknown" };
+        return archs.Count > 0 ? archs : ["unknown"];
     }
 }

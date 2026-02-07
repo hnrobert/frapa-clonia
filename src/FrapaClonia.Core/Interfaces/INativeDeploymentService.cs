@@ -28,7 +28,7 @@ public interface INativeDeploymentService
     /// <summary>
     /// Gets the deployed frpc binary path
     /// </summary>
-    Task<string?> GetDeployedBinaryPathAsync(CancellationToken cancellationToken = default);
+    Task<string> GetDeployedBinaryPathAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Sets executable permissions on the frpc binary (Unix-like systems)
