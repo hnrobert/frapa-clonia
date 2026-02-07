@@ -1,0 +1,161 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <!-- =============================================
+         SPACING TOKENS
+         ============================================= -->
+
+    <!-- Base spacing unit (4px grid system) -->
+    <sys:Double x:Key="SpacingUnit">4</sys:Double>
+
+    <!-- Predefined spacing values -->
+    <sys:Double x:Key="SpacingXS">4</sys:Double>   <!-- 1x -->
+    <sys:Double x:Key="SpacingS">8</sys:Double>    <!-- 2x -->
+    <sys:Double x:Key="SpacingM">12</sys:Double>   <!-- 3x -->
+    <sys:Double x:Key="SpacingL">16</sys:Double>   <!-- 4x -->
+    <sys:Double x:Key="SpacingXL">24</sys:Double>  <!-- 6x -->
+    <sys:Double x:Key="SpacingXXL">32</sys:Double> <!-- 8x -->
+    <sys:Double x:Key="SpacingXXXL">48</sys:Double><!-- 12x -->
+
+    <!-- Thickness helpers -->
+    <Thickness x:Key="ThicknessNone">0</Thickness>
+    <Thickness x:Key="ThicknessXS">2</Thickness>
+    <Thickness x:Key="ThicknessS">4</Thickness>
+    <Thickness x:Key="ThicknessM">8</Thickness>
+    <Thickness x:Key="ThicknessL">16</Thickness>
+    <Thickness x:Key="ThicknessXL">24</Thickness>
+
+    <Thickness x:Key="ThicknessTopS">0,4,0,0</Thickness>
+    <Thickness x:Key="ThicknessTopM">0,8,0,0</Thickness>
+    <Thickness x:Key="ThicknessTopL">0,16,0,0</Thickness>
+
+    <Thickness x:Key="ThicknessTopXS">0,2,0,0</Thickness>
+    <Thickness x:Key="ThicknessBottomXS">0,0,0,2</Thickness>
+
+    <Thickness x:Key="ThicknessBottomS">0,0,0,4</Thickness>
+    <Thickness x:Key="ThicknessBottomM">0,0,0,8</Thickness>
+    <Thickness x:Key="ThicknessBottomL">0,0,0,16</Thickness>
+
+    <Thickness x:Key="ThicknessLeftS">4,0,0,0</Thickness>
+    <Thickness x:Key="ThicknessLeftM">8,0,0,0</Thickness>
+
+    <Thickness x:Key="ThicknessRightS">0,0,4,0</Thickness>
+    <Thickness x:Key="ThicknessRightM">0,0,8,0</Thickness>
+    <Thickness x:Key="ThicknessRightL">0,0,16,0</Thickness>
+
+    <Thickness x:Key="ThicknessHorizontalS">4,0,4,0</Thickness>
+    <Thickness x:Key="ThicknessHorizontalM">8,0,8,0</Thickness>
+    <Thickness x:Key="ThicknessHorizontalL">16,0,16,0</Thickness>
+
+    <Thickness x:Key="ThicknessVerticalS">0,4,0,4</Thickness>
+    <Thickness x:Key="ThicknessVerticalM">0,8,0,8</Thickness>
+    <Thickness x:Key="ThicknessVerticalL">0,16,0,16</Thickness>
+
+    <Thickness x:Key="ThicknessCard">16</Thickness>
+    <Thickness x:Key="ThicknessCardCompact">12</Thickness>
+    <Thickness x:Key="ThicknessCardSparse">24</Thickness>
+
+    <!-- =============================================
+         CORNER RADIUS TOKENS
+         ============================================= -->
+
+    <CornerRadius x:Key="CornerRadiusNone">0</CornerRadius>
+    <CornerRadius x:Key="CornerRadiusS">4</CornerRadius>
+    <CornerRadius x:Key="CornerRadiusM">6</CornerRadius>
+    <CornerRadius x:Key="CornerRadiusL">8</CornerRadius>
+    <CornerRadius x:Key="CornerRadiusXL">12</CornerRadius>
+    <CornerRadius x:Key="CornerRadiusFull">9999</CornerRadius>
+
+    <!-- =============================================
+         TYPOGRAPHY TOKENS
+         ============================================= -->
+
+    <!-- Font Sizes -->
+    <sys:Double x:Key="FontSizeXS">10</sys:Double>
+    <sys:Double x:Key="FontSizeS">11</sys:Double>
+    <sys:Double x:Key="FontSizeM">13</sys:Double>
+    <sys:Double x:Key="FontSizeBase">14</sys:Double>
+    <sys:Double x:Key="FontSizeL">16</sys:Double>
+    <sys:Double x:Key="FontSizeXL">18</sys:Double>
+    <sys:Double x:Key="FontSizeXXL">24</sys:Double>
+    <sys:Double x:Key="FontSizeXXXL">28</sys:Double>
+    <sys:Double x:Key="FontSizeDisplay">32</sys:Double>
+
+    <!-- Font Weights -->
+    <FontWeight x:Key="FontWeightRegular">Regular</FontWeight>
+    <FontWeight x:Key="FontWeightMedium">Medium</FontWeight>
+    <FontWeight x:Key="FontWeightSemiBold">SemiBold</FontWeight>
+    <FontWeight x:Key="FontWeightBold">Bold</FontWeight>
+
+    <!-- Line Heights -->
+    <sys:Double x:Key="LineHeightTight">1.2</sys:Double>
+    <sys:Double x:Key="LineHeightNormal">1.5</sys:Double>
+    <sys:Double x:Key="LineHeightRelaxed">1.75</sys:Double>
+
+    <!-- =============================================
+         ICON TOKENS
+         ============================================= -->
+
+    <sys:Double x:Key="IconSizeXS">12</sys:Double>
+    <sys:Double x:Key="IconSizeS">14</sys:Double>
+    <sys:Double x:Key="IconSizeM">16</sys:Double>
+    <sys:Double x:Key="IconSizeL">18</sys:Double>
+    <sys:Double x:Key="IconSizeXL">20</sys:Double>
+    <sys:Double x:Key="IconSizeXXL">24</sys:Double>
+    <sys:Double x:Key="IconSizeXXXL">32</sys:Double>
+
+    <!-- =============================================
+         CONTROL SIZES
+         ============================================= -->
+
+    <!-- Button Heights -->
+    <sys:Double x:Key="ButtonHeightS">28</sys:Double>
+    <sys:Double x:Key="ButtonHeightM">32</sys:Double>
+    <sys:Double x:Key="ButtonHeightL">36</sys:Double>
+    <sys:Double x:Key="ButtonHeightXL">40</sys:Double>
+
+    <!-- Input Heights -->
+    <sys:Double x:Key="InputHeightS">28</sys:Double>
+    <sys:Double x:Key="InputHeightM">32</sys:Double>
+    <sys:Double x:Key="InputHeightL">36</sys:Double>
+
+    <!-- =============================================
+         LAYOUT TOKENS
+         ============================================= -->
+
+    <!-- Sidebar -->
+    <sys:Double x:Key="SidebarWidth">240</sys:Double>
+    <sys:Double x:Key="SidebarCollapsedWidth">64</sys:Double>
+
+    <!-- Page Header -->
+    <sys:Double x:Key="PageHeaderHeight">64</sys:Double>
+    <sys:Double x:Key="PageHeaderHeightCompact">56</sys:Double>
+
+    <!-- Content Padding -->
+    <Thickness x:Key="ContentPadding">24</Thickness>
+    <Thickness x:Key="ContentPaddingCompact">16</Thickness>
+    <Thickness x:Key="ContentPaddingSparse">32</Thickness>
+
+    <!-- Card Grid Spacing -->
+    <sys:Double x:Key="CardGridSpacing">12</sys:Double>
+
+    <!-- =============================================
+         Z-INDEX LAYERS
+         ============================================= -->
+
+    <sys:Int32 x:Key="ZIndexDropdown">1000</sys:Int32>
+    <sys:Int32 x:Key="ZIndexModal">2000</sys:Int32>
+    <sys:Int32 x:Key="ZIndexToast">3000</sys:Int32>
+    <sys:Int32 x:Key="ZIndexTooltip">4000</sys:Int32>
+
+    <!-- =============================================
+         ANIMATION DURATION
+         ============================================= -->
+
+    <sys:TimeSpan x:Key="AnimationDurationFast">0:0:0.1</sys:TimeSpan>
+    <sys:TimeSpan x:Key="AnimationDurationNormal">0:0:0.2</sys:TimeSpan>
+    <sys:TimeSpan x:Key="AnimationDurationSlow">0:0:0.3</sys:TimeSpan>
+    <sys:TimeSpan x:Key="AnimationDurationSlower">0:0:0.5</sys:TimeSpan>
+
+</ResourceDictionary>

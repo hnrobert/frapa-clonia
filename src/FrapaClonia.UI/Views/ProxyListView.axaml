@@ -11,88 +11,19 @@
         <vm:ProxyListViewModel />
     </Design.DataContext>
 
-    <UserControl.Resources>
-        <!-- Spacing Tokens -->
-        <x:Double x:Key="SpacingXS">4</x:Double>
-        <x:Double x:Key="SpacingS">8</x:Double>
-        <x:Double x:Key="SpacingM">12</x:Double>
-        <x:Double x:Key="SpacingL">16</x:Double>
-        <x:Double x:Key="SpacingXL">24</x:Double>
-        <x:Double x:Key="SpacingXXL">32</x:Double>
-
-        <!-- CornerRadius Tokens -->
-        <CornerRadius x:Key="CornerRadiusS">4</CornerRadius>
-        <CornerRadius x:Key="CornerRadiusM">6</CornerRadius>
-        <CornerRadius x:Key="CornerRadiusL">8</CornerRadius>
-
-        <!-- Thickness Tokens -->
-        <Thickness x:Key="ThicknessM">0,0,0,12</Thickness>
-        <Thickness x:Key="ThicknessRightM">0,0,16,0</Thickness>
-        <Thickness x:Key="ThicknessTopS">0,8,0,0</Thickness>
-
-        <!-- Status Indicator Brushes -->
-        <SolidColorBrush x:Key="StatusActiveBrush" Color="#10B981" />
-        <SolidColorBrush x:Key="StatusInactiveBrush" Color="#6B7280" />
-        <SolidColorBrush x:Key="StatusErrorBrush" Color="#EF4444" />
-    </UserControl.Resources>
-
     <UserControl.Styles>
-
-        <!-- Primary Action Button Style -->
-        <Style Selector="Button.primaryAction">
-            <Setter Property="Height" Value="36" />
-            <Setter Property="Padding" Value="16,8" />
-            <Setter Property="MinWidth" Value="120" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusM}" />
-        </Style>
-
-        <!-- Secondary Action Button Style -->
-        <Style Selector="Button.secondaryAction">
-            <Setter Property="Height" Value="32" />
-            <Setter Property="Padding" Value="12,6" />
-            <Setter Property="MinWidth" Value="80" />
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusM}" />
-        </Style>
-
-        <!-- Icon Button Style for item actions -->
-        <Style Selector="Button.iconButton">
-            <Setter Property="Width" Value="36" />
-            <Setter Property="Height" Value="36" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusS}" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Cursor" Value="Hand" />
-        </Style>
-
-        <Style Selector="Button.iconButton:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
-        </Style>
-
-        <Style Selector="Button.iconButton:pressed /template/ ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseMediumLowBrush}" />
-        </Style>
-
-        <!-- Destructive icon button style -->
-        <Style Selector="Button.iconButton.destructive:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#FEE2E2" />
-        </Style>
-
         <!-- Proxy Card Style -->
         <Style Selector="Border.proxyCard">
             <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltLowBrush}" />
             <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusM}" />
-            <Setter Property="Padding" Value="16" />
-            <Setter Property="Margin" Value="0,0,0,12" />
+            <Setter Property="Padding" Value="{StaticResource ThicknessCard}" />
+            <Setter Property="Margin" Value="{StaticResource ThicknessBottomM}" />
             <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
 
         <Style Selector="Border.proxyCard:pointerover">
             <Setter Property="BorderBrush" Value="{DynamicResource AccentColor}" />
-            <Setter Property="BorderThickness" Value="1" />
         </Style>
 
         <!-- Type Badge Style -->
@@ -104,17 +35,8 @@
 
         <Style Selector="Border.typeBadge TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource AccentColorForegroundBrush}" />
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-        </Style>
-
-        <!-- Destructive Action Style -->
-        <Style Selector="Button.destructive">
-            <Setter Property="Foreground" Value="#DC2626" />
-        </Style>
-
-        <Style Selector="Button.destructive:pointerover">
-            <Setter Property="Background" Value="#FEE2E2" />
+            <Setter Property="FontSize" Value="{StaticResource FontSizeS}" />
+            <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
         </Style>
     </UserControl.Styles>
 
@@ -129,17 +51,17 @@
         <!-- Page Header -->
         <Border Grid.Row="0"
                 Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
-                Padding="24,16"
+                Padding="{StaticResource ThicknessHorizontalL}"
                 BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
                 BorderThickness="0,0,0,1">
             <Grid ColumnDefinitions="*,Auto">
                 <StackPanel Grid.Column="0" Spacing="{StaticResource SpacingS}">
                     <TextBlock Text="Proxy Management"
-                               FontSize="22"
-                               FontWeight="SemiBold"
+                               FontSize="{StaticResource FontSizeXXL}"
+                               FontWeight="{StaticResource FontWeightSemiBold}"
                                Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
                     <TextBlock Text="Configure and manage your frpc proxy configurations"
-                               FontSize="13"
+                               FontSize="{StaticResource FontSizeM}"
                                Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                 </StackPanel>
 
@@ -154,18 +76,18 @@
                                      IsVisible="{Binding IsLoading}"
                                      VerticalAlignment="Center" />
                         <TextBlock Text="Loading..."
-                                   FontSize="12"
+                                   FontSize="{StaticResource FontSizeS}"
                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                    IsVisible="{Binding IsLoading}"
                                    VerticalAlignment="Center"
-                                   Margin="8,0,0,0" />
+                                   Margin="{StaticResource ThicknessLeftS}" />
                     </StackPanel>
 
                     <TextBlock Text="{Binding Proxies.Count, StringFormat='{}{0} proxies'}"
-                               FontSize="13"
+                               FontSize="{StaticResource FontSizeM}"
                                Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                VerticalAlignment="Center"
-                               Margin="12,0,0,0" />
+                               Margin="{StaticResource ThicknessLeftM}" />
                 </StackPanel>
             </Grid>
         </Border>
@@ -173,7 +95,7 @@
         <!-- Primary Actions Toolbar -->
         <Border Grid.Row="1"
                 Background="{DynamicResource SystemControlPageBackgroundTransparent}"
-                Padding="24,16">
+                Padding="{StaticResource ThicknessHorizontalL}">
             <Grid ColumnDefinitions="*,Auto">
                 <!-- Search and Filter -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
@@ -181,14 +103,14 @@
                     <TextBox Text="{Binding SearchQuery}"
                              Watermark="Search by name..."
                              MinWidth="240"
-                             Height="36"
+                             Height="{StaticResource ButtonHeightL}"
                              VerticalAlignment="Center" />
 
                     <!-- Type Filter -->
                     <ComboBox ItemsSource="{Binding ProxyTypes}"
                               SelectedItem="{Binding FilterType}"
                               MinWidth="140"
-                              Height="36"
+                              Height="{StaticResource ButtonHeightL}"
                               PlaceholderText="All Types"
                               VerticalAlignment="Center" />
                 </StackPanel>
@@ -196,10 +118,10 @@
                 <!-- Primary Action - Add Proxy -->
                 <Button Grid.Column="1"
                         Command="{Binding AddProxyCommand}"
-                        Classes="Primary"
+                        Classes="primary"
                         HorizontalAlignment="Right">
                     <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-                        <TextBlock Text="+" FontSize="16" FontWeight="Bold" />
+                        <TextBlock Text="+" FontSize="{StaticResource FontSizeL}" FontWeight="{StaticResource FontWeightBold}" />
                         <TextBlock Text="Add Proxy" />
                     </StackPanel>
                 </Button>
@@ -209,62 +131,59 @@
         <!-- Bulk Actions Toolbar -->
         <Border Grid.Row="2"
                 Background="{DynamicResource SystemControlPageBackgroundAltLowBrush}"
-                Padding="24,12,24,12"
+                Padding="{StaticResource ThicknessHorizontalL}"
                 BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
                 BorderThickness="0,0,0,1"
                 IsVisible="{Binding Proxies.Count, Converter={x:Static ObjectConverters.IsNotNull}}">
             <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingM}" HorizontalAlignment="Right">
                 <Button Content="Refresh"
                         Command="{Binding RefreshCommand}"
-                        Classes="secondaryAction"
                         IsEnabled="{Binding !IsLoading}" />
 
                 <Button Content="Export All"
-                        Command="{Binding ExportAllCommand}"
-                        Classes="secondaryAction" />
+                        Command="{Binding ExportAllCommand}" />
 
                 <Button Content="Import"
-                        Command="{Binding ImportCommand}"
-                        Classes="secondaryAction" />
+                        Command="{Binding ImportCommand}" />
 
                 <Button Content="Clear All"
                         Command="{Binding ClearAllCommand}"
-                        Classes="destructive,secondaryAction" />
+                        Classes="destructive" />
             </StackPanel>
         </Border>
 
         <!-- Proxy List -->
         <Border Grid.Row="3"
                 Background="{DynamicResource SystemControlPageBackgroundTransparent}"
-                Padding="24,16">
+                Padding="{StaticResource ThicknessHorizontalL}">
             <Grid>
                 <!-- Empty State -->
                 <Border IsVisible="{Binding Proxies.Count, Converter={x:Static ObjectConverters.IsNull}}"
                         Background="{DynamicResource SystemControlPageBackgroundAltLowBrush}"
                         CornerRadius="{StaticResource CornerRadiusL}"
-                        Padding="32"
+                        Padding="{StaticResource ThicknessXL}"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center">
-                    <StackPanel Spacing="12" HorizontalAlignment="Center">
+                    <StackPanel Spacing="{StaticResource SpacingM}" HorizontalAlignment="Center">
                         <TextBlock Text="&#xF5E7;"
                                    FontFamily="{DynamicResource SymbolThemeFontFamily}"
                                    FontSize="48"
                                    Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
                                    HorizontalAlignment="Center" />
                         <TextBlock Text="No proxies configured"
-                                   FontSize="18"
-                                   FontWeight="SemiBold"
+                                   FontSize="{StaticResource FontSizeXL}"
+                                   FontWeight="{StaticResource FontWeightSemiBold}"
                                    Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
                                    HorizontalAlignment="Center" />
                         <TextBlock Text="Create your first proxy configuration to get started"
-                                   FontSize="13"
+                                   FontSize="{StaticResource FontSizeM}"
                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                    HorizontalAlignment="Center" />
                         <Button Content="+ Create Proxy"
                                 Command="{Binding AddProxyCommand}"
-                                Classes="Primary"
+                                Classes="primary"
                                 HorizontalAlignment="Center"
-                                Margin="0,16,0,0" />
+                                Margin="{StaticResource ThicknessTopL}" />
                     </StackPanel>
                 </Border>
 
@@ -281,39 +200,39 @@
                                             <Grid ColumnDefinitions="*,Auto">
                                                 <TextBlock Grid.Column="0"
                                                            Text="{Binding Name}"
-                                                           FontSize="15"
-                                                           FontWeight="SemiBold"
+                                                           FontSize="{StaticResource FontSizeL}"
+                                                           FontWeight="{StaticResource FontWeightSemiBold}"
                                                            Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
                                                            VerticalAlignment="Center" />
 
                                                 <Border Grid.Column="1"
                                                         Classes="typeBadge"
-                                                        Margin="12,0,0,0"
+                                                        Margin="{StaticResource ThicknessLeftM}"
                                                         VerticalAlignment="Center">
                                                     <TextBlock Text="{Binding Type}" />
                                                 </Border>
                                             </Grid>
 
                                             <!-- Connection Details -->
-                                            <StackPanel Spacing="{StaticResource SpacingXS}" Margin="0,8,0,0">
+                                            <StackPanel Spacing="{StaticResource SpacingXS}" Margin="{StaticResource ThicknessTopS}">
                                                 <!-- Local Endpoint -->
                                                 <Grid ColumnDefinitions="Auto,Auto,Auto">
                                                     <TextBlock Grid.Column="0"
                                                                Text="Local:"
-                                                               FontSize="12"
+                                                               FontSize="{StaticResource FontSizeS}"
                                                                Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                                                VerticalAlignment="Center" />
                                                     <TextBlock Grid.Column="1"
                                                                Text="{Binding LocalIP}"
-                                                               FontSize="13"
+                                                               FontSize="{StaticResource FontSizeM}"
                                                                FontFamily="Monospace"
-                                                               Margin="8,0,0,0"
+                                                               Margin="{StaticResource ThicknessLeftS}"
                                                                VerticalAlignment="Center" />
                                                     <TextBlock Grid.Column="2"
                                                                Text="{Binding LocalPort, StringFormat=':{}{0}'}"
-                                                               FontSize="13"
+                                                               FontSize="{StaticResource FontSizeM}"
                                                                FontFamily="Monospace"
-                                                               Margin="8,0,0,0"
+                                                               Margin="{StaticResource ThicknessLeftS}"
                                                                VerticalAlignment="Center" />
                                                 </Grid>
 
@@ -322,24 +241,24 @@
                                                       IsVisible="{Binding RemotePort, Converter={x:Static ObjectConverters.IsNotNull}}">
                                                     <TextBlock Grid.Column="0"
                                                                Text="Remote Port:"
-                                                               FontSize="12"
+                                                               FontSize="{StaticResource FontSizeS}"
                                                                Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                                                VerticalAlignment="Center" />
                                                     <TextBlock Grid.Column="1"
                                                                Text="{Binding RemotePort}"
-                                                               FontSize="13"
+                                                               FontSize="{StaticResource FontSizeM}"
                                                                FontFamily="Monospace"
-                                                               Margin="8,0,0,0"
-                                                               FontWeight="SemiBold"
+                                                               Margin="{StaticResource ThicknessLeftS}"
+                                                               FontWeight="{StaticResource FontWeightMedium}"
                                                                VerticalAlignment="Center" />
                                                 </Grid>
                                             </StackPanel>
 
                                             <!-- Additional Info (Optional) -->
-                                            <StackPanel Orientation="Horizontal" Spacing="16"
+                                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingL}"
                                                         IsVisible="{Binding CustomDomains, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                                        Margin="0,8,0,0">
-                                                <TextBlock FontSize="11"
+                                                        Margin="{StaticResource ThicknessTopS}">
+                                                <TextBlock FontSize="{StaticResource FontSizeS}"
                                                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}">
                                                     <Run Text="&#xF8E2;" FontFamily="{DynamicResource SymbolThemeFontFamily}" />
                                                     <Run Text="{Binding CustomDomains}" />
@@ -351,13 +270,13 @@
                                         <Border Grid.Column="1"
                                                 Width="40"
                                                 Height="40"
-                                                CornerRadius="20"
-                                                Background="{StaticResource StatusActiveBrush}"
-                                                Margin="0,0,16,0"
+                                                CornerRadius="{StaticResource CornerRadiusFull}"
+                                                Background="{DynamicResource AppSuccessBrush}"
+                                                Margin="{StaticResource ThicknessRightM}"
                                                 VerticalAlignment="Center">
                                             <TextBlock Text="&#xE8FB;"
                                                        FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                                       FontSize="16"
+                                                       FontSize="{StaticResource IconSizeL}"
                                                        Foreground="White"
                                                        HorizontalAlignment="Center"
                                                        VerticalAlignment="Center" />
@@ -366,30 +285,28 @@
                                         <!-- Action Buttons -->
                                         <StackPanel Grid.Column="2"
                                                     Orientation="Horizontal"
-                                                    Spacing="8"
+                                                    Spacing="{StaticResource SpacingS}"
                                                     VerticalAlignment="Center">
                                             <Button Click="OnEditClick"
-                                                    ToolTip.Tip="Edit Proxy"
-                                                    Classes="iconButton">
+                                                    ToolTip.Tip="Edit Proxy">
                                                 <TextBlock Text="&#xE70F;"
                                                            FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                                           FontSize="14" />
+                                                           FontSize="{StaticResource IconSizeM}" />
                                             </Button>
 
                                             <Button Click="OnDuplicateClick"
-                                                    ToolTip.Tip="Duplicate Proxy"
-                                                    Classes="iconButton">
+                                                    ToolTip.Tip="Duplicate Proxy">
                                                 <TextBlock Text="&#xF817;"
                                                            FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                                           FontSize="14" />
+                                                           FontSize="{StaticResource IconSizeM}" />
                                             </Button>
 
                                             <Button Click="OnDeleteClick"
                                                     ToolTip.Tip="Delete Proxy"
-                                                    Classes="iconButton,destructive">
+                                                    Classes="destructive">
                                                 <TextBlock Text="&#xE74D;"
                                                            FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                                           FontSize="14" />
+                                                           FontSize="{StaticResource IconSizeM}" />
                                             </Button>
                                         </StackPanel>
                                     </Grid>

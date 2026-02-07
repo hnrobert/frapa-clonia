@@ -12,87 +12,56 @@
     </Design.DataContext>
 
     <UserControl.Styles>
-        <Style Selector="Border.settings-card">
-            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" />
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Padding" Value="20" />
-            <Setter Property="Margin" Value="0" />
+        <!-- Settings dropdown -->
+        <Style Selector="ComboBox.settings-dropdown">
+            <Setter Property="MinWidth" Value="240" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
         </Style>
 
-        <Style Selector="Border.settings-card:pointerover">
-            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltLowBrush}" />
+        <!-- Settings checkbox -->
+        <Style Selector="CheckBox.settings-checkbox">
+            <Setter Property="Margin" Value="{StaticResource ThicknessTopS}" />
         </Style>
 
-        <Style Selector="TextBlock.section-header">
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Margin" Value="0,0,0,16" />
+        <Style Selector="CheckBox.settings-checkbox > ContentPresenter">
+            <Setter Property="Margin" Value="{StaticResource ThicknessLeftS}" />
         </Style>
 
-        <Style Selector="TextBlock.field-label">
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="FontWeight" Value="Medium" />
-            <Setter Property="Margin" Value="0,0,0,6" />
-        </Style>
-
-        <Style Selector="TextBlock.hint-text">
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-            <Setter Property="Margin" Value="0,4,0,0" />
-        </Style>
-
+        <!-- Readonly value -->
         <Style Selector="TextBlock.readonly-value">
-            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
             <Setter Property="FontFamily" Value="{DynamicResource MonoFontFamily}" />
             <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
 
-        <Style Selector="Button.action-button">
-            <Setter Property="MinWidth" Value="100" />
-            <Setter Property="Padding" Value="20,10" />
-            <Setter Property="HorizontalAlignment" Value="Right" />
-        </Style>
-
+        <!-- Primary action button -->
         <Style Selector="Button.action-button.primary">
-            <Setter Property="Background" Value="{DynamicResource SystemControlAccentColor1Brush}" />
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColor1Brush}" />
             <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundAltHighBrush}" />
-            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
         </Style>
 
         <Style Selector="Button.action-button.primary:pointerover">
-            <Setter Property="Background" Value="{DynamicResource SystemControlAccentColor2Brush}" />
-        </Style>
-
-        <Style Selector="CheckBox.settings-checkbox">
-            <Setter Property="Margin" Value="0,8,0,0" />
-        </Style>
-
-        <Style Selector="CheckBox.settings-checkbox > ContentPresenter">
-            <Setter Property="Margin" Value="8,0,0,0" />
-        </Style>
-
-        <Style Selector="ComboBox.settings-dropdown">
-            <Setter Property="MinWidth" Value="240" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColor2Brush}" />
         </Style>
     </UserControl.Styles>
 
     <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-        <Panel Margin="24">
-            <StackPanel Spacing="24" MaxWidth="650">
+        <Panel Margin="{StaticResource ContentPadding}">
+            <StackPanel Spacing="{StaticResource SpacingL}" MaxWidth="650">
                 <!-- Header -->
                 <TextBlock Text="Settings"
-                           FontSize="28"
-                           FontWeight="SemiBold"
+                           FontSize="{StaticResource FontSizeXXXL}"
+                           FontWeight="{StaticResource FontWeightSemiBold}"
                            Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
 
                 <!-- Language Settings -->
                 <Border Classes="settings-card">
                     <StackPanel Spacing="0">
                         <TextBlock Text="Language &amp; Region"
-                                   Classes="section-header" />
+                                   Classes="sectionTitle"
+                                   Margin="{StaticResource ThicknessBottomM}" />
 
                         <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
@@ -111,7 +80,7 @@
                             </ComboBox>
                             <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                                        Text="Changes will take effect after restarting the application"
-                                       Classes="hint-text" />
+                                       Classes="hint" />
                         </Grid>
                     </StackPanel>
                 </Border>
@@ -120,17 +89,18 @@
                 <Border Classes="settings-card">
                     <StackPanel Spacing="0">
                         <TextBlock Text="System Integration"
-                                   Classes="section-header" />
+                                   Classes="sectionTitle"
+                                   Margin="{StaticResource ThicknessBottomM}" />
 
                         <CheckBox IsChecked="{Binding AutoStartEnabled}"
                                   Classes="settings-checkbox"
                                   AutomationProperties.Name="Start on system boot">
-                            <StackPanel Spacing="4">
+                            <StackPanel Spacing="{StaticResource SpacingS}">
                                 <TextBlock Text="Start on system boot"
-                                           FontSize="13"
-                                           FontWeight="Medium" />
+                                           FontSize="{StaticResource FontSizeM}"
+                                           FontWeight="{StaticResource FontWeightMedium}" />
                                 <TextBlock Text="Automatically launch FrapaClonia when you sign in"
-                                           Classes="hint-text" />
+                                           Classes="hint" />
                             </StackPanel>
                         </CheckBox>
                     </StackPanel>
@@ -140,7 +110,8 @@
                 <Border Classes="settings-card">
                     <StackPanel Spacing="0">
                         <TextBlock Text="Appearance"
-                                   Classes="section-header" />
+                                   Classes="sectionTitle"
+                                   Margin="{StaticResource ThicknessBottomM}" />
 
                         <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
@@ -155,7 +126,7 @@
                             </ComboBox>
                             <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                                        Text="Choose your preferred color theme"
-                                       Classes="hint-text" />
+                                       Classes="hint" />
                         </Grid>
                     </StackPanel>
                 </Border>
@@ -164,25 +135,26 @@
                 <Border Classes="settings-card">
                     <StackPanel Spacing="0">
                         <TextBlock Text="Application Mode"
-                                   Classes="section-header" />
+                                   Classes="sectionTitle"
+                                   Margin="{StaticResource ThicknessBottomM}" />
 
                         <CheckBox IsChecked="{Binding PortableMode}"
                                   IsEnabled="False"
                                   Classes="settings-checkbox"
                                   AutomationProperties.Name="Portable Mode">
-                            <StackPanel Spacing="4">
+                            <StackPanel Spacing="{StaticResource SpacingS}">
                                 <TextBlock Text="Portable Mode"
-                                           FontSize="13"
-                                           FontWeight="Medium" />
+                                           FontSize="{StaticResource FontSizeM}"
+                                           FontWeight="{StaticResource FontWeightMedium}" />
                                 <TextBlock Text="Configuration stored in application directory (requires portable.txt)"
-                                           Classes="hint-text" />
+                                           Classes="hint" />
                             </StackPanel>
                         </CheckBox>
 
                         <Border BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
                                 BorderThickness="0,1,0,0"
-                                Margin="0,16,0,0"
-                                Padding="0,16,0,0">
+                                Margin="{StaticResource ThicknessTopL}"
+                                Padding="{StaticResource ThicknessTopL}">
                             <StackPanel Spacing="0">
                                 <TextBlock Text="Configuration Location"
                                            Classes="field-label" />
@@ -198,7 +170,8 @@
                 <Border Classes="settings-card">
                     <StackPanel Spacing="0">
                         <TextBlock Text="About"
-                                   Classes="section-header" />
+                                   Classes="sectionTitle"
+                                   Margin="{StaticResource ThicknessBottomM}" />
 
                         <Grid ColumnDefinitions="120,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
@@ -224,8 +197,8 @@
 
                             <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
                                        Text="A cross-platform frpc visual client built with Avalonia UI"
-                                       Classes="hint-text"
-                                       Margin="0,12,0,0" />
+                                       Classes="hint"
+                                       Margin="{StaticResource ThicknessTopM}" />
                         </Grid>
                     </StackPanel>
                 </Border>
@@ -233,8 +206,8 @@
                 <!-- Action Buttons -->
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Right"
-                            Spacing="12"
-                            Margin="0,8,0,0">
+                            Spacing="{StaticResource SpacingM}"
+                            Margin="{StaticResource ThicknessTopS}">
                     <Button Command="{Binding ResetCommand}"
                             Content="Reset to Defaults"
                             Classes="action-button"
@@ -245,7 +218,7 @@
                             Classes="action-button primary"
                             IsEnabled="{Binding !IsSaving}"
                             AutomationProperties.Name="Save Settings">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
                             <TextBlock Text="Save Settings" />
                             <ProgressBar IsIndeterminate="True"
                                           Width="16"
