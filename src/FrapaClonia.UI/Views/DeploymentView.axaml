@@ -1,0 +1,226 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="600"
+             x:Class="FrapaClonia.UI.Views.DeploymentView"
+             x:DataType="vm:DeploymentViewModel">
+
+    <Design.DataContext>
+        <vm:DeploymentViewModel />
+    </Design.DataContext>
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.sectionTitle">
+            <Setter Property="FontSize" Value="{StaticResource FontSizeL}" />
+            <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.hint">
+            <Setter Property="FontSize" Value="{StaticResource FontSizeS}" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style Selector="TextBlock.field-label">
+            <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
+            <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusL}" />
+            <Setter Property="Padding" Value="{StaticResource ThicknessL}" />
+            <Setter Property="Margin" Value="{StaticResource ThicknessBottomL}" />
+        </Style>
+
+        <Style Selector="Button.action-button">
+            <Setter Property="Margin" Value="{StaticResource ThicknessRightS}" />
+        </Style>
+
+        <Style Selector="ProgressBar.status-indicator">
+            <Setter Property="IsIndeterminate" Value="True" />
+            <Setter Property="Width" Value="16" />
+            <Setter Property="Height" Value="16" />
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+        <Panel Margin="{StaticResource ContentPadding}">
+            <StackPanel Spacing="{StaticResource SpacingL}" MaxWidth="800">
+                <!-- Header -->
+                <TextBlock Text="Deployment"
+                           FontSize="{StaticResource FontSizeXXXL}"
+                           FontWeight="{StaticResource FontWeightSemiBold}"
+                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+
+                <!-- Status Bar -->
+                <Border Classes="card">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Grid.Column="0"
+                                   Text="{Binding StatusMessage}"
+                                   VerticalAlignment="Center" />
+                        <StackPanel Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    Spacing="{StaticResource SpacingS}">
+                            <ProgressBar IsIndeterminate="True"
+                                          Width="24"
+                                          Height="24"
+                                          IsVisible="{Binding IsBusy}" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Deployment Mode Selection -->
+                <Border Classes="card">
+                    <StackPanel Spacing="0">
+                        <TextBlock Text="Deployment Mode"
+                                   Classes="sectionTitle"
+                                   Margin="{StaticResource ThicknessBottomM}" />
+
+                        <ComboBox ItemsSource="{Binding DeploymentModes}"
+                                  SelectedItem="{Binding SelectedDeploymentMode}"
+                                  MinWidth="200"
+                                  HorizontalAlignment="Left">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <TextBlock Text="Choose how you want to deploy and run frpc"
+                                   Classes="hint"
+                                   Margin="{StaticResource ThicknessTopS}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Docker Deployment -->
+                <Border Classes="card">
+                    <StackPanel Spacing="{StaticResource SpacingM}">
+                        <TextBlock Text="Docker Deployment"
+                                   Classes="sectionTitle" />
+
+                        <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto">
+                            <TextBlock Grid.Row="0" Grid.Column="0"
+                                       Text="Docker Status"
+                                       Classes="field-label" />
+                            <StackPanel Grid.Row="0" Grid.Column="1"
+                                        Orientation="Horizontal"
+                                        Spacing="{StaticResource SpacingM}">
+                                <TextBlock Text="{Binding IsDockerAvailable, Converter={StaticResource BoolToAvailableStringConverter}}"
+                                           VerticalAlignment="Center" />
+                                <Button Command="{Binding CheckDockerCommand}"
+                                        Content="Check Docker"
+                                        IsEnabled="{Binding !IsDockerChecking}"
+                                        Classes="action-button" />
+                            </StackPanel>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0"
+                                       Text="Container Name"
+                                       Classes="field-label" />
+                            <TextBox Grid.Row="1" Grid.Column="1"
+                                     Text="{Binding DockerContainerName}"
+                                     Watermark="frapa-clonia-frpc"
+                                     MinWidth="200" />
+                        </Grid>
+
+                        <TextBlock Text="Docker Image"
+                                   Classes="field-label"
+                                   Margin="{StaticResource ThicknessTopS}" />
+                        <TextBox Text="{Binding DockerImageName}"
+                                 Watermark="fatedier/frpc:latest" />
+
+                        <TextBlock Text="Docker Compose Path"
+                                   Classes="field-label"
+                                   Margin="{StaticResource ThicknessTopS}" />
+                        <TextBox Text="{Binding DockerComposePath}"
+                                 IsReadOnly="True"
+                                 Watermark="Not generated yet" />
+
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="{StaticResource SpacingM}"
+                                    Margin="{StaticResource ThicknessTopS}">
+                            <Button Command="{Binding GenerateDockerComposeCommand}"
+                                    Content="Generate docker-compose.yml"
+                                    IsEnabled="{Binding !IsBusy}"
+                                    Classes="action-button" />
+                            <Button Command="{Binding StartDockerCommand}"
+                                    Content="Start Container"
+                                    IsEnabled="{Binding !IsBusy}"
+                                    Classes="action-button" />
+                            <Button Command="{Binding StopDockerCommand}"
+                                    Content="Stop Container"
+                                    IsEnabled="{Binding !IsBusy}"
+                                    Classes="action-button" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Native Deployment -->
+                <Border Classes="card">
+                    <StackPanel Spacing="{StaticResource SpacingM}">
+                        <TextBlock Text="Native Deployment"
+                                   Classes="sectionTitle" />
+
+                        <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto">
+                            <TextBlock Grid.Row="0" Grid.Column="0"
+                                       Text="Deployment Status"
+                                       Classes="field-label" />
+                            <StackPanel Grid.Row="0" Grid.Column="1"
+                                        Orientation="Horizontal"
+                                        Spacing="{StaticResource SpacingM}">
+                                <TextBlock Text="{Binding IsNativeDeployed, Converter={StaticResource BoolToDeployedStringConverter}}"
+                                           VerticalAlignment="Center" />
+                                <Button Command="{Binding CheckNativeCommand}"
+                                        Content="Check Deployment"
+                                        IsEnabled="{Binding !IsNativeChecking}"
+                                        Classes="action-button" />
+                            </StackPanel>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0"
+                                       Text="Binary Path"
+                                       Classes="field-label" />
+                            <TextBlock Grid.Row="1" Grid.Column="1"
+                                       Text="{Binding DeployedBinaryPath}"
+                                       FontFamily="{DynamicResource MonoFontFamily}"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="{StaticResource SpacingM}"
+                                    Margin="{StaticResource ThicknessTopS}">
+                            <Button Command="{Binding DownloadFrpcCommand}"
+                                    Content="Download frpc"
+                                    IsEnabled="{Binding !IsBusy}"
+                                    Classes="action-button" />
+                            <Button Command="{Binding DeployNativeCommand}"
+                                    Content="Deploy Native"
+                                    IsEnabled="{Binding !IsBusy}"
+                                    Classes="action-button" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Information -->
+                <Border Classes="card">
+                    <StackPanel Spacing="{StaticResource SpacingS}">
+                        <TextBlock Text="Deployment Information"
+                                   Classes="sectionTitle" />
+
+                        <TextBlock Text="• Docker deployment requires Docker and Docker Compose to be installed"
+                                   Classes="hint" />
+                        <TextBlock Text="• Native deployment downloads and extracts the frpc binary for your platform"
+                                   Classes="hint" />
+                        <TextBlock Text="• Both methods use the same configuration file from the Server settings"
+                                   Classes="hint" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Panel>
+    </ScrollViewer>
+</UserControl>

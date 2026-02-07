@@ -29,12 +29,15 @@ public class NavigationService : ObservableObject
     public void NavigateTo(string page)
     {
         CurrentPage = page;
+
         CurrentView = page switch
         {
             "dashboard" => new DashboardView(),
             "server" => new ServerConfigView(),
             "proxies" => new ProxyListView(),
             "visitors" => new VisitorListView(),
+            "deployment" => new DeploymentView(),
+            "logs" => new LogsView(),
             "settings" => new SettingsView(),
             _ => null
         };

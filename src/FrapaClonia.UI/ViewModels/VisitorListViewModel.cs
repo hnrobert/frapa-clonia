@@ -2,7 +2,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.Domain.Models;
+using FrapaClonia.UI.Views;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using Avalonia.Controls.ApplicationLifetimes;
+using System.Text.Json;
 
 namespace FrapaClonia.UI.ViewModels;
 
@@ -14,6 +18,7 @@ public partial class VisitorListViewModel : ObservableObject
     private readonly ILogger<VisitorListViewModel> _logger;
     private readonly IConfigurationService _configurationService;
     private readonly IValidationService _validationService;
+    private readonly IServiceProvider _serviceProvider;
 
     [ObservableProperty]
     private List<VisitorConfig> _visitors = [];
@@ -48,11 +53,13 @@ public partial class VisitorListViewModel : ObservableObject
     public VisitorListViewModel(
         ILogger<VisitorListViewModel> logger,
         IConfigurationService configurationService,
-        IValidationService validationService)
+        IValidationService validationService,
+        IServiceProvider serviceProvider)
     {
         _logger = logger;
         _configurationService = configurationService;
         _validationService = validationService;
+        _serviceProvider = serviceProvider;
 
         AddVisitorCommand = new RelayCommand(AddVisitor);
         EditVisitorCommand = new RelayCommand(EditVisitor, () => SelectedVisitor != null);
@@ -127,17 +134,60 @@ public partial class VisitorListViewModel : ObservableObject
         }
     }
 
-    private void AddVisitor()
+    private async void AddVisitor()
     {
         _logger.LogInformation("Add visitor clicked");
-        // TODO: Navigate to visitor editor with new visitor
+
+        // Create new visitor and show editor dialog
+        var newVisitor = new VisitorConfig();
+        var editorLogger = _serviceProvider.GetRequiredService<ILogger<VisitorEditorViewModel>>();
+        var viewModel = new VisitorEditorViewModel(editorLogger, _configurationService, _validationService, newVisitor);
+
+        var editorWindow = new VisitorEditorView
+        {
+            DataContext = viewModel
+        };
+
+        if (Avalonia.Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+            return;
+        var result = await editorWindow.ShowDialog<bool?>(desktop.MainWindow);
+        if (result == true)
+        {
+            // User clicked Save - refresh the list
+            _ = Task.Run(LoadVisitorsAsync);
+        }
     }
 
-    private void EditVisitor()
+    private async void EditVisitor()
     {
         if (SelectedVisitor == null) return;
         _logger.LogInformation("Edit visitor: {VisitorName}", SelectedVisitor.Name);
-        // TODO: Navigate to visitor editor with selected visitor
+
+        // Clone the visitor to avoid modifying the original until saved
+        var visitorClone = JsonSerializer.Deserialize<VisitorConfig>(
+            JsonSerializer.Serialize(SelectedVisitor),
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        if (visitorClone != null)
+        {
+            var editorLogger = _serviceProvider.GetRequiredService<ILogger<VisitorEditorViewModel>>();
+            var viewModel = new VisitorEditorViewModel(editorLogger, _configurationService, _validationService, visitorClone);
+
+            var editorWindow = new VisitorEditorView
+            {
+                DataContext = viewModel
+            };
+
+            if (Avalonia.Application.Current!.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                var result = await editorWindow.ShowDialog<bool?>(desktop.MainWindow);
+                if (result == true)
+                {
+                    // User clicked Save - refresh the list
+                    _ = Task.Run(LoadVisitorsAsync);
+                }
+            }
+        }
     }
 
     private async Task DeleteVisitorAsync()

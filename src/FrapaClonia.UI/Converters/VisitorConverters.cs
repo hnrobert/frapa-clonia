@@ -41,7 +41,7 @@ public class NotNullConverter : IValueConverter
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        // TODO
+        // This converter is one-way only (model to view), so ConvertBack is not implemented
         throw new NotImplementedException();
     }
 }

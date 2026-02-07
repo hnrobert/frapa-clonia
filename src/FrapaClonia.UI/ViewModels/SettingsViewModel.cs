@@ -4,6 +4,8 @@ using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
+using System.IO;
+using System.Text.Json;
 
 namespace FrapaClonia.UI.ViewModels;
 
@@ -16,6 +18,17 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ILocalizationService _localizationService;
     private readonly IAutoStartService _autoStartService;
     private readonly ThemeService _themeService;
+
+    private readonly string _settingsFile = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "FrapaClonia",
+        "settings.json");
+
+    private readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        WriteIndented = true,
+        PropertyNameCaseInsensitive = true
+    };
 
     [ObservableProperty]
     private LanguageOption? _selectedLanguage;
@@ -99,12 +112,38 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            var cultureCode = _localizationService.CurrentCulture.Name;
+            // Try to load settings from file
+            AppSettings? settings = null;
+            if (File.Exists(_settingsFile))
+            {
+                try
+                {
+                    var json = await File.ReadAllTextAsync(_settingsFile);
+                    settings = JsonSerializer.Deserialize<AppSettings>(json, _jsonOptions);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Could not load settings file, using defaults");
+                }
+            }
+
+            // Apply settings or use defaults
+            var cultureCode = settings?.Language ?? "en";
             SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == cultureCode)
                 ?? AvailableLanguages.First();
+
             AutoStartEnabled = await _autoStartService.IsAutoStartEnabledAsync();
             PortableMode = DetectPortableMode();
             ConfigLocation = GetConfigLocation();
+
+            // Set theme from settings
+            var themeStr = settings?.Theme ?? "Default";
+            ThemeIndex = themeStr switch
+            {
+                "Light" => 0,
+                "Dark" => 1,
+                _ => 2
+            };
 
             _logger.LogInformation("Settings loaded");
         }
@@ -136,10 +175,31 @@ public partial class SettingsViewModel : ObservableObject
                 await _autoStartService.DisableAutoStartAsync();
             }
 
-            // TODO: Save portable mode setting
-            // TODO: Save other settings
+            // Save settings to file
+            var settings = new AppSettings
+            {
+                Language = SelectedLanguage?.Code ?? "en",
+                Theme = ThemeIndex switch
+                {
+                    0 => "Light",
+                    1 => "Dark",
+                    _ => "Default"
+                },
+                AutoStart = AutoStartEnabled,
+                PortableMode = PortableMode
+            };
 
-            _logger.LogInformation("Settings saved");
+            // Ensure directory exists
+            var settingsDir = Path.GetDirectoryName(_settingsFile);
+            if (!string.IsNullOrEmpty(settingsDir) && !Directory.Exists(settingsDir))
+            {
+                Directory.CreateDirectory(settingsDir);
+            }
+
+            var json = JsonSerializer.Serialize(settings, _jsonOptions);
+            await File.WriteAllTextAsync(_settingsFile, json);
+
+            _logger.LogInformation("Settings saved to: {SettingsFile}", _settingsFile);
         }
         catch (Exception ex)
         {
@@ -178,3 +238,14 @@ public partial class SettingsViewModel : ObservableObject
 /// Language option for selection
 /// </summary>
 public record LanguageOption(string Code, string Name);
+
+/// <summary>
+/// Application settings
+/// </summary>
+public class AppSettings
+{
+    public string Language { get; init; } = "en";
+    public string Theme { get; init; } = "Default";
+    public bool AutoStart { get; init; }
+    public bool PortableMode { get; init; }
+}

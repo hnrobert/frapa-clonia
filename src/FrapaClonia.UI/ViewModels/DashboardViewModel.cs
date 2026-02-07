@@ -12,6 +12,7 @@ public partial class DashboardViewModel : ObservableObject
 {
     private readonly ILogger<DashboardViewModel> _logger;
     private readonly IFrpcProcessService _frpcProcessService;
+    private readonly IConfigurationService _configurationService;
 
     [ObservableProperty]
     private bool _isFrpcRunning;
@@ -46,10 +47,12 @@ public partial class DashboardViewModel : ObservableObject
 
     public DashboardViewModel(
         ILogger<DashboardViewModel> logger,
-        IFrpcProcessService frpcProcessService)
+        IFrpcProcessService frpcProcessService,
+        IConfigurationService configurationService)
     {
         _logger = logger;
         _frpcProcessService = frpcProcessService;
+        _configurationService = configurationService;
 
         NavigateToServerConfigCommand = new RelayCommand(() => _logger.LogInformation("Navigate to Server Config"));
         NavigateToProxyListCommand = new RelayCommand(() => _logger.LogInformation("Navigate to Proxy List"));
@@ -130,8 +133,12 @@ public partial class DashboardViewModel : ObservableObject
     private async Task StartFrpcAsync()
     {
         _logger.LogInformation("Starting frpc...");
-        // TODO: Get config path and start frpc
-        await Task.CompletedTask;
+        var configPath = _configurationService.GetDefaultConfigPath();
+        var success = await _frpcProcessService.StartAsync(configPath);
+        if (!success)
+        {
+            _logger.LogWarning("Failed to start frpc with config: {ConfigPath}", configPath);
+        }
     }
 
     private async Task StopFrpcAsync()
@@ -143,7 +150,11 @@ public partial class DashboardViewModel : ObservableObject
     private async Task RestartFrpcAsync()
     {
         _logger.LogInformation("Restarting frpc...");
-        // TODO: Get config path and restart frpc
-        await Task.CompletedTask;
+        var configPath = _configurationService.GetDefaultConfigPath();
+        var success = await _frpcProcessService.RestartAsync(configPath);
+        if (!success)
+        {
+            _logger.LogWarning("Failed to restart frpc with config: {ConfigPath}", configPath);
+        }
     }
 }

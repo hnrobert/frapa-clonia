@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace FrapaClonia.UI.Views;
 
-public partial class ServerConfigView : UserControl
+public partial class DeploymentView : UserControl
 {
-    public ServerConfigView()
+    public DeploymentView()
     {
         InitializeComponent();
     }

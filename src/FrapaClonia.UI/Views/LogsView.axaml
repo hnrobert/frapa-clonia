@@ -1,0 +1,193 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="600"
+             x:Class="FrapaClonia.UI.Views.LogsView"
+             x:DataType="vm:LogsViewModel">
+
+    <Design.DataContext>
+        <vm:LogsViewModel />
+    </Design.DataContext>
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.sectionTitle">
+            <Setter Property="FontSize" Value="{StaticResource FontSizeL}" />
+            <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.hint">
+            <Setter Property="FontSize" Value="{StaticResource FontSizeS}" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
+            <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusL}" />
+            <Setter Property="Padding" Value="{StaticResource ThicknessL}" />
+        </Style>
+
+        <Style Selector="ListBox.logViewer">
+            <Setter Property="FontFamily" Value="{DynamicResource MonoFontFamily}" />
+            <Setter Property="FontSize" Value="{StaticResource FontSizeS}" />
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+            <Setter Property="Padding" Value="{StaticResource ThicknessS}" />
+        </Style>
+
+        <Style Selector="ListBox.logViewer > ListBoxItem">
+            <Setter Property="Padding" Value="4,2" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <Style Selector="ListBoxItem.log-debug">
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+        </Style>
+
+        <Style Selector="ListBoxItem.log-info">
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+        </Style>
+
+        <Style Selector="ListBoxItem.log-warning">
+            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor3Brush}" />
+        </Style>
+
+        <Style Selector="ListBoxItem.log-error">
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+            <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+        </Style>
+
+        <Style Selector="TextBlock.log-timestamp">
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.log-level">
+            <Setter Property="Margin" Value="8,0,8,0" />
+            <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+        </Style>
+
+        <Style Selector="TextBlock.log-level.level-debug">
+            <Setter Property="Foreground" Value="Gray" />
+        </Style>
+
+        <Style Selector="TextBlock.log-level.level-info">
+            <Setter Property="Foreground" Value="DodgerBlue" />
+        </Style>
+
+        <Style Selector="TextBlock.log-level.level-warning">
+            <Setter Property="Foreground" Value="Orange" />
+        </Style>
+
+        <Style Selector="TextBlock.log-level.level-error">
+            <Setter Property="Foreground" Value="Red" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+        <!-- Header -->
+        <TextBlock Grid.Row="0"
+                   Text="Logs"
+                   FontSize="{StaticResource FontSizeXXXL}"
+                   FontWeight="{StaticResource FontWeightSemiBold}"
+                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                   Margin="{StaticResource ContentPaddingTop}" />
+
+        <!-- Controls Bar -->
+        <Border Grid.Row="1"
+                Classes="card"
+                Margin="{StaticResource ContentPaddingHorizontalTop}">
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+                <!-- Log Level Filter -->
+                <StackPanel Grid.Column="0"
+                            Orientation="Horizontal"
+                            Spacing="{StaticResource SpacingS}">
+                    <TextBlock Text="Log Level:"
+                               VerticalAlignment="Center"
+                               Classes="field-label" />
+                    <ComboBox ItemsSource="{Binding LogLevels}"
+                              SelectedItem="{Binding SelectedLogLevel}"
+                              MinWidth="120">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- Follow Toggle -->
+                <CheckBox Grid.Column="1"
+                          IsChecked="{Binding IsFollowEnabled}"
+                          Content="Auto-scroll"
+                          Margin="{StaticResource ThicknessLeftL}"
+                          VerticalAlignment="Center" />
+
+                <!-- Action Buttons -->
+                <StackPanel Grid.Column="3"
+                            Orientation="Horizontal"
+                            Spacing="{StaticResource SpacingS}">
+                    <Button Command="{Binding RefreshCommand}"
+                            Content="Refresh"
+                            ToolTip.Tip="Reload logs from buffer" />
+                    <Button Command="{Binding ClearLogsCommand}"
+                            Content="Clear"
+                            ToolTip.Tip="Clear all logs"
+                            IsEnabled="{Binding !IsClearing}" />
+                    <Button Command="{Binding ExportLogsCommand}"
+                            Content="Export"
+                            ToolTip.Tip="Export logs to file" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Log Viewer -->
+        <Border Grid.Row="2"
+                Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                BorderThickness="1"
+                CornerRadius="{StaticResource CornerRadiusM}"
+                Margin="{StaticResource ContentPaddingHorizontalTopBottom}">
+            <ListBox ItemsSource="{Binding LogEntries}"
+                     Classes="logViewer"
+                     HorizontalAlignment="Stretch">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="0">
+                            <TextBlock Text="{Binding Timestamp, StringFormat='[{0:HH:mm:ss.fff}]'}"
+                                       Classes="log-timestamp" />
+                            <TextBlock Text="["
+                                       Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+                            <TextBlock Text="{Binding Level}"
+                                       Classes="log-level level-{Binding Level, Converter={StaticResource LevelToLowerConverter}}" />
+                            <TextBlock Text="]"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+                            <TextBlock Text=" "
+                                       Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+                            <TextBlock Text="{Binding Message}"
+                                       TextWrapping="NoWrap" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="3"
+                Classes="card"
+                Margin="{StaticResource ContentPaddingHorizontalBottom}">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="{Binding StatusMessage}"
+                           VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1"
+                           Text="{Binding LogEntries.Count, StringFormat='{}{0} entries'}"
+                           VerticalAlignment="Center"
+                           Classes="hint" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

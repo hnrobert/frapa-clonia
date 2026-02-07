@@ -2,7 +2,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.Domain.Models;
+using FrapaClonia.UI.Views;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using Avalonia.Controls.ApplicationLifetimes;
+using System.Text.Json;
 // ReSharper disable UnusedParameterInPartialMethod
 
 namespace FrapaClonia.UI.ViewModels;
@@ -14,6 +18,8 @@ public partial class ProxyListViewModel : ObservableObject
 {
     private readonly ILogger<ProxyListViewModel> _logger;
     private readonly IConfigurationService _configurationService;
+    private readonly IValidationService _validationService;
+    private readonly IServiceProvider _serviceProvider;
 
     [ObservableProperty]
     private List<ProxyConfig> _proxies = [];
@@ -46,10 +52,14 @@ public partial class ProxyListViewModel : ObservableObject
 
     public ProxyListViewModel(
         ILogger<ProxyListViewModel> logger,
-        IConfigurationService configurationService)
+        IConfigurationService configurationService,
+        IValidationService validationService,
+        IServiceProvider serviceProvider)
     {
         _logger = logger;
         _configurationService = configurationService;
+        _validationService = validationService;
+        _serviceProvider = serviceProvider;
 
         AddProxyCommand = new RelayCommand(AddProxy);
         EditProxyCommand = new RelayCommand(EditProxy, () => SelectedProxy != null);
@@ -137,8 +147,7 @@ public partial class ProxyListViewModel : ObservableObject
 
     private void FilterProxies()
     {
-        // TODO: Implement filtering and searching
-        // For now, just trigger a refresh
+        // Filtering is implemented in LoadProxiesAsync
         _ = Task.Run(LoadProxiesAsync);
     }
 
@@ -187,17 +196,61 @@ public partial class ProxyListViewModel : ObservableObject
         }
     }
 
-    private void AddProxy()
+    private async void AddProxy()
     {
         _logger.LogInformation("Add proxy clicked");
-        // TODO: Navigate to proxy editor with new proxy
+
+        // Create new proxy and show editor dialog
+        var newProxy = new ProxyConfig();
+        var editorLogger = _serviceProvider.GetRequiredService<ILogger<ProxyEditorViewModel>>();
+        var viewModel = new ProxyEditorViewModel(editorLogger, _configurationService, _validationService, newProxy);
+
+        var editorWindow = new ProxyEditorView
+        {
+            DataContext = viewModel
+        };
+
+        if (Avalonia.Application.Current!.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            var result = await editorWindow.ShowDialog<bool?>(desktop.MainWindow);
+            if (result == true)
+            {
+                // User clicked Save - refresh the list
+                _ = Task.Run(LoadProxiesAsync);
+            }
+        }
     }
 
-    private void EditProxy()
+    private async void EditProxy()
     {
         if (SelectedProxy == null) return;
         _logger.LogInformation("Edit proxy: {ProxyName}", SelectedProxy.Name);
-        // TODO: Navigate to proxy editor with selected proxy
+
+        // Clone the proxy to avoid modifying the original until saved
+        var proxyClone = JsonSerializer.Deserialize<ProxyConfig>(
+            JsonSerializer.Serialize(SelectedProxy),
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        if (proxyClone != null)
+        {
+            var editorLogger = _serviceProvider.GetRequiredService<ILogger<ProxyEditorViewModel>>();
+            var viewModel = new ProxyEditorViewModel(editorLogger, _configurationService, _validationService, proxyClone);
+
+            var editorWindow = new ProxyEditorView
+            {
+                DataContext = viewModel
+            };
+
+            if (Avalonia.Application.Current!.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                var result = await editorWindow.ShowDialog<bool?>(desktop.MainWindow);
+                if (result == true)
+                {
+                    // User clicked Save - refresh the list
+                    _ = Task.Run(LoadProxiesAsync);
+                }
+            }
+        }
     }
 
     private async Task DeleteProxyAsync()
@@ -263,15 +316,104 @@ public partial class ProxyListViewModel : ObservableObject
     private async Task ExportAllAsync()
     {
         _logger.LogInformation("Export all proxies");
-        // TODO: Implement export functionality
-        await Task.CompletedTask;
+
+        try
+        {
+            if (Avalonia.Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+                return;
+
+            var storageProvider = desktop.MainWindow?.StorageProvider;
+            if (storageProvider == null) return;
+
+            // Create save file dialog
+            var file = await storageProvider.SaveFilePickerAsync(new Avalonia.Platform.Storage.FilePickerSaveOptions
+            {
+                Title = "Export Proxies",
+                DefaultExtension = "json",
+                FileTypeChoices = new[]
+                {
+                    new Avalonia.Platform.Storage.FilePickerFileType("JSON Files")
+                    {
+                        Patterns = new[] { "*.json" }
+                    },
+                    new Avalonia.Platform.Storage.FilePickerFileType("All Files")
+                    {
+                        Patterns = new[] { "*" }
+                    }
+                }
+            });
+
+            if (file != null)
+            {
+                await using var stream = await file.OpenWriteAsync();
+                var options = new JsonSerializerOptions { WriteIndented = true };
+                await JsonSerializer.SerializeAsync(stream, Proxies, options);
+                _logger.LogInformation("Exported {Count} proxies to {FilePath}", Proxies.Count, file.Name);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error exporting proxies");
+        }
     }
 
     private async Task ImportAsync()
     {
         _logger.LogInformation("Import proxies");
-        // TODO: Implement import functionality
-        await Task.CompletedTask;
+
+        try
+        {
+            if (Avalonia.Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+                return;
+
+            var storageProvider = desktop.MainWindow?.StorageProvider;
+            if (storageProvider == null) return;
+
+            // Create open file dialog
+            var files = await storageProvider.OpenFilePickerAsync(new Avalonia.Platform.Storage.FilePickerOpenOptions
+            {
+                Title = "Import Proxies",
+                FileTypeFilter = new[]
+                {
+                    new Avalonia.Platform.Storage.FilePickerFileType("JSON Files")
+                    {
+                        Patterns = new[] { "*.json" }
+                    },
+                    new Avalonia.Platform.Storage.FilePickerFileType("All Files")
+                    {
+                        Patterns = new[] { "*" }
+                    }
+                },
+                AllowMultiple = false
+            });
+
+            if (files.Count > 0)
+            {
+                var file = files[0];
+                await using var stream = await file.OpenReadAsync();
+                var importedProxies = await JsonSerializer.DeserializeAsync<List<ProxyConfig>>(stream,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                if (importedProxies != null)
+                {
+                    // Save imported proxies to configuration
+                    var configPath = _configurationService.GetDefaultConfigPath();
+                    var config = await _configurationService.LoadConfigurationAsync(configPath);
+
+                    if (config != null)
+                    {
+                        config.Proxies.AddRange(importedProxies);
+                        await _configurationService.SaveConfigurationAsync(configPath, config);
+                        await LoadProxiesAsync();
+                        _logger.LogInformation("Imported {Count} proxies from {FilePath}", importedProxies.Count, file.Name);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error importing proxies");
+        }
     }
 
     private async Task ClearAllAsync()
