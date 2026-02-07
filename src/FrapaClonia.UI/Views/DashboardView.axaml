@@ -11,443 +11,392 @@
         <vm:DashboardViewModel />
     </Design.DataContext>
 
-    <UserControl.Styles>
-        <Style Selector="Border.card">
-            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" />
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Padding" Value="16" />
-        </Style>
-
-        <Style Selector="Border.card:pointerover">
-            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltHighBrush}" />
-        </Style>
-
-        <Style Selector="TextBlock.sectionTitle">
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-        </Style>
-
-        <Style Selector="TextBlock.pageTitle">
-            <Setter Property="FontSize" Value="28" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-        </Style>
-
-        <Style Selector="TextBlock.label">
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-            <Setter Property="FontSize" Value="13" />
-        </Style>
-
-        <Style Selector="TextBlock.value">
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="FontWeight" Value="Medium" />
-        </Style>
-
-        <Style Selector="Button.actionButton">
-            <Setter Property="Height" Value="36" />
-            <Setter Property="MinWidth" Value="100" />
-            <Setter Property="Padding" Value="16,8" />
-            <Setter Property="CornerRadius" Value="4" />
-        </Style>
-
-        <Style Selector="Button.primaryButton">
-            <Setter Property="Height" Value="40" />
-            <Setter Property="MinWidth" Value="120" />
-            <Setter Property="Padding" Value="20,10" />
-            <Setter Property="CornerRadius" Value="4" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-        </Style>
-
-        <Style Selector="TextBlock.cardTitle">
-            <Setter Property="FontSize" Value="15" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-        </Style>
-
-        <Style Selector="TextBlock.cardDescription">
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-        </Style>
-
-        <Style Selector="Border.statusIndicator">
-            <Setter Property="Width" Value="8" />
-            <Setter Property="Height" Value="8" />
-            <Setter Property="CornerRadius" Value="4" />
-        </Style>
-
-        <Style Selector="Border.statusIndicator.running">
-            <Setter Property="Background" Value="{DynamicResource SystemAccentColor1Brush}" />
-        </Style>
-
-        <Style Selector="Border.statusIndicator.stopped">
-            <Setter Property="Background" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-        </Style>
-    </UserControl.Styles>
-
     <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-        <Panel Margin="24">
-            <Panel.Children>
-                <!-- Main Grid Layout -->
-                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*">
-                    <!-- Page Header -->
-                    <Grid Row="0" ColumnDefinitions="Auto,*">
-                        <TextBlock Grid.Column="0"
-                                   Text="Dashboard"
-                                   Classes="pageTitle" />
+        <Border Margin="24">
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*">
+                <!-- Page Header -->
+                <Grid Row="0" ColumnDefinitions="Auto,*" Margin="0,0,0,24">
+                    <TextBlock Grid.Column="0"
+                               Text="Dashboard"
+                               FontSize="28"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
 
-                        <StackPanel Grid.Column="1"
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="8"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                        <Border Width="8" Height="8"
+                                CornerRadius="9999"
+                                Background="{DynamicResource AppSuccessBrush}">
+                            <Border.Styles>
+                                <Style Selector="Border">
+                                    <Style.Animations>
+                                        <Animation Duration="0:0:1.5" IterationCount="Infinite">
+                                            <KeyFrame Cue="0%">
+                                                <Setter Property="Opacity" Value="1.0" />
+                                            </KeyFrame>
+                                            <KeyFrame Cue="50%">
+                                                <Setter Property="Opacity" Value="0.4" />
+                                            </KeyFrame>
+                                            <KeyFrame Cue="100%">
+                                                <Setter Property="Opacity" Value="1.0" />
+                                            </KeyFrame>
+                                        </Animation>
+                                    </Style.Animations>
+                                </Style>
+                            </Border.Styles>
+                        </Border>
+                        <TextBlock Text="{Binding StatusMessage}"
+                                   FontSize="14"
+                                   FontWeight="Medium"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- Primary Action Bar -->
+                <Border Grid.Row="1"
+                        Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
+                        BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="16">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <!-- Action Buttons -->
+                        <StackPanel Grid.Column="0"
                                     Orientation="Horizontal"
-                                    Spacing="8"
-                                    HorizontalAlignment="Right">
-                            <Border Classes="statusIndicator running">
-                                <Border.Styles>
-                                    <Style Selector="Border">
-                                        <Style.Animations>
-                                            <Animation Duration="0:0:1.5" IterationCount="Infinite">
-                                                <KeyFrame Cue="0%">
-                                                    <Setter Property="Opacity" Value="1.0" />
-                                                </KeyFrame>
-                                                <KeyFrame Cue="50%">
-                                                    <Setter Property="Opacity" Value="0.4" />
-                                                </KeyFrame>
-                                                <KeyFrame Cue="100%">
-                                                    <Setter Property="Opacity" Value="1.0" />
-                                                </KeyFrame>
-                                            </Animation>
-                                        </Style.Animations>
-                                    </Style>
-                                </Border.Styles>
-                            </Border>
-                            <TextBlock Text="{Binding StatusMessage}"
-                                       VerticalAlignment="Center"
-                                       Classes="value" />
-                        </StackPanel>
-                    </Grid>
+                                    Spacing="12"
+                                    VerticalAlignment="Center">
+                            <Button Content="Start Frpc"
+                                    Command="{Binding StartFrpcCommand}"
+                                    Background="{DynamicResource SystemAccentColor}"
+                                    Foreground="{DynamicResource SystemControlForegroundAltMediumHighBrush}"
+                                    FontWeight="SemiBold"
+                                    Height="40"
+                                    Padding="20,10"
+                                    CornerRadius="6" />
 
-                    <!-- Primary Action Bar -->
-                    <Border Grid.Row="1"
-                            Classes="card"
-                            Margin="0,24,0,0">
-                        <Grid ColumnDefinitions="Auto,*,Auto">
-                            <StackPanel Grid.Column="0"
-                                        Orientation="Horizontal"
-                                        Spacing="12"
-                                        VerticalAlignment="Center">
-                                <Button Content="Start Frpc"
-                                        Command="{Binding StartFrpcCommand}"
-                                        Classes="primaryButton">
-                                    <Button.Styles>
-                                        <Style Selector="Button">
-                                            <Setter Property="Background" Value="{DynamicResource SystemAccentColor1Brush}" />
-                                            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundAltMediumHighBrush}" />
-                                        </Style>
-                                        <Style Selector="Button:pointerover">
-                                            <Setter Property="Background" Value="{DynamicResource SystemAccentColor1Brush}" />
-                                            <Setter Property="Opacity" Value="0.9" />
-                                        </Style>
-                                        <Style Selector="Button:disabled /template/ ContentPresenter">
-                                            <Setter Property="Background" Value="{DynamicResource SystemControlDisabledBaseMediumLowBrush}" />
-                                            <Setter Property="Foreground" Value="{DynamicResource SystemControlDisabledBaseMediumBrush}" />
-                                        </Style>
-                                    </Button.Styles>
-                                </Button>
-
-                                <Button Content="Stop"
-                                        Command="{Binding StopFrpcCommand}"
-                                        Classes="actionButton">
-                                    <Button.Styles>
-                                        <Style Selector="Button">
-                                            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltHighBrush}" />
-                                            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-                                            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-                                            <Setter Property="BorderThickness" Value="1" />
-                                        </Style>
-                                        <Style Selector="Button:pointerover">
-                                            <Setter Property="Background" Value="#DC2626" />
-                                            <Setter Property="Foreground" Value="White" />
-                                            <Setter Property="BorderBrush" Value="#DC2626" />
-                                        </Style>
-                                        <Style Selector="Button:disabled /template/ ContentPresenter">
-                                            <Setter Property="Background" Value="{DynamicResource SystemControlDisabledBaseMediumLowBrush}" />
-                                            <Setter Property="BorderBrush" Value="Transparent" />
-                                        </Style>
-                                    </Button.Styles>
-                                </Button>
-
-                                <Button Content="Restart"
-                                        Command="{Binding RestartFrpcCommand}"
-                                        Classes="actionButton">
-                                    <Button.Styles>
-                                        <Style Selector="Button">
-                                            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltHighBrush}" />
-                                            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-                                            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-                                            <Setter Property="BorderThickness" Value="1" />
-                                        </Style>
-                                        <Style Selector="Button:pointerover">
-                                            <Setter Property="Background" Value="{DynamicResource SystemAccentColor2Brush}" />
-                                            <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor2Brush}" />
-                                        </Style>
-                                        <Style Selector="Button:disabled /template/ ContentPresenter">
-                                            <Setter Property="Background" Value="{DynamicResource SystemControlDisabledBaseMediumLowBrush}" />
-                                            <Setter Property="BorderBrush" Value="Transparent" />
-                                        </Style>
-                                    </Button.Styles>
-                                </Button>
-                            </StackPanel>
-
-                            <Border Grid.Column="2"
+                            <Button Content="Stop"
+                                    Command="{Binding StopFrpcCommand}"
                                     Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
-                                    CornerRadius="6"
-                                    Padding="12,8"
-                                    HorizontalAlignment="Right">
-                                <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
-                                    <TextBlock Grid.Row="0" Grid.Column="0"
-                                               Text="Process ID:"
-                                               Classes="label" />
-                                    <TextBlock Grid.Row="0" Grid.Column="1"
-                                               Text="{Binding FrpcProcessId, TargetNullValue='N/A'}"
-                                               Classes="value"
-                                               Margin="8,0,0,0" />
+                                    Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                                    BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                    BorderThickness="1"
+                                    Height="36"
+                                    Padding="16,8"
+                                    CornerRadius="6">
+                                <Button.Styles>
+                                    <Style Selector="Button:pointerover">
+                                        <Setter Property="Background" Value="#DC2626" />
+                                        <Setter Property="Foreground" Value="White" />
+                                        <Setter Property="BorderBrush" Value="#DC2626" />
+                                    </Style>
+                                </Button.Styles>
+                            </Button>
 
-                                    <TextBlock Grid.Row="1" Grid.Column="0"
-                                               Text="Server:"
-                                               Classes="label"
-                                               Margin="0,4,0,0" />
-                                    <TextBlock Grid.Row="1" Grid.Column="1"
-                                               Text="{Binding ServerAddress}"
-                                               Classes="value"
-                                               Margin="8,4,0,0" />
-                                </Grid>
-                            </Border>
+                            <Button Content="Restart"
+                                    Command="{Binding RestartFrpcCommand}"
+                                    Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
+                                    Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                                    BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                    BorderThickness="1"
+                                    Height="36"
+                                    Padding="16,8"
+                                    CornerRadius="6">
+                                <Button.Styles>
+                                    <Style Selector="Button:pointerover">
+                                        <Setter Property="Background" Value="{DynamicResource SystemAccentColor2Brush}" />
+                                        <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor2Brush}" />
+                                    </Style>
+                                </Button.Styles>
+                            </Button>
+                        </StackPanel>
+
+                        <!-- Status Panel -->
+                        <Border Grid.Column="2"
+                                Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
+                                CornerRadius="6"
+                                Padding="12,8"
+                                HorizontalAlignment="Right">
+                            <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
+                                <TextBlock Grid.Row="0" Grid.Column="0"
+                                           Text="Process ID:"
+                                           FontSize="13"
+                                           FontWeight="Medium"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                                <TextBlock Grid.Row="0" Grid.Column="1"
+                                           Text="{Binding FrpcProcessId, TargetNullValue='N/A'}"
+                                           FontSize="13"
+                                           FontWeight="Medium"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                                           Margin="8,0,0,0" />
+
+                                <TextBlock Grid.Row="1" Grid.Column="0"
+                                           Text="Server:"
+                                           FontSize="13"
+                                           FontWeight="Medium"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                           Margin="0,4,0,0" />
+                                <TextBlock Grid.Row="1" Grid.Column="1"
+                                           Text="{Binding ServerAddress}"
+                                           FontSize="13"
+                                           FontWeight="Medium"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                                           Margin="8,4,0,0" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- Section Header -->
+                <TextBlock Grid.Row="2"
+                           Text="Quick Access"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                           Margin="0,24,0,0" />
+
+                <!-- Quick Access Cards -->
+                <Grid Grid.Row="3"
+                      ColumnDefinitions="*,*,*,*"
+                      ColumnSpacing="12"
+                      Margin="0,12,0,0">
+                    <!-- Server Configuration Card -->
+                    <Border Grid.Column="0"
+                            Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
+                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="16">
+                        <Grid RowDefinitions="Auto,*,Auto" Height="120">
+                            <TextBlock Grid.Row="0"
+                                       Text="Server"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                            <TextBlock Grid.Row="1"
+                                       Text="Configure frpc server connection"
+                                       FontSize="13"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center" />
+                            <Button Grid.Row="2"
+                                    Content="Configure"
+                                    Command="{Binding NavigateToServerConfigCommand}"
+                                    HorizontalAlignment="Left"
+                                    Height="36"
+                                    MinWidth="100"
+                                    Padding="16,8"
+                                    CornerRadius="4" />
                         </Grid>
                     </Border>
 
-                    <!-- Section Header -->
-                    <TextBlock Grid.Row="2"
-                               Text="Quick Access"
-                               Classes="sectionTitle"
-                               Margin="0,24,0,12" />
+                    <!-- Proxy Management Card -->
+                    <Border Grid.Column="1"
+                            Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
+                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="16">
+                        <Grid RowDefinitions="Auto,*,Auto" Height="120">
+                            <TextBlock Grid.Row="0"
+                                       Text="Proxies"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                            <TextBlock Grid.Row="1"
+                                       Text="Manage proxy configurations"
+                                       FontSize="13"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center" />
+                            <Button Grid.Row="2"
+                                    Content="Manage"
+                                    Command="{Binding NavigateToProxyListCommand}"
+                                    HorizontalAlignment="Left"
+                                    Height="36"
+                                    MinWidth="100"
+                                    Padding="16,8"
+                                    CornerRadius="4" />
+                        </Grid>
+                    </Border>
 
-                    <!-- Quick Access Cards -->
-                    <Grid Grid.Row="3"
-                          ColumnDefinitions="*,*,*,*"
-                          ColumnSpacing="12">
-                        <!-- Server Configuration Card -->
-                        <Border Grid.Column="0"
-                                Classes="card"
-                                IsHitTestVisible="True">
-                            <Border.Styles>
-                                <Style Selector="Border:pointerover">
-                                    <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltHighBrush}" />
-                                </Style>
-                            </Border.Styles>
-                            <Grid RowDefinitions="Auto,*,Auto" Height="120">
-                                <TextBlock Grid.Row="0"
-                                           Text="Server"
-                                           Classes="cardTitle" />
+                    <!-- Deployment Card -->
+                    <Border Grid.Column="2"
+                            Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
+                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="16">
+                        <Grid RowDefinitions="Auto,*,Auto" Height="120">
+                            <TextBlock Grid.Row="0"
+                                       Text="Deploy"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                            <TextBlock Grid.Row="1"
+                                       Text="Download and configure frpc"
+                                       FontSize="13"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center" />
+                            <Button Grid.Row="2"
+                                    Content="Setup"
+                                    Command="{Binding NavigateToDeploymentCommand}"
+                                    HorizontalAlignment="Left"
+                                    Height="36"
+                                    MinWidth="100"
+                                    Padding="16,8"
+                                    CornerRadius="4" />
+                        </Grid>
+                    </Border>
 
-                                <TextBlock Grid.Row="1"
-                                           Text="Configure frpc server connection"
-                                           Classes="cardDescription"
-                                           VerticalAlignment="Center" />
-
-                                <Button Grid.Row="2"
-                                        Content="Configure"
-                                        Command="{Binding NavigateToServerConfigCommand}"
-                                        HorizontalAlignment="Left"
-                                        Classes="actionButton"
-                                        Padding="12,6" />
-                            </Grid>
-                        </Border>
-
-                        <!-- Proxy Management Card -->
-                        <Border Grid.Column="1"
-                                Classes="card">
-                            <Border.Styles>
-                                <Style Selector="Border:pointerover">
-                                    <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltHighBrush}" />
-                                </Style>
-                            </Border.Styles>
-                            <Grid RowDefinitions="Auto,*,Auto" Height="120">
-                                <TextBlock Grid.Row="0"
-                                           Text="Proxies"
-                                           Classes="cardTitle" />
-
-                                <TextBlock Grid.Row="1"
-                                           Text="Manage proxy configurations"
-                                           Classes="cardDescription"
-                                           VerticalAlignment="Center" />
-
-                                <Button Grid.Row="2"
-                                        Content="Manage"
-                                        Command="{Binding NavigateToProxyListCommand}"
-                                        HorizontalAlignment="Left"
-                                        Classes="actionButton"
-                                        Padding="12,6" />
-                            </Grid>
-                        </Border>
-
-                        <!-- Deployment Card -->
-                        <Border Grid.Column="2"
-                                Classes="card">
-                            <Border.Styles>
-                                <Style Selector="Border:pointerover">
-                                    <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltHighBrush}" />
-                                </Style>
-                            </Border.Styles>
-                            <Grid RowDefinitions="Auto,*,Auto" Height="120">
-                                <TextBlock Grid.Row="0"
-                                           Text="Deploy"
-                                           Classes="cardTitle" />
-
-                                <TextBlock Grid.Row="1"
-                                           Text="Download and configure frpc"
-                                           Classes="cardDescription"
-                                           VerticalAlignment="Center" />
-
-                                <Button Grid.Row="2"
-                                        Content="Setup"
-                                        Command="{Binding NavigateToDeploymentCommand}"
-                                        HorizontalAlignment="Left"
-                                        Classes="actionButton"
-                                        Padding="12,6" />
-                            </Grid>
-                        </Border>
-
-                        <!-- Logs Card -->
-                        <Border Grid.Column="3"
-                                Classes="card">
-                            <Border.Styles>
-                                <Style Selector="Border:pointerover">
-                                    <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltHighBrush}" />
-                                </Style>
-                            </Border.Styles>
-                            <Grid RowDefinitions="Auto,*,Auto" Height="120">
-                                <TextBlock Grid.Row="0"
-                                           Text="Logs"
-                                           Classes="cardTitle" />
-
-                                <TextBlock Grid.Row="1"
-                                           Text="View real-time logs"
-                                           Classes="cardDescription"
-                                           VerticalAlignment="Center" />
-
-                                <Button Grid.Row="2"
-                                        Content="View"
-                                        Command="{Binding NavigateToLogsCommand}"
-                                        HorizontalAlignment="Left"
-                                        Classes="actionButton"
-                                        Padding="12,6" />
-                            </Grid>
-                        </Border>
-                    </Grid>
-
-                    <!-- Section Header -->
-                    <TextBlock Grid.Row="4"
-                               Text="Overview"
-                               Classes="sectionTitle"
-                               Margin="0,24,0,12" />
-
-                    <!-- Overview Stats -->
-                    <Grid Grid.Row="5"
-                          ColumnDefinitions="*,*,*"
-                          ColumnSpacing="12">
-                        <!-- Proxy Count -->
-                        <Border Grid.Column="0" Classes="card">
-                            <Grid ColumnDefinitions="Auto,*">
-                                <Border Grid.Column="0"
-                                        Width="48"
-                                        Height="48"
-                                        CornerRadius="8"
-                                        Background="{DynamicResource SystemAccentColor1Brush}"
-                                        Margin="0,0,12,0">
-                                    <TextBlock Text="P"
-                                               FontSize="24"
-                                               FontWeight="Bold"
-                                               Foreground="{DynamicResource SystemControlForegroundAltMediumHighBrush}"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center" />
-                                </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding ProxyCount, StringFormat={}{0}}"
-                                               FontSize="24"
-                                               FontWeight="SemiBold"
-                                               Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-                                    <TextBlock Text="Active Proxies"
-                                               Classes="label"
-                                               Margin="0,2,0,0" />
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-
-                        <!-- Configuration Status -->
-                        <Border Grid.Column="1" Classes="card">
-                            <Grid ColumnDefinitions="Auto,*">
-                                <Border Grid.Column="0"
-                                        Width="48"
-                                        Height="48"
-                                        CornerRadius="8"
-                                        Background="{DynamicResource SystemAccentColor2Brush}"
-                                        Margin="0,0,12,0">
-                                    <TextBlock Text="C"
-                                               FontSize="24"
-                                               FontWeight="Bold"
-                                               Foreground="{DynamicResource SystemControlForegroundAltMediumHighBrush}"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center" />
-                                </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock FontSize="14"
-                                               FontWeight="SemiBold"
-                                               Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
-                                               Text="Configured">
-                                        <TextBlock.Styles>
-                                            <Style Selector="TextBlock">
-                                                <Style.Animations>
-                                                    <Animation Duration="0:0:0.2" FillMode="Forward">
-                                                        <KeyFrame Cue="100%">
-                                                            <Setter Property="Opacity" Value="1" />
-                                                        </KeyFrame>
-                                                    </Animation>
-                                                </Style.Animations>
-                                            </Style>
-                                        </TextBlock.Styles>
-                                    </TextBlock>
-                                    <TextBlock Text="Configuration"
-                                               Classes="label"
-                                               Margin="0,2,0,0" />
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-
-                        <!-- Recent Activity -->
-                        <Border Grid.Column="2" Classes="card">
-                            <Grid RowDefinitions="Auto,*">
-                                <TextBlock Grid.Row="0"
-                                           Text="Recent Activity"
-                                           Classes="cardTitle" />
-                                <Border Grid.Row="1"
-                                        Background="{DynamicResource SystemControlPageBackgroundTransparent}"
-                                        CornerRadius="4"
-                                        Padding="8"
-                                        VerticalAlignment="Center"
-                                        MinHeight="48">
-                                    <TextBlock Text="{Binding LastLogLine}"
-                                               FontFamily="Consolas,Monospace"
-                                               FontSize="11"
-                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                               TextWrapping="Wrap"
-                                               TextTrimming="CharacterEllipsis" />
-                                </Border>
-                            </Grid>
-                        </Border>
-                    </Grid>
+                    <!-- Logs Card -->
+                    <Border Grid.Column="3"
+                            Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
+                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="16">
+                        <Grid RowDefinitions="Auto,*,Auto" Height="120">
+                            <TextBlock Grid.Row="0"
+                                       Text="Logs"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                            <TextBlock Grid.Row="1"
+                                       Text="View real-time logs"
+                                       FontSize="13"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center" />
+                            <Button Grid.Row="2"
+                                    Content="View"
+                                    Command="{Binding NavigateToLogsCommand}"
+                                    HorizontalAlignment="Left"
+                                    Height="36"
+                                    MinWidth="100"
+                                    Padding="16,8"
+                                    CornerRadius="4" />
+                        </Grid>
+                    </Border>
                 </Grid>
-            </Panel.Children>
-        </Panel>
+
+                <!-- Section Header -->
+                <TextBlock Grid.Row="4"
+                           Text="Overview"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                           Margin="0,24,0,0" />
+
+                <!-- Overview Stats -->
+                <Grid Grid.Row="5"
+                      ColumnDefinitions="*,*,*"
+                      ColumnSpacing="12"
+                      Margin="0,12,0,0">
+                    <!-- Proxy Count -->
+                    <Border Grid.Column="0"
+                            Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
+                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="16">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Border Grid.Column="0"
+                                    Width="48"
+                                    Height="48"
+                                    CornerRadius="6"
+                                    Background="{DynamicResource SystemAccentColor}"
+                                    Margin="0,0,12,0">
+                                <TextBlock Text="P"
+                                           FontSize="24"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource SystemControlForegroundAltMediumHighBrush}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding ProxyCount, StringFormat={}{0}}"
+                                           FontSize="24"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                                <TextBlock Text="Active Proxies"
+                                           FontSize="13"
+                                           FontWeight="Medium"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                           Margin="0,2,0,0" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Configuration Status -->
+                    <Border Grid.Column="1"
+                            Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
+                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="16">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Border Grid.Column="0"
+                                    Width="48"
+                                    Height="48"
+                                    CornerRadius="6"
+                                    Background="{DynamicResource SystemAccentColor}"
+                                    Margin="0,0,12,0">
+                                <TextBlock Text="C"
+                                           FontSize="24"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource SystemControlForegroundAltMediumHighBrush}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="Configured"
+                                           FontSize="16"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                                <TextBlock Text="Configuration"
+                                           FontSize="13"
+                                           FontWeight="Medium"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                           Margin="0,2,0,0" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Recent Activity -->
+                    <Border Grid.Column="2"
+                            Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
+                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="16">
+                        <Grid RowDefinitions="Auto,*">
+                            <TextBlock Grid.Row="0"
+                                       Text="Recent Activity"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                            <Border Grid.Row="1"
+                                    Background="{DynamicResource SystemControlPageBackgroundTransparent}"
+                                    CornerRadius="4"
+                                    Padding="8"
+                                    VerticalAlignment="Center"
+                                    MinHeight="48"
+                                    Margin="0,8,0,0">
+                                <TextBlock Text="{Binding LastLogLine}"
+                                           FontFamily="Consolas,Monospace"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                           TextWrapping="Wrap"
+                                           TextTrimming="CharacterEllipsis" />
+                            </Border>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Border>
     </ScrollViewer>
 </UserControl>

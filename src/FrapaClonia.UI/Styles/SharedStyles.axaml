@@ -1,0 +1,251 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Card Styles -->
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusL}" />
+        <Setter Property="Padding" Value="{StaticResource ThicknessCard}" />
+    </Style>
+
+    <Style Selector="Border.card:pointerover">
+        <Setter Property="BorderBrush" Value="{DynamicResource AppPrimaryBrush}" />
+    </Style>
+
+    <!-- Section Card -->
+    <Style Selector="Border.section-card">
+        <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltLowBrush}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusM}" />
+        <Setter Property="Padding" Value="{StaticResource ThicknessCard}" />
+        <Setter Property="Margin" Value="{StaticResource ThicknessBottomM}" />
+    </Style>
+
+    <!-- Settings Card -->
+    <Style Selector="Border.settings-card">
+        <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusL}" />
+        <Setter Property="Padding" Value="{StaticResource ThicknessL}" />
+        <Setter Property="Margin" Value="{StaticResource ThicknessBottomL}" />
+    </Style>
+
+    <!-- Text Styles -->
+    <Style Selector="TextBlock.pageTitle">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeXXXL}" />
+        <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+        <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.heading">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
+        <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+        <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+        <Setter Property="Margin" Value="{StaticResource ThicknessBottomS}" />
+    </Style>
+
+    <Style Selector="TextBlock.sectionTitle">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
+        <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+        <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.section-header">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeS}" />
+        <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+        <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.field-label, TextBlock.label">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
+        <Setter Property="FontWeight" Value="{StaticResource FontWeightMedium}" />
+        <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.value">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
+        <Setter Property="FontWeight" Value="{StaticResource FontWeightMedium}" />
+        <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.hint, TextBlock.field-description, TextBlock.hint-text">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeS}" />
+        <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style Selector="TextBlock.cardTitle">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeL}" />
+        <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+        <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.cardDescription">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
+        <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <!-- Button Styles -->
+    <Style Selector="Button.primary">
+        <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusM}" />
+        <Setter Property="Padding" Value="{StaticResource ThicknessHorizontalM}" />
+        <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+        <Setter Property="MinHeight" Value="{StaticResource ButtonHeightL}" />
+    </Style>
+
+    <Style Selector="Button.primary:pointerover">
+        <Setter Property="Background" Value="{DynamicResource AppPrimaryHoverBrush}" />
+    </Style>
+
+    <Style Selector="Button.primary:disabled /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SystemControlDisabledBaseMediumLowBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource SystemControlDisabledBaseMediumBrush}" />
+    </Style>
+
+    <Style Selector="Button.secondary">
+        <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltLowBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusM}" />
+        <Setter Property="Padding" Value="{StaticResource ThicknessHorizontalM}" />
+        <Setter Property="MinHeight" Value="{StaticResource ButtonHeightL}" />
+    </Style>
+
+    <Style Selector="Button.secondary:pointerover">
+        <Setter Property="Background" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+    </Style>
+
+    <Style Selector="Button.secondary:disabled /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SystemControlDisabledBaseMediumLowBrush}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+
+    <Style Selector="Button.destructive">
+        <Setter Property="Foreground" Value="{DynamicResource AppErrorBrush}" />
+    </Style>
+
+    <Style Selector="Button.destructive:pointerover">
+        <Setter Property="Background" Value="{DynamicResource AppErrorBrush}" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+
+    <Style Selector="Button.action-button">
+        <Setter Property="Height" Value="{StaticResource ButtonHeightL}" />
+        <Setter Property="MinWidth" Value="100" />
+        <Setter Property="Padding" Value="{StaticResource ThicknessHorizontalM}" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusS}" />
+    </Style>
+
+    <!-- Input Styles -->
+    <Style Selector="TextBox.input-control, ComboBox.input-control, NumericUpDown.input-control">
+        <Setter Property="MinHeight" Value="{StaticResource InputHeightM}" />
+        <Setter Property="Padding" Value="{StaticResource ThicknessHorizontalM}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- Status Indicators -->
+    <Style Selector="Border.statusIndicator">
+        <Setter Property="Width" Value="8" />
+        <Setter Property="Height" Value="8" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusFull}" />
+    </Style>
+
+    <Style Selector="Border.statusIndicator.running">
+        <Setter Property="Background" Value="{DynamicResource AppSuccessBrush}" />
+    </Style>
+
+    <Style Selector="Border.statusIndicator.stopped">
+        <Setter Property="Background" Value="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
+    </Style>
+
+    <Style Selector="Border.statusIndicator.error">
+        <Setter Property="Background" Value="{DynamicResource AppErrorBrush}" />
+    </Style>
+
+    <!-- Status Text Colors -->
+    <Style Selector="TextBlock.status-error">
+        <Setter Property="Foreground" Value="{DynamicResource AppErrorBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.status-warning">
+        <Setter Property="Foreground" Value="{DynamicResource AppWarningBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.status-success">
+        <Setter Property="Foreground" Value="{DynamicResource AppSuccessBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.status-info">
+        <Setter Property="Foreground" Value="{DynamicResource AppInfoBrush}" />
+    </Style>
+
+    <!-- Badge Styles -->
+    <Style Selector="Border.typeBadge">
+        <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusS}" />
+        <Setter Property="Padding" Value="6,3" />
+    </Style>
+
+    <Style Selector="Border.typeBadge TextBlock">
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeS}" />
+        <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+    </Style>
+
+    <!-- Navigation Styles -->
+    <Style Selector="Button.nav-button">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="Padding" Value="{StaticResource ThicknessL}" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource SystemControlPageTextBaseHighBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusS}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBase}" />
+        <Setter Property="MinHeight" Value="40" />
+    </Style>
+
+    <Style Selector="Button.nav-button:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+    </Style>
+
+    <Style Selector="Button.nav-button:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumBrush}" />
+    </Style>
+
+    <Style Selector="Button.nav-button:focus">
+        <Setter Property="BorderBrush" Value="{DynamicResource SystemControlFocusVisualFocusBrush}" />
+        <Setter Property="BorderThickness" Value="2" />
+    </Style>
+
+    <Style Selector="Button.nav-button:disabled">
+        <Setter Property="Opacity" Value="0.5" />
+    </Style>
+
+    <Style Selector="Path.nav-icon">
+        <Setter Property="Width" Value="{StaticResource IconSizeL}" />
+        <Setter Property="Height" Value="{StaticResource IconSizeL}" />
+        <Setter Property="Stretch" Value="Uniform" />
+        <Setter Property="Fill" Value="{DynamicResource SystemControlPageTextBaseMediumBrush}" />
+    </Style>
+
+    <Style Selector="Button.nav-button:pointerover Path.nav-icon">
+        <Setter Property="Fill" Value="{DynamicResource SystemControlHighlightAltBaseHighBrush}" />
+    </Style>
+
+    <!-- Separators -->
+    <Style Selector="Separator.section">
+        <Setter Property="Margin" Value="{StaticResource ThicknessVerticalM}" />
+        <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+    </Style>
+
+</Styles>

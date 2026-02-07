@@ -20,4 +20,8 @@
     <EnableAotAnalyzer>true</EnableAotAnalyzer>
   </PropertyGroup>
 
+  <ItemGroup>
+    <AvaloniaResource Include="Styles\**\*.axaml" />
+  </ItemGroup>
+
 </Project>

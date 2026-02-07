@@ -51,6 +51,6 @@ public partial class MainWindowViewModel : ObservableObject
     private void Navigate(string page)
     {
         _navigation.NavigateTo(page);
-        _logger.LogInformation("Navigated to: {Page}", page);
+        // _logger.LogInformation("Navigated to: {Page}", page);
     }
 }
