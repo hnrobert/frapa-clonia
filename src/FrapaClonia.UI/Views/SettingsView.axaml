@@ -12,39 +12,7 @@
     </Design.DataContext>
 
     <UserControl.Styles>
-        <!-- Settings dropdown -->
-        <Style Selector="ComboBox.settings-dropdown">
-            <Setter Property="MinWidth" Value="240" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-        </Style>
-
-        <!-- Settings checkbox -->
-        <Style Selector="CheckBox.settings-checkbox">
-            <Setter Property="Margin" Value="{StaticResource ThicknessTopS}" />
-        </Style>
-
-        <Style Selector="CheckBox.settings-checkbox > ContentPresenter">
-            <Setter Property="Margin" Value="{StaticResource ThicknessLeftS}" />
-        </Style>
-
-        <!-- Readonly value -->
-        <Style Selector="TextBlock.readonly-value">
-            <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
-            <Setter Property="FontFamily" Value="{DynamicResource MonoFontFamily}" />
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-        </Style>
-
-        <!-- Primary action button -->
-        <Style Selector="Button.action-button.primary">
-            <Setter Property="Background" Value="{DynamicResource SystemAccentColor1Brush}" />
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundAltHighBrush}" />
-            <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
-        </Style>
-
-        <Style Selector="Button.action-button.primary:pointerover">
-            <Setter Property="Background" Value="{DynamicResource SystemAccentColor2Brush}" />
-        </Style>
+        <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
     </UserControl.Styles>
 
     <ScrollViewer HorizontalScrollBarVisibility="Disabled">

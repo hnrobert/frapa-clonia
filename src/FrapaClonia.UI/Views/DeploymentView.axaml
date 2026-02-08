@@ -17,6 +17,10 @@
         <converters:BoolToDeployedStringConverter x:Key="BoolToDeployedStringConverter" />
     </UserControl.Resources>
 
+    <UserControl.Styles>
+      <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
+    </UserControl.Styles>
+
     <ScrollViewer HorizontalScrollBarVisibility="Disabled">
         <Panel Margin="{StaticResource ContentPadding}">
             <StackPanel Spacing="{StaticResource SpacingL}" MaxWidth="800">
