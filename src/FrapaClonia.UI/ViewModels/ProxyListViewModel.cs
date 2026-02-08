@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Avalonia.Threading;
 using Avalonia.Controls.ApplicationLifetimes;
 using System.Text.Json;
+using FrapaClonia.Domain;
+
 // ReSharper disable UnusedParameterInPartialMethod
 
 namespace FrapaClonia.UI.ViewModels;
@@ -153,7 +155,7 @@ public partial class ProxyListViewModel : ObservableObject
         _ = LoadProxiesAsync();
     }
 
-    public async Task LoadProxiesAsync()
+    private async Task LoadProxiesAsync()
     {
         await Dispatcher.UIThread.InvokeAsync(async () =>
         {
@@ -215,14 +217,14 @@ public partial class ProxyListViewModel : ObservableObject
             DataContext = viewModel
         };
 
-        if (Avalonia.Application.Current!.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        if (Avalonia.Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+            return;
+        if (desktop.MainWindow == null) return;
+        var result = await editorWindow.ShowDialog<bool?>(desktop.MainWindow);
+        if (result == true)
         {
-            var result = await editorWindow.ShowDialog<bool?>(desktop.MainWindow);
-            if (result == true)
-            {
-                // User clicked Save - refresh the list
-                _ = Task.Run(LoadProxiesAsync);
-            }
+            // User clicked Save - refresh the list
+            _ = Task.Run(LoadProxiesAsync);
         }
     }
 
@@ -232,29 +234,26 @@ public partial class ProxyListViewModel : ObservableObject
         _logger.LogInformation("Edit proxy: {ProxyName}", SelectedProxy.Name);
 
         // Clone the proxy to avoid modifying the original until saved
-        var proxyClone = JsonSerializer.Deserialize<ProxyConfig>(
-            JsonSerializer.Serialize(SelectedProxy),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var json = JsonSerializer.Serialize(SelectedProxy, FrpClientConfigContext.Default.ProxyConfig);
+        var proxyClone = JsonSerializer.Deserialize(json, FrpClientConfigContext.Default.ProxyConfig);
 
-        if (proxyClone != null)
+        if (proxyClone == null) return;
+        var editorLogger = _serviceProvider.GetRequiredService<ILogger<ProxyEditorViewModel>>();
+        var viewModel = new ProxyEditorViewModel(editorLogger, _configurationService, _validationService, proxyClone);
+
+        var editorWindow = new ProxyEditorView
         {
-            var editorLogger = _serviceProvider.GetRequiredService<ILogger<ProxyEditorViewModel>>();
-            var viewModel = new ProxyEditorViewModel(editorLogger, _configurationService, _validationService, proxyClone);
+            DataContext = viewModel
+        };
 
-            var editorWindow = new ProxyEditorView
-            {
-                DataContext = viewModel
-            };
-
-            if (Avalonia.Application.Current!.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                var result = await editorWindow.ShowDialog<bool?>(desktop.MainWindow);
-                if (result == true)
-                {
-                    // User clicked Save - refresh the list
-                    _ = Task.Run(LoadProxiesAsync);
-                }
-            }
+        if (Avalonia.Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+            return;
+        if (desktop.MainWindow == null) return;
+        var result = await editorWindow.ShowDialog<bool?>(desktop.MainWindow);
+        if (result == true)
+        {
+            // User clicked Save - refresh the list
+            _ = Task.Run(LoadProxiesAsync);
         }
     }
 
@@ -309,7 +308,7 @@ public partial class ProxyListViewModel : ObservableObject
             Subdomain = SelectedProxy.Subdomain,
             Transport = SelectedProxy.Transport,
             HealthCheck = SelectedProxy.HealthCheck,
-            Plugin = SelectedProxy.Plugin,
+            Plugin = SelectedProxy.Plugin
             // Copy other properties as needed
         };
 
@@ -351,8 +350,7 @@ public partial class ProxyListViewModel : ObservableObject
             if (file != null)
             {
                 await using var stream = await file.OpenWriteAsync();
-                var options = new JsonSerializerOptions { WriteIndented = true };
-                await JsonSerializer.SerializeAsync(stream, Proxies, options);
+                await JsonSerializer.SerializeAsync(stream, Proxies, FrpClientConfigContext.Default.ListProxyConfig);
                 _logger.LogInformation("Exported {Count} proxies to {FilePath}", Proxies.Count, file.Name);
             }
         }
@@ -396,8 +394,7 @@ public partial class ProxyListViewModel : ObservableObject
             {
                 var file = files[0];
                 await using var stream = await file.OpenReadAsync();
-                var importedProxies = await JsonSerializer.DeserializeAsync<List<ProxyConfig>>(stream,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var importedProxies = await JsonSerializer.DeserializeAsync(stream, FrpClientConfigContext.Default.ListProxyConfig);
 
                 if (importedProxies != null)
                 {

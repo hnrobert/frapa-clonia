@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FrapaClonia.Core\FrapaClonia.Core.csproj" />
     <ProjectReference Include="..\FrapaClonia.Infrastructure\FrapaClonia.Infrastructure.csproj" />
+    <ProjectReference Include="..\FrapaClonia.Domain\FrapaClonia.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

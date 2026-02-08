@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Avalonia.Threading;
 using Avalonia.Controls.ApplicationLifetimes;
 using System.Text.Json;
+using FrapaClonia.Domain;
 
 namespace FrapaClonia.UI.ViewModels;
 
@@ -155,6 +156,7 @@ public partial class VisitorListViewModel : ObservableObject
 
         if (Avalonia.Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
             return;
+        if (desktop.MainWindow == null) return;
         var result = await editorWindow.ShowDialog<bool?>(desktop.MainWindow);
         if (result == true)
         {
@@ -169,29 +171,26 @@ public partial class VisitorListViewModel : ObservableObject
         _logger.LogInformation("Edit visitor: {VisitorName}", SelectedVisitor.Name);
 
         // Clone the visitor to avoid modifying the original until saved
-        var visitorClone = JsonSerializer.Deserialize<VisitorConfig>(
-            JsonSerializer.Serialize(SelectedVisitor),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var json = JsonSerializer.Serialize(SelectedVisitor, FrpClientConfigContext.Default.VisitorConfig);
+        var visitorClone = JsonSerializer.Deserialize(json, FrpClientConfigContext.Default.VisitorConfig);
 
-        if (visitorClone != null)
+        if (visitorClone == null) return;
+        var editorLogger = _serviceProvider.GetRequiredService<ILogger<VisitorEditorViewModel>>();
+        var viewModel = new VisitorEditorViewModel(editorLogger, _configurationService, _validationService, visitorClone);
+
+        var editorWindow = new VisitorEditorView
         {
-            var editorLogger = _serviceProvider.GetRequiredService<ILogger<VisitorEditorViewModel>>();
-            var viewModel = new VisitorEditorViewModel(editorLogger, _configurationService, _validationService, visitorClone);
+            DataContext = viewModel
+        };
 
-            var editorWindow = new VisitorEditorView
-            {
-                DataContext = viewModel
-            };
-
-            if (Avalonia.Application.Current!.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                var result = await editorWindow.ShowDialog<bool?>(desktop.MainWindow);
-                if (result == true)
-                {
-                    // User clicked Save - refresh the list
-                    _ = Task.Run(LoadVisitorsAsync);
-                }
-            }
+        if (Avalonia.Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime
+            desktop) return;
+        if (desktop.MainWindow == null) return;
+        var result = await editorWindow.ShowDialog<bool?>(desktop.MainWindow);
+        if (result == true)
+        {
+            // User clicked Save - refresh the list
+            _ = Task.Run(LoadVisitorsAsync);
         }
     }
 
