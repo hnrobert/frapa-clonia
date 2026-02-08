@@ -205,4 +205,60 @@ public class ValidationService(ILogger<ValidationService> logger) : IValidationS
                    part.All(c => char.IsLetterOrDigit(c) || c == '-');
         });
     }
+
+    public ValidationResult ValidateVisitor(VisitorConfig visitor)
+    {
+        var errors = new List<string>();
+        var warnings = new List<string>();
+
+        // Name validation
+        if (string.IsNullOrWhiteSpace(visitor.Name))
+        {
+            errors.Add("Visitor name is required");
+        }
+
+        // Type validation
+        var validTypes = new[] { "stcp", "xtcp", "sudp" };
+        if (string.IsNullOrWhiteSpace(visitor.Type) || !validTypes.Contains(visitor.Type.ToLower()))
+        {
+            errors.Add($"Visitor type must be one of: {string.Join(", ", validTypes)}");
+        }
+
+        // Server name validation
+        if (string.IsNullOrWhiteSpace(visitor.ServerName))
+        {
+            errors.Add("Server name is required");
+        }
+
+        // Secret key validation
+        if (string.IsNullOrWhiteSpace(visitor.SecretKey))
+        {
+            errors.Add("Secret key is required");
+        }
+
+        // Bind port validation
+        if (visitor.BindPort is <= 0 or > 65535)
+        {
+            errors.Add($"Invalid bind port: {visitor.BindPort}. Port must be between 1 and 65535");
+        }
+
+        // Bind address validation
+        if (!string.IsNullOrWhiteSpace(visitor.BindAddr) && !IsValidIpAddress(visitor.BindAddr))
+        {
+            warnings.Add("Bind address should be a valid IP address");
+        }
+
+        // Bind IP validation (if specified)
+        if (!string.IsNullOrWhiteSpace(visitor.BindIp) && !IsValidIpAddress(visitor.BindIp))
+        {
+            warnings.Add("Bind IP should be a valid IP address");
+        }
+
+        return new ValidationResult
+        {
+            IsValid = errors.Count == 0,
+            Errors = errors,
+            Warnings = warnings
+        };
+    }
 }

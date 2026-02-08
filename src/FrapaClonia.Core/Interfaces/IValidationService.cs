@@ -21,6 +21,11 @@ public interface IValidationService
     /// Validates a server connection configuration
     /// </summary>
     ValidationResult ValidateServerConnection(ClientCommonConfig serverConfig);
+
+    /// <summary>
+    /// Validates a visitor configuration
+    /// </summary>
+    ValidationResult ValidateVisitor(VisitorConfig visitor);
 }
 
 /// <summary>

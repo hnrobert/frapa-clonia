@@ -13,6 +13,7 @@ public partial class DashboardViewModel : ObservableObject
     private readonly ILogger<DashboardViewModel>? _logger;
     private readonly IFrpcProcessService? _frpcProcessService;
     private readonly IConfigurationService? _configurationService;
+    private readonly IValidationService? _validationService;
 
     [ObservableProperty] private bool _isFrpcRunning;
 
@@ -43,6 +44,7 @@ public partial class DashboardViewModel : ObservableObject
     public DashboardViewModel() : this(
         Microsoft.Extensions.Logging.Abstractions.NullLogger<DashboardViewModel>.Instance,
         null!,
+        null!,
         null!)
     {
     }
@@ -50,11 +52,13 @@ public partial class DashboardViewModel : ObservableObject
     public DashboardViewModel(
         ILogger<DashboardViewModel> logger,
         IFrpcProcessService frpcProcessService,
-        IConfigurationService configurationService)
+        IConfigurationService configurationService,
+        IValidationService validationService)
     {
         _logger = logger;
         _frpcProcessService = frpcProcessService;
         _configurationService = configurationService;
+        _validationService = validationService;
 
         // For design-time or when services are null, use empty commands
 
@@ -138,8 +142,32 @@ public partial class DashboardViewModel : ObservableObject
     private async Task StartFrpcAsync()
     {
         if (_frpcProcessService == null || _configurationService == null) return;
-        _logger?.LogInformation("Starting frpc...");
+
         var configPath = _configurationService.GetDefaultConfigPath();
+
+        // Validate configuration before starting
+        if (_validationService != null)
+        {
+            var config = await _configurationService.LoadConfigurationAsync(configPath);
+            if (config != null)
+            {
+                var validation = _validationService.ValidateConfiguration(config);
+                if (!validation.IsValid)
+                {
+                    _logger?.LogError("Configuration validation failed: {Errors}",
+                        string.Join(", ", validation.Errors));
+                    return;
+                }
+
+                if (validation.Warnings.Count > 0)
+                {
+                    _logger?.LogWarning("Configuration validation warnings: {Warnings}",
+                        string.Join(", ", validation.Warnings));
+                }
+            }
+        }
+
+        _logger?.LogInformation("Starting frpc...");
         var success = await _frpcProcessService.StartAsync(configPath);
         if (!success)
         {
