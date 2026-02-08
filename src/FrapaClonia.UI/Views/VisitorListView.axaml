@@ -222,21 +222,21 @@
                                                        Orientation="Horizontal"
                                                        Spacing="{StaticResource SpacingS}"
                                                        VerticalAlignment="Center">
-                                                <Button Command="{Binding $parent[UserControl].EditVisitorCommand}"
+                                                <Button Click="OnEditClick"
                                                         Classes="icon-button"
                                                         ToolTip.Tip="Edit visitor">
                                                     <TextBlock Text="&#xE70F;"
                                                                FontFamily="{DynamicResource SymbolThemeFontFamily}"
                                                                FontSize="{StaticResource IconSizeM}" />
                                                 </Button>
-                                                <Button Command="{Binding $parent[UserControl].DuplicateVisitorCommand}"
+                                                <Button Click="OnDuplicateClick"
                                                         Classes="icon-button"
                                                         ToolTip.Tip="Duplicate visitor">
                                                     <TextBlock Text="&#xF817;"
                                                                FontFamily="{DynamicResource SymbolThemeFontFamily}"
                                                                FontSize="{StaticResource IconSizeM}" />
                                                 </Button>
-                                                <Button Command="{Binding $parent[UserControl].DeleteVisitorCommand}"
+                                                <Button Click="OnDeleteClick"
                                                         Classes="icon-button"
                                                         ToolTip.Tip="Delete visitor"
                                                         Foreground="{DynamicResource AppErrorBrush}">
