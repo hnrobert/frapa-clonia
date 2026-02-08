@@ -10,6 +10,15 @@ public partial class ProxyListView : UserControl
     public ProxyListView()
     {
         InitializeComponent();
+        Loaded += OnLoaded;
+    }
+
+    private void OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is ProxyListViewModel viewModel)
+        {
+            viewModel.Initialize();
+        }
     }
 
     private void OnEditClick(object sender, RoutedEventArgs e)

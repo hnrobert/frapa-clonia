@@ -5,7 +5,6 @@ using FrapaClonia.Domain.Models;
 using FrapaClonia.UI.Views;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using Avalonia.Threading;
 using Avalonia.Controls.ApplicationLifetimes;
 using System.Text.Json;
 using FrapaClonia.Domain;
@@ -131,7 +130,11 @@ public partial class ProxyListViewModel : ObservableObject
             }
         }, () => Proxies.Count > 0);
 
-        // Initial load - don't await to avoid blocking constructor
+        // Note: Loading is initiated by the View's OnLoaded event
+    }
+
+    public void Initialize()
+    {
         _ = LoadProxiesAsync();
     }
 
@@ -159,59 +162,52 @@ public partial class ProxyListViewModel : ObservableObject
 
     private void FilterProxies()
     {
-        // Filtering is implemented in LoadProxiesAsync
         _ = LoadProxiesAsync();
     }
 
     private async Task LoadProxiesAsync()
     {
-        await Dispatcher.UIThread.InvokeAsync(async () =>
+        try
         {
-            try
+            IsLoading = true;
+
+            if (_configurationService != null)
             {
-                IsLoading = true;
+                var configPath = _configurationService.GetDefaultConfigPath();
+                var config = await _configurationService.LoadConfigurationAsync(configPath);
 
-                if (_configurationService != null)
+                if (config != null)
                 {
-                    var configPath = _configurationService.GetDefaultConfigPath();
-                    var config = await _configurationService.LoadConfigurationAsync(configPath);
+                    var allProxies = config.Proxies;
+                    var filtered = allProxies.AsEnumerable();
 
-                    if (config != null)
+                    if (!string.IsNullOrWhiteSpace(SearchQuery))
                     {
-                        var allProxies = config.Proxies;
-
-                        // Apply filters
-                        var filtered = allProxies.AsEnumerable();
-
-                        if (!string.IsNullOrWhiteSpace(SearchQuery))
-                        {
-                            var query = SearchQuery.ToLower();
-                            filtered = filtered.Where(p =>
-                                p.Name.Contains(query, StringComparison.CurrentCultureIgnoreCase) ||
-                                p.Type.Contains(query, StringComparison.CurrentCultureIgnoreCase));
-                        }
-
-                        if (FilterType != "All")
-                        {
-                            filtered = filtered.Where(p => p.Type == FilterType);
-                        }
-
-                        Proxies = filtered.ToList();
-
-                        _logger?.LogInformation("Loaded {Count} proxies", Proxies.Count);
+                        var query = SearchQuery.ToLower();
+                        filtered = filtered.Where(p =>
+                            p.Name.Contains(query, StringComparison.CurrentCultureIgnoreCase) ||
+                            p.Type.Contains(query, StringComparison.CurrentCultureIgnoreCase));
                     }
+
+                    if (FilterType != "All")
+                    {
+                        filtered = filtered.Where(p => p.Type == FilterType);
+                    }
+
+                    Proxies = filtered.ToList();
+                    _logger?.LogInformation("Loaded {Count} proxies", Proxies.Count);
                 }
             }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, "Error loading proxies");
-                Proxies = [];
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        });
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error loading proxies");
+            Proxies = [];
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
     private async void AddProxy()
@@ -244,7 +240,7 @@ public partial class ProxyListViewModel : ObservableObject
             if (result == true)
             {
                 // User clicked Save - refresh the list
-                _ = Task.Run(LoadProxiesAsync);
+                _ = LoadProxiesAsync();
             }
         }
         catch (Exception e)
@@ -287,7 +283,7 @@ public partial class ProxyListViewModel : ObservableObject
             if (result == true)
             {
                 // User clicked Save - refresh the list
-                _ = Task.Run(LoadProxiesAsync);
+                _ = LoadProxiesAsync();
             }
         }
         catch (Exception e)

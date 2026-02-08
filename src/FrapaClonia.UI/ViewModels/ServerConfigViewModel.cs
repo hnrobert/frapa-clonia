@@ -162,8 +162,12 @@ public partial class ServerConfigViewModel : ObservableObject
             }
         }, () => !IsSaving && !IsLoading);
 
-        // Load saved configuration if exists
-        _ = Task.Run(LoadConfigurationAsync);
+        // Note: Loading is initiated by the View's OnLoaded event
+    }
+
+    public void Initialize()
+    {
+        _ = LoadConfigurationAsync();
     }
 
     partial void OnServerAddrChanged(string value)

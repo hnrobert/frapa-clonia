@@ -10,6 +10,15 @@ public partial class VisitorListView : UserControl
     public VisitorListView()
     {
         InitializeComponent();
+        Loaded += OnLoaded;
+    }
+
+    private void OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is VisitorListViewModel viewModel)
+        {
+            viewModel.Initialize();
+        }
     }
 
     private void OnEditClick(object sender, RoutedEventArgs e)
