@@ -28,7 +28,18 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
     {
         try
         {
-            var tomlContent = File.ReadAllText(filePath);
+            if (!File.Exists(filePath))
+            {
+                logger.LogInformation("TOML file not found at {FilePath}, returning empty config", filePath);
+                return Task.FromResult<FrpClientConfig?>(new FrpClientConfig
+                {
+                    CommonConfig = new ClientCommonConfig(),
+                    Proxies = new List<ProxyConfig>(),
+                    Visitors = new List<VisitorConfig>()
+                });
+            }
+
+            var tomlContent = File.ReadAllText(filePath, Encoding.UTF8);
             logger.LogInformation("Deserializing TOML file at {FilePath}", filePath);
             return DeserializeAsync(tomlContent, cancellationToken);
         }

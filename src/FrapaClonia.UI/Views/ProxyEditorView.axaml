@@ -98,10 +98,10 @@
             <Grid RowDefinitions="Auto,Auto">
                 <!-- Header Section -->
                 <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,32">
-                    <TextBlock Text="Proxy Configuration"
+                    <TextBlock Text="{DynamicResource Localized_ProxyConfiguration}"
                                FontSize="28"
                                FontWeight="SemiBold" />
-                    <TextBlock Text="Configure your proxy settings below. Required fields are marked with an asterisk."
+                    <TextBlock Text="{DynamicResource Localized_ConfigureYourProxySettingsBelow}"
                                FontSize="13"
                                Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                 </StackPanel>
@@ -112,12 +112,12 @@
                     <!-- Basic Settings Section -->
                     <Border Classes="settingsCard">
                         <StackPanel Spacing="20">
-                            <TextBlock Text="Basic Settings" Classes="sectionHeader" />
+                            <TextBlock Text="{DynamicResource Localized_BasicSettings}" Classes="sectionHeader" />
 
                             <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="16">
                                 <StackPanel Grid.Row="0" Grid.Column="0">
-                                    <TextBlock Text="Proxy Name" Classes="fieldLabel required">
-                                        <Run Text="Proxy Name" />
+                                    <TextBlock Classes="fieldLabel required">
+                                        <Run Text="{DynamicResource Localized_ProxyName}" />
                                         <Run Text="*" Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
                                     </TextBlock>
                                     <TextBox Text="{Binding ProxyName}"
@@ -127,8 +127,8 @@
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="0" Grid.Column="1">
-                                    <TextBlock Text="Proxy Type" Classes="fieldLabel required">
-                                        <Run Text="Proxy Type" />
+                                    <TextBlock Classes="fieldLabel required">
+                                        <Run Text="{DynamicResource Localized_ProxyType}" />
                                         <Run Text="*" Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
                                     </TextBlock>
                                     <ComboBox ItemsSource="{Binding ProxyTypes}"
@@ -143,22 +143,22 @@
                     <!-- Local Settings Section -->
                     <Border Classes="settingsCard">
                         <StackPanel Spacing="20">
-                            <TextBlock Text="Local Settings" Classes="sectionHeader" />
+                            <TextBlock Text="{DynamicResource Localized_LocalSettings}" Classes="sectionHeader" />
 
                             <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="16">
                                 <StackPanel Grid.Row="0" Grid.Column="0">
-                                    <TextBlock Text="Local IP" Classes="fieldLabel" />
+                                    <TextBlock Text="{DynamicResource Localized_LocalIP}" Classes="fieldLabel" />
                                     <TextBox Text="{Binding LocalIP}"
                                              Classes="fieldControl"
                                              Watermark="127.0.0.1"
                                              Name="LocalIPTextBox" />
-                                    <TextBlock Text="The IP address of the local service to forward to"
+                                    <TextBlock Text="{DynamicResource Localized_TheIPOfTheLocalService}"
                                                Classes="hintText" />
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="0" Grid.Column="1">
-                                    <TextBlock Text="Local Port" Classes="fieldLabel required">
-                                        <Run Text="Local Port" />
+                                    <TextBlock Classes="fieldLabel required">
+                                        <Run Text="{DynamicResource Localized_LocalPort}" />
                                         <Run Text="*" Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
                                     </TextBlock>
                                     <NumericUpDown Value="{Binding LocalPort}"
@@ -174,8 +174,8 @@
 
                                 <StackPanel Grid.Row="1" Grid.Column="0"
                                            IsVisible="{Binding IsTcpOrUdp}">
-                                    <TextBlock Text="Remote Port" Classes="fieldLabel required">
-                                        <Run Text="Remote Port" />
+                                    <TextBlock Classes="fieldLabel required">
+                                        <Run Text="{DynamicResource Localized_RemotePort}" />
                                         <Run Text="*" Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
                                     </TextBlock>
                                     <NumericUpDown Value="{Binding RemotePort}"
@@ -197,26 +197,26 @@
                     <!-- Domain Settings Section (Conditional) -->
                     <Border Classes="settingsCard" IsVisible="{Binding NeedsDomain}">
                         <StackPanel Spacing="20">
-                            <TextBlock Text="Domain Settings" Classes="sectionHeader" />
+                            <TextBlock Text="{DynamicResource Localized_DomainSettings}" Classes="sectionHeader" />
 
                             <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="16">
                                 <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-                                    <TextBlock Text="Custom Domains" Classes="fieldLabel" />
+                                    <TextBlock Text="{DynamicResource Localized_CustomDomains}" Classes="fieldLabel" />
                                     <TextBox Text="{Binding CustomDomains}"
                                              Classes="fieldControl"
-                                             Watermark="e.g., www.example.com, api.example.com"
+                                             Watermark="{DynamicResource Localized_EgWwwExampleCom}"
                                              Name="CustomDomainsTextBox" />
-                                    <TextBlock Text="Comma-separated list of custom domains"
+                                    <TextBlock Text="{DynamicResource Localized_CommaSeparatedList}"
                                                Classes="hintText" />
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="1" Grid.Column="0">
-                                    <TextBlock Text="Subdomain" Classes="fieldLabel" />
+                                    <TextBlock Text="{DynamicResource Localized_Subdomain}" Classes="fieldLabel" />
                                     <TextBox Text="{Binding Subdomain}"
                                              Classes="fieldControl"
                                              Watermark="e.g., myapp (for myapp.yourdomain.com)"
                                              Name="SubdomainTextBox" />
-                                    <TextBlock Text="Leave empty if using custom domains"
+                                    <TextBlock Text="{DynamicResource Localized_LeaveEmptyIfUsingCustomDomains}"
                                                Classes="hintText" />
                                 </StackPanel>
 
@@ -224,20 +224,20 @@
                                 <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
                                            IsVisible="{Binding IsHttpOrHttps}"
                                            Margin="0,12,0,0">
-                                    <TextBlock Text="HTTP Authentication"
+                                    <TextBlock Text="{DynamicResource Localized_HTTPAuthentication}"
                                                FontSize="14"
                                                FontWeight="SemiBold"
                                                Margin="0,0,0,12" />
                                     <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
                                         <StackPanel Grid.Column="0">
-                                            <TextBlock Text="Username" Classes="fieldLabel" />
+                                            <TextBlock Text="{DynamicResource Localized_Username}" Classes="fieldLabel" />
                                             <TextBox Text="{Binding HttpUser}"
                                                      Classes="fieldControl"
                                                      Watermark="Optional"
                                                      Name="HttpUserTextBox" />
                                         </StackPanel>
                                         <StackPanel Grid.Column="1">
-                                            <TextBlock Text="Password" Classes="fieldLabel" />
+                                            <TextBlock Text="{DynamicResource Localized_Password}" Classes="fieldLabel" />
                                             <TextBox Text="{Binding HttpPassword}"
                                                      Classes="fieldControl"
                                                      PasswordChar="•"
@@ -253,12 +253,12 @@
                     <!-- Secure Tunnel Settings Section (Conditional) -->
                     <Border Classes="settingsCard" IsVisible="{Binding IsStcpOrXtcpOrSudp}">
                         <StackPanel Spacing="20">
-                            <TextBlock Text="Secure Tunnel Settings" Classes="sectionHeader" />
+                            <TextBlock Text="{DynamicResource Localized_SecureTunnelSettings}" Classes="sectionHeader" />
 
                             <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="16">
                                 <StackPanel Grid.Row="0" Grid.Column="0">
-                                    <TextBlock Text="Secret Key" Classes="fieldLabel required">
-                                        <Run Text="Secret Key" />
+                                    <TextBlock Classes="fieldLabel required">
+                                        <Run Text="{DynamicResource Localized_SecretKey}" />
                                         <Run Text="*" Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
                                     </TextBlock>
                                     <TextBox Text="{Binding SecretKey}"
@@ -266,17 +266,17 @@
                                              PasswordChar="•"
                                              Watermark="Shared secret for this tunnel"
                                              Name="SecretKeyTextBox" />
-                                    <TextBlock Text="Must match the visitor's secret key"
+                                    <TextBlock Text="{DynamicResource Localized_MustMatchTheVisitorsSecretKey}"
                                                Classes="hintText" />
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="0" Grid.Column="1">
-                                    <TextBlock Text="Allowed Users" Classes="fieldLabel" />
+                                    <TextBlock Text="{DynamicResource Localized_AllowedUsers}" Classes="fieldLabel" />
                                     <TextBox Text="{Binding AllowUsers}"
                                              Classes="fieldControl"
                                              Watermark="Comma-separated list of allowed users"
                                              Name="AllowUsersTextBox" />
-                                    <TextBlock Text="Leave empty to allow all users"
+                                    <TextBlock Text="{DynamicResource Localized_LeaveEmptyToAllowAllUsers}"
                                                Classes="hintText" />
                                 </StackPanel>
                             </Grid>
@@ -286,15 +286,15 @@
                     <!-- TCP Multiplexer Settings Section (Conditional) -->
                     <Border Classes="settingsCard" IsVisible="{Binding IsTcpmux}">
                         <StackPanel Spacing="20">
-                            <TextBlock Text="TCP Multiplexer Settings" Classes="sectionHeader" />
+                            <TextBlock Text="{DynamicResource Localized_TcpMultiplexerSettings}" Classes="sectionHeader" />
 
                             <StackPanel>
-                                <TextBlock Text="Multiplexer Name" Classes="fieldLabel" />
+                                <TextBlock Text="{DynamicResource Localized_MultiplexerName}" Classes="fieldLabel" />
                                 <TextBox Text="{Binding Multiplexer}"
                                          Classes="fieldControl"
-                                         Watermark="Name of the multiplexer"
+                                         Watermark="{DynamicResource Localized_NameOfTheMultiplexer}"
                                          Name="MultiplexerTextBox" />
-                                <TextBlock Text="The multiplexer must be configured on the server"
+                                <TextBlock Text="{DynamicResource Localized_TheMultiplexerMustBeConfiguredOnTheServer}"
                                            Classes="hintText" />
                             </StackPanel>
                         </StackPanel>
@@ -303,12 +303,12 @@
                     <!-- Transport Options Section -->
                     <Border Classes="settingsCard">
                         <StackPanel Spacing="16">
-                            <TextBlock Text="Transport Options" Classes="sectionHeader" />
+                            <TextBlock Text="{DynamicResource Localized_TransportOptions}" Classes="sectionHeader" />
 
                             <CheckBox IsChecked="{Binding UseEncryption}" Classes="settingsCheckBox">
                                 <StackPanel Spacing="3">
-                                    <TextBlock Text="Use Encryption" FontSize="13" FontWeight="Medium" />
-                                    <TextBlock Text="Encrypt the connection between client and server"
+                                    <TextBlock Text="{DynamicResource Localized_EnableEncryption}" FontSize="13" FontWeight="Medium" />
+                                    <TextBlock Text="{DynamicResource Localized_EncryptTheConnectionBetweenClientAndServer}"
                                                FontSize="11"
                                                Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                                 </StackPanel>
@@ -316,20 +316,20 @@
 
                             <CheckBox IsChecked="{Binding UseCompression}" Classes="settingsCheckBox">
                                 <StackPanel Spacing="3">
-                                    <TextBlock Text="Use Compression" FontSize="13" FontWeight="Medium" />
-                                    <TextBlock Text="Compress data to reduce bandwidth usage"
+                                    <TextBlock Text="{DynamicResource Localized_EnableCompression}" FontSize="13" FontWeight="Medium" />
+                                    <TextBlock Text="{DynamicResource Localized_CompressDataToReduceBandwidthUsage}"
                                                FontSize="11"
                                                Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                                 </StackPanel>
                             </CheckBox>
 
                             <StackPanel IsVisible="{Binding BandwidthLimit}" Spacing="8" Margin="0,8,0,0">
-                                <TextBlock Text="Bandwidth Limit" Classes="fieldLabel" />
+                                <TextBlock Text="{DynamicResource Localized_BandwidthLimit}" Classes="fieldLabel" />
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                                     <TextBox Grid.Column="0"
                                              Text="{Binding BandwidthLimit}"
                                              Classes="fieldControl"
-                                             Watermark="e.g., 1MB, 256KB"
+                                             Watermark="{DynamicResource Localized_Eg1Mb256Kb}"
                                              Name="BandwidthLimitTextBox" />
                                     <ComboBox Grid.Column="1"
                                               ItemsSource="{Binding BandwidthLimitModes}"
@@ -338,7 +338,7 @@
                                               MinWidth="100"
                                               Name="BandwidthLimitModeComboBox" />
                                 </Grid>
-                                <TextBlock Text="Limit bandwidth for this proxy"
+                                <TextBlock Text="{DynamicResource Localized_LimitBandwidthForThisProxy}"
                                            Classes="hintText" />
                             </StackPanel>
                         </StackPanel>
@@ -349,8 +349,8 @@
                         <StackPanel Spacing="20">
                             <CheckBox IsChecked="{Binding HealthCheckEnabled}" Classes="settingsCheckBox">
                                 <StackPanel Spacing="2">
-                                    <TextBlock Text="Enable Health Check" FontSize="16" FontWeight="SemiBold" />
-                                    <TextBlock Text="Monitor the health of the local service"
+                                    <TextBlock Text="{DynamicResource Localized_EnableHealthCheck}" FontSize="16" FontWeight="SemiBold" />
+                                    <TextBlock Text="{DynamicResource Localized_MonitorTheHealthOfTheLocalService}"
                                                FontSize="12"
                                                Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                                 </StackPanel>
@@ -359,7 +359,7 @@
                             <StackPanel IsVisible="{Binding HealthCheckEnabled}" Spacing="20">
                                 <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="16">
                                     <StackPanel Grid.Row="0" Grid.Column="0">
-                                        <TextBlock Text="Type" Classes="fieldLabel" />
+                                        <TextBlock Text="{DynamicResource Localized_TypeLabel}" Classes="fieldLabel" />
                                         <ComboBox ItemsSource="{Binding HealthCheckTypes}"
                                                   SelectedItem="{Binding HealthCheckType}"
                                                   Classes="fieldControl"
@@ -367,7 +367,7 @@
                                     </StackPanel>
 
                                     <StackPanel Grid.Row="0" Grid.Column="1">
-                                        <TextBlock Text="Timeout (seconds)" Classes="fieldLabel" />
+                                        <TextBlock Text="{DynamicResource Localized_TimeoutSeconds}" Classes="fieldLabel" />
                                         <NumericUpDown Value="{Binding HealthCheckTimeoutSeconds}"
                                                       Classes="fieldControl"
                                                       Minimum="1"
@@ -380,7 +380,7 @@
                                     </StackPanel>
 
                                     <StackPanel Grid.Row="1" Grid.Column="0">
-                                        <TextBlock Text="Max Failed" Classes="fieldLabel" />
+                                        <TextBlock Text="{DynamicResource Localized_MaxFailed}" Classes="fieldLabel" />
                                         <NumericUpDown Value="{Binding HealthCheckMaxFailed}"
                                                       Classes="fieldControl"
                                                       Minimum="1"
@@ -393,7 +393,7 @@
                                     </StackPanel>
 
                                     <StackPanel Grid.Row="1" Grid.Column="1">
-                                        <TextBlock Text="Interval (seconds)" Classes="fieldLabel" />
+                                        <TextBlock Text="{DynamicResource Localized_IntervalSeconds}" Classes="fieldLabel" />
                                         <NumericUpDown Value="{Binding HealthCheckIntervalSeconds}"
                                                       Classes="fieldControl"
                                                       Minimum="1"
@@ -408,7 +408,7 @@
 
                                 <StackPanel IsVisible="{Binding IsHttpOrHttps}" Spacing="16">
                                     <StackPanel>
-                                        <TextBlock Text="Path" Classes="fieldLabel" />
+                                        <TextBlock Text="{DynamicResource Localized_PathLabel}" Classes="fieldLabel" />
                                         <TextBox Text="{Binding HealthCheckPath}"
                                                  Classes="fieldControl"
                                                  Watermark="/health"
@@ -416,15 +416,15 @@
                                     </StackPanel>
 
                                     <StackPanel>
-                                        <TextBlock Text="Headers" Classes="fieldLabel" />
+                                        <TextBlock Text="{DynamicResource Localized_HeadersLabel}" Classes="fieldLabel" />
                                         <TextBox Text="{Binding HealthCheckHeaders}"
                                                  Classes="fieldControl"
-                                                 Watermark="Header-Name: value"
+                                                 Watermark="{DynamicResource Localized_HeaderNameValue}"
                                                  AcceptsReturn="True"
                                                  TextWrapping="Wrap"
                                                  MinHeight="80"
                                                  Name="HealthCheckHeadersTextBox" />
-                                        <TextBlock Text="One header per line (e.g., Authorization: Bearer token)"
+                                        <TextBlock Text="{DynamicResource Localized_OneHeaderPerLine}"
                                                    Classes="hintText" />
                                     </StackPanel>
                                 </StackPanel>
@@ -435,10 +435,10 @@
                     <!-- Plugin Configuration Section (Conditional) -->
                     <Border Classes="settingsCard" IsVisible="{Binding PluginType}">
                         <StackPanel Spacing="20">
-                            <TextBlock Text="Plugin Configuration" Classes="sectionHeader" />
+                            <TextBlock Text="{DynamicResource Localized_PluginConfiguration}" Classes="sectionHeader" />
 
                             <StackPanel Spacing="8">
-                                <TextBlock Text="Plugin Type" Classes="fieldLabel" />
+                                <TextBlock Text="{DynamicResource Localized_PluginTypeLabel}" Classes="fieldLabel" />
                                 <ComboBox ItemsSource="{Binding PluginTypes}"
                                           SelectedItem="{Binding PluginType}"
                                           Classes="fieldControl"
@@ -447,7 +447,7 @@
 
                             <!-- HTTP Proxy Plugin -->
                             <StackPanel IsVisible="{Binding PluginHttpProxyUrl, FallbackValue=False}" Spacing="8">
-                                <TextBlock Text="HTTP Proxy URL" Classes="fieldLabel" />
+                                <TextBlock Text="{DynamicResource Localized_HTTPProxyUrl}" Classes="fieldLabel" />
                                 <TextBox Text="{Binding PluginHttpProxyUrl}"
                                          Classes="fieldControl"
                                          Watermark="http://proxy.example.com:8080"
@@ -456,7 +456,7 @@
 
                             <!-- SOCKS5 Plugin -->
                             <StackPanel IsVisible="{Binding PluginSocks5Url, FallbackValue=False}" Spacing="8">
-                                <TextBlock Text="SOCKS5 URL" Classes="fieldLabel" />
+                                <TextBlock Text="{DynamicResource Localized_Socks5Url}" Classes="fieldLabel" />
                                 <TextBox Text="{Binding PluginSocks5Url}"
                                          Classes="fieldControl"
                                          Watermark="socks5://proxy.example.com:1080"
@@ -465,20 +465,20 @@
 
                             <!-- Static File Plugin -->
                             <StackPanel IsVisible="{Binding PluginStaticFilePath, FallbackValue=False}" Spacing="16">
-                                <TextBlock Text="Static File Plugin Settings"
+                                <TextBlock Text="{DynamicResource Localized_StaticFilePluginSettings}"
                                            FontSize="14"
                                            FontWeight="SemiBold"
                                            Margin="0,0,0,8" />
                                 <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="16">
                                     <StackPanel Grid.Row="0" Grid.Column="0">
-                                        <TextBlock Text="Local Path" Classes="fieldLabel" />
+                                        <TextBlock Text="{DynamicResource Localized_LocalPath}" Classes="fieldLabel" />
                                         <TextBox Text="{Binding PluginStaticFilePath}"
                                                  Classes="fieldControl"
                                                  Watermark="/path/to/files"
                                                  Name="PluginStaticFilePathTextBox" />
                                     </StackPanel>
                                     <StackPanel Grid.Row="0" Grid.Column="1">
-                                        <TextBlock Text="URL Prefix" Classes="fieldLabel" />
+                                        <TextBlock Text="{DynamicResource Localized_UrlPrefix}" Classes="fieldLabel" />
                                         <TextBox Text="{Binding PluginStaticFilePrefixUrl}"
                                                  Classes="fieldControl"
                                                  Watermark="/files"
@@ -489,26 +489,26 @@
 
                             <!-- HTTPS to HTTP Plugin -->
                             <StackPanel IsVisible="{Binding PluginHttps2HttpLocalAddr, FallbackValue=False}" Spacing="16">
-                                <TextBlock Text="HTTPS to HTTP Plugin Settings"
+                                <TextBlock Text="{DynamicResource Localized_HttpsToHTTPPluginSettings}"
                                            FontSize="14"
                                            FontWeight="SemiBold"
                                            Margin="0,0,0,8" />
                                 <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="16">
                                     <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-                                        <TextBlock Text="Local Address" Classes="fieldLabel" />
+                                        <TextBlock Text="{DynamicResource Localized_LocalAddress}" Classes="fieldLabel" />
                                         <TextBox Text="{Binding PluginHttps2HttpLocalAddr}"
                                                  Classes="fieldControl"
                                                  Watermark="127.0.0.1:80"
                                                  Name="PluginHttps2HttpLocalAddrTextBox" />
                                     </StackPanel>
                                     <StackPanel Grid.Row="1" Grid.Column="0">
-                                        <TextBlock Text="CRT Path" Classes="fieldLabel" />
+                                        <TextBlock Text="{DynamicResource Localized_CrtPath}" Classes="fieldLabel" />
                                         <TextBox Text="{Binding PluginHttps2HttpCrtPath}"
                                                  Classes="fieldControl"
                                                  Name="PluginHttps2HttpCrtPathTextBox" />
                                     </StackPanel>
                                     <StackPanel Grid.Row="1" Grid.Column="1">
-                                        <TextBlock Text="Key Path" Classes="fieldLabel" />
+                                        <TextBlock Text="{DynamicResource Localized_Keypath}" Classes="fieldLabel" />
                                         <TextBox Text="{Binding PluginHttps2HttpKeyPath}"
                                                  Classes="fieldControl"
                                                  Name="PluginHttps2HttpKeyPathTextBox" />
@@ -518,26 +518,26 @@
 
                             <!-- HTTP to HTTPS Plugin -->
                             <StackPanel IsVisible="{Binding PluginHttp2HttpsLocalAddr, FallbackValue=False}" Spacing="16">
-                                <TextBlock Text="HTTP to HTTPS Plugin Settings"
+                                <TextBlock Text="{DynamicResource Localized_HTTPToHttpsPluginSettings}"
                                            FontSize="14"
                                            FontWeight="SemiBold"
                                            Margin="0,0,0,8" />
                                 <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="16">
                                     <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-                                        <TextBlock Text="Local Address" Classes="fieldLabel" />
+                                        <TextBlock Text="{DynamicResource Localized_LocalAddress}" Classes="fieldLabel" />
                                         <TextBox Text="{Binding PluginHttp2HttpsLocalAddr}"
                                                  Classes="fieldControl"
                                                  Watermark="127.0.0.1:443"
                                                  Name="PluginHttp2HttpsLocalAddrTextBox" />
                                     </StackPanel>
                                     <StackPanel Grid.Row="1" Grid.Column="0">
-                                        <TextBlock Text="CRT Path" Classes="fieldLabel" />
+                                        <TextBlock Text="{DynamicResource Localized_CrtPath}" Classes="fieldLabel" />
                                         <TextBox Text="{Binding PluginHttp2HttpsCrtPath}"
                                                  Classes="fieldControl"
                                                  Name="PluginHttp2HttpsCrtPathTextBox" />
                                     </StackPanel>
                                     <StackPanel Grid.Row="1" Grid.Column="1">
-                                        <TextBlock Text="Key Path" Classes="fieldLabel" />
+                                        <TextBlock Text="{DynamicResource Localized_Keypath}" Classes="fieldLabel" />
                                         <TextBox Text="{Binding PluginHttp2HttpsKeyPath}"
                                                  Classes="fieldControl"
                                                  Name="PluginHttp2HttpsKeyPathTextBox" />
@@ -554,7 +554,7 @@
                             IsVisible="{Binding HasValidationError}"
                             Margin="0,0,0,24">
                         <StackPanel Spacing="8">
-                            <TextBlock Text="Configuration Error"
+                            <TextBlock Text="{DynamicResource Localized_ConfigurationError}"
                                        FontSize="14"
                                        FontWeight="SemiBold"
                                        Foreground="{DynamicResource SystemControlOnAccentHighBrush}" />
@@ -572,7 +572,7 @@
                         <Button Command="{Binding CancelCommand}"
                                 Classes="actionButton"
                                 IsEnabled="{Binding !IsSaving}"
-                                Content="Cancel"
+                                Content="{DynamicResource Localized_Cancel}"
                                 Name="CancelButton" />
 
                         <Button Command="{Binding SaveCommand}"
@@ -580,7 +580,7 @@
                                 IsEnabled="{Binding !IsSaving}"
                                 Name="SaveButton">
                             <StackPanel Orientation="Horizontal" Spacing="10">
-                                <TextBlock Text="Save" />
+                                <TextBlock Text="{DynamicResource Localized_Save}" />
                                 <ProgressBar IsIndeterminate="True"
                                              Width="16" Height="16"
                                              IsVisible="{Binding IsSaving}"

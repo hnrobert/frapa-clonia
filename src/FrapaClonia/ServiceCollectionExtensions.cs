@@ -6,6 +6,8 @@ using FrapaClonia.UI.Services;
 using FrapaClonia.UI.ViewModels;
 using Serilog;
 using System.IO;
+using System.Text;
+using Serilog.Events;
 
 namespace FrapaClonia;
 
@@ -46,8 +48,8 @@ public static class ServiceCollectionExtensions
         // Logging
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
-            .WriteTo.Console()
-            .WriteTo.File(Path.Combine(GetAppDataDirectory(), "logs", "frapa-clonia-.log"), rollingInterval: RollingInterval.Day)
+            .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}", standardErrorFromLevel: LogEventLevel.Error)
+            .WriteTo.File(Path.Combine(GetAppDataDirectory(), "logs", "frapa-clonia-.log"), rollingInterval: RollingInterval.Day, encoding: Encoding.UTF8)
             .CreateLogger();
 
         services.AddLogging(builder =>

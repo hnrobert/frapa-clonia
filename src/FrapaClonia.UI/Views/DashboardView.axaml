@@ -22,7 +22,7 @@
                 <!-- Page Header -->
                 <Grid ColumnDefinitions="Auto,*">
                     <TextBlock Grid.Column="0"
-                               Text="Dashboard"
+                               Text="{DynamicResource Localized_Dashboard}"
                                Classes="page-title" />
 
                     <StackPanel Grid.Column="1"
@@ -66,11 +66,11 @@
                                     Orientation="Horizontal"
                                     Spacing="{StaticResource SpacingM}"
                                     VerticalAlignment="Center">
-                            <Button Content="Start Frpc"
+                            <Button Content="{DynamicResource Localized_StartFrpc}"
                                     Command="{Binding StartFrpcCommand}"
                                     Classes="primary" />
 
-                            <Button Content="Stop"
+                            <Button Content="{DynamicResource Localized_StopFrpc}"
                                     Command="{Binding StopFrpcCommand}"
                                     Classes="secondary">
                                 <Button.Styles>
@@ -81,7 +81,7 @@
                                 </Button.Styles>
                             </Button>
 
-                            <Button Content="Restart"
+                            <Button Content="{DynamicResource Localized_RestartFrpc}"
                                     Command="{Binding RestartFrpcCommand}"
                                     Classes="secondary">
                                 <Button.Styles>
@@ -101,7 +101,7 @@
                                 HorizontalAlignment="Right">
                             <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
                                 <TextBlock Grid.Row="0" Grid.Column="0"
-                                           Text="Process ID:"
+                                           Text="{DynamicResource Localized_ProcessId}"
                                            Classes="label" />
                                 <TextBlock Grid.Row="0" Grid.Column="1"
                                            Text="{Binding FrpcProcessId, TargetNullValue='N/A'}"
@@ -109,9 +109,10 @@
                                            Margin="{StaticResource ThicknessLeftS}" />
 
                                 <TextBlock Grid.Row="1" Grid.Column="0"
-                                           Text="Server:"
                                            Classes="label"
-                                           Margin="{StaticResource ThicknessTopS}" />
+                                           Margin="{StaticResource ThicknessTopS}">
+                                    <Run Text="{DynamicResource Localized_ServerName}" /><Run Text=":" />
+                                </TextBlock>
                                 <TextBlock Grid.Row="1" Grid.Column="1"
                                            Text="{Binding ServerAddress}"
                                            Classes="value"
@@ -122,7 +123,7 @@
                 </Border>
 
                 <!-- Section Header -->
-                <TextBlock Text="Quick Access"
+                <TextBlock Text="{DynamicResource Localized_QuickAccess}"
                            Classes="section-title"
                            Margin="{StaticResource ThicknessTopS}" />
 
@@ -133,15 +134,16 @@
                     <Border Grid.Column="0" Classes="card">
                         <Grid RowDefinitions="Auto,*,Auto" Height="120">
                             <TextBlock Grid.Row="0"
-                                       Text="Server"
+                                       Text="{DynamicResource Localized_ServerConfig}"
                                        Classes="card-title" />
                             <TextBlock Grid.Row="1"
-                                       Text="Configure frpc server connection"
                                        Classes="card-description"
                                        TextWrapping="Wrap"
-                                       VerticalAlignment="Center" />
+                                       VerticalAlignment="Center">
+                                    <Run Text="{DynamicResource Localized_Configure}" /><Run Text=" " /><Run Text="{DynamicResource Localized_FrpcStatus}" />
+                                </TextBlock>
                             <Button Grid.Row="2"
-                                    Content="Configure"
+                                    Content="{DynamicResource Localized_Configure}"
                                     Command="{Binding NavigateToServerConfigCommand}"
                                     HorizontalAlignment="Left"
                                     Classes="secondary" />
@@ -152,15 +154,16 @@
                     <Border Grid.Column="1" Classes="card">
                         <Grid RowDefinitions="Auto,*,Auto" Height="120">
                             <TextBlock Grid.Row="0"
-                                       Text="Proxies"
+                                       Text="{DynamicResource Localized_ProxyManagement}"
                                        Classes="card-title" />
                             <TextBlock Grid.Row="1"
-                                       Text="Manage proxy configurations"
                                        Classes="card-description"
                                        TextWrapping="Wrap"
-                                       VerticalAlignment="Center" />
+                                       VerticalAlignment="Center">
+                                    <Run Text="{DynamicResource Localized_Manage}" /><Run Text=" " /><Run Text="{DynamicResource Localized_Configuration}" />
+                                </TextBlock>
                             <Button Grid.Row="2"
-                                    Content="Manage"
+                                    Content="{DynamicResource Localized_Manage}"
                                     Command="{Binding NavigateToProxyListCommand}"
                                     HorizontalAlignment="Left"
                                     Classes="secondary" />
@@ -171,15 +174,16 @@
                     <Border Grid.Column="2" Classes="card">
                         <Grid RowDefinitions="Auto,*,Auto" Height="120">
                             <TextBlock Grid.Row="0"
-                                       Text="Deploy"
+                                       Text="{DynamicResource Localized_Deployment}"
                                        Classes="card-title" />
                             <TextBlock Grid.Row="1"
-                                       Text="Download and configure frpc"
                                        Classes="card-description"
                                        TextWrapping="Wrap"
-                                       VerticalAlignment="Center" />
+                                       VerticalAlignment="Center">
+                                    <Run Text="{DynamicResource Localized_Setup}" /><Run Text=" " /><Run Text="{DynamicResource Localized_FrpcStatus}" />
+                                </TextBlock>
                             <Button Grid.Row="2"
-                                    Content="Setup"
+                                    Content="{DynamicResource Localized_Setup}"
                                     Command="{Binding NavigateToDeploymentCommand}"
                                     HorizontalAlignment="Left"
                                     Classes="secondary" />
@@ -190,15 +194,16 @@
                     <Border Grid.Column="3" Classes="card">
                         <Grid RowDefinitions="Auto,*,Auto" Height="120">
                             <TextBlock Grid.Row="0"
-                                       Text="Logs"
+                                       Text="{DynamicResource Localized_Logs}"
                                        Classes="card-title" />
                             <TextBlock Grid.Row="1"
-                                       Text="View real-time logs"
                                        Classes="card-description"
                                        TextWrapping="Wrap"
-                                       VerticalAlignment="Center" />
+                                       VerticalAlignment="Center">
+                                    <Run Text="{DynamicResource Localized_View}" /><Run Text=" " /><Run Text="{DynamicResource Localized_FrpcStatus}" />
+                                </TextBlock>
                             <Button Grid.Row="2"
-                                    Content="View"
+                                    Content="{DynamicResource Localized_View}"
                                     Command="{Binding NavigateToLogsCommand}"
                                     HorizontalAlignment="Left"
                                     Classes="secondary" />
@@ -207,7 +212,7 @@
                 </Grid>
 
                 <!-- Section Header -->
-                <TextBlock Text="Overview"
+                <TextBlock Text="{DynamicResource Localized_Overview}"
                            Classes="section-title"
                            Margin="{StaticResource ThicknessTopS}" />
 
@@ -235,7 +240,7 @@
                                            FontSize="24"
                                            FontWeight="{StaticResource FontWeightSemiBold}"
                                            Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-                                <TextBlock Text="Active Proxies"
+                                <TextBlock Text="{DynamicResource Localized_ActiveProxies}"
                                            FontSize="{StaticResource FontSizeM}"
                                            FontWeight="{StaticResource FontWeightMedium}"
                                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
@@ -261,11 +266,11 @@
                                            VerticalAlignment="Center" />
                             </Border>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Text="Configured"
+                                <TextBlock Text="{DynamicResource Localized_FrpcNotRunning}"
                                            FontSize="{StaticResource FontSizeL}"
                                            FontWeight="{StaticResource FontWeightSemiBold}"
                                            Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-                                <TextBlock Text="Configuration"
+                                <TextBlock Text="{DynamicResource Localized_Configuration}"
                                            FontSize="{StaticResource FontSizeM}"
                                            FontWeight="{StaticResource FontWeightMedium}"
                                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
@@ -278,7 +283,7 @@
                     <Border Grid.Column="2" Classes="card">
                         <Grid RowDefinitions="Auto,*">
                             <TextBlock Grid.Row="0"
-                                       Text="Recent Activity"
+                                       Text="{DynamicResource Localized_RecentActivity}"
                                        Classes="card-title" />
                             <Border Grid.Row="1"
                                     Background="{DynamicResource SystemControlPageBackgroundTransparent}"

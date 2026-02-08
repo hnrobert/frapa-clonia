@@ -20,32 +20,32 @@
             <StackPanel Spacing="{StaticResource SpacingL}" MaxWidth="800">
 
                 <!-- Header -->
-                <TextBlock Text="Server Configuration"
+                <TextBlock Text="{DynamicResource Localized_ServerConfig}"
                            Classes="page-title" />
 
                 <!-- Server Connection Section -->
                 <Border Classes="settings-card">
                     <StackPanel Spacing="{StaticResource SpacingM}">
-                        <TextBlock Text="Connection Settings"
+                        <TextBlock Text="{DynamicResource Localized_ConnectionSettings}"
                                    Classes="section-title" />
 
                         <!-- Server Address -->
                         <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="Server Address"
+                                       Text="{DynamicResource Localized_ServerAddress}"
                                        Classes="field-label" />
                             <TextBox Grid.Row="0" Grid.Column="1"
                                      Text="{Binding ServerAddr}"
                                      Watermark="e.g., 127.0.0.1 or your-server.com" />
                             <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                                       Text="The address of the frps server"
+                                       Text="{DynamicResource Localized_TheAddressOfTheFrpsServer}"
                                        Classes="hint" />
                         </Grid>
 
                         <!-- Server Port -->
                         <Grid ColumnDefinitions="140,120,*" RowDefinitions="Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="Server Port"
+                                       Text="{DynamicResource Localized_ServerPort}"
                                        Classes="field-label" />
                             <NumericUpDown Grid.Row="0" Grid.Column="1"
                                            Value="{Binding ServerPort}"
@@ -54,20 +54,21 @@
                                            Increment="1"
                                            FormatString="0" />
                             <TextBlock Grid.Row="0" Grid.Column="2"
-                                       Text="Default: 7000"
-                                       VerticalAlignment="Center" />
+                                       VerticalAlignment="Center">
+                                <Run Text="{DynamicResource Localized_DefaultPort}" /><Run Text=": 7000" />
+                            </TextBlock>
                         </Grid>
 
                         <!-- User -->
                         <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="User"
+                                       Text="{DynamicResource Localized_OptionalUserName}"
                                        Classes="field-label" />
                             <TextBox Grid.Row="0" Grid.Column="1"
                                      Text="{Binding User}"
                                      Watermark="Optional user name" />
                             <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                                       Text="Optional user name to avoid proxy name conflicts"
+                                       Text="{DynamicResource Localized_OptionalUserNameToAvoidProxyNameConflicts}"
                                        Classes="hint" />
                         </Grid>
                     </StackPanel>
@@ -76,18 +77,18 @@
                 <!-- Authentication Section -->
                 <Border Classes="card">
                     <StackPanel Spacing="{StaticResource SpacingM}">
-                        <TextBlock Text="Authentication"
+                        <TextBlock Text="{DynamicResource Localized_Authentication}"
                                    Classes="section-title" />
 
                         <!-- Auth Method -->
                         <Grid ColumnDefinitions="140,180,*" RowDefinitions="Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="Method"
+                                       Text="{DynamicResource Localized_Method}"
                                        Classes="field-label" />
                             <ComboBox Grid.Column="1"
                                       SelectedIndex="{Binding AuthMethodIndex}">
                                 <ComboBoxItem>Token</ComboBoxItem>
-                                <ComboBoxItem>OIDC</ComboBoxItem>
+                                <ComboBoxItem>{DynamicResource Localized_OIDC}</ComboBoxItem>
                             </ComboBox>
                         </Grid>
 
@@ -95,12 +96,12 @@
                         <StackPanel Spacing="{StaticResource SpacingM}" IsVisible="{Binding !IsOidcAuth}">
                             <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
                                 <TextBlock Grid.Row="0" Grid.Column="0"
-                                           Text="Token"
+                                           Text="{DynamicResource Localized_Token}"
                                            Classes="field-label" />
                                 <TextBox Grid.Column="1"
                                          Text="{Binding Token}"
                                          PasswordChar="*"
-                                         Watermark="Enter your authentication token" />
+                                         Watermark="{DynamicResource Localized_EnterYourAuthenticationToken}" />
                             </Grid>
                         </StackPanel>
 
@@ -109,7 +110,7 @@
                             <!-- Client ID -->
                             <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
                                 <TextBlock Grid.Row="0" Grid.Column="0"
-                                           Text="Client ID"
+                                           Text="{DynamicResource Localized_ClientId}"
                                            Classes="field-label" />
                                 <TextBox Grid.Column="1"
                                          Text="{Binding OidcClientId}" />
@@ -118,7 +119,7 @@
                             <!-- Client Secret -->
                             <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
                                 <TextBlock Grid.Row="0" Grid.Column="0"
-                                           Text="Client Secret"
+                                           Text="{DynamicResource Localized_ClientSecret}"
                                            Classes="field-label" />
                                 <TextBox Grid.Column="1"
                                          Text="{Binding OidcClientSecret}"
@@ -128,7 +129,7 @@
                             <!-- Token Endpoint -->
                             <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
                                 <TextBlock Grid.Row="0" Grid.Column="0"
-                                           Text="Token Endpoint"
+                                           Text="{DynamicResource Localized_TokenEndpoint}"
                                            Classes="field-label" />
                                 <TextBox Grid.Column="1"
                                          Text="{Binding OidcTokenEndpointUrl}"
@@ -138,21 +139,21 @@
                             <!-- Audience -->
                             <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
                                 <TextBlock Grid.Row="0" Grid.Column="0"
-                                           Text="Audience"
+                                           Text="{DynamicResource Localized_Audience}"
                                            Classes="field-label" />
                                 <TextBox Grid.Column="1"
                                          Text="{Binding OidcAudience}"
-                                         Watermark="Optional audience" />
+                                         Watermark="{DynamicResource Localized_OptionalAudience}" />
                             </Grid>
 
                             <!-- Scope -->
                             <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
                                 <TextBlock Grid.Row="0" Grid.Column="0"
-                                           Text="Scope"
+                                           Text="{DynamicResource Localized_Scope}"
                                            Classes="field-label" />
                                 <TextBox Grid.Column="1"
                                          Text="{Binding OidcScope}"
-                                         Watermark="e.g., openid profile" />
+                                         Watermark="{DynamicResource Localized_EgOpenidProfile}" />
                             </Grid>
                         </StackPanel>
                     </StackPanel>
@@ -161,13 +162,13 @@
                 <!-- Transport Section -->
                 <Border Classes="card">
                     <StackPanel Spacing="{StaticResource SpacingM}">
-                        <TextBlock Text="Transport Settings"
+                        <TextBlock Text="{DynamicResource Localized_TransportSettings}"
                                    Classes="section-title" />
 
                         <!-- Protocol -->
                         <Grid ColumnDefinitions="140,180,*" RowDefinitions="Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="Protocol"
+                                       Text="{DynamicResource Localized_TransportProtocol}"
                                        Classes="field-label" />
                             <ComboBox Grid.Column="1"
                                       SelectedIndex="{Binding TransportProtocolIndex}">
@@ -183,7 +184,7 @@
                         <Grid ColumnDefinitions="140,120,20,Auto,*" RowDefinitions="Auto,Auto">
                             <!-- Dial Timeout -->
                             <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="Dial Timeout"
+                                       Text="{DynamicResource Localized_DialTimeout}"
                                        Classes="field-label" />
                             <NumericUpDown Grid.Row="0" Grid.Column="1"
                                            Value="{Binding DialServerTimeout}"
@@ -192,12 +193,12 @@
                                            Increment="1"
                                            FormatString="0" />
                             <TextBlock Grid.Row="0" Grid.Column="2"
-                                       Text="seconds"
+                                       Text="{DynamicResource Localized_Seconds}"
                                        VerticalAlignment="Center" />
 
                             <!-- TCP Mux -->
                             <TextBlock Grid.Row="0" Grid.Column="3"
-                                       Text="TCP Mux"
+                                       Text="{DynamicResource Localized_TcpMux}"
                                        VerticalAlignment="Center" />
                             <CheckBox Grid.Row="0" Grid.Column="4"
                                       IsChecked="{Binding TcpMux}"
@@ -208,7 +209,7 @@
                         <Grid ColumnDefinitions="140,120,20,120,*" RowDefinitions="Auto,Auto">
                             <!-- Heartbeat Interval -->
                             <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="Heartbeat Interval"
+                                       Text="{DynamicResource Localized_HeartbeatInterval}"
                                        Classes="field-label" />
                             <NumericUpDown Grid.Row="0" Grid.Column="1"
                                            Value="{Binding HeartbeatInterval}"
@@ -217,12 +218,12 @@
                                            Increment="5"
                                            FormatString="0" />
                             <TextBlock Grid.Row="0" Grid.Column="2"
-                                       Text="seconds"
+                                       Text="{DynamicResource Localized_Seconds}"
                                        VerticalAlignment="Center" />
 
                             <!-- Heartbeat Timeout -->
                             <TextBlock Grid.Row="0" Grid.Column="3"
-                                       Text="Heartbeat Timeout"
+                                       Text="{DynamicResource Localized_HeartbeatTimeout}"
                                        Classes="field-label" />
                             <NumericUpDown Grid.Row="0" Grid.Column="4"
                                            Value="{Binding HeartbeatTimeout}"
@@ -235,9 +236,9 @@
                         <!-- TLS -->
                         <CheckBox IsChecked="{Binding TlsEnabled}">
                             <StackPanel Spacing="2">
-                                <TextBlock Text="Enable TLS"
+                                <TextBlock Text="{DynamicResource Localized_EnableTLS}"
                                            FontWeight="Medium" />
-                                <TextBlock Text="Encrypt communication with the frps server"
+                                <TextBlock Text="{DynamicResource Localized_EncryptCommunicationWithTheFrpsServer}"
                                            Classes="hint" />
                             </StackPanel>
                         </CheckBox>
@@ -247,7 +248,7 @@
                 <!-- Logging Section -->
                 <Border Classes="card">
                     <StackPanel Spacing="{StaticResource SpacingM}">
-                        <TextBlock Text="Logging"
+                        <TextBlock Text="{DynamicResource Localized_LoggingSection}"
                                    Classes="section-title" />
 
                         <!-- Log Level and Max Days -->
@@ -267,7 +268,7 @@
 
                             <!-- Max Days -->
                             <TextBlock Grid.Column="3"
-                                       Text="Max Days"
+                                       Text="{DynamicResource Localized_MaxDays}"
                                        Classes="field-label" />
                             <NumericUpDown Grid.Column="4"
                                            Value="{Binding LogMaxDays}"
@@ -280,11 +281,11 @@
                         <!-- Log To -->
                         <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="Log To"
+                                       Text="{DynamicResource Localized_LogTo}"
                                        Classes="field-label" />
                             <TextBox Grid.Column="1"
                                      Text="{Binding LogTo}"
-                                     Watermark="e.g., console, /path/to/logfile" />
+                                     Watermark="{DynamicResource Localized_EgConsolePathToLogfile}" />
                         </Grid>
                     </StackPanel>
                 </Border>
@@ -293,7 +294,7 @@
                 <Border Classes="card"
                         IsVisible="{Binding IsValid}">
                     <StackPanel Spacing="{StaticResource SpacingS}">
-                        <TextBlock Text="Status"
+                        <TextBlock Text="{DynamicResource Localized_StatusSection}"
                                    Classes="section-title" />
 
                         <TextBlock Text="{Binding ValidationError}"
@@ -304,7 +305,7 @@
                                    Foreground="Orange"
                                    IsVisible="{Binding HasValidationWarning}" />
 
-                        <TextBlock Text="Configuration is valid"
+                        <TextBlock Text="{DynamicResource Localized_ConfigurationIsValid}"
                                    Foreground="{DynamicResource SystemAccentColor1Brush}"
                                    IsVisible="{Binding IsValid}" />
                     </StackPanel>
@@ -315,7 +316,7 @@
                             HorizontalAlignment="Right"
                             Spacing="{StaticResource SpacingM}"
                             Margin="{StaticResource ThicknessTopS}">
-                    <Button Content="Reset to Defaults"
+                    <Button Content="{DynamicResource Localized_ResetToDefaults}"
                             Command="{Binding ResetCommand}"
                             IsEnabled="{Binding !IsSaving}"
                             Classes="action-button" />
@@ -324,7 +325,7 @@
                             IsEnabled="{Binding !IsSaving}"
                             Classes="action-button primary">
                         <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-                            <TextBlock Text="Save Configuration" />
+                            <TextBlock Text="{DynamicResource Localized_SaveConfiguration}" />
                             <ProgressBar IsIndeterminate="True"
                                           Width="16"
                                           Height="16"
