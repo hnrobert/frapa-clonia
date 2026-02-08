@@ -110,20 +110,8 @@ public partial class SettingsViewModel : ObservableObject
                                ?? AvailableLanguages.First();
         };
 
-        // Initialize selected language from service - run on UI thread
-        try
-        {
-            if (_localizationService != null)
-            {
-                var cultureCode = _localizationService.CurrentCulture.Name;
-                SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == cultureCode)
-                                   ?? AvailableLanguages.First();
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error loading settings");
-        }
+        // Load saved settings on initialization
+        _ = Task.Run(async () => await LoadSettingsAsync());
     }
 
     partial void OnThemeIndexChanged(int value)
@@ -135,6 +123,14 @@ public partial class SettingsViewModel : ObservableObject
             _ => ThemeVariant.Default
         };
         _themeService?.CurrentTheme = theme;
+    }
+
+    partial void OnSelectedLanguageChanged(LanguageOption? value)
+    {
+        if (value == null || _localizationService == null ||
+            value.Code == _localizationService.CurrentCulture.Name) return;
+        _localizationService.SetCulture(value.Code);
+        _logger?.LogInformation("Language changed to: {Language}", value.Code);
     }
 
     private async Task LoadSettingsAsync()
@@ -149,6 +145,7 @@ public partial class SettingsViewModel : ObservableObject
                 {
                     var json = await File.ReadAllTextAsync(_settingsFile);
                     settings = JsonSerializer.Deserialize(json, AppSettingsContext.Default.AppSettings);
+                    _logger?.LogInformation("Settings file loaded from: {SettingsFile}", _settingsFile);
                 }
                 catch (Exception ex)
                 {
@@ -158,8 +155,16 @@ public partial class SettingsViewModel : ObservableObject
 
             // Apply settings or use defaults
             var cultureCode = settings?.Language ?? "en";
-            SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == cultureCode)
-                               ?? AvailableLanguages.First();
+            var languageOption = AvailableLanguages.FirstOrDefault(l => l.Code == cultureCode)
+                                  ?? AvailableLanguages.First();
+
+            // Apply language setting immediately
+            SelectedLanguage = languageOption;
+            if (_localizationService != null && cultureCode != _localizationService.CurrentCulture.Name)
+            {
+                _localizationService.SetCulture(cultureCode);
+                _logger?.LogInformation("Loaded language setting: {Language}", cultureCode);
+            }
 
             if (_autoStartService != null) AutoStartEnabled = await _autoStartService.IsAutoStartEnabledAsync();
             PortableMode = DetectPortableMode();
@@ -174,7 +179,7 @@ public partial class SettingsViewModel : ObservableObject
                 _ => 2
             };
 
-            _logger?.LogInformation("Settings loaded");
+            _logger?.LogInformation("Settings loaded: Language={Language}, Theme={Theme}", cultureCode, themeStr);
         }
         catch (Exception ex)
         {
@@ -187,13 +192,6 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             IsSaving = true;
-
-            // Apply language change
-            if (SelectedLanguage != null && _localizationService != null &&
-                SelectedLanguage.Code != _localizationService.CurrentCulture.Name)
-            {
-                _localizationService.SetCulture(SelectedLanguage.Code);
-            }
 
             // Apply auto-start setting
             if (AutoStartEnabled)

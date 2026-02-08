@@ -170,11 +170,14 @@ public partial class ProxyListViewModel : ObservableObject
         try
         {
             IsLoading = true;
+            _logger?.LogInformation("LoadProxiesAsync: Starting, IsLoading={IsLoading}", IsLoading);
 
             if (_configurationService != null)
             {
                 var configPath = _configurationService.GetDefaultConfigPath();
                 var config = await _configurationService.LoadConfigurationAsync(configPath);
+
+                _logger?.LogInformation("LoadProxiesAsync: Config loaded, Config={Config}", config != null);
 
                 if (config != null)
                 {
@@ -197,6 +200,16 @@ public partial class ProxyListViewModel : ObservableObject
                     Proxies = filtered.ToList();
                     _logger?.LogInformation("Loaded {Count} proxies", Proxies.Count);
                 }
+                else
+                {
+                    Proxies = [];
+                    _logger?.LogInformation("Config is null, setting Proxies to empty list");
+                }
+            }
+            else
+            {
+                Proxies = [];
+                _logger?.LogWarning("ConfigurationService is null");
             }
         }
         catch (Exception ex)
@@ -207,6 +220,7 @@ public partial class ProxyListViewModel : ObservableObject
         finally
         {
             IsLoading = false;
+            _logger?.LogInformation("LoadProxiesAsync: Completed, IsLoading={IsLoading}", IsLoading);
         }
     }
 
