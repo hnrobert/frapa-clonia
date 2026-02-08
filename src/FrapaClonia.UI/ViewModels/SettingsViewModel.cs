@@ -13,38 +13,41 @@ namespace FrapaClonia.UI.ViewModels;
 /// </summary>
 public partial class SettingsViewModel : ObservableObject
 {
-    private readonly ILogger<SettingsViewModel> _logger;
-    private readonly ILocalizationService _localizationService;
-    private readonly IAutoStartService _autoStartService;
-    private readonly ThemeService _themeService;
+    private readonly ILogger<SettingsViewModel>? _logger;
+    private readonly ILocalizationService? _localizationService;
+    private readonly IAutoStartService? _autoStartService;
+    private readonly ThemeService? _themeService;
 
     private readonly string _settingsFile = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "FrapaClonia",
         "settings.json");
 
-    [ObservableProperty]
-    private LanguageOption? _selectedLanguage;
+    [ObservableProperty] private LanguageOption? _selectedLanguage;
 
-    [ObservableProperty]
-    private bool _autoStartEnabled;
+    [ObservableProperty] private bool _autoStartEnabled;
 
-    [ObservableProperty]
-    private bool _portableMode;
+    [ObservableProperty] private bool _portableMode;
 
-    [ObservableProperty]
-    private string _configLocation = "";
+    [ObservableProperty] private string _configLocation = "";
 
-    [ObservableProperty]
-    private bool _isSaving;
+    [ObservableProperty] private bool _isSaving;
 
-    [ObservableProperty]
-    private int _themeIndex;
+    [ObservableProperty] private int _themeIndex;
 
     public IRelayCommand SaveCommand { get; }
     public IRelayCommand ResetCommand { get; }
 
     public List<LanguageOption> AvailableLanguages { get; }
+
+    // Default constructor for design-time support
+    public SettingsViewModel() : this(
+        Microsoft.Extensions.Logging.Abstractions.NullLogger<SettingsViewModel>.Instance,
+        null!,
+        null!,
+        null!)
+    {
+    }
 
     public SettingsViewModel(
         ILogger<SettingsViewModel> logger,
@@ -57,20 +60,40 @@ public partial class SettingsViewModel : ObservableObject
         _autoStartService = autoStartService;
         _themeService = themeService;
 
-        SaveCommand = new RelayCommand(async void () => await SaveAsync());
-        ResetCommand = new RelayCommand(async void () => await LoadSettingsAsync());
-
         AvailableLanguages =
         [
-            new("en", "English"),
-            new("zh-CN", "简体中文"),
-            new("ja", "日本語"),
-            new("ko", "한국어"),
-            new("es", "Español"),
-            new("fr", "Français"),
-            new("de", "Deutsch"),
-            new("ru", "Русский")
+            new LanguageOption("en", "English"),
+            new LanguageOption("zh-CN", "简体中文"),
+            new LanguageOption("ja", "日本語"),
+            new LanguageOption("ko", "한국어"),
+            new LanguageOption("es", "Español"),
+            new LanguageOption("fr", "Français"),
+            new LanguageOption("de", "Deutsch"),
+            new LanguageOption("ru", "Русский")
         ];
+
+        SaveCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await SaveAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error saving settings");
+            }
+        });
+        ResetCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await LoadSettingsAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error loading settings");
+            }
+        });
 
         // Initialize theme from ThemeService
         ThemeIndex = _themeService.CurrentTheme.ToString() switch
@@ -84,7 +107,7 @@ public partial class SettingsViewModel : ObservableObject
         {
             var cultureCode = _localizationService.CurrentCulture.Name;
             SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == cultureCode)
-                ?? AvailableLanguages.First();
+                               ?? AvailableLanguages.First();
         };
 
         _ = Task.Run(LoadSettingsAsync);
@@ -98,7 +121,7 @@ public partial class SettingsViewModel : ObservableObject
             1 => ThemeVariant.Dark,
             _ => ThemeVariant.Default
         };
-        _themeService.CurrentTheme = theme;
+        _themeService?.CurrentTheme = theme;
     }
 
     private async Task LoadSettingsAsync()
@@ -116,16 +139,16 @@ public partial class SettingsViewModel : ObservableObject
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning(ex, "Could not load settings file, using defaults");
+                    _logger?.LogWarning(ex, "Could not load settings file, using defaults");
                 }
             }
 
             // Apply settings or use defaults
             var cultureCode = settings?.Language ?? "en";
             SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == cultureCode)
-                ?? AvailableLanguages.First();
+                               ?? AvailableLanguages.First();
 
-            AutoStartEnabled = await _autoStartService.IsAutoStartEnabledAsync();
+            if (_autoStartService != null) AutoStartEnabled = await _autoStartService.IsAutoStartEnabledAsync();
             PortableMode = DetectPortableMode();
             ConfigLocation = GetConfigLocation();
 
@@ -138,11 +161,11 @@ public partial class SettingsViewModel : ObservableObject
                 _ => 2
             };
 
-            _logger.LogInformation("Settings loaded");
+            _logger?.LogInformation("Settings loaded");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error loading settings");
+            _logger?.LogError(ex, "Error loading settings");
         }
     }
 
@@ -153,7 +176,8 @@ public partial class SettingsViewModel : ObservableObject
             IsSaving = true;
 
             // Apply language change
-            if (SelectedLanguage != null && SelectedLanguage.Code != _localizationService.CurrentCulture.Name)
+            if (SelectedLanguage != null && _localizationService != null &&
+                SelectedLanguage.Code != _localizationService.CurrentCulture.Name)
             {
                 _localizationService.SetCulture(SelectedLanguage.Code);
             }
@@ -161,11 +185,11 @@ public partial class SettingsViewModel : ObservableObject
             // Apply auto-start setting
             if (AutoStartEnabled)
             {
-                await _autoStartService.EnableAutoStartAsync();
+                if (_autoStartService != null) await _autoStartService.EnableAutoStartAsync();
             }
             else
             {
-                await _autoStartService.DisableAutoStartAsync();
+                if (_autoStartService != null) await _autoStartService.DisableAutoStartAsync();
             }
 
             // Save settings to file
@@ -192,11 +216,11 @@ public partial class SettingsViewModel : ObservableObject
             var json = JsonSerializer.Serialize(settings, AppSettingsContext.Default.AppSettings);
             await File.WriteAllTextAsync(_settingsFile, json);
 
-            _logger.LogInformation("Settings saved to: {SettingsFile}", _settingsFile);
+            _logger?.LogInformation("Settings saved to: {SettingsFile}", _settingsFile);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error saving settings");
+            _logger?.LogError(ex, "Error saving settings");
         }
         finally
         {
@@ -206,7 +230,7 @@ public partial class SettingsViewModel : ObservableObject
 
     private static bool DetectPortableMode()
     {
-        // Check if running in portable mode
+        // Check if running in portable mode,
         // Portable mode is detected if the executable is in a directory with a config file
         var appDir = AppContext.BaseDirectory;
         var portableMarker = Path.Combine(appDir, "portable.txt");
@@ -219,11 +243,9 @@ public partial class SettingsViewModel : ObservableObject
         {
             return Path.Combine(AppContext.BaseDirectory, "config");
         }
-        else
-        {
-            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            return Path.Combine(appData, "FrapaClonia");
-        }
+
+        var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        return Path.Combine(appData, "FrapaClonia");
     }
 }
 

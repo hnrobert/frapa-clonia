@@ -26,9 +26,8 @@ public class ValidationService(ILogger<ValidationService> logger) : IValidationS
         errors.AddRange(serverValidation.Errors);
         warnings.AddRange(serverValidation.Warnings);
 
-        foreach (var proxy in configuration.Proxies)
+        foreach (var proxyValidation in configuration.Proxies.Select(ValidateProxy))
         {
-            var proxyValidation = ValidateProxy(proxy);
             errors.AddRange(proxyValidation.Errors);
             warnings.AddRange(proxyValidation.Warnings);
         }
@@ -71,7 +70,7 @@ public class ValidationService(ILogger<ValidationService> logger) : IValidationS
         {
             case "tcp":
             case "udp":
-                if (!proxy.RemotePort.HasValue || proxy.RemotePort.Value <= 0)
+                if (proxy.RemotePort is not > 0)
                 {
                     errors.Add($"{type.ToUpper()} proxy requires remotePort to be specified");
                 }
@@ -153,20 +152,24 @@ public class ValidationService(ILogger<ValidationService> logger) : IValidationS
         }
 
         // Transport validation
-        if (serverConfig.Transport != null)
+        if (serverConfig.Transport == null)
+            return new ValidationResult
+            {
+                IsValid = errors.Count == 0,
+                Errors = errors,
+                Warnings = warnings
+            };
+        var validProtocols = new[] { "tcp", "kcp", "quic", "websocket", "wss" };
+        if (!string.IsNullOrWhiteSpace(serverConfig.Transport.Protocol) &&
+            !validProtocols.Contains(serverConfig.Transport.Protocol.ToLower()))
         {
-            var validProtocols = new[] { "tcp", "kcp", "quic", "websocket", "wss" };
-            if (!string.IsNullOrWhiteSpace(serverConfig.Transport.Protocol) &&
-                !validProtocols.Contains(serverConfig.Transport.Protocol.ToLower()))
-            {
-                warnings.Add($"Unknown transport protocol: {serverConfig.Transport.Protocol}");
-            }
+            warnings.Add($"Unknown transport protocol: {serverConfig.Transport.Protocol}");
+        }
 
-            if (serverConfig.Transport.HeartbeatInterval > 0 && serverConfig.Transport.HeartbeatTimeout > 0 &&
-                serverConfig.Transport.HeartbeatTimeout <= serverConfig.Transport.HeartbeatInterval)
-            {
-                warnings.Add("Heartbeat timeout should be greater than heartbeat interval");
-            }
+        if (serverConfig.Transport.HeartbeatInterval > 0 && serverConfig.Transport.HeartbeatTimeout > 0 &&
+            serverConfig.Transport.HeartbeatTimeout <= serverConfig.Transport.HeartbeatInterval)
+        {
+            warnings.Add("Heartbeat timeout should be greater than heartbeat interval");
         }
 
         return new ValidationResult
