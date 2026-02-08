@@ -5,6 +5,7 @@ using FrapaClonia.Domain.Models;
 using FrapaClonia.UI.Views;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Avalonia.Threading;
 using Avalonia.Controls.ApplicationLifetimes;
 using System.Text.Json;
 // ReSharper disable UnusedParameterInPartialMethod
@@ -120,7 +121,8 @@ public partial class ProxyListViewModel : ObservableObject
             }
         }, () => Proxies.Count > 0);
 
-        _ = Task.Run(LoadProxiesAsync);
+        // Initial load - don't await to avoid blocking constructor
+        _ = LoadProxiesAsync();
     }
 
     partial void OnSelectedProxyChanged(ProxyConfig? value)
@@ -148,52 +150,55 @@ public partial class ProxyListViewModel : ObservableObject
     private void FilterProxies()
     {
         // Filtering is implemented in LoadProxiesAsync
-        _ = Task.Run(LoadProxiesAsync);
+        _ = LoadProxiesAsync();
     }
 
     public async Task LoadProxiesAsync()
     {
-        try
+        await Dispatcher.UIThread.InvokeAsync(async () =>
         {
-            IsLoading = true;
-
-            var configPath = _configurationService.GetDefaultConfigPath();
-            var config = await _configurationService.LoadConfigurationAsync(configPath);
-
-            if (config != null)
+            try
             {
-                var allProxies = config.Proxies;
+                IsLoading = true;
 
-                // Apply filters
-                var filtered = allProxies.AsEnumerable();
+                var configPath = _configurationService.GetDefaultConfigPath();
+                var config = await _configurationService.LoadConfigurationAsync(configPath);
 
-                if (!string.IsNullOrWhiteSpace(SearchQuery))
+                if (config != null)
                 {
-                    var query = SearchQuery.ToLower();
-                    filtered = filtered.Where(p =>
-                        p.Name.ToLower().Contains(query) ||
-                        p.Type.ToLower().Contains(query));
+                    var allProxies = config.Proxies;
+
+                    // Apply filters
+                    var filtered = allProxies.AsEnumerable();
+
+                    if (!string.IsNullOrWhiteSpace(SearchQuery))
+                    {
+                        var query = SearchQuery.ToLower();
+                        filtered = filtered.Where(p =>
+                            p.Name.ToLower().Contains(query) ||
+                            p.Type.ToLower().Contains(query));
+                    }
+
+                    if (FilterType != "All")
+                    {
+                        filtered = filtered.Where(p => p.Type == FilterType);
+                    }
+
+                    Proxies = filtered.ToList();
+
+                    _logger.LogInformation("Loaded {Count} proxies", Proxies.Count);
                 }
-
-                if (FilterType != "All")
-                {
-                    filtered = filtered.Where(p => p.Type == FilterType);
-                }
-
-                Proxies = filtered.ToList();
-
-                _logger.LogInformation("Loaded {Count} proxies", Proxies.Count);
             }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error loading proxies");
-            Proxies = [];
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading proxies");
+                Proxies = [];
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        });
     }
 
     private async void AddProxy()
