@@ -154,13 +154,12 @@ public partial class DeploymentViewModel : ObservableObject
             }
         });
 
-        // Initialize
-        _ = Task.Run(InitializeAsync);
+        // Note: Initialization is triggered by the View's OnLoaded event
     }
 
-    private async Task InitializeAsync()
+    public void Initialize()
     {
-        await CheckNativeAsync();
+        _ = CheckNativeAsync();
     }
 
     private async Task CheckDockerAsync()

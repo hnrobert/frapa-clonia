@@ -5,7 +5,6 @@ using FrapaClonia.Domain.Models;
 using FrapaClonia.UI.Views;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using Avalonia.Threading;
 using Avalonia.Controls.ApplicationLifetimes;
 using System.Text.Json;
 using FrapaClonia.Domain;
@@ -104,7 +103,11 @@ public partial class VisitorListViewModel : ObservableObject
             }
         });
 
-        // Initial load - don't await to avoid blocking constructor
+        // Note: Loading is initiated by the View's OnLoaded event
+    }
+
+    public void Initialize()
+    {
         _ = LoadVisitorsAsync();
     }
 
@@ -117,35 +120,31 @@ public partial class VisitorListViewModel : ObservableObject
 
     private async Task LoadVisitorsAsync()
     {
-        await Dispatcher.UIThread.InvokeAsync(async () =>
+        try
         {
-            try
+            IsLoading = true;
+
+            if (_configurationService != null)
             {
-                IsLoading = true;
+                var configPath = _configurationService.GetDefaultConfigPath();
+                var config = await _configurationService.LoadConfigurationAsync(configPath);
 
-                if (_configurationService != null)
+                if (config != null)
                 {
-                    var configPath = _configurationService.GetDefaultConfigPath();
-                    var config = await _configurationService.LoadConfigurationAsync(configPath);
-
-                    if (config != null)
-                    {
-                        Visitors = config.Visitors;
-
-                        _logger?.LogInformation("Loaded {Count} visitors", Visitors.Count);
-                    }
+                    Visitors = config.Visitors;
+                    _logger?.LogInformation("Loaded {Count} visitors", Visitors.Count);
                 }
             }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, "Error loading visitors");
-                Visitors = [];
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        });
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error loading visitors");
+            Visitors = [];
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
     private async void AddVisitor()
@@ -175,7 +174,7 @@ public partial class VisitorListViewModel : ObservableObject
             if (result == true)
             {
                 // User clicked Save - refresh the list
-                _ = Task.Run(LoadVisitorsAsync);
+                _ = LoadVisitorsAsync();
             }
         }
         catch (Exception e)
@@ -215,7 +214,7 @@ public partial class VisitorListViewModel : ObservableObject
             if (result == true)
             {
                 // User clicked Save - refresh the list
-                _ = Task.Run(LoadVisitorsAsync);
+                _ = LoadVisitorsAsync();
             }
         }
         catch (Exception e)

@@ -110,7 +110,20 @@ public partial class SettingsViewModel : ObservableObject
                                ?? AvailableLanguages.First();
         };
 
-        _ = Task.Run(LoadSettingsAsync);
+        // Initialize selected language from service - run on UI thread
+        try
+        {
+            if (_localizationService != null)
+            {
+                var cultureCode = _localizationService.CurrentCulture.Name;
+                SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == cultureCode)
+                                   ?? AvailableLanguages.First();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error loading settings");
+        }
     }
 
     partial void OnThemeIndexChanged(int value)
