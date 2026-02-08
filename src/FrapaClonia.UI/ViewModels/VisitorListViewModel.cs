@@ -5,6 +5,7 @@ using FrapaClonia.Domain.Models;
 using FrapaClonia.UI.Views;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Avalonia.Threading;
 using Avalonia.Controls.ApplicationLifetimes;
 using System.Text.Json;
 
@@ -97,7 +98,8 @@ public partial class VisitorListViewModel : ObservableObject
             }
         });
 
-        _ = Task.Run(LoadVisitorsAsync);
+        // Initial load - don't await to avoid blocking constructor
+        _ = LoadVisitorsAsync();
     }
 
     // ReSharper disable once UnusedParameterInPartialMethod
@@ -109,29 +111,32 @@ public partial class VisitorListViewModel : ObservableObject
 
     private async Task LoadVisitorsAsync()
     {
-        try
+        await Dispatcher.UIThread.InvokeAsync(async () =>
         {
-            IsLoading = true;
-
-            var configPath = _configurationService.GetDefaultConfigPath();
-            var config = await _configurationService.LoadConfigurationAsync(configPath);
-
-            if (config != null)
+            try
             {
-                Visitors = config.Visitors;
+                IsLoading = true;
 
-                _logger.LogInformation("Loaded {Count} visitors", Visitors.Count);
+                var configPath = _configurationService.GetDefaultConfigPath();
+                var config = await _configurationService.LoadConfigurationAsync(configPath);
+
+                if (config != null)
+                {
+                    Visitors = config.Visitors;
+
+                    _logger.LogInformation("Loaded {Count} visitors", Visitors.Count);
+                }
             }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error loading visitors");
-            Visitors = [];
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading visitors");
+                Visitors = [];
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        });
     }
 
     private async void AddVisitor()
