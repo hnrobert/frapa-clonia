@@ -91,6 +91,36 @@ public partial class VisitorEditorViewModel : ObservableObject
         }
     }
 
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnVisitorNameChanged(string value)
+    {
+        _ = ValidateAsync();
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnVisitorTypeChanged(string value)
+    {
+        _ = ValidateAsync();
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnServerNameChanged(string value)
+    {
+        _ = ValidateAsync();
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnSecretKeyChanged(string value)
+    {
+        _ = ValidateAsync();
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnBindPortChanged(int value)
+    {
+        _ = ValidateAsync();
+    }
+
     private void LoadFromVisitor(VisitorConfig visitor)
     {
         VisitorName = visitor.Name;
@@ -107,12 +137,9 @@ public partial class VisitorEditorViewModel : ObservableObject
     private Task ValidateAsync()
     {
         var visitor = CreateVisitorConfig();
-        // Validate required fields
-        IsValid = !string.IsNullOrWhiteSpace(VisitorName) &&
-                   !string.IsNullOrWhiteSpace(ServerName) &&
-                   !string.IsNullOrWhiteSpace(SecretKey) &&
-                   BindPort > 0;
-        ValidationError = IsValid ? null : "Please fill in all required fields";
+        var validation = _validationService?.ValidateVisitor(visitor) ?? new ValidationResult();
+        IsValid = validation.IsValid;
+        ValidationError = validation.Errors.FirstOrDefault();
         return Task.CompletedTask;
     }
 
