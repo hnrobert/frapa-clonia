@@ -1,6 +1,7 @@
 using FrapaClonia.Core.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
+using System.Text.Json;
 
 namespace FrapaClonia.Infrastructure.Services;
 
@@ -37,14 +38,71 @@ public class LocalizationService : ILocalizationService
         _localizationData = new Dictionary<string, Dictionary<string, string>>();
         InitializeLocalizationData();
 
-        // Auto-detect system language
-        var systemCulture = CultureInfo.CurrentUICulture;
+        // Try to load saved language from settings file first
+        var savedCulture = LoadSavedCulture();
+
+        // If no saved culture, auto-detect system language
+        var systemCulture = savedCulture ?? CultureInfo.CurrentUICulture;
         var supportedCulture = SupportedCultures
             .FirstOrDefault(c => c.Name == systemCulture.Name || c.Name.StartsWith(systemCulture.TwoLetterISOLanguageName));
 
         CurrentCulture = supportedCulture ?? SupportedCultures[0];
 
+        // Apply the culture immediately
+        CultureInfo.CurrentUICulture = CurrentCulture;
+        CultureInfo.CurrentCulture = CurrentCulture;
+
         _logger.LogInformation("Localization initialized with culture: {Culture}", CurrentCulture.Name);
+    }
+
+    private CultureInfo? LoadSavedCulture()
+    {
+        try
+        {
+            var settingsFile = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "FrapaClonia",
+                "settings.json");
+
+            if (File.Exists(settingsFile))
+            {
+                var json = File.ReadAllText(settingsFile);
+                using var document = JsonDocument.Parse(json);
+
+                // Try to find the language property (case-insensitive)
+                JsonElement languageElement = default;
+                bool found = false;
+
+                foreach (var property in document.RootElement.EnumerateObject())
+                {
+                    if (property.Name.Equals("language", StringComparison.OrdinalIgnoreCase))
+                    {
+                        languageElement = property.Value;
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found)
+                {
+                    var languageCode = languageElement.GetString();
+                    if (!string.IsNullOrEmpty(languageCode))
+                    {
+                        var culture = SupportedCultures.FirstOrDefault(c => c.Name == languageCode);
+                        if (culture != null)
+                        {
+                            _logger.LogInformation("Loaded saved language: {Language}", languageCode);
+                            return culture;
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to load saved language from settings");
+        }
+        return null;
     }
 
     public void SetCulture(string cultureCode)
