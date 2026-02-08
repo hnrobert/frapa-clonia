@@ -21,6 +21,8 @@ public partial class MainWindowViewModel : ObservableObject
     public IRelayCommand NavigateToServerConfigCommand { get; }
     public IRelayCommand NavigateToProxiesCommand { get; }
     public IRelayCommand NavigateToVisitorsCommand { get; }
+    public IRelayCommand NavigateToDeploymentCommand { get; }
+    public IRelayCommand NavigateToLogsCommand { get; }
     public IRelayCommand NavigateToSettingsCommand { get; }
 
     public MainWindowViewModel(
@@ -34,6 +36,8 @@ public partial class MainWindowViewModel : ObservableObject
         NavigateToServerConfigCommand = new RelayCommand(() => Navigate("server"));
         NavigateToProxiesCommand = new RelayCommand(() => Navigate("proxies"));
         NavigateToVisitorsCommand = new RelayCommand(() => Navigate("visitors"));
+        NavigateToDeploymentCommand = new RelayCommand(() => Navigate("deployment"));
+        NavigateToLogsCommand = new RelayCommand(() => Navigate("logs"));
         NavigateToSettingsCommand = new RelayCommand(() => Navigate("settings"));
 
         // Subscribe to navigation changes
