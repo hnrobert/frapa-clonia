@@ -17,53 +17,15 @@
         <converters:BoolToDeployedStringConverter x:Key="BoolToDeployedStringConverter" />
     </UserControl.Resources>
 
-    <UserControl.Styles>
-        <Style Selector="TextBlock.sectionTitle">
-            <Setter Property="FontSize" Value="{StaticResource FontSizeL}" />
-            <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-        </Style>
-
-        <Style Selector="TextBlock.hint">
-            <Setter Property="FontSize" Value="{StaticResource FontSizeS}" />
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-        </Style>
-
-        <Style Selector="TextBlock.field-label">
-            <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-
-        <Style Selector="Border.card">
-            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
-            <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusL}" />
-            <Setter Property="Padding" Value="{StaticResource ThicknessL}" />
-            <Setter Property="Margin" Value="{StaticResource ThicknessBottomL}" />
-        </Style>
-
-        <Style Selector="Button.action-button">
-            <Setter Property="Margin" Value="{StaticResource ThicknessRightS}" />
-        </Style>
-
-        <Style Selector="ProgressBar.status-indicator">
-            <Setter Property="IsIndeterminate" Value="True" />
-            <Setter Property="Width" Value="16" />
-            <Setter Property="Height" Value="16" />
-        </Style>
-    </UserControl.Styles>
-
     <ScrollViewer HorizontalScrollBarVisibility="Disabled">
         <Panel Margin="{StaticResource ContentPadding}">
             <StackPanel Spacing="{StaticResource SpacingL}" MaxWidth="800">
                 <!-- Header -->
                 <TextBlock Text="Deployment"
-                           FontSize="{StaticResource FontSizeXXXL}"
-                           FontWeight="{StaticResource FontWeightSemiBold}"
-                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                           Classes="page-title" />
 
                 <!-- Status Bar -->
-                <Border Classes="card">
+                <Border Classes="settings-card">
                     <Grid ColumnDefinitions="*,Auto">
                         <TextBlock Grid.Column="0"
                                    Text="{Binding StatusMessage}"
@@ -80,7 +42,7 @@
                 </Border>
 
                 <!-- Deployment Mode Selection -->
-                <Border Classes="card">
+                <Border Classes="settings-card">
                     <StackPanel Spacing="0">
                         <TextBlock Text="Deployment Mode"
                                    Classes="sectionTitle"
@@ -104,7 +66,7 @@
                 </Border>
 
                 <!-- Docker Deployment -->
-                <Border Classes="card">
+                <Border Classes="settings-card">
                     <StackPanel Spacing="{StaticResource SpacingM}">
                         <TextBlock Text="Docker Deployment"
                                    Classes="sectionTitle" />
@@ -166,7 +128,7 @@
                 </Border>
 
                 <!-- Native Deployment -->
-                <Border Classes="card">
+                <Border Classes="settings-card">
                     <StackPanel Spacing="{StaticResource SpacingM}">
                         <TextBlock Text="Native Deployment"
                                    Classes="sectionTitle" />
@@ -213,7 +175,7 @@
                 </Border>
 
                 <!-- Information -->
-                <Border Classes="card">
+                <Border Classes="settings-card">
                     <StackPanel Spacing="{StaticResource SpacingS}">
                         <TextBlock Text="Deployment Information"
                                    Classes="sectionTitle" />

@@ -48,6 +48,13 @@
     <Thickness x:Key="ThicknessHorizontalM">8,0,8,0</Thickness>
     <Thickness x:Key="ThicknessHorizontalL">16,0,16,0</Thickness>
 
+    <!-- Spacing as Thickness -->
+    <Thickness x:Key="SpacingLeftM">8,0,0,0</Thickness>
+    <Thickness x:Key="SpacingLeftL">12,0,0,0</Thickness>
+    <Thickness x:Key="SpacingRightM">0,0,8,0</Thickness>
+    <Thickness x:Key="SpacingTopXS">0,2,0,0</Thickness>
+    <Thickness x:Key="SpacingTopS">0,4,0,0</Thickness>
+
     <Thickness x:Key="ThicknessVerticalS">0,4,0,4</Thickness>
     <Thickness x:Key="ThicknessVerticalM">0,8,0,8</Thickness>
     <Thickness x:Key="ThicknessVerticalL">0,16,0,16</Thickness>
@@ -136,6 +143,15 @@
     <Thickness x:Key="ContentPadding">24</Thickness>
     <Thickness x:Key="ContentPaddingCompact">16</Thickness>
     <Thickness x:Key="ContentPaddingSparse">32</Thickness>
+
+    <!-- Page Header Padding -->
+    <Thickness x:Key="PageHeaderPadding">24,20,24,16</Thickness>
+
+    <!-- Page Toolbar Padding -->
+    <Thickness x:Key="PageToolbarPadding">24,12,24,16</Thickness>
+
+    <!-- Page Content Padding -->
+    <Thickness x:Key="PageContentPadding">24,0,24,20</Thickness>
 
     <!-- Card Grid Spacing -->
     <sys:Double x:Key="CardGridSpacing">12</sys:Double>

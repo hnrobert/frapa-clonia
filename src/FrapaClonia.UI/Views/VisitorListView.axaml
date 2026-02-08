@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+             xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="650"
@@ -11,97 +12,24 @@
         <vm:VisitorListViewModel />
     </Design.DataContext>
 
+    <UserControl.Resources>
+        <converters:TypeToColorConverter x:Key="TypeToColorConverter" />
+        <converters:NotNullConverter x:Key="NotNullConverter" />
+        <converters:EmptyCollectionConverter x:Key="EmptyCollectionConverter" />
+    </UserControl.Resources>
+
     <UserControl.Styles>
-        <Style Selector="Button.cardActionButton">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Padding" Value="8" />
-            <Setter Property="Width" Value="36" />
-            <Setter Property="Height" Value="36" />
-            <Setter Property="CornerRadius" Value="4" />
-        </Style>
-        <Style Selector="Button.cardActionButton:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
-        </Style>
-        <Style Selector="Button.primaryAction">
-            <Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundAltHighBrush}" />
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Padding" Value="16,8" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-        </Style>
-        <Style Selector="Button.primaryAction:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SystemAccentColor1}" />
-        </Style>
-        <Style Selector="Button.secondaryAction">
-            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" />
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Padding" Value="16,8" />
-        </Style>
-        <Style Selector="Button.secondaryAction:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltHighBrush}" />
-        </Style>
-        <Style Selector="Border.infoCard">
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltLowBrush}" />
-            <Setter Property="Padding" Value="16" />
-            <Setter Property="Margin" Value="0,0,0,12" />
-            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-        </Style>
-        <Style Selector="Border.infoCard:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" />
-        </Style>
-        <Style Selector="TextBlock.heading">
-            <Setter Property="FontSize" Value="28" />
-            <Setter Property="FontWeight" Value="Bold" />
-        </Style>
-        <Style Selector="TextBlock.subheading">
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-        </Style>
-        <Style Selector="TextBlock.label">
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-        </Style>
-        <Style Selector="TextBlock.value">
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-        </Style>
+        <!-- Override typeBadge for visitor list -->
         <Style Selector="Border.typeBadge">
-            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusS}" />
             <Setter Property="Padding" Value="6,3" />
             <Setter Property="MinWidth" Value="45" />
         </Style>
-        <Style Selector="TextBlock.typeText">
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="FontWeight" Value="SemiBold" />
+
+        <Style Selector="Border.typeBadge TextBlock">
+            <Setter Property="FontSize" Value="{StaticResource FontSizeS}" />
+            <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
             <Setter Property="Foreground" Value="White" />
-        </Style>
-        <Style Selector="Ellipse.statusIndicator">
-            <Setter Property="Width" Value="10" />
-            <Setter Property="Height" Value="10" />
-        </Style>
-        <Style Selector="Ellipse.statusIndicator.active">
-            <Setter Property="Fill" Value="#10B981" />
-        </Style>
-        <Style Selector="Ellipse.statusIndicator.inactive">
-            <Setter Property="Fill" Value="#9CA3AF" />
-        </Style>
-        <Style Selector="TextBox.searchBox">
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Padding" Value="36,10,12,10" />
-            <Setter Property="MinWidth" Value="280" />
-        </Style>
-        <Style Selector="ComboBox.filterBox">
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Padding" Value="12,8" />
-            <Setter Property="MinWidth" Value="140" />
-        </Style>
-        <Style Selector="Border.searchIconContainer">
-            <Setter Property="IsHitTestVisible" Value="False" />
-            <Setter Property="Padding" Value="12,10,0,10" />
         </Style>
     </UserControl.Styles>
 
@@ -112,32 +40,33 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Header Section -->
-        <Border Grid.Row="0"
-                Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
-                Padding="24,20,24,16">
+        <!-- Page Header -->
+        <Border Grid.Row="0" Classes="page-header">
             <Grid ColumnDefinitions="*,Auto">
-                <StackPanel Grid.Column="0" Spacing="4">
-                    <TextBlock Text="Visitor Management" Classes="heading" />
+                <StackPanel Grid.Column="0" Spacing="{StaticResource SpacingS}">
+                    <TextBlock Text="Visitor Management"
+                               Classes="page-title" />
                     <TextBlock Text="Configure and manage secure tunnel visitors (STCP/XTCP/SUDP)"
-                               Classes="subheading" />
+                               Classes="page-subtitle" />
                 </StackPanel>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12">
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
                     <Button Command="{Binding RefreshCommand}"
-                            Classes="secondaryAction"
+                            Classes="secondary"
                             IsEnabled="{Binding !IsLoading}"
                             ToolTip.Tip="Refresh visitor list">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <TextBlock Text="↻" FontSize="14" />
+                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+                            <TextBlock Text="&#xE117;"
+                                       FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                       FontSize="{StaticResource IconSizeM}" />
                             <TextBlock Text="Refresh" />
                         </StackPanel>
                     </Button>
                     <Button Command="{Binding AddVisitorCommand}"
-                            Classes="primaryAction"
+                            Classes="primary"
                             ToolTip.Tip="Add a new visitor configuration">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <TextBlock Text="+" FontSize="14" />
+                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+                            <TextBlock Text="+" FontSize="{StaticResource FontSizeL}" FontWeight="{StaticResource FontWeightBold}" />
                             <TextBlock Text="Add Visitor" />
                         </StackPanel>
                     </Button>
@@ -145,30 +74,20 @@
             </Grid>
         </Border>
 
-        <!-- Toolbar Section -->
+        <!-- Page Toolbar -->
         <Border Grid.Row="1"
-                Background="{DynamicResource SystemControlPageBackgroundTransparent}"
-                Padding="24,12,24,16"
+                Classes="page-toolbar"
                 BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
                 BorderThickness="0,0,0,1">
             <Grid ColumnDefinitions="*,Auto">
-                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
-                    <!-- Search Box -->
-                    <Grid>
-                        <TextBox Text="{Binding SearchQuery}"
-                                 Watermark="Search visitors..."
-                                 Classes="searchBox" />
-                        <Border Classes="searchIconContainer">
-                            <TextBlock Text="🔍"
-                                       FontSize="14"
-                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-                        </Border>
-                    </Grid>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
+                    <TextBox Text="{Binding SearchQuery}"
+                             Watermark="Search visitors..."
+                             Classes="search-box" />
 
-                    <!-- Type Filter -->
                     <ComboBox SelectedIndex="{Binding SelectedTypeFilter}"
                               PlaceholderText="All Types"
-                              Classes="filterBox">
+                              Classes="filter-box">
                         <ComboBoxItem Content="All Types" />
                         <ComboBoxItem Content="STCP" />
                         <ComboBoxItem Content="XTCP" />
@@ -177,199 +96,212 @@
                 </StackPanel>
 
                 <!-- Status Info -->
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <Ellipse Classes="statusIndicator active" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{StaticResource SpacingL}">
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+                        <Border Classes="status-dot active" VerticalAlignment="Center" />
                         <TextBlock Text="{Binding ActiveCount, FallbackValue='0'}"
-                                   FontSize="13"
-                                   FontWeight="SemiBold" />
+                                   FontSize="{StaticResource FontSizeM}"
+                                   FontWeight="{StaticResource FontWeightSemiBold}"
+                                   VerticalAlignment="Center" />
                         <TextBlock Text="Active"
-                                   FontSize="13"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                                   FontSize="{StaticResource FontSizeM}"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   VerticalAlignment="Center" />
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <Ellipse Classes="statusIndicator inactive" />
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+                        <Border Classes="status-dot inactive" VerticalAlignment="Center" />
                         <TextBlock Text="{Binding Visitors.Count, FallbackValue='0'}"
-                                   FontSize="13"
-                                   FontWeight="SemiBold" />
+                                   FontSize="{StaticResource FontSizeM}"
+                                   FontWeight="{StaticResource FontWeightSemiBold}"
+                                   VerticalAlignment="Center" />
                         <TextBlock Text="Total"
-                                   FontSize="13"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                                   FontSize="{StaticResource FontSizeM}"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   VerticalAlignment="Center" />
                     </StackPanel>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- Visitor List -->
-        <Border Grid.Row="2"
-                Background="{DynamicResource SystemControlPageBackgroundTransparent}"
-                Padding="24,0,24,20">
-            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-                <StackPanel Spacing="0">
-                    <!-- Visitor Cards -->
-                    <ItemsControl ItemsSource="{Binding Visitors}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border Classes="infoCard">
-                                    <Grid ColumnDefinitions="Auto,*,Auto">
-                                        <!-- Type Badge & Status -->
-                                        <StackPanel Grid.Column="0"
-                                                   Orientation="Horizontal"
-                                                   Spacing="12"
-                                                   Margin="0,0,16,0">
-                                            <Ellipse Classes="statusIndicator active"
-                                                     VerticalAlignment="Top"
-                                                     Margin="0,4,0,0" />
-                                            <Border Background="{Binding Type, Converter={StaticResource TypeToColorConverter}}"
-                                                   Classes="typeBadge">
-                                                <TextBlock Text="{Binding Type}"
-                                                           Classes="typeText"
-                                                           HorizontalAlignment="Center" />
-                                            </Border>
-                                        </StackPanel>
+        <!-- Page Content -->
+        <Border Grid.Row="2" Classes="page-content">
+            <Grid>
+                <!-- Loading Overlay -->
+                <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
+                        Opacity="0.8"
+                        IsVisible="{Binding IsLoading}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch">
+                    <StackPanel Spacing="{StaticResource SpacingM}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <ProgressBar IsIndeterminate="True" Width="60" Height="60" />
+                        <TextBlock Text="Loading visitors..."
+                                   FontSize="{StaticResource FontSizeL}"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                    </StackPanel>
+                </Border>
 
-                                        <!-- Visitor Information -->
-                                        <StackPanel Grid.Column="1" Spacing="8">
-                                            <!-- Name & Description -->
-                                            <TextBlock Text="{Binding Name}"
-                                                       FontSize="16"
-                                                       FontWeight="SemiBold" />
+                <!-- Content -->
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Spacing="0">
+                        <!-- Visitor Cards -->
+                        <ItemsControl ItemsSource="{Binding Visitors}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Classes="list-card">
+                                        <Grid ColumnDefinitions="Auto,*,Auto">
+                                            <!-- Type Badge & Status -->
+                                            <StackPanel Grid.Column="0"
+                                                       Orientation="Horizontal"
+                                                       Spacing="{StaticResource SpacingM}"
+                                                       Margin="{StaticResource SpacingRightM}">
+                                                <Border Classes="status-dot active"
+                                                        VerticalAlignment="Top"
+                                                        Margin="0,4,0,0" />
+                                                <Border Background="{Binding Type, Converter={StaticResource TypeToColorConverter}}"
+                                                       Classes="typeBadge"
+                                                       VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Type}"
+                                                               HorizontalAlignment="Center" />
+                                                </Border>
+                                            </StackPanel>
 
-                                            <!-- Connection Details -->
-                                            <Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto">
-                                                <!-- Row 1: Server and Bind Address -->
-                                                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="6">
-                                                    <TextBlock Text="Server:"
-                                                               Classes="label" />
-                                                    <TextBlock Text="{Binding ServerName}"
-                                                               Classes="value" />
-                                                </StackPanel>
+                                            <!-- Visitor Information -->
+                                            <StackPanel Grid.Column="1" Spacing="{StaticResource SpacingS}">
+                                                <!-- Name -->
+                                                <TextBlock Text="{Binding Name}"
+                                                           FontSize="{StaticResource FontSizeL}"
+                                                           FontWeight="{StaticResource FontWeightSemiBold}"
+                                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
 
-                                                <Border Grid.Row="0" Grid.Column="1"
-                                                       Width="1"
-                                                       Margin="8,0"
-                                                       Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-
-                                                <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" Spacing="6">
-                                                    <TextBlock Text="Bind:"
-                                                               Classes="label" />
-                                                    <TextBlock>
-                                                        <Run Text="{Binding BindAddr}" />
-                                                        <Run Text=":" />
-                                                        <Run Text="{Binding BindPort}" />
-                                                    </TextBlock>
-                                                </StackPanel>
-
-                                                <!-- Row 2: Optional Bind IP -->
-                                                <StackPanel Grid.Row="1" Grid.Column="0"
-                                                           Orientation="Horizontal"
-                                                           Spacing="6"
-                                                           IsVisible="{Binding BindIp, Converter={StaticResource NotNullConverter}}">
-                                                    <TextBlock Text="Bind IP:"
-                                                               Classes="label" />
-                                                    <TextBlock Text="{Binding BindIp}"
-                                                               Classes="value" />
-                                                </StackPanel>
-                                            </Grid>
-
-                                            <!-- Transport Info -->
-                                            <Border Background="{DynamicResource SystemControlPageBackgroundTransparent}"
-                                                   CornerRadius="4"
-                                                   Padding="8,6"
-                                                   Margin="0,4,0,0"
-                                                   IsVisible="{Binding Transport, Converter={StaticResource NotNullConverter}}">
-                                                <StackPanel Orientation="Horizontal" Spacing="12">
-                                                    <StackPanel Orientation="Horizontal" Spacing="4">
-                                                        <TextBlock Text="🔒"
-                                                                   FontSize="10"
-                                                                   IsVisible="{Binding Transport.UseEncryption}" />
-                                                        <TextBlock Text="📦"
-                                                                   FontSize="10"
-                                                                   IsVisible="{Binding Transport.UseCompression}" />
+                                                <!-- Connection Details -->
+                                                <Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto">
+                                                    <!-- Row 1: Server and Bind Address -->
+                                                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="{StaticResource SpacingXS}">
+                                                        <TextBlock Text="Server:"
+                                                                   Classes="label" />
+                                                        <TextBlock Text="{Binding ServerName}"
+                                                                   Classes="value" />
                                                     </StackPanel>
-                                                    <TextBlock Text="Transport enabled"
-                                                               FontSize="11"
-                                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-                                                </StackPanel>
-                                            </Border>
-                                        </StackPanel>
 
-                                        <!-- Action Buttons -->
-                                        <StackPanel Grid.Column="2"
-                                                   Orientation="Horizontal"
-                                                   Spacing="4"
-                                                   VerticalAlignment="Center">
-                                            <Button Command="{Binding $parent[UserControl].EditVisitorCommand}"
-                                                   Classes="cardActionButton"
-                                                   ToolTip.Tip="Edit visitor">
-                                                <TextBlock Text="✏️" FontSize="14" />
-                                            </Button>
-                                            <Button Command="{Binding $parent[UserControl].DuplicateVisitorCommand}"
-                                                   Classes="cardActionButton"
-                                                   ToolTip.Tip="Duplicate visitor">
-                                                <TextBlock Text="📋" FontSize="14" />
-                                            </Button>
-                                            <Button Command="{Binding $parent[UserControl].DeleteVisitorCommand}"
-                                                   Classes="cardActionButton"
-                                                   ToolTip.Tip="Delete visitor"
-                                                   Foreground="#EF4444">
-                                                <TextBlock Text="🗑️" FontSize="14" />
-                                            </Button>
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                                                    <Border Grid.Row="0" Grid.Column="1"
+                                                           Width="1"
+                                                           Margin="{StaticResource ThicknessHorizontalS}"
+                                                           Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
 
-                    <!-- Empty State -->
-                    <Border IsVisible="{Binding Visitors, Converter={StaticResource EmptyCollectionConverter}}"
-                           CornerRadius="8"
-                           Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
-                           Padding="40"
-                           Margin="0,20,0,0">
-                        <StackPanel Spacing="16" HorizontalAlignment="Center">
-                            <TextBlock Text="🌐"
-                                       FontSize="48"
-                                       HorizontalAlignment="Center" />
-                            <TextBlock Text="No Visitors Configured"
-                                       FontSize="18"
-                                       FontWeight="SemiBold"
-                                       HorizontalAlignment="Center" />
-                            <TextBlock Text="Visitors allow you to connect to secure tunnel proxies (STCP/XTCP/SUDP)"
-                                       FontSize="14"
-                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                       TextWrapping="Wrap"
-                                       TextAlignment="Center"
-                                       MaxWidth="400" />
-                            <Button Command="{Binding AddVisitorCommand}"
-                                   Classes="primaryAction"
-                                   HorizontalAlignment="Center"
-                                   Margin="0,8,0,0">
-                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <TextBlock Text="+" FontSize="14" />
-                                    <TextBlock Text="Create Your First Visitor" />
-                                </StackPanel>
-                            </Button>
-                        </StackPanel>
-                    </Border>
-                </StackPanel>
-            </ScrollViewer>
-        </Border>
+                                                    <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" Spacing="{StaticResource SpacingXS}">
+                                                        <TextBlock Text="Bind:"
+                                                                   Classes="label" />
+                                                        <TextBlock>
+                                                            <Run Text="{Binding BindAddr}" />
+                                                            <Run Text=":" />
+                                                            <Run Text="{Binding BindPort}" />
+                                                        </TextBlock>
+                                                    </StackPanel>
 
-        <!-- Loading Overlay -->
-        <Border Grid.Row="0"
-                Grid.RowSpan="3"
-                Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
-                Opacity="0.8"
-                IsVisible="{Binding IsLoading}">
-            <StackPanel Spacing="16" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <ProgressBar IsIndeterminate="True" Width="60" Height="60" />
-                <TextBlock Text="Loading visitors..."
-                           FontSize="16"
-                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-            </StackPanel>
+                                                    <!-- Row 2: Optional Bind IP -->
+                                                    <StackPanel Grid.Row="1" Grid.Column="0"
+                                                               Orientation="Horizontal"
+                                                               Spacing="{StaticResource SpacingXS}"
+                                                               IsVisible="{Binding BindIp, Converter={StaticResource NotNullConverter}}">
+                                                        <TextBlock Text="Bind IP:"
+                                                                   Classes="label" />
+                                                        <TextBlock Text="{Binding BindIp}"
+                                                                   Classes="value" />
+                                                    </StackPanel>
+                                                </Grid>
+
+                                                <!-- Transport Info -->
+                                                <Border Background="{DynamicResource SystemControlPageBackgroundTransparent}"
+                                                       CornerRadius="{StaticResource CornerRadiusS}"
+                                                       Padding="{StaticResource ThicknessS}"
+                                                       IsVisible="{Binding Transport, Converter={StaticResource NotNullConverter}}">
+                                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
+                                                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingXS}">
+                                                            <TextBlock Text="&#xE72E;"
+                                                                       FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                                                       FontSize="{StaticResource FontSizeS}"
+                                                                       IsVisible="{Binding Transport.UseEncryption}" />
+                                                            <TextBlock Text="&#xF8AF;"
+                                                                       FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                                                       FontSize="{StaticResource FontSizeS}"
+                                                                       IsVisible="{Binding Transport.UseCompression}" />
+                                                        </StackPanel>
+                                                        <TextBlock Text="Transport enabled"
+                                                                   FontSize="{StaticResource FontSizeS}"
+                                                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                                                    </StackPanel>
+                                                </Border>
+                                            </StackPanel>
+
+                                            <!-- Action Buttons -->
+                                            <StackPanel Grid.Column="2"
+                                                       Orientation="Horizontal"
+                                                       Spacing="{StaticResource SpacingS}"
+                                                       VerticalAlignment="Center">
+                                                <Button Command="{Binding $parent[UserControl].EditVisitorCommand}"
+                                                        Classes="icon-button"
+                                                        ToolTip.Tip="Edit visitor">
+                                                    <TextBlock Text="&#xE70F;"
+                                                               FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                                               FontSize="{StaticResource IconSizeM}" />
+                                                </Button>
+                                                <Button Command="{Binding $parent[UserControl].DuplicateVisitorCommand}"
+                                                        Classes="icon-button"
+                                                        ToolTip.Tip="Duplicate visitor">
+                                                    <TextBlock Text="&#xF817;"
+                                                               FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                                               FontSize="{StaticResource IconSizeM}" />
+                                                </Button>
+                                                <Button Command="{Binding $parent[UserControl].DeleteVisitorCommand}"
+                                                        Classes="icon-button"
+                                                        ToolTip.Tip="Delete visitor"
+                                                        Foreground="{DynamicResource AppErrorBrush}">
+                                                    <TextBlock Text="&#xE74D;"
+                                                               FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                                               FontSize="{StaticResource IconSizeM}" />
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Empty State -->
+                        <Border IsVisible="{Binding Visitors, Converter={StaticResource EmptyCollectionConverter}}"
+                               Classes="empty-state"
+                               HorizontalAlignment="Center">
+                            <StackPanel Spacing="{StaticResource SpacingL}" HorizontalAlignment="Center">
+                                <TextBlock Text="&#xE711;"
+                                           FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                           FontSize="48"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                           HorizontalAlignment="Center" />
+                                <TextBlock Text="No Visitors Configured"
+                                           FontSize="{StaticResource FontSizeXL}"
+                                           FontWeight="{StaticResource FontWeightSemiBold}"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                                           HorizontalAlignment="Center" />
+                                <TextBlock Text="Visitors allow you to connect to secure tunnel proxies (STCP/XTCP/SUDP)"
+                                           FontSize="{StaticResource FontSizeM}"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           MaxWidth="400" />
+                                <Button Command="{Binding AddVisitorCommand}"
+                                       Classes="primary"
+                                       HorizontalAlignment="Center"
+                                       Margin="{StaticResource ThicknessTopS}">
+                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+                                        <TextBlock Text="+" FontSize="{StaticResource FontSizeL}" FontWeight="{StaticResource FontWeightBold}" />
+                                        <TextBlock Text="Create Your First Visitor" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>
-

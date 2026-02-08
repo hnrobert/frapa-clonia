@@ -12,23 +12,22 @@
     </Design.DataContext>
 
     <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-        <Border Margin="24">
-            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*">
+        <Panel Margin="{StaticResource ContentPadding}">
+            <StackPanel Spacing="{StaticResource SpacingL}">
+
                 <!-- Page Header -->
-                <Grid Row="0" ColumnDefinitions="Auto,*" Margin="0,0,0,24">
+                <Grid ColumnDefinitions="Auto,*">
                     <TextBlock Grid.Column="0"
                                Text="Dashboard"
-                               FontSize="28"
-                               FontWeight="SemiBold"
-                               Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                               Classes="page-title" />
 
                     <StackPanel Grid.Column="1"
                                 Orientation="Horizontal"
-                                Spacing="8"
+                                Spacing="{StaticResource SpacingS}"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Center">
                         <Border Width="8" Height="8"
-                                CornerRadius="9999"
+                                CornerRadius="{StaticResource CornerRadiusFull}"
                                 Background="{DynamicResource AppSuccessBrush}">
                             <Border.Styles>
                                 <Style Selector="Border">
@@ -49,65 +48,42 @@
                             </Border.Styles>
                         </Border>
                         <TextBlock Text="{Binding StatusMessage}"
-                                   FontSize="14"
-                                   FontWeight="Medium"
+                                   FontSize="{StaticResource FontSizeM}"
+                                   FontWeight="{StaticResource FontWeightMedium}"
                                    Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
                     </StackPanel>
                 </Grid>
 
                 <!-- Primary Action Bar -->
-                <Border Grid.Row="1"
-                        Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
-                        BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="16">
+                <Border Classes="card">
                     <Grid ColumnDefinitions="Auto,*,Auto">
                         <!-- Action Buttons -->
                         <StackPanel Grid.Column="0"
                                     Orientation="Horizontal"
-                                    Spacing="12"
+                                    Spacing="{StaticResource SpacingM}"
                                     VerticalAlignment="Center">
                             <Button Content="Start Frpc"
                                     Command="{Binding StartFrpcCommand}"
-                                    Background="{DynamicResource SystemAccentColor}"
-                                    Foreground="{DynamicResource SystemControlForegroundAltMediumHighBrush}"
-                                    FontWeight="SemiBold"
-                                    Height="40"
-                                    Padding="20,10"
-                                    CornerRadius="6" />
+                                    Classes="primary" />
 
                             <Button Content="Stop"
                                     Command="{Binding StopFrpcCommand}"
-                                    Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
-                                    Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
-                                    BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                                    BorderThickness="1"
-                                    Height="36"
-                                    Padding="16,8"
-                                    CornerRadius="6">
+                                    Classes="secondary">
                                 <Button.Styles>
                                     <Style Selector="Button:pointerover">
-                                        <Setter Property="Background" Value="#DC2626" />
-                                        <Setter Property="Foreground" Value="White" />
-                                        <Setter Property="BorderBrush" Value="#DC2626" />
+                                        <Setter Property="Foreground" Value="{DynamicResource AppErrorBrush}" />
+                                        <Setter Property="BorderBrush" Value="{DynamicResource AppErrorBrush}" />
                                     </Style>
                                 </Button.Styles>
                             </Button>
 
                             <Button Content="Restart"
                                     Command="{Binding RestartFrpcCommand}"
-                                    Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
-                                    Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
-                                    BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                                    BorderThickness="1"
-                                    Height="36"
-                                    Padding="16,8"
-                                    CornerRadius="6">
+                                    Classes="secondary">
                                 <Button.Styles>
                                     <Style Selector="Button:pointerover">
-                                        <Setter Property="Background" Value="{DynamicResource SystemAccentColor2Brush}" />
-                                        <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor2Brush}" />
+                                        <Setter Property="Foreground" Value="{DynamicResource AppAccentColor2Brush}" />
+                                        <Setter Property="BorderBrush" Value="{DynamicResource AppAccentColor2Brush}" />
                                     </Style>
                                 </Button.Styles>
                             </Button>
@@ -116,200 +92,133 @@
                         <!-- Status Panel -->
                         <Border Grid.Column="2"
                                 Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
-                                CornerRadius="6"
-                                Padding="12,8"
+                                CornerRadius="{StaticResource CornerRadiusS}"
+                                Padding="{StaticResource ThicknessS}"
                                 HorizontalAlignment="Right">
                             <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
                                 <TextBlock Grid.Row="0" Grid.Column="0"
                                            Text="Process ID:"
-                                           FontSize="13"
-                                           FontWeight="Medium"
-                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                                           Classes="label" />
                                 <TextBlock Grid.Row="0" Grid.Column="1"
                                            Text="{Binding FrpcProcessId, TargetNullValue='N/A'}"
-                                           FontSize="13"
-                                           FontWeight="Medium"
-                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
-                                           Margin="8,0,0,0" />
+                                           Classes="value"
+                                           Margin="{StaticResource ThicknessLeftS}" />
 
                                 <TextBlock Grid.Row="1" Grid.Column="0"
                                            Text="Server:"
-                                           FontSize="13"
-                                           FontWeight="Medium"
-                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                           Margin="0,4,0,0" />
+                                           Classes="label"
+                                           Margin="{StaticResource ThicknessTopS}" />
                                 <TextBlock Grid.Row="1" Grid.Column="1"
                                            Text="{Binding ServerAddress}"
-                                           FontSize="13"
-                                           FontWeight="Medium"
-                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
-                                           Margin="8,4,0,0" />
+                                           Classes="value"
+                                           Margin="{StaticResource ThicknessLeftS}" />
                             </Grid>
                         </Border>
                     </Grid>
                 </Border>
 
                 <!-- Section Header -->
-                <TextBlock Grid.Row="2"
-                           Text="Quick Access"
-                           FontSize="16"
-                           FontWeight="SemiBold"
-                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
-                           Margin="0,24,0,0" />
+                <TextBlock Text="Quick Access"
+                           Classes="sectionTitle"
+                           Margin="{StaticResource ThicknessTopS}" />
 
                 <!-- Quick Access Cards -->
-                <Grid Grid.Row="3"
-                      ColumnDefinitions="*,*,*,*"
-                      ColumnSpacing="12"
-                      Margin="0,12,0,0">
+                <Grid ColumnDefinitions="*,*,*,*"
+                      ColumnSpacing="{StaticResource CardGridSpacing}">
                     <!-- Server Configuration Card -->
-                    <Border Grid.Column="0"
-                            Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
-                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="16">
+                    <Border Grid.Column="0" Classes="card">
                         <Grid RowDefinitions="Auto,*,Auto" Height="120">
                             <TextBlock Grid.Row="0"
                                        Text="Server"
-                                       FontSize="16"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                                       Classes="cardTitle" />
                             <TextBlock Grid.Row="1"
                                        Text="Configure frpc server connection"
-                                       FontSize="13"
-                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                       Classes="cardDescription"
                                        TextWrapping="Wrap"
                                        VerticalAlignment="Center" />
                             <Button Grid.Row="2"
                                     Content="Configure"
                                     Command="{Binding NavigateToServerConfigCommand}"
                                     HorizontalAlignment="Left"
-                                    Height="36"
-                                    MinWidth="100"
-                                    Padding="16,8"
-                                    CornerRadius="4" />
+                                    Classes="secondary" />
                         </Grid>
                     </Border>
 
                     <!-- Proxy Management Card -->
-                    <Border Grid.Column="1"
-                            Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
-                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="16">
+                    <Border Grid.Column="1" Classes="card">
                         <Grid RowDefinitions="Auto,*,Auto" Height="120">
                             <TextBlock Grid.Row="0"
                                        Text="Proxies"
-                                       FontSize="16"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                                       Classes="cardTitle" />
                             <TextBlock Grid.Row="1"
                                        Text="Manage proxy configurations"
-                                       FontSize="13"
-                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                       Classes="cardDescription"
                                        TextWrapping="Wrap"
                                        VerticalAlignment="Center" />
                             <Button Grid.Row="2"
                                     Content="Manage"
                                     Command="{Binding NavigateToProxyListCommand}"
                                     HorizontalAlignment="Left"
-                                    Height="36"
-                                    MinWidth="100"
-                                    Padding="16,8"
-                                    CornerRadius="4" />
+                                    Classes="secondary" />
                         </Grid>
                     </Border>
 
                     <!-- Deployment Card -->
-                    <Border Grid.Column="2"
-                            Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
-                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="16">
+                    <Border Grid.Column="2" Classes="card">
                         <Grid RowDefinitions="Auto,*,Auto" Height="120">
                             <TextBlock Grid.Row="0"
                                        Text="Deploy"
-                                       FontSize="16"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                                       Classes="cardTitle" />
                             <TextBlock Grid.Row="1"
                                        Text="Download and configure frpc"
-                                       FontSize="13"
-                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                       Classes="cardDescription"
                                        TextWrapping="Wrap"
                                        VerticalAlignment="Center" />
                             <Button Grid.Row="2"
                                     Content="Setup"
                                     Command="{Binding NavigateToDeploymentCommand}"
                                     HorizontalAlignment="Left"
-                                    Height="36"
-                                    MinWidth="100"
-                                    Padding="16,8"
-                                    CornerRadius="4" />
+                                    Classes="secondary" />
                         </Grid>
                     </Border>
 
                     <!-- Logs Card -->
-                    <Border Grid.Column="3"
-                            Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
-                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="16">
+                    <Border Grid.Column="3" Classes="card">
                         <Grid RowDefinitions="Auto,*,Auto" Height="120">
                             <TextBlock Grid.Row="0"
                                        Text="Logs"
-                                       FontSize="16"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                                       Classes="cardTitle" />
                             <TextBlock Grid.Row="1"
                                        Text="View real-time logs"
-                                       FontSize="13"
-                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                       Classes="cardDescription"
                                        TextWrapping="Wrap"
                                        VerticalAlignment="Center" />
                             <Button Grid.Row="2"
                                     Content="View"
                                     Command="{Binding NavigateToLogsCommand}"
                                     HorizontalAlignment="Left"
-                                    Height="36"
-                                    MinWidth="100"
-                                    Padding="16,8"
-                                    CornerRadius="4" />
+                                    Classes="secondary" />
                         </Grid>
                     </Border>
                 </Grid>
 
                 <!-- Section Header -->
-                <TextBlock Grid.Row="4"
-                           Text="Overview"
-                           FontSize="16"
-                           FontWeight="SemiBold"
-                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
-                           Margin="0,24,0,0" />
+                <TextBlock Text="Overview"
+                           Classes="sectionTitle"
+                           Margin="{StaticResource ThicknessTopS}" />
 
                 <!-- Overview Stats -->
-                <Grid Grid.Row="5"
-                      ColumnDefinitions="*,*,*"
-                      ColumnSpacing="12"
-                      Margin="0,12,0,0">
+                <Grid ColumnDefinitions="*,*,*"
+                      ColumnSpacing="{StaticResource CardGridSpacing}">
                     <!-- Proxy Count -->
-                    <Border Grid.Column="0"
-                            Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
-                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="16">
+                    <Border Grid.Column="0" Classes="card">
                         <Grid ColumnDefinitions="Auto,*">
                             <Border Grid.Column="0"
                                     Width="48"
                                     Height="48"
-                                    CornerRadius="6"
-                                    Background="{DynamicResource SystemAccentColor}"
-                                    Margin="0,0,12,0">
+                                    CornerRadius="{StaticResource CornerRadiusS}"
+                                    Background="{DynamicResource AppAccentColor}"
+                                    Margin="{StaticResource ThicknessRightM}">
                                 <TextBlock Text="P"
                                            FontSize="24"
                                            FontWeight="Bold"
@@ -320,31 +229,26 @@
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="{Binding ProxyCount, StringFormat={}{0}}"
                                            FontSize="24"
-                                           FontWeight="SemiBold"
+                                           FontWeight="{StaticResource FontWeightSemiBold}"
                                            Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
                                 <TextBlock Text="Active Proxies"
-                                           FontSize="13"
-                                           FontWeight="Medium"
+                                           FontSize="{StaticResource FontSizeM}"
+                                           FontWeight="{StaticResource FontWeightMedium}"
                                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                           Margin="0,2,0,0" />
+                                           Margin="{StaticResource ThicknessTopXS}" />
                             </StackPanel>
                         </Grid>
                     </Border>
 
                     <!-- Configuration Status -->
-                    <Border Grid.Column="1"
-                            Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
-                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="16">
+                    <Border Grid.Column="1" Classes="card">
                         <Grid ColumnDefinitions="Auto,*">
                             <Border Grid.Column="0"
                                     Width="48"
                                     Height="48"
-                                    CornerRadius="6"
-                                    Background="{DynamicResource SystemAccentColor}"
-                                    Margin="0,0,12,0">
+                                    CornerRadius="{StaticResource CornerRadiusS}"
+                                    Background="{DynamicResource AppAccentColor}"
+                                    Margin="{StaticResource ThicknessRightM}">
                                 <TextBlock Text="C"
                                            FontSize="24"
                                            FontWeight="Bold"
@@ -354,41 +258,34 @@
                             </Border>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="Configured"
-                                           FontSize="16"
-                                           FontWeight="SemiBold"
+                                           FontSize="{StaticResource FontSizeL}"
+                                           FontWeight="{StaticResource FontWeightSemiBold}"
                                            Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
                                 <TextBlock Text="Configuration"
-                                           FontSize="13"
-                                           FontWeight="Medium"
+                                           FontSize="{StaticResource FontSizeM}"
+                                           FontWeight="{StaticResource FontWeightMedium}"
                                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                           Margin="0,2,0,0" />
+                                           Margin="{StaticResource ThicknessTopXS}" />
                             </StackPanel>
                         </Grid>
                     </Border>
 
                     <!-- Recent Activity -->
-                    <Border Grid.Column="2"
-                            Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
-                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="16">
+                    <Border Grid.Column="2" Classes="card">
                         <Grid RowDefinitions="Auto,*">
                             <TextBlock Grid.Row="0"
                                        Text="Recent Activity"
-                                       FontSize="16"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                                       Classes="cardTitle" />
                             <Border Grid.Row="1"
                                     Background="{DynamicResource SystemControlPageBackgroundTransparent}"
-                                    CornerRadius="4"
-                                    Padding="8"
+                                    CornerRadius="{StaticResource CornerRadiusS}"
+                                    Padding="{StaticResource ThicknessS}"
                                     VerticalAlignment="Center"
                                     MinHeight="48"
-                                    Margin="0,8,0,0">
+                                    Margin="{StaticResource ThicknessTopS}">
                                 <TextBlock Text="{Binding LastLogLine}"
-                                           FontFamily="Consolas,Monospace"
-                                           FontSize="11"
+                                           FontFamily="{DynamicResource MonoFontFamily}"
+                                           FontSize="{StaticResource FontSizeS}"
                                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                            TextWrapping="Wrap"
                                            TextTrimming="CharacterEllipsis" />
@@ -396,7 +293,8 @@
                         </Grid>
                     </Border>
                 </Grid>
-            </Grid>
-        </Border>
+
+            </StackPanel>
+        </Panel>
     </ScrollViewer>
 </UserControl>
