@@ -19,7 +19,7 @@ public class LocalizedString : ObservableObject
         _args = args;
 
         // Subscribe to culture changes and refresh the value
-        _localizationService.CultureChanged += (_, _) => RefreshValue();
+        _localizationService.CultureChanged += OnCultureChanged;
 
         // Get initial value
         _value = _localizationService.GetString(_key, _args);
@@ -33,9 +33,14 @@ public class LocalizedString : ObservableObject
         set => SetProperty(ref _value, value);
     }
 
-    private void RefreshValue()
+    private void OnCultureChanged(object? sender, EventArgs e)
     {
-        _value = _localizationService.GetString(_key, _args);
-        OnPropertyChanged(nameof(Value));
+        // Refresh the value and notify on the UI thread
+        var newValue = _localizationService.GetString(_key, _args);
+        if (_value != newValue)
+        {
+            _value = newValue;
+            OnPropertyChanged(nameof(Value));
+        }
     }
 }
