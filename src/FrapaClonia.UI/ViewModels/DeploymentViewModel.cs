@@ -328,6 +328,7 @@ public partial class DeploymentViewModel : ObservableObject
         {
             IsNativeChecking = true;
             StatusMessage = "Checking native deployment...";
+            _logger?.LogInformation("CheckNativeAsync: Starting, IsNativeChecking={IsNativeChecking}", IsNativeChecking);
 
             if (_nativeDeploymentService != null)
             {
@@ -343,6 +344,11 @@ public partial class DeploymentViewModel : ObservableObject
                     DeployedBinaryPath = null;
                 }
             }
+            else
+            {
+                StatusMessage = "Native deployment service not available";
+                _logger?.LogWarning("NativeDeploymentService is null");
+            }
 
             _logger?.LogInformation("Native deployment check: IsDeployed={IsDeployed}, Path={Path}",
                 IsNativeDeployed, DeployedBinaryPath);
@@ -356,6 +362,7 @@ public partial class DeploymentViewModel : ObservableObject
         finally
         {
             IsNativeChecking = false;
+            _logger?.LogInformation("CheckNativeAsync: Completed, IsNativeChecking={IsNativeChecking}", IsNativeChecking);
         }
     }
 

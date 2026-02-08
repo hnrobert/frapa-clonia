@@ -210,11 +210,14 @@ public partial class ServerConfigViewModel : ObservableObject
         try
         {
             IsLoading = true;
+            _logger?.LogInformation("LoadConfigurationAsync: Starting, IsLoading={IsLoading}", IsLoading);
 
             if (_configurationService != null)
             {
                 var configPath = _configurationService.GetDefaultConfigPath();
                 var config = await _configurationService.LoadConfigurationAsync(configPath);
+
+                _logger?.LogInformation("LoadConfigurationAsync: Config loaded, Config={Config}", config?.CommonConfig != null);
 
                 if (config?.CommonConfig != null)
                 {
@@ -261,6 +264,22 @@ public partial class ServerConfigViewModel : ObservableObject
 
                     _logger?.LogInformation("Configuration loaded successfully");
                 }
+                else
+                {
+                    _logger?.LogInformation("Config is null or CommonConfig is null, using defaults");
+                    // Set default values
+                    ServerAddr = "";
+                    ServerPort = 7000;
+                    User = "";
+                    AuthMethod = "token";
+                    Token = "";
+                    TransportProtocol = "tcp";
+                    TlsEnabled = true;
+                }
+            }
+            else
+            {
+                _logger?.LogWarning("ConfigurationService is null");
             }
 
             await ValidateAsync();
@@ -273,6 +292,7 @@ public partial class ServerConfigViewModel : ObservableObject
         finally
         {
             IsLoading = false;
+            _logger?.LogInformation("LoadConfigurationAsync: Completed, IsLoading={IsLoading}", IsLoading);
         }
     }
 

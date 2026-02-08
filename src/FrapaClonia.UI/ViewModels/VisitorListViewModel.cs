@@ -123,17 +123,30 @@ public partial class VisitorListViewModel : ObservableObject
         try
         {
             IsLoading = true;
+            _logger?.LogInformation("LoadVisitorsAsync: Starting, IsLoading={IsLoading}", IsLoading);
 
             if (_configurationService != null)
             {
                 var configPath = _configurationService.GetDefaultConfigPath();
                 var config = await _configurationService.LoadConfigurationAsync(configPath);
 
+                _logger?.LogInformation("LoadVisitorsAsync: Config loaded, Config={Config}", config != null);
+
                 if (config != null)
                 {
                     Visitors = config.Visitors;
                     _logger?.LogInformation("Loaded {Count} visitors", Visitors.Count);
                 }
+                else
+                {
+                    Visitors = [];
+                    _logger?.LogInformation("Config is null, setting Visitors to empty list");
+                }
+            }
+            else
+            {
+                Visitors = [];
+                _logger?.LogWarning("ConfigurationService is null");
             }
         }
         catch (Exception ex)
@@ -144,6 +157,7 @@ public partial class VisitorListViewModel : ObservableObject
         finally
         {
             IsLoading = false;
+            _logger?.LogInformation("LoadVisitorsAsync: Completed, IsLoading={IsLoading}", IsLoading);
         }
     }
 
