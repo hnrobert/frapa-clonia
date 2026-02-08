@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.Domain.Models;
 using Microsoft.Extensions.Logging;
+
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace FrapaClonia.UI.ViewModels;
@@ -12,133 +13,92 @@ namespace FrapaClonia.UI.ViewModels;
 /// </summary>
 public partial class ProxyEditorViewModel : ObservableObject
 {
-    private readonly ILogger<ProxyEditorViewModel> _logger;
-    private readonly IConfigurationService _configurationService;
-    private readonly IValidationService _validationService;
+    private readonly ILogger<ProxyEditorViewModel>? _logger;
+    private readonly IConfigurationService? _configurationService;
+    private readonly IValidationService? _validationService;
     private readonly ProxyConfig? _originalProxy;
 
-    [ObservableProperty]
-    private string _proxyName = "";
+    [ObservableProperty] private string _proxyName = "";
 
-    [ObservableProperty]
-    private string _proxyType = "tcp";
+    [ObservableProperty] private string _proxyType = "tcp";
 
-    [ObservableProperty]
-    private string _localIP = "127.0.0.1";
+    [ObservableProperty] private string _localIP = "127.0.0.1";
 
-    [ObservableProperty]
-    private int _localPort;
+    [ObservableProperty] private int _localPort;
 
-    [ObservableProperty]
-    private int? _remotePort;
+    [ObservableProperty] private int? _remotePort;
 
-    [ObservableProperty]
-    private string? _customDomains;
+    [ObservableProperty] private string? _customDomains;
 
-    [ObservableProperty]
-    private string? _subdomain;
+    [ObservableProperty] private string? _subdomain;
 
-    [ObservableProperty]
-    private List<string>? _locations;
+    [ObservableProperty] private List<string>? _locations;
 
-    [ObservableProperty]
-    private string? _httpUser;
+    [ObservableProperty] private string? _httpUser;
 
-    [ObservableProperty]
-    private string? _httpPassword;
+    [ObservableProperty] private string? _httpPassword;
 
-    [ObservableProperty]
-    private string? _hostHeaderRewrite;
+    [ObservableProperty] private string? _hostHeaderRewrite;
 
-    [ObservableProperty]
-    private string? _requestHeaders;
+    [ObservableProperty] private string? _requestHeaders;
 
-    [ObservableProperty]
-    private string? _responseHeaders;
+    [ObservableProperty] private string? _responseHeaders;
 
-    [ObservableProperty]
-    private string? _secretKey;  // For STCP, XTCP, SUDP
+    [ObservableProperty] private string? _secretKey; // For STCP, XTCP, SUDP
 
-    [ObservableProperty]
-    private List<string>? _allowUsers;  // For STCP, XTCP, SUDP
+    [ObservableProperty] private List<string>? _allowUsers; // For STCP, XTCP, SUDP
 
-    [ObservableProperty]
-    private string? _multiplexer;  // For TCPMUX
+    [ObservableProperty] private string? _multiplexer; // For TCPMUX
 
-    [ObservableProperty]
-    private bool _useEncryption;
+    [ObservableProperty] private bool _useEncryption;
 
-    [ObservableProperty]
-    private bool _useCompression;
+    [ObservableProperty] private bool _useCompression;
 
-    [ObservableProperty]
-    private string? _bandwidthLimit;
+    [ObservableProperty] private string? _bandwidthLimit;
 
-    [ObservableProperty]
-    private string? _bandwidthLimitMode;
+    [ObservableProperty] private string? _bandwidthLimitMode;
 
-    [ObservableProperty]
-    private bool _healthCheckEnabled;
+    [ObservableProperty] private bool _healthCheckEnabled;
 
-    [ObservableProperty]
-    private string _healthCheckType = "tcp";
+    [ObservableProperty] private string _healthCheckType = "tcp";
 
-    [ObservableProperty]
-    private int _healthCheckTimeoutSeconds = 3;
+    [ObservableProperty] private int _healthCheckTimeoutSeconds = 3;
 
-    [ObservableProperty]
-    private int _healthCheckMaxFailed = 3;
+    [ObservableProperty] private int _healthCheckMaxFailed = 3;
 
-    [ObservableProperty]
-    private int _healthCheckIntervalSeconds = 10;
+    [ObservableProperty] private int _healthCheckIntervalSeconds = 10;
 
-    [ObservableProperty]
-    private string? _healthCheckPath = "/";
+    [ObservableProperty] private string? _healthCheckPath = "/";
 
-    [ObservableProperty]
-    private string? _healthCheckHeaders;
+    [ObservableProperty] private string? _healthCheckHeaders;
 
-    [ObservableProperty]
-    private string? _pluginType;
+    [ObservableProperty] private string? _pluginType;
 
-    [ObservableProperty]
-    private string? _pluginHttpProxyUrl;
+    [ObservableProperty] private string? _pluginHttpProxyUrl;
 
-    [ObservableProperty]
-    private string? _pluginSocks5Url;
+    [ObservableProperty] private string? _pluginSocks5Url;
 
-    [ObservableProperty]
-    private string? _pluginStaticFilePath;
+    [ObservableProperty] private string? _pluginStaticFilePath;
 
-    [ObservableProperty]
-    private string? _pluginStaticFilePrefixUrl;
+    [ObservableProperty] private string? _pluginStaticFilePrefixUrl;
 
-    [ObservableProperty]
-    private string? _pluginHttps2HttpLocalAddr;
+    [ObservableProperty] private string? _pluginHttps2HttpLocalAddr;
 
-    [ObservableProperty]
-    private string? _pluginHttps2HttpCrtPath;
+    [ObservableProperty] private string? _pluginHttps2HttpCrtPath;
 
-    [ObservableProperty]
-    private string? _pluginHttps2HttpKeyPath;
+    [ObservableProperty] private string? _pluginHttps2HttpKeyPath;
 
-    [ObservableProperty]
-    private string? _pluginHttp2HttpsLocalAddr;
+    [ObservableProperty] private string? _pluginHttp2HttpsLocalAddr;
 
-    [ObservableProperty]
-    private string? _pluginHttp2HttpsCrtPath;
+    [ObservableProperty] private string? _pluginHttp2HttpsCrtPath;
 
-    [ObservableProperty]
-    private string? _pluginHttp2HttpsKeyPath;
+    [ObservableProperty] private string? _pluginHttp2HttpsKeyPath;
 
-    [ObservableProperty]
-    private bool _isValid = true;
+    [ObservableProperty] private bool _isValid = true;
 
-    [ObservableProperty]
-    private string? _validationError;
+    [ObservableProperty] private string? _validationError;
 
-    [ObservableProperty]
-    private bool _isSaving;
+    [ObservableProperty] private bool _isSaving;
 
     public IRelayCommand SaveCommand { get; }
     public IRelayCommand CancelCommand { get; }
@@ -161,6 +121,14 @@ public partial class ProxyEditorViewModel : ObservableObject
     public bool NeedsDomain => IsHttpOrHttps || IsTcpmux;
     public bool HasValidationError => !string.IsNullOrWhiteSpace(ValidationError);
 
+    // Default constructor for design-time support
+    public ProxyEditorViewModel() : this(
+        Microsoft.Extensions.Logging.Abstractions.NullLogger<ProxyEditorViewModel>.Instance,
+        null!,
+        null!)
+    {
+    }
+
     public ProxyEditorViewModel(
         ILogger<ProxyEditorViewModel> logger,
         IConfigurationService configurationService,
@@ -180,10 +148,10 @@ public partial class ProxyEditorViewModel : ObservableObject
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error saving proxy");
+                _logger?.LogError(e, "Error saving proxy");
             }
         }, () => !IsSaving);
-        CancelCommand = new RelayCommand(() => _logger.LogInformation("Cancel edit"));
+        CancelCommand = new RelayCommand(() => _logger?.LogInformation("Cancel edit"));
         AddLocationCommand = new RelayCommand(AddLocation);
         AddAllowUserCommand = new RelayCommand(AddAllowUser);
 
@@ -254,7 +222,8 @@ public partial class ProxyEditorViewModel : ObservableObject
             HealthCheckPath = proxy.HealthCheck.Path;
             if (proxy.HealthCheck.HttpHeaders != null)
             {
-                HealthCheckHeaders = string.Join("\n", proxy.HealthCheck.HttpHeaders.Select(h => $"{h.Name}: {h.Value}"));
+                HealthCheckHeaders =
+                    string.Join("\n", proxy.HealthCheck.HttpHeaders.Select(h => $"{h.Name}: {h.Value}"));
             }
         }
 
@@ -277,7 +246,7 @@ public partial class ProxyEditorViewModel : ObservableObject
     private Task ValidateAsync()
     {
         var proxy = CreateProxyConfig();
-        var validation = _validationService.ValidateProxy(proxy);
+        var validation = _validationService?.ValidateProxy(proxy) ?? new ValidationResult();
         IsValid = validation.IsValid;
         ValidationError = validation.Errors.FirstOrDefault();
         return Task.CompletedTask;
@@ -311,7 +280,9 @@ public partial class ProxyEditorViewModel : ObservableObject
                 .Select(line =>
                 {
                     var parts = line.Split(':', 2);
-                    return parts.Length == 2 ? new HttpHeader { Name = parts[0].Trim(), Value = parts[1].Trim() } : null;
+                    return parts.Length == 2
+                        ? new HttpHeader { Name = parts[0].Trim(), Value = parts[1].Trim() }
+                        : null;
                 })
                 .Where(h => h != null)
                 .ToList()!;
@@ -340,25 +311,26 @@ public partial class ProxyEditorViewModel : ObservableObject
                 BandwidthLimit = BandwidthLimit,
                 BandwidthLimitMode = BandwidthLimitMode
             },
-            HealthCheck = HealthCheckEnabled ? new HealthCheckConfig
-            {
-                Type = HealthCheckType,
-                TimeoutSeconds = HealthCheckTimeoutSeconds,
-                MaxFailed = HealthCheckMaxFailed,
-                IntervalSeconds = HealthCheckIntervalSeconds,
-                Path = HealthCheckPath,
-                HttpHeaders = httpHeaders
-            } : null,
+            HealthCheck = HealthCheckEnabled
+                ? new HealthCheckConfig
+                {
+                    Type = HealthCheckType,
+                    TimeoutSeconds = HealthCheckTimeoutSeconds,
+                    MaxFailed = HealthCheckMaxFailed,
+                    IntervalSeconds = HealthCheckIntervalSeconds,
+                    Path = HealthCheckPath,
+                    HttpHeaders = httpHeaders
+                }
+                : null,
             Plugin = plugin
         };
     }
 
     private static List<string>? ParseList(string? value)
     {
-        if (string.IsNullOrWhiteSpace(value))
-            return null;
-
-        return value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+        return string.IsNullOrWhiteSpace(value)
+            ? null
+            : value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
     }
 
     private async Task SaveAsync()
@@ -375,8 +347,8 @@ public partial class ProxyEditorViewModel : ObservableObject
                 return;
             }
 
-            var configPath = _configurationService.GetDefaultConfigPath();
-            var config = await _configurationService.LoadConfigurationAsync(configPath);
+            var configPath = _configurationService?.GetDefaultConfigPath() ?? "";
+            var config = await _configurationService!.LoadConfigurationAsync(configPath);
 
             if (config != null)
             {
@@ -390,14 +362,14 @@ public partial class ProxyEditorViewModel : ObservableObject
 
                 config.Proxies.Add(proxy);
 
-                await _configurationService.SaveConfigurationAsync(configPath, config);
+                await _configurationService!.SaveConfigurationAsync(configPath, config);
 
-                _logger.LogInformation("Proxy saved: {ProxyName}", proxy.Name);
+                _logger?.LogInformation("Proxy saved: {ProxyName}", proxy.Name);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error saving proxy");
+            _logger?.LogError(ex, "Error saving proxy");
             ValidationError = "Failed to save proxy";
         }
         finally
@@ -408,14 +380,14 @@ public partial class ProxyEditorViewModel : ObservableObject
 
     private void AddLocation()
     {
-        Locations ??= new List<string>();
+        Locations ??= [];
         Locations.Add("/");
         OnPropertyChanged(nameof(Locations));
     }
 
     private void AddAllowUser()
     {
-        AllowUsers ??= new List<string>();
+        AllowUsers ??= [];
         AllowUsers.Add("");
         OnPropertyChanged(nameof(AllowUsers));
     }

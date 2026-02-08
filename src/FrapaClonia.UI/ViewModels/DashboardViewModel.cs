@@ -10,40 +10,42 @@ namespace FrapaClonia.UI.ViewModels;
 /// </summary>
 public partial class DashboardViewModel : ObservableObject
 {
-    private readonly ILogger<DashboardViewModel> _logger;
-    private readonly IFrpcProcessService _frpcProcessService;
-    private readonly IConfigurationService _configurationService;
+    private readonly ILogger<DashboardViewModel>? _logger;
+    private readonly IFrpcProcessService? _frpcProcessService;
+    private readonly IConfigurationService? _configurationService;
 
-    [ObservableProperty]
-    private bool _isFrpcRunning;
+    [ObservableProperty] private bool _isFrpcRunning;
 
-    [ObservableProperty]
-    private int? _frpcProcessId;
+    [ObservableProperty] private int? _frpcProcessId;
 
-    [ObservableProperty]
-    private string _statusMessage = "Frpc is not running";
+    [ObservableProperty] private string _statusMessage = "Frpc is not running";
 
-    [ObservableProperty]
-    private string _lastLogLine = "";
+    [ObservableProperty] private string _lastLogLine = "";
 
-    [ObservableProperty]
-    private bool _hasConfiguration;
+    [ObservableProperty] private bool _hasConfiguration;
 
-    [ObservableProperty]
-    private string _serverAddress = "Not configured";
+    [ObservableProperty] private string _serverAddress = "Not configured";
 
-    [ObservableProperty]
-    private int _proxyCount;
+    [ObservableProperty] private int _proxyCount;
 
     public IRelayCommand NavigateToServerConfigCommand { get; }
     public IRelayCommand NavigateToProxyListCommand { get; }
     public IRelayCommand NavigateToDeploymentCommand { get; }
+
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public IRelayCommand NavigateToSettingsCommand { get; }
     public IRelayCommand NavigateToLogsCommand { get; }
     public IRelayCommand StartFrpcCommand { get; }
     public IRelayCommand StopFrpcCommand { get; }
     public IRelayCommand RestartFrpcCommand { get; }
+
+    // Default constructor for design-time support
+    public DashboardViewModel() : this(
+        Microsoft.Extensions.Logging.Abstractions.NullLogger<DashboardViewModel>.Instance,
+        null!,
+        null!)
+    {
+    }
 
     public DashboardViewModel(
         ILogger<DashboardViewModel> logger,
@@ -53,6 +55,8 @@ public partial class DashboardViewModel : ObservableObject
         _logger = logger;
         _frpcProcessService = frpcProcessService;
         _configurationService = configurationService;
+
+        // For design-time or when services are null, use empty commands
 
         NavigateToServerConfigCommand = new RelayCommand(() => _logger.LogInformation("Navigate to Server Config"));
         NavigateToProxyListCommand = new RelayCommand(() => _logger.LogInformation("Navigate to Proxy List"));
@@ -114,7 +118,7 @@ public partial class DashboardViewModel : ObservableObject
     {
         IsFrpcRunning = e.IsRunning;
         FrpcProcessId = e.ProcessId;
-        _logger.LogInformation("Frpc process state changed: IsRunning={IsRunning}, ProcessId={ProcessId}",
+        _logger?.LogInformation("Frpc process state changed: IsRunning={IsRunning}, ProcessId={ProcessId}",
             e.IsRunning, e.ProcessId);
     }
 
@@ -125,6 +129,7 @@ public partial class DashboardViewModel : ObservableObject
 
     private void UpdateFrpcStatus()
     {
+        if (_frpcProcessService == null) return;
         IsFrpcRunning = _frpcProcessService.IsRunning;
         FrpcProcessId = _frpcProcessService.ProcessId;
         StatusMessage = IsFrpcRunning ? $"Frpc is running (PID: {FrpcProcessId})" : "Frpc is not running";
@@ -132,29 +137,32 @@ public partial class DashboardViewModel : ObservableObject
 
     private async Task StartFrpcAsync()
     {
-        _logger.LogInformation("Starting frpc...");
+        if (_frpcProcessService == null || _configurationService == null) return;
+        _logger?.LogInformation("Starting frpc...");
         var configPath = _configurationService.GetDefaultConfigPath();
         var success = await _frpcProcessService.StartAsync(configPath);
         if (!success)
         {
-            _logger.LogWarning("Failed to start frpc with config: {ConfigPath}", configPath);
+            _logger?.LogWarning("Failed to start frpc with config: {ConfigPath}", configPath);
         }
     }
 
     private async Task StopFrpcAsync()
     {
-        _logger.LogInformation("Stopping frpc...");
+        if (_frpcProcessService == null) return;
+        _logger?.LogInformation("Stopping frpc...");
         await _frpcProcessService.StopAsync();
     }
 
     private async Task RestartFrpcAsync()
     {
-        _logger.LogInformation("Restarting frpc...");
+        if (_frpcProcessService == null || _configurationService == null) return;
+        _logger?.LogInformation("Restarting frpc...");
         var configPath = _configurationService.GetDefaultConfigPath();
         var success = await _frpcProcessService.RestartAsync(configPath);
         if (!success)
         {
-            _logger.LogWarning("Failed to restart frpc with config: {ConfigPath}", configPath);
+            _logger?.LogWarning("Failed to restart frpc with config: {ConfigPath}", configPath);
         }
     }
 }

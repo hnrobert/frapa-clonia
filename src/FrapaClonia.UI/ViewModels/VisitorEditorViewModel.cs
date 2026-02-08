@@ -11,9 +11,9 @@ namespace FrapaClonia.UI.ViewModels;
 /// </summary>
 public partial class VisitorEditorViewModel : ObservableObject
 {
-    private readonly ILogger<VisitorEditorViewModel> _logger;
-    private readonly IConfigurationService _configurationService;
-    private readonly IValidationService _validationService;
+    private readonly ILogger<VisitorEditorViewModel>? _logger;
+    private readonly IConfigurationService? _configurationService;
+    private readonly IValidationService? _validationService;
     private readonly VisitorConfig? _originalVisitor;
 
     [ObservableProperty]
@@ -53,6 +53,14 @@ public partial class VisitorEditorViewModel : ObservableObject
 
     public bool HasValidationError => !string.IsNullOrWhiteSpace(ValidationError);
 
+    // Default constructor for design-time support
+    public VisitorEditorViewModel() : this(
+        Microsoft.Extensions.Logging.Abstractions.NullLogger<VisitorEditorViewModel>.Instance,
+        null!,
+        null!)
+    {
+    }
+
     public VisitorEditorViewModel(
         ILogger<VisitorEditorViewModel> logger,
         IConfigurationService configurationService,
@@ -72,10 +80,10 @@ public partial class VisitorEditorViewModel : ObservableObject
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error saving visitor");
+                _logger?.LogError(e, "Error saving visitor");
             }
         }, () => !IsSaving);
-        CancelCommand = new RelayCommand(() => _logger.LogInformation("Cancel edit"));
+        CancelCommand = new RelayCommand(() => _logger?.LogInformation("Cancel edit"));
 
         if (visitorToEdit != null)
         {
@@ -137,8 +145,8 @@ public partial class VisitorEditorViewModel : ObservableObject
                 return;
             }
 
-            var configPath = _configurationService.GetDefaultConfigPath();
-            var config = await _configurationService.LoadConfigurationAsync(configPath);
+            var configPath = _configurationService?.GetDefaultConfigPath() ?? "";
+            var config = await _configurationService!.LoadConfigurationAsync(configPath);
 
             if (config != null)
             {
@@ -152,14 +160,14 @@ public partial class VisitorEditorViewModel : ObservableObject
 
                 config.Visitors.Add(visitor);
 
-                await _configurationService.SaveConfigurationAsync(configPath, config);
+                await _configurationService!.SaveConfigurationAsync(configPath, config);
 
-                _logger.LogInformation("Visitor saved: {VisitorName}", visitor.Name);
+                _logger?.LogInformation("Visitor saved: {VisitorName}", visitor.Name);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error saving visitor");
+            _logger?.LogError(ex, "Error saving visitor");
             ValidationError = "Failed to save visitor";
         }
         finally

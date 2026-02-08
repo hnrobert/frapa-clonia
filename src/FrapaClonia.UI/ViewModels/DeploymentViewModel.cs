@@ -11,47 +11,37 @@ namespace FrapaClonia.UI.ViewModels;
 /// </summary>
 public partial class DeploymentViewModel : ObservableObject
 {
-    private readonly ILogger<DeploymentViewModel> _logger;
-    private readonly IFrpcDownloader _frpcDownloader;
-    private readonly INativeDeploymentService _nativeDeploymentService;
-    private readonly IDockerDeploymentService _dockerDeploymentService;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<DeploymentViewModel>? _logger;
 
-    [ObservableProperty]
-    private string _selectedDeploymentMode = "native";
+    // ReSharper disable once NotAccessedField.Local
+    private readonly IFrpcDownloader? _frpcDownloader;
+    private readonly INativeDeploymentService? _nativeDeploymentService;
+    private readonly IDockerDeploymentService? _dockerDeploymentService;
+    private readonly IServiceProvider? _serviceProvider;
 
-    [ObservableProperty]
-    private bool _isDockerAvailable;
+    [ObservableProperty] private string _selectedDeploymentMode = "native";
 
-    [ObservableProperty]
-    private bool _isDockerChecking;
+    [ObservableProperty] private bool _isDockerAvailable;
 
-    [ObservableProperty]
-    private bool _isNativeDeployed;
+    [ObservableProperty] private bool _isDockerChecking;
 
-    [ObservableProperty]
-    private bool _isNativeChecking;
+    [ObservableProperty] private bool _isNativeDeployed;
 
-    [ObservableProperty]
-    private string? _deployedBinaryPath;
+    [ObservableProperty] private bool _isNativeChecking;
 
-    [ObservableProperty]
-    private string _dockerContainerName = "frapa-clonia-frpc";
+    [ObservableProperty] private string? _deployedBinaryPath;
 
-    [ObservableProperty]
-    private string _dockerImageName = "fatedier/frpc:latest";
+    [ObservableProperty] private string _dockerContainerName = "frapa-clonia-frpc";
 
-    [ObservableProperty]
-    private string _dockerComposePath = "";
+    [ObservableProperty] private string _dockerImageName = "fatedier/frpc:latest";
 
-    [ObservableProperty]
-    private bool _isContainerRunning;
+    [ObservableProperty] private string _dockerComposePath = "";
 
-    [ObservableProperty]
-    private string _statusMessage = "Ready";
+    [ObservableProperty] private bool _isContainerRunning;
 
-    [ObservableProperty]
-    private bool _isBusy;
+    [ObservableProperty] private string _statusMessage = "Ready";
+
+    [ObservableProperty] private bool _isBusy;
 
     public IRelayCommand CheckDockerCommand { get; }
     public IRelayCommand GenerateDockerComposeCommand { get; }
@@ -62,6 +52,16 @@ public partial class DeploymentViewModel : ObservableObject
     public IRelayCommand DownloadFrpcCommand { get; }
 
     public List<string> DeploymentModes { get; } = ["native", "docker"];
+
+    // Default constructor for design-time support
+    public DeploymentViewModel() : this(
+        Microsoft.Extensions.Logging.Abstractions.NullLogger<DeploymentViewModel>.Instance,
+        null!,
+        null!,
+        null!,
+        null!)
+    {
+    }
 
     public DeploymentViewModel(
         ILogger<DeploymentViewModel> logger,
@@ -76,13 +76,83 @@ public partial class DeploymentViewModel : ObservableObject
         _dockerDeploymentService = dockerDeploymentService;
         _serviceProvider = serviceProvider;
 
-        CheckDockerCommand = new RelayCommand(async void () => await CheckDockerAsync());
-        GenerateDockerComposeCommand = new RelayCommand(async void () => await GenerateDockerComposeAsync());
-        StartDockerCommand = new RelayCommand(async void () => await StartDockerAsync());
-        StopDockerCommand = new RelayCommand(async void () => await StopDockerAsync());
-        CheckNativeCommand = new RelayCommand(async void () => await CheckNativeAsync());
-        DeployNativeCommand = new RelayCommand(async void () => await DeployNativeAsync());
-        DownloadFrpcCommand = new RelayCommand(async void () => await DownloadFrpcAsync());
+        CheckDockerCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await CheckDockerAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error checking Docker availability");
+            }
+        });
+        GenerateDockerComposeCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await GenerateDockerComposeAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error generating docker compose");
+            }
+        });
+        StartDockerCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await StartDockerAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error starting docker");
+            }
+        });
+        StopDockerCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await StopDockerAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error stopping docker");
+            }
+        });
+        CheckNativeCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await CheckNativeAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error checking docker native");
+            }
+        });
+        DeployNativeCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await DeployNativeAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error deploying native");
+            }
+        });
+        DownloadFrpcCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await DownloadFrpcAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error downloading frpc");
+            }
+        });
 
         // Initialize
         _ = Task.Run(InitializeAsync);
@@ -100,16 +170,17 @@ public partial class DeploymentViewModel : ObservableObject
             IsDockerChecking = true;
             StatusMessage = "Checking Docker availability...";
 
-            IsDockerAvailable = await _dockerDeploymentService.IsDockerAvailableAsync();
+            if (_dockerDeploymentService != null)
+                IsDockerAvailable = await _dockerDeploymentService.IsDockerAvailableAsync();
             StatusMessage = IsDockerAvailable
                 ? "Docker is available"
                 : "Docker is not available";
 
-            _logger.LogInformation("Docker availability check: {IsAvailable}", IsDockerAvailable);
+            _logger?.LogInformation("Docker availability check: {IsAvailable}", IsDockerAvailable);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error checking Docker availability");
+            _logger?.LogError(ex, "Error checking Docker availability");
             StatusMessage = "Error checking Docker availability";
             IsDockerAvailable = false;
         }
@@ -126,30 +197,37 @@ public partial class DeploymentViewModel : ObservableObject
             IsBusy = true;
             StatusMessage = "Generating docker-compose.yml...";
 
-            var configPath = _serviceProvider.GetRequiredService<IConfigurationService>().GetDefaultConfigPath();
-            var config = new FrpcDockerConfig
+            if (_serviceProvider != null)
             {
-                ImageName = "fatedier/frpc",
-                Tag = "latest",
-                ConfigPath = configPath,
-                ContainerName = DockerContainerName,
-                AutoRestart = true
-            };
+                var configPath = _serviceProvider.GetRequiredService<IConfigurationService>().GetDefaultConfigPath();
+                var config = new FrpcDockerConfig
+                {
+                    ImageName = "fatedier/frpc",
+                    Tag = "latest",
+                    ConfigPath = configPath,
+                    ContainerName = DockerContainerName,
+                    AutoRestart = true
+                };
 
-            // Use user's Downloads directory for docker-compose
-            var downloadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
-            var outputPath = Path.Combine(downloadsPath, "frapa-clonia-docker");
-            Directory.CreateDirectory(outputPath);
+                // Use user's Downloads directory for docker-compose
+                var downloadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    "Downloads");
+                var outputPath = Path.Combine(downloadsPath, "frapa-clonia-docker");
+                Directory.CreateDirectory(outputPath);
 
-            var composePath = await _dockerDeploymentService.GenerateDockerComposeAsync(outputPath, config);
-            DockerComposePath = composePath;
+                if (_dockerDeploymentService != null)
+                {
+                    var composePath = await _dockerDeploymentService.GenerateDockerComposeAsync(outputPath, config);
+                    DockerComposePath = composePath;
 
-            StatusMessage = $"docker-compose.yml generated at: {composePath}";
-            _logger.LogInformation("Generated docker-compose.yml at {Path}", composePath);
+                    StatusMessage = $"docker-compose.yml generated at: {composePath}";
+                    _logger?.LogInformation("Generated docker-compose.yml at {Path}", composePath);
+                }
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error generating docker-compose.yml");
+            _logger?.LogError(ex, "Error generating docker-compose.yml");
             StatusMessage = "Error generating docker-compose.yml";
         }
         finally
@@ -178,11 +256,13 @@ public partial class DeploymentViewModel : ObservableObject
                 return;
             }
 
-            var success = await _dockerDeploymentService.StartDockerComposeAsync(composeDirectory);
+            var success = _dockerDeploymentService != null &&
+                          await _dockerDeploymentService.StartDockerComposeAsync(composeDirectory);
             if (success)
             {
                 StatusMessage = "Docker container started successfully";
-                IsContainerRunning = await _dockerDeploymentService.IsContainerRunningAsync(DockerContainerName);
+                if (_dockerDeploymentService != null)
+                    IsContainerRunning = await _dockerDeploymentService.IsContainerRunningAsync(DockerContainerName);
             }
             else
             {
@@ -191,7 +271,7 @@ public partial class DeploymentViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error starting Docker container");
+            _logger?.LogError(ex, "Error starting Docker container");
             StatusMessage = "Error starting Docker container";
         }
         finally
@@ -220,7 +300,8 @@ public partial class DeploymentViewModel : ObservableObject
                 return;
             }
 
-            var success = await _dockerDeploymentService.StopDockerComposeAsync(composeDirectory);
+            var success = _dockerDeploymentService != null &&
+                          await _dockerDeploymentService.StopDockerComposeAsync(composeDirectory);
             if (success)
             {
                 StatusMessage = "Docker container stopped successfully";
@@ -233,7 +314,7 @@ public partial class DeploymentViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error stopping Docker container");
+            _logger?.LogError(ex, "Error stopping Docker container");
             StatusMessage = "Error stopping Docker container";
         }
         finally
@@ -249,24 +330,27 @@ public partial class DeploymentViewModel : ObservableObject
             IsNativeChecking = true;
             StatusMessage = "Checking native deployment...";
 
-            IsNativeDeployed = await _nativeDeploymentService.IsDeployedAsync();
-            if (IsNativeDeployed)
+            if (_nativeDeploymentService != null)
             {
-                DeployedBinaryPath = await _nativeDeploymentService.GetDeployedBinaryPathAsync();
-                StatusMessage = $"Native deployment found at: {DeployedBinaryPath}";
-            }
-            else
-            {
-                StatusMessage = "Native deployment not found. Please download and deploy frpc.";
-                DeployedBinaryPath = null;
+                IsNativeDeployed = await _nativeDeploymentService.IsDeployedAsync();
+                if (IsNativeDeployed)
+                {
+                    DeployedBinaryPath = await _nativeDeploymentService.GetDeployedBinaryPathAsync();
+                    StatusMessage = $"Native deployment found at: {DeployedBinaryPath}";
+                }
+                else
+                {
+                    StatusMessage = "Native deployment not found. Please download and deploy frpc.";
+                    DeployedBinaryPath = null;
+                }
             }
 
-            _logger.LogInformation("Native deployment check: IsDeployed={IsDeployed}, Path={Path}",
+            _logger?.LogInformation("Native deployment check: IsDeployed={IsDeployed}, Path={Path}",
                 IsNativeDeployed, DeployedBinaryPath);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error checking native deployment");
+            _logger?.LogError(ex, "Error checking native deployment");
             StatusMessage = "Error checking native deployment";
             IsNativeDeployed = false;
         }
@@ -290,11 +374,11 @@ public partial class DeploymentViewModel : ObservableObject
             // For now, this is a placeholder
 
             StatusMessage = "Native deployment not yet implemented";
-            _logger.LogWarning("Native deployment not yet implemented");
+            _logger?.LogWarning("Native deployment not yet implemented");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deploying native frpc");
+            _logger?.LogError(ex, "Error deploying native frpc");
             StatusMessage = "Error deploying native frpc";
         }
         finally
@@ -316,11 +400,11 @@ public partial class DeploymentViewModel : ObservableObject
             var url = "https://github.com/fatedier/frpc/releases";
             StatusMessage = $"Please download frpc from {url}";
 
-            _logger.LogInformation("Opened frpc download page: {Url}", url);
+            _logger?.LogInformation("Opened frpc download page: {Url}", url);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error opening frpc download page");
+            _logger?.LogError(ex, "Error opening frpc download page");
             StatusMessage = "Error opening frpc download page";
         }
         finally

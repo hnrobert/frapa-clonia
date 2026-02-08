@@ -14,20 +14,18 @@ public partial class ProxyListView : UserControl
 
     private void OnEditClick(object sender, RoutedEventArgs e)
     {
-        if (sender is Button button && button.DataContext is ProxyConfig proxy &&
-            DataContext is ProxyListViewModel viewModel)
+        if (sender is not Button { DataContext: ProxyConfig proxy } ||
+            DataContext is not ProxyListViewModel viewModel) return;
+        viewModel.SelectedProxy = proxy;
+        if (viewModel.EditProxyCommand.CanExecute(null))
         {
-            viewModel.SelectedProxy = proxy;
-            if (viewModel.EditProxyCommand.CanExecute(null))
-            {
-                viewModel.EditProxyCommand.Execute(null);
-            }
+            viewModel.EditProxyCommand.Execute(null);
         }
     }
 
     private void OnDuplicateClick(object sender, RoutedEventArgs e)
     {
-        if (sender is Button button && button.DataContext is ProxyConfig proxy &&
+        if (sender is Button { DataContext: ProxyConfig proxy } &&
             DataContext is ProxyListViewModel viewModel)
         {
             viewModel.SelectedProxy = proxy;
@@ -40,14 +38,12 @@ public partial class ProxyListView : UserControl
 
     private void OnDeleteClick(object sender, RoutedEventArgs e)
     {
-        if (sender is Button button && button.DataContext is ProxyConfig proxy &&
-            DataContext is ProxyListViewModel viewModel)
+        if (sender is not Button { DataContext: ProxyConfig proxy } ||
+            DataContext is not ProxyListViewModel viewModel) return;
+        viewModel.SelectedProxy = proxy;
+        if (viewModel.DeleteProxyCommand.CanExecute(null))
         {
-            viewModel.SelectedProxy = proxy;
-            if (viewModel.DeleteProxyCommand.CanExecute(null))
-            {
-                viewModel.DeleteProxyCommand.Execute(null);
-            }
+            viewModel.DeleteProxyCommand.Execute(null);
         }
     }
 }

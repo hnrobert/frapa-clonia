@@ -10,6 +10,9 @@ using Avalonia.Controls.ApplicationLifetimes;
 using System.Text.Json;
 using FrapaClonia.Domain;
 
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace FrapaClonia.UI.ViewModels;
 
 /// <summary>
@@ -17,31 +20,24 @@ namespace FrapaClonia.UI.ViewModels;
 /// </summary>
 public partial class VisitorListViewModel : ObservableObject
 {
-    private readonly ILogger<VisitorListViewModel> _logger;
-    private readonly IConfigurationService _configurationService;
-    private readonly IValidationService _validationService;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<VisitorListViewModel>? _logger;
+    private readonly IConfigurationService? _configurationService;
+    private readonly IValidationService? _validationService;
+    private readonly IServiceProvider? _serviceProvider;
 
-    [ObservableProperty]
-    private List<VisitorConfig> _visitors = [];
+    [ObservableProperty] private List<VisitorConfig> _visitors = [];
 
-    [ObservableProperty]
-    private VisitorConfig? _selectedVisitor;
+    [ObservableProperty] private VisitorConfig? _selectedVisitor;
 
-    [ObservableProperty]
-    private bool _isLoading;
+    [ObservableProperty] private bool _isLoading;
 
-    [ObservableProperty]
-    private bool _isSaving;
+    [ObservableProperty] private bool _isSaving;
 
-    [ObservableProperty]
-    private string? _searchQuery;
+    [ObservableProperty] private string? _searchQuery;
 
-    [ObservableProperty]
-    private int _selectedTypeFilter;
+    [ObservableProperty] private int _selectedTypeFilter;
 
-    [ObservableProperty]
-    private int _activeCount;
+    [ObservableProperty] private int _activeCount;
 
     public IRelayCommand AddVisitorCommand { get; }
     public IRelayCommand EditVisitorCommand { get; }
@@ -49,7 +45,17 @@ public partial class VisitorListViewModel : ObservableObject
     public IRelayCommand DuplicateVisitorCommand { get; }
     public IRelayCommand RefreshCommand { get; }
 
+    // ReSharper disable once UnusedMember.Global
     public List<string> VisitorTypes { get; } = ["stcp", "xtcp", "sudp"];
+
+    // Default constructor for design-time support
+    public VisitorListViewModel() : this(
+        Microsoft.Extensions.Logging.Abstractions.NullLogger<VisitorListViewModel>.Instance,
+        null!,
+        null!,
+        null!)
+    {
+    }
 
     public VisitorListViewModel(
         ILogger<VisitorListViewModel> logger,
@@ -72,7 +78,7 @@ public partial class VisitorListViewModel : ObservableObject
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error deleting visitor");
+                _logger?.LogError(e, "Error deleting visitor");
             }
         }, () => SelectedVisitor != null);
         DuplicateVisitorCommand = new RelayCommand(async void () =>
@@ -83,7 +89,7 @@ public partial class VisitorListViewModel : ObservableObject
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error deleting visitor");
+                _logger?.LogError(e, "Error deleting visitor");
             }
         }, () => SelectedVisitor != null);
         RefreshCommand = new RelayCommand(async void () =>
@@ -94,7 +100,7 @@ public partial class VisitorListViewModel : ObservableObject
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error loading visitors");
+                _logger?.LogError(e, "Error loading visitors");
             }
         });
 
@@ -117,19 +123,22 @@ public partial class VisitorListViewModel : ObservableObject
             {
                 IsLoading = true;
 
-                var configPath = _configurationService.GetDefaultConfigPath();
-                var config = await _configurationService.LoadConfigurationAsync(configPath);
-
-                if (config != null)
+                if (_configurationService != null)
                 {
-                    Visitors = config.Visitors;
+                    var configPath = _configurationService.GetDefaultConfigPath();
+                    var config = await _configurationService.LoadConfigurationAsync(configPath);
 
-                    _logger.LogInformation("Loaded {Count} visitors", Visitors.Count);
+                    if (config != null)
+                    {
+                        Visitors = config.Visitors;
+
+                        _logger?.LogInformation("Loaded {Count} visitors", Visitors.Count);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error loading visitors");
+                _logger?.LogError(ex, "Error loading visitors");
                 Visitors = [];
             }
             finally
@@ -141,55 +150,77 @@ public partial class VisitorListViewModel : ObservableObject
 
     private async void AddVisitor()
     {
-        _logger.LogInformation("Add visitor clicked");
-
-        // Create new visitor and show editor dialog
-        var newVisitor = new VisitorConfig();
-        var editorLogger = _serviceProvider.GetRequiredService<ILogger<VisitorEditorViewModel>>();
-        var viewModel = new VisitorEditorViewModel(editorLogger, _configurationService, _validationService, newVisitor);
-
-        var editorWindow = new VisitorEditorView
+        try
         {
-            DataContext = viewModel
-        };
+            _logger?.LogInformation("Add visitor clicked");
 
-        if (Avalonia.Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
-            return;
-        if (desktop.MainWindow == null) return;
-        var result = await editorWindow.ShowDialog<bool?>(desktop.MainWindow);
-        if (result == true)
+            // Create new visitor and show editor dialog
+            var newVisitor = new VisitorConfig();
+            if (_serviceProvider == null) return;
+            var editorLogger = _serviceProvider.GetRequiredService<ILogger<VisitorEditorViewModel>>();
+            if (_configurationService == null) return;
+            if (_validationService == null) return;
+            var viewModel = new VisitorEditorViewModel(editorLogger, _configurationService, _validationService, newVisitor);
+
+            var editorWindow = new VisitorEditorView
+            {
+                DataContext = viewModel
+            };
+
+            if (Avalonia.Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime
+                desktop)
+                return;
+            if (desktop.MainWindow == null) return;
+            var result = await editorWindow.ShowDialog<bool?>(desktop.MainWindow);
+            if (result == true)
+            {
+                // User clicked Save - refresh the list
+                _ = Task.Run(LoadVisitorsAsync);
+            }
+        }
+        catch (Exception e)
         {
-            // User clicked Save - refresh the list
-            _ = Task.Run(LoadVisitorsAsync);
+            _logger?.LogError(e, "Error adding visitor");
         }
     }
 
     private async void EditVisitor()
     {
-        if (SelectedVisitor == null) return;
-        _logger.LogInformation("Edit visitor: {VisitorName}", SelectedVisitor.Name);
-
-        // Clone the visitor to avoid modifying the original until saved
-        var json = JsonSerializer.Serialize(SelectedVisitor, FrpClientConfigContext.Default.VisitorConfig);
-        var visitorClone = JsonSerializer.Deserialize(json, FrpClientConfigContext.Default.VisitorConfig);
-
-        if (visitorClone == null) return;
-        var editorLogger = _serviceProvider.GetRequiredService<ILogger<VisitorEditorViewModel>>();
-        var viewModel = new VisitorEditorViewModel(editorLogger, _configurationService, _validationService, visitorClone);
-
-        var editorWindow = new VisitorEditorView
+        try
         {
-            DataContext = viewModel
-        };
+            if (SelectedVisitor == null) return;
+            _logger?.LogInformation("Edit visitor: {VisitorName}", SelectedVisitor.Name);
 
-        if (Avalonia.Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime
-            desktop) return;
-        if (desktop.MainWindow == null) return;
-        var result = await editorWindow.ShowDialog<bool?>(desktop.MainWindow);
-        if (result == true)
+            // Clone the visitor to avoid modifying the original until saved
+            var json = JsonSerializer.Serialize(SelectedVisitor, FrpClientConfigContext.Default.VisitorConfig);
+            var visitorClone = JsonSerializer.Deserialize(json, FrpClientConfigContext.Default.VisitorConfig);
+
+            if (visitorClone == null) return;
+            if (_serviceProvider == null) return;
+            var editorLogger = _serviceProvider.GetRequiredService<ILogger<VisitorEditorViewModel>>();
+
+            if (_configurationService == null) return;
+            if (_validationService == null) return;
+            var viewModel = new VisitorEditorViewModel(editorLogger, _configurationService, _validationService, visitorClone);
+
+            var editorWindow = new VisitorEditorView
+            {
+                DataContext = viewModel
+            };
+
+            if (Avalonia.Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime
+                desktop) return;
+            if (desktop.MainWindow == null) return;
+            var result = await editorWindow.ShowDialog<bool?>(desktop.MainWindow);
+            if (result == true)
+            {
+                // User clicked Save - refresh the list
+                _ = Task.Run(LoadVisitorsAsync);
+            }
+        }
+        catch (Exception e)
         {
-            // User clicked Save - refresh the list
-            _ = Task.Run(LoadVisitorsAsync);
+            _logger?.LogError(e, "Error editing visitor");
         }
     }
 
@@ -197,29 +228,32 @@ public partial class VisitorListViewModel : ObservableObject
     {
         if (SelectedVisitor == null) return;
 
-        _logger.LogInformation("Delete visitor: {VisitorName}", SelectedVisitor.Name);
+        _logger?.LogInformation("Delete visitor: {VisitorName}", SelectedVisitor.Name);
 
         try
         {
             IsSaving = true;
 
-            var configPath = _configurationService.GetDefaultConfigPath();
-            var config = await _configurationService.LoadConfigurationAsync(configPath);
-
-            if (config != null)
+            if (_configurationService != null)
             {
-                config.Visitors.RemoveAll(v => v.Name == SelectedVisitor.Name);
-                await _configurationService.SaveConfigurationAsync(configPath, config);
+                var configPath = _configurationService.GetDefaultConfigPath();
+                var config = await _configurationService.LoadConfigurationAsync(configPath);
 
-                await LoadVisitorsAsync();
-                SelectedVisitor = null;
+                if (config != null)
+                {
+                    config.Visitors.RemoveAll(v => v.Name == SelectedVisitor.Name);
+                    await _configurationService.SaveConfigurationAsync(configPath, config);
 
-                _logger.LogInformation("Visitor deleted successfully");
+                    await LoadVisitorsAsync();
+                    SelectedVisitor = null;
+
+                    _logger?.LogInformation("Visitor deleted successfully");
+                }
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deleting visitor");
+            _logger?.LogError(ex, "Error deleting visitor");
         }
         finally
         {
@@ -231,40 +265,43 @@ public partial class VisitorListViewModel : ObservableObject
     {
         if (SelectedVisitor == null) return;
 
-        _logger.LogInformation("Duplicate visitor: {VisitorName}", SelectedVisitor.Name);
+        _logger?.LogInformation("Duplicate visitor: {VisitorName}", SelectedVisitor.Name);
 
         try
         {
             IsSaving = true;
 
-            var configPath = _configurationService.GetDefaultConfigPath();
-            var config = await _configurationService.LoadConfigurationAsync(configPath);
-
-            if (config != null)
+            if (_configurationService != null)
             {
-                var duplicate = new VisitorConfig
+                var configPath = _configurationService.GetDefaultConfigPath();
+                var config = await _configurationService.LoadConfigurationAsync(configPath);
+
+                if (config != null)
                 {
-                    Name = $"{SelectedVisitor.Name} (Copy)",
-                    Type = SelectedVisitor.Type,
-                    ServerName = SelectedVisitor.ServerName,
-                    SecretKey = SelectedVisitor.SecretKey,
-                    BindAddr = SelectedVisitor.BindAddr,
-                    BindPort = SelectedVisitor.BindPort + 1,
-                    BindIp = SelectedVisitor.BindIp,
-                    Transport = SelectedVisitor.Transport
-                };
+                    var duplicate = new VisitorConfig
+                    {
+                        Name = $"{SelectedVisitor.Name} (Copy)",
+                        Type = SelectedVisitor.Type,
+                        ServerName = SelectedVisitor.ServerName,
+                        SecretKey = SelectedVisitor.SecretKey,
+                        BindAddr = SelectedVisitor.BindAddr,
+                        BindPort = SelectedVisitor.BindPort + 1,
+                        BindIp = SelectedVisitor.BindIp,
+                        Transport = SelectedVisitor.Transport
+                    };
 
-                config.Visitors.Add(duplicate);
-                await _configurationService.SaveConfigurationAsync(configPath, config);
+                    config.Visitors.Add(duplicate);
+                    await _configurationService.SaveConfigurationAsync(configPath, config);
 
-                await LoadVisitorsAsync();
+                    await LoadVisitorsAsync();
 
-                _logger.LogInformation("Visitor duplicated successfully");
+                    _logger?.LogInformation("Visitor duplicated successfully");
+                }
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error duplicating visitor");
+            _logger?.LogError(ex, "Error duplicating visitor");
         }
         finally
         {

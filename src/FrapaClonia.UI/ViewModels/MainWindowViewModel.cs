@@ -12,11 +12,10 @@ namespace FrapaClonia.UI.ViewModels;
 public partial class MainWindowViewModel : ObservableObject
 {
     // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
-    private readonly ILogger<MainWindowViewModel> _logger;
-    private readonly NavigationService _navigation;
+    private readonly ILogger<MainWindowViewModel>? _logger;
+    private readonly NavigationService? _navigation;
 
-    [ObservableProperty]
-    private Control? _currentView;
+    [ObservableProperty] private Control? _currentView;
 
     public IRelayCommand NavigateToDashboardCommand { get; }
     public IRelayCommand NavigateToServerConfigCommand { get; }
@@ -25,6 +24,13 @@ public partial class MainWindowViewModel : ObservableObject
     public IRelayCommand NavigateToDeploymentCommand { get; }
     public IRelayCommand NavigateToLogsCommand { get; }
     public IRelayCommand NavigateToSettingsCommand { get; }
+
+    // Default constructor for design-time support
+    public MainWindowViewModel() : this(
+        Microsoft.Extensions.Logging.Abstractions.NullLogger<MainWindowViewModel>.Instance,
+        null!)
+    {
+    }
 
     public MainWindowViewModel(
         ILogger<MainWindowViewModel> logger,
@@ -42,10 +48,7 @@ public partial class MainWindowViewModel : ObservableObject
         NavigateToSettingsCommand = new RelayCommand(() => Navigate("settings"));
 
         // Subscribe to navigation changes
-        _navigation.PageChanged += (_, _) =>
-        {
-            CurrentView = _navigation.CurrentView;
-        };
+        _navigation.PageChanged += (_, _) => { CurrentView = _navigation.CurrentView; };
 
         // Initialize with dashboard
         Navigate("dashboard");
@@ -55,7 +58,7 @@ public partial class MainWindowViewModel : ObservableObject
 
     private void Navigate(string page)
     {
-        _navigation.NavigateTo(page);
-        // _logger.LogInformation("Navigated to: {Page}", page);
+        _navigation?.NavigateTo(page);
+        // _logger?.LogInformation("Navigated to: {Page}", page);
     }
 }

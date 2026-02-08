@@ -4,6 +4,8 @@ using FrapaClonia.Core.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+
 namespace FrapaClonia.UI.ViewModels;
 
 /// <summary>
@@ -11,27 +13,23 @@ namespace FrapaClonia.UI.ViewModels;
 /// </summary>
 public partial class LogsViewModel : ObservableObject
 {
-    private readonly ILogger<LogsViewModel> _logger;
-    private readonly IFrpcProcessService _frpcProcessService;
-    private readonly IConfigurationService _configurationService;
+    private readonly ILogger<LogsViewModel>? _logger;
+    private readonly IFrpcProcessService? _frpcProcessService;
 
-    [ObservableProperty]
-    private ObservableCollection<LogEntry> _logEntries = [];
+    // ReSharper disable once NotAccessedField.Local
+    private readonly IConfigurationService? _configurationService;
 
-    [ObservableProperty]
-    private string _selectedLogLevel = "All";
+    [ObservableProperty] private ObservableCollection<LogEntry> _logEntries = [];
 
-    [ObservableProperty]
-    private bool _isFollowEnabled = true;
+    [ObservableProperty] private string _selectedLogLevel = "All";
 
-    [ObservableProperty]
-    private bool _isClearing;
+    [ObservableProperty] private bool _isFollowEnabled = true;
 
-    [ObservableProperty]
-    private int _maxLogEntries = 1000;
+    [ObservableProperty] private bool _isClearing;
 
-    [ObservableProperty]
-    private string _statusMessage = "Waiting for logs...";
+    [ObservableProperty] private int _maxLogEntries = 1000;
+
+    [ObservableProperty] private string _statusMessage = "Waiting for logs...";
 
     private readonly Queue<LogEntry> _logBuffer = new();
     private const int MaxBufferSize = 10000;
@@ -43,6 +41,14 @@ public partial class LogsViewModel : ObservableObject
 
     public List<string> LogLevels { get; } = ["All", "Debug", "Information", "Warning", "Error"];
 
+    // Default constructor for design-time support
+    public LogsViewModel() : this(
+        Microsoft.Extensions.Logging.Abstractions.NullLogger<LogsViewModel>.Instance,
+        null!,
+        null!)
+    {
+    }
+
     public LogsViewModel(
         ILogger<LogsViewModel> logger,
         IFrpcProcessService frpcProcessService,
@@ -52,10 +58,40 @@ public partial class LogsViewModel : ObservableObject
         _frpcProcessService = frpcProcessService;
         _configurationService = configurationService;
 
-        ClearLogsCommand = new RelayCommand(async void () => await ClearLogsAsync());
-        ExportLogsCommand = new RelayCommand(async void () => await ExportLogsAsync());
+        ClearLogsCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await ClearLogsAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error clearing logs");
+            }
+        });
+        ExportLogsCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await ExportLogsAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error clearing logs");
+            }
+        });
         ToggleFollowCommand = new RelayCommand(ToggleFollow);
-        RefreshCommand = new RelayCommand(async void () => await RefreshAsync());
+        RefreshCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await RefreshAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error clearing logs");
+            }
+        });
 
         // Subscribe to log events
         _frpcProcessService.LogLineReceived += OnLogLineReceived;
@@ -114,20 +150,15 @@ public partial class LogsViewModel : ObservableObject
 
     private void UpdateStatus()
     {
-        if (_frpcProcessService.IsRunning)
-        {
-            StatusMessage = $"Connected to frpc (PID: {_frpcProcessService.ProcessId}) - Receiving logs...";
-        }
-        else
-        {
-            StatusMessage = "frpc is not running - Start frpc to see logs";
-        }
+        StatusMessage = _frpcProcessService?.IsRunning == true
+            ? $"Connected to frpc (PID: {_frpcProcessService.ProcessId}) - Receiving logs..."
+            : "frpc is not running - Start frpc to see logs";
     }
 
     private void ToggleFollow()
     {
         IsFollowEnabled = !IsFollowEnabled;
-        _logger.LogInformation("Log follow {State}", IsFollowEnabled ? "enabled" : "disabled");
+        _logger?.LogInformation("Log follow {State}", IsFollowEnabled ? "enabled" : "disabled");
     }
 
     private Task ClearLogsAsync()
@@ -136,11 +167,11 @@ public partial class LogsViewModel : ObservableObject
         {
             IsClearing = true;
             LogEntries.Clear();
-            _logger.LogInformation("Logs cleared");
+            _logger?.LogInformation("Logs cleared");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error clearing logs");
+            _logger?.LogError(ex, "Error clearing logs");
         }
         finally
         {
@@ -163,11 +194,11 @@ public partial class LogsViewModel : ObservableObject
                 $"[{e.Timestamp:yyyy-MM-dd HH:mm:ss.fff}] [{e.Level}] {e.Message}"));
 
             StatusMessage = $"Logs exported to: {logsPath}";
-            _logger.LogInformation("Logs exported to {Path}", logsPath);
+            _logger?.LogInformation("Logs exported to {Path}", logsPath);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error exporting logs");
+            _logger?.LogError(ex, "Error exporting logs");
             StatusMessage = "Error exporting logs";
         }
     }
@@ -203,14 +234,12 @@ public partial class LogsViewModel : ObservableObject
                 var filtered = new ObservableCollection<LogEntry>();
                 lock (_logBuffer)
                 {
-                    foreach (var entry in _logBuffer)
+                    foreach (var entry in _logBuffer.Where(ShouldShowLog))
                     {
-                        if (ShouldShowLog(entry))
-                        {
-                            filtered.Add(entry);
-                        }
+                        filtered.Add(entry);
                     }
                 }
+
                 LogEntries = filtered;
             });
         });

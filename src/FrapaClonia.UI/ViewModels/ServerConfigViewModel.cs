@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.Domain.Models;
 using Microsoft.Extensions.Logging;
+
 // ReSharper disable UnusedParameterInPartialMethod
 
 namespace FrapaClonia.UI.ViewModels;
@@ -12,89 +13,64 @@ namespace FrapaClonia.UI.ViewModels;
 /// </summary>
 public partial class ServerConfigViewModel : ObservableObject
 {
-    private readonly IConfigurationService _configurationService;
-    private readonly IValidationService _validationService;
-    private readonly ILogger<ServerConfigViewModel> _logger;
+    private readonly IConfigurationService? _configurationService;
+    private readonly IValidationService? _validationService;
+    private readonly ILogger<ServerConfigViewModel>? _logger;
 
-    [ObservableProperty]
-    private string _serverAddr = "";
+    [ObservableProperty] private string _serverAddr = "";
 
-    [ObservableProperty]
-    private int _serverPort = 7000;
+    [ObservableProperty] private int _serverPort = 7000;
 
-    [ObservableProperty]
-    private string _user = "";
+    [ObservableProperty] private string _user = "";
 
-    [ObservableProperty]
-    private string _token = "";
+    [ObservableProperty] private string _token = "";
 
-    [ObservableProperty]
-    private string _authMethod = "token"; // token or oidc
+    [ObservableProperty] private string _authMethod = "token"; // token or oidc
 
     // OIDC properties
-    [ObservableProperty]
-    private string? _oidcClientId;
+    [ObservableProperty] private string? _oidcClientId;
 
-    [ObservableProperty]
-    private string? _oidcClientSecret;
+    [ObservableProperty] private string? _oidcClientSecret;
 
-    [ObservableProperty]
-    private string? _oidcAudience;
+    [ObservableProperty] private string? _oidcAudience;
 
-    [ObservableProperty]
-    private string? _oidcScope;
+    [ObservableProperty] private string? _oidcScope;
 
-    [ObservableProperty]
-    private string? _oidcTokenEndpointUrl;
+    [ObservableProperty] private string? _oidcTokenEndpointUrl;
 
     // Transport properties
-    [ObservableProperty]
-    private string _transportProtocol = "tcp"; // tcp, kcp, quic, websocket, wss
+    [ObservableProperty] private string _transportProtocol = "tcp"; // tcp, kcp, quic, websocket, wss
 
-    [ObservableProperty]
-    private int _dialServerTimeout = 10;
+    [ObservableProperty] private int _dialServerTimeout = 10;
 
-    [ObservableProperty]
-    private bool _tcpMux = true;
+    [ObservableProperty] private bool _tcpMux = true;
 
-    [ObservableProperty]
-    private int _heartbeatInterval = 30;
+    [ObservableProperty] private int _heartbeatInterval = 30;
 
-    [ObservableProperty]
-    private int _heartbeatTimeout = 90;
+    [ObservableProperty] private int _heartbeatTimeout = 90;
 
-    [ObservableProperty]
-    private bool _tlsEnabled = true;
+    [ObservableProperty] private bool _tlsEnabled = true;
 
     // DNS
-    [ObservableProperty]
-    private string? _dnsServer;
+    [ObservableProperty] private string? _dnsServer;
 
     // Log configuration
-    [ObservableProperty]
-    private string _logLevel = "info";
+    [ObservableProperty] private string _logLevel = "info";
 
-    [ObservableProperty]
-    private string? _logTo;
+    [ObservableProperty] private string? _logTo;
 
-    [ObservableProperty]
-    private int _logMaxDays = 3;
+    [ObservableProperty] private int _logMaxDays = 3;
 
     // Validation
-    [ObservableProperty]
-    private bool _isValid = true;
+    [ObservableProperty] private bool _isValid = true;
 
-    [ObservableProperty]
-    private string? _validationError;
+    [ObservableProperty] private string? _validationError;
 
-    [ObservableProperty]
-    private string? _validationWarning;
+    [ObservableProperty] private string? _validationWarning;
 
-    [ObservableProperty]
-    private bool _isSaving;
+    [ObservableProperty] private bool _isSaving;
 
-    [ObservableProperty]
-    private bool _isLoading;
+    [ObservableProperty] private bool _isLoading;
 
     public IRelayCommand SaveCommand { get; }
     public IRelayCommand ResetCommand { get; }
@@ -148,6 +124,12 @@ public partial class ServerConfigViewModel : ObservableObject
         };
     }
 
+    // Default constructor for design-time support
+    public ServerConfigViewModel() : this(null!, null!,
+        Microsoft.Extensions.Logging.Abstractions.NullLogger<ServerConfigViewModel>.Instance)
+    {
+    }
+
     public ServerConfigViewModel(
         IConfigurationService configurationService,
         IValidationService validationService,
@@ -165,7 +147,7 @@ public partial class ServerConfigViewModel : ObservableObject
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Could not save configuration");
+                _logger?.LogError(e, "Could not save configuration");
             }
         }, () => !IsSaving);
         ResetCommand = new RelayCommand(async void () =>
@@ -176,7 +158,7 @@ public partial class ServerConfigViewModel : ObservableObject
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Could not load configuration");
+                _logger?.LogError(e, "Could not load configuration");
             }
         }, () => !IsSaving && !IsLoading);
 
@@ -225,60 +207,63 @@ public partial class ServerConfigViewModel : ObservableObject
         {
             IsLoading = true;
 
-            var configPath = _configurationService.GetDefaultConfigPath();
-            var config = await _configurationService.LoadConfigurationAsync(configPath);
-
-            if (config?.CommonConfig != null)
+            if (_configurationService != null)
             {
-                var cc = config.CommonConfig;
+                var configPath = _configurationService.GetDefaultConfigPath();
+                var config = await _configurationService.LoadConfigurationAsync(configPath);
 
-                // Load server settings
-                ServerAddr = cc.ServerAddr ?? "";
-                ServerPort = cc.ServerPort;
-                User = cc.User ?? "";
-
-                // Load auth
-                if (cc.Auth != null)
+                if (config?.CommonConfig != null)
                 {
-                    AuthMethod = cc.Auth.Method;
-                    Token = cc.Auth.Token ?? "";
-                    OidcClientId = cc.Auth.Oidc?.ClientId;
-                    OidcClientSecret = cc.Auth.Oidc?.ClientSecret;
-                    OidcAudience = cc.Auth.Oidc?.Audience;
-                    OidcScope = cc.Auth.Oidc?.Scope;
-                    OidcTokenEndpointUrl = cc.Auth.Oidc?.TokenEndpointUrl;
+                    var cc = config.CommonConfig;
+
+                    // Load server settings
+                    ServerAddr = cc.ServerAddr ?? "";
+                    ServerPort = cc.ServerPort;
+                    User = cc.User ?? "";
+
+                    // Load auth
+                    if (cc.Auth != null)
+                    {
+                        AuthMethod = cc.Auth.Method;
+                        Token = cc.Auth.Token ?? "";
+                        OidcClientId = cc.Auth.Oidc?.ClientId;
+                        OidcClientSecret = cc.Auth.Oidc?.ClientSecret;
+                        OidcAudience = cc.Auth.Oidc?.Audience;
+                        OidcScope = cc.Auth.Oidc?.Scope;
+                        OidcTokenEndpointUrl = cc.Auth.Oidc?.TokenEndpointUrl;
+                    }
+
+                    // Load transport
+                    if (cc.Transport != null)
+                    {
+                        TransportProtocol = cc.Transport.Protocol;
+                        DialServerTimeout = cc.Transport.DialServerTimeout;
+                        TcpMux = cc.Transport.TcpMux;
+                        HeartbeatInterval = cc.Transport.HeartbeatInterval;
+                        HeartbeatTimeout = cc.Transport.HeartbeatTimeout;
+                        TlsEnabled = cc.Transport.Tls?.Enable ?? true;
+                    }
+
+                    // Load DNS
+                    DnsServer = cc.DnsServer;
+
+                    // Load log
+                    if (cc.Log != null)
+                    {
+                        LogLevel = cc.Log.Level;
+                        LogTo = cc.Log.To;
+                        LogMaxDays = cc.Log.MaxDays;
+                    }
+
+                    _logger?.LogInformation("Configuration loaded successfully");
                 }
-
-                // Load transport
-                if (cc.Transport != null)
-                {
-                    TransportProtocol = cc.Transport.Protocol;
-                    DialServerTimeout = cc.Transport.DialServerTimeout;
-                    TcpMux = cc.Transport.TcpMux;
-                    HeartbeatInterval = cc.Transport.HeartbeatInterval;
-                    HeartbeatTimeout = cc.Transport.HeartbeatTimeout;
-                    TlsEnabled = cc.Transport.Tls?.Enable ?? true;
-                }
-
-                // Load DNS
-                DnsServer = cc.DnsServer;
-
-                // Load log
-                if (cc.Log != null)
-                {
-                    LogLevel = cc.Log.Level;
-                    LogTo = cc.Log.To;
-                    LogMaxDays = cc.Log.MaxDays;
-                }
-
-                _logger.LogInformation("Configuration loaded successfully");
             }
 
             await ValidateAsync();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error loading configuration");
+            _logger?.LogError(ex, "Error loading configuration");
             ValidationError = "Failed to load configuration";
         }
         finally
@@ -310,22 +295,28 @@ public partial class ServerConfigViewModel : ObservableObject
             };
 
             // Validate before saving
-            var validation = _validationService.ValidateServerConnection(config.CommonConfig);
-            if (!validation.IsValid)
+            if (_validationService != null)
             {
-                ValidationError = validation.Errors.FirstOrDefault() ?? "Validation failed";
-                return;
+                var validation = _validationService.ValidateServerConnection(config.CommonConfig);
+                if (!validation.IsValid)
+                {
+                    ValidationError = validation.Errors.FirstOrDefault() ?? "Validation failed";
+                    return;
+                }
             }
 
             // Save configuration
-            var configPath = _configurationService.GetDefaultConfigPath();
-            await _configurationService.SaveConfigurationAsync(configPath, config);
+            if (_configurationService != null)
+            {
+                var configPath = _configurationService.GetDefaultConfigPath();
+                await _configurationService.SaveConfigurationAsync(configPath, config);
+            }
 
-            _logger.LogInformation("Configuration saved successfully");
+            _logger?.LogInformation("Configuration saved successfully");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error saving configuration");
+            _logger?.LogError(ex, "Error saving configuration");
             ValidationError = "Failed to save configuration: " + ex.Message;
         }
         finally
@@ -348,10 +339,12 @@ public partial class ServerConfigViewModel : ObservableObject
             }
         };
 
+        if (_validationService == null) return Task.CompletedTask;
         var validation = _validationService.ValidateServerConnection(config.CommonConfig);
         IsValid = validation.IsValid;
         ValidationError = validation.Errors.FirstOrDefault();
         ValidationWarning = validation.Warnings.FirstOrDefault();
+
         return Task.CompletedTask;
     }
 
@@ -373,11 +366,13 @@ public partial class ServerConfigViewModel : ObservableObject
             };
         }
 
-        return string.IsNullOrWhiteSpace(Token) ? null : new AuthConfig
-        {
-            Method = "token",
-            Token = Token
-        };
+        return string.IsNullOrWhiteSpace(Token)
+            ? null
+            : new AuthConfig
+            {
+                Method = "token",
+                Token = Token
+            };
     }
 
     private ClientTransportConfig CreateTransportConfig()
