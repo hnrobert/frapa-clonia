@@ -64,6 +64,7 @@ public partial class SettingsViewModel : ObservableObject
         [
             new LanguageOption("en", "English"),
             new LanguageOption("zh-CN", "简体中文"),
+            new LanguageOption("zh-TW", "繁體中文"),
             new LanguageOption("ja", "日本語"),
             new LanguageOption("ko", "한국어"),
             new LanguageOption("es", "Español"),
