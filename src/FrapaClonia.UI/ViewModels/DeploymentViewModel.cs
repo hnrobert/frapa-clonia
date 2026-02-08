@@ -276,7 +276,7 @@ public partial class DeploymentViewModel : ObservableObject
         }
     }
 
-    private async Task DeployNativeAsync()
+    private Task DeployNativeAsync()
     {
         try
         {
@@ -301,9 +301,11 @@ public partial class DeploymentViewModel : ObservableObject
         {
             IsBusy = false;
         }
+
+        return Task.CompletedTask;
     }
 
-    private async Task DownloadFrpcAsync()
+    private Task DownloadFrpcAsync()
     {
         try
         {
@@ -325,5 +327,7 @@ public partial class DeploymentViewModel : ObservableObject
         {
             IsBusy = false;
         }
+
+        return Task.CompletedTask;
     }
 }

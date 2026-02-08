@@ -119,7 +119,7 @@
 
                 <!-- Section Header -->
                 <TextBlock Text="Quick Access"
-                           Classes="sectionTitle"
+                           Classes="section-title"
                            Margin="{StaticResource ThicknessTopS}" />
 
                 <!-- Quick Access Cards -->
@@ -130,10 +130,10 @@
                         <Grid RowDefinitions="Auto,*,Auto" Height="120">
                             <TextBlock Grid.Row="0"
                                        Text="Server"
-                                       Classes="cardTitle" />
+                                       Classes="card-title" />
                             <TextBlock Grid.Row="1"
                                        Text="Configure frpc server connection"
-                                       Classes="cardDescription"
+                                       Classes="card-description"
                                        TextWrapping="Wrap"
                                        VerticalAlignment="Center" />
                             <Button Grid.Row="2"
@@ -149,10 +149,10 @@
                         <Grid RowDefinitions="Auto,*,Auto" Height="120">
                             <TextBlock Grid.Row="0"
                                        Text="Proxies"
-                                       Classes="cardTitle" />
+                                       Classes="card-title" />
                             <TextBlock Grid.Row="1"
                                        Text="Manage proxy configurations"
-                                       Classes="cardDescription"
+                                       Classes="card-description"
                                        TextWrapping="Wrap"
                                        VerticalAlignment="Center" />
                             <Button Grid.Row="2"
@@ -168,10 +168,10 @@
                         <Grid RowDefinitions="Auto,*,Auto" Height="120">
                             <TextBlock Grid.Row="0"
                                        Text="Deploy"
-                                       Classes="cardTitle" />
+                                       Classes="card-title" />
                             <TextBlock Grid.Row="1"
                                        Text="Download and configure frpc"
-                                       Classes="cardDescription"
+                                       Classes="card-description"
                                        TextWrapping="Wrap"
                                        VerticalAlignment="Center" />
                             <Button Grid.Row="2"
@@ -187,10 +187,10 @@
                         <Grid RowDefinitions="Auto,*,Auto" Height="120">
                             <TextBlock Grid.Row="0"
                                        Text="Logs"
-                                       Classes="cardTitle" />
+                                       Classes="card-title" />
                             <TextBlock Grid.Row="1"
                                        Text="View real-time logs"
-                                       Classes="cardDescription"
+                                       Classes="card-description"
                                        TextWrapping="Wrap"
                                        VerticalAlignment="Center" />
                             <Button Grid.Row="2"
@@ -204,7 +204,7 @@
 
                 <!-- Section Header -->
                 <TextBlock Text="Overview"
-                           Classes="sectionTitle"
+                           Classes="section-title"
                            Margin="{StaticResource ThicknessTopS}" />
 
                 <!-- Overview Stats -->
@@ -275,7 +275,7 @@
                         <Grid RowDefinitions="Auto,*">
                             <TextBlock Grid.Row="0"
                                        Text="Recent Activity"
-                                       Classes="cardTitle" />
+                                       Classes="card-title" />
                             <Border Grid.Row="1"
                                     Background="{DynamicResource SystemControlPageBackgroundTransparent}"
                                     CornerRadius="{StaticResource CornerRadiusS}"

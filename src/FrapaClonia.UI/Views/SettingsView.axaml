@@ -60,7 +60,7 @@
                 <Border Classes="settings-card">
                     <StackPanel Spacing="0">
                         <TextBlock Text="Language &amp; Region"
-                                   Classes="sectionTitle"
+                                   Classes="section-title"
                                    Margin="{StaticResource ThicknessBottomM}" />
 
                         <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto">
@@ -89,7 +89,7 @@
                 <Border Classes="settings-card">
                     <StackPanel Spacing="0">
                         <TextBlock Text="System Integration"
-                                   Classes="sectionTitle"
+                                   Classes="section-title"
                                    Margin="{StaticResource ThicknessBottomM}" />
 
                         <CheckBox IsChecked="{Binding AutoStartEnabled}"
@@ -110,7 +110,7 @@
                 <Border Classes="settings-card">
                     <StackPanel Spacing="0">
                         <TextBlock Text="Appearance"
-                                   Classes="sectionTitle"
+                                   Classes="section-title"
                                    Margin="{StaticResource ThicknessBottomM}" />
 
                         <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto">
@@ -135,7 +135,7 @@
                 <Border Classes="settings-card">
                     <StackPanel Spacing="0">
                         <TextBlock Text="Application Mode"
-                                   Classes="sectionTitle"
+                                   Classes="section-title"
                                    Margin="{StaticResource ThicknessBottomM}" />
 
                         <CheckBox IsChecked="{Binding PortableMode}"
@@ -170,7 +170,7 @@
                 <Border Classes="settings-card">
                     <StackPanel Spacing="0">
                         <TextBlock Text="About"
-                                   Classes="sectionTitle"
+                                   Classes="section-title"
                                    Margin="{StaticResource ThicknessBottomM}" />
 
                         <Grid ColumnDefinitions="120,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
@@ -221,9 +221,9 @@
                         <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
                             <TextBlock Text="Save Settings" />
                             <ProgressBar IsIndeterminate="True"
-                                          Width="16"
-                                          Height="16"
-                                          IsVisible="{Binding IsSaving}" />
+                                         Width="16"
+                                         Height="16"
+                                         IsVisible="{Binding IsSaving}" />
                         </StackPanel>
                     </Button>
                 </StackPanel>

@@ -40,14 +40,14 @@
                 <Border Classes="settings-card">
                     <StackPanel Spacing="{StaticResource SpacingM}">
                         <TextBlock Text="Connection Settings"
-                                   Classes="sectionTitle" />
+                                   Classes="section-title" />
 
                         <!-- Server Address -->
                         <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
                                        Text="Server Address"
                                        Classes="field-label" />
-                            <TextBox Grid.Column="1"
+                            <TextBox Grid.Row="0" Grid.Column="1"
                                      Text="{Binding ServerAddr}"
                                      Watermark="e.g., 127.0.0.1 or your-server.com" />
                             <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
@@ -60,13 +60,13 @@
                             <TextBlock Grid.Row="0" Grid.Column="0"
                                        Text="Server Port"
                                        Classes="field-label" />
-                            <NumericUpDown Grid.Column="1"
+                            <NumericUpDown Grid.Row="0" Grid.Column="1"
                                            Value="{Binding ServerPort}"
                                            Minimum="1"
                                            Maximum="65535"
                                            Increment="1"
                                            FormatString="0" />
-                            <TextBlock Grid.Column="2"
+                            <TextBlock Grid.Row="0" Grid.Column="2"
                                        Text="Default: 7000"
                                        VerticalAlignment="Center" />
                         </Grid>
@@ -76,7 +76,7 @@
                             <TextBlock Grid.Row="0" Grid.Column="0"
                                        Text="User"
                                        Classes="field-label" />
-                            <TextBox Grid.Column="1"
+                            <TextBox Grid.Row="0" Grid.Column="1"
                                      Text="{Binding User}"
                                      Watermark="Optional user name" />
                             <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
@@ -90,7 +90,7 @@
                 <Border Classes="card">
                     <StackPanel Spacing="{StaticResource SpacingM}">
                         <TextBlock Text="Authentication"
-                                   Classes="sectionTitle" />
+                                   Classes="section-title" />
 
                         <!-- Auth Method -->
                         <Grid ColumnDefinitions="140,180,*" RowDefinitions="Auto">
@@ -175,7 +175,7 @@
                 <Border Classes="card">
                     <StackPanel Spacing="{StaticResource SpacingM}">
                         <TextBlock Text="Transport Settings"
-                                   Classes="sectionTitle" />
+                                   Classes="section-title" />
 
                         <!-- Protocol -->
                         <Grid ColumnDefinitions="140,180,*" RowDefinitions="Auto">
@@ -193,51 +193,51 @@
                         </Grid>
 
                         <!-- Timeout and Mux -->
-                        <Grid ColumnDefinitions="140,120,20,Auto" RowDefinitions="Auto,Auto">
+                        <Grid ColumnDefinitions="140,120,20,Auto,*" RowDefinitions="Auto,Auto">
                             <!-- Dial Timeout -->
                             <TextBlock Grid.Row="0" Grid.Column="0"
                                        Text="Dial Timeout"
                                        Classes="field-label" />
-                            <NumericUpDown Grid.Column="1"
+                            <NumericUpDown Grid.Row="0" Grid.Column="1"
                                            Value="{Binding DialServerTimeout}"
                                            Minimum="1"
                                            Maximum="300"
                                            Increment="1"
                                            FormatString="0" />
-                            <TextBlock Grid.Column="2"
+                            <TextBlock Grid.Row="0" Grid.Column="2"
                                        Text="seconds"
                                        VerticalAlignment="Center" />
 
                             <!-- TCP Mux -->
-                            <TextBlock Grid.Column="3"
+                            <TextBlock Grid.Row="0" Grid.Column="3"
                                        Text="TCP Mux"
                                        VerticalAlignment="Center" />
-                            <CheckBox Grid.Column="4"
+                            <CheckBox Grid.Row="0" Grid.Column="4"
                                       IsChecked="{Binding TcpMux}"
                                       VerticalAlignment="Center" />
                         </Grid>
 
                         <!-- Heartbeat -->
-                        <Grid ColumnDefinitions="140,120,20,120" RowDefinitions="Auto,Auto">
+                        <Grid ColumnDefinitions="140,120,20,120,*" RowDefinitions="Auto,Auto">
                             <!-- Heartbeat Interval -->
                             <TextBlock Grid.Row="0" Grid.Column="0"
                                        Text="Heartbeat Interval"
                                        Classes="field-label" />
-                            <NumericUpDown Grid.Column="1"
+                            <NumericUpDown Grid.Row="0" Grid.Column="1"
                                            Value="{Binding HeartbeatInterval}"
                                            Minimum="5"
                                            Maximum="300"
                                            Increment="5"
                                            FormatString="0" />
-                            <TextBlock Grid.Column="2"
+                            <TextBlock Grid.Row="0" Grid.Column="2"
                                        Text="seconds"
                                        VerticalAlignment="Center" />
 
                             <!-- Heartbeat Timeout -->
-                            <TextBlock Grid.Column="3"
+                            <TextBlock Grid.Row="0" Grid.Column="3"
                                        Text="Heartbeat Timeout"
                                        Classes="field-label" />
-                            <NumericUpDown Grid.Column="4"
+                            <NumericUpDown Grid.Row="0" Grid.Column="4"
                                            Value="{Binding HeartbeatTimeout}"
                                            Minimum="5"
                                            Maximum="600"
@@ -261,7 +261,7 @@
                 <Border Classes="card">
                     <StackPanel Spacing="{StaticResource SpacingM}">
                         <TextBlock Text="Logging"
-                                   Classes="sectionTitle" />
+                                   Classes="section-title" />
 
                         <!-- Log Level and Max Days -->
                         <Grid ColumnDefinitions="140,180,20,Auto,120" RowDefinitions="Auto">
@@ -307,7 +307,7 @@
                         IsVisible="{Binding IsValid}">
                     <StackPanel Spacing="{StaticResource SpacingS}">
                         <TextBlock Text="Status"
-                                   Classes="sectionTitle" />
+                                   Classes="section-title" />
 
                         <TextBlock Text="{Binding ValidationError}"
                                    Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}"

@@ -45,7 +45,7 @@
                 <Border Classes="settings-card">
                     <StackPanel Spacing="0">
                         <TextBlock Text="Deployment Mode"
-                                   Classes="sectionTitle"
+                                   Classes="section-title"
                                    Margin="{StaticResource ThicknessBottomM}" />
 
                         <ComboBox ItemsSource="{Binding DeploymentModes}"
@@ -69,7 +69,7 @@
                 <Border Classes="settings-card">
                     <StackPanel Spacing="{StaticResource SpacingM}">
                         <TextBlock Text="Docker Deployment"
-                                   Classes="sectionTitle" />
+                                   Classes="section-title" />
 
                         <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
@@ -131,7 +131,7 @@
                 <Border Classes="settings-card">
                     <StackPanel Spacing="{StaticResource SpacingM}">
                         <TextBlock Text="Native Deployment"
-                                   Classes="sectionTitle" />
+                                   Classes="section-title" />
 
                         <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
@@ -178,7 +178,7 @@
                 <Border Classes="settings-card">
                     <StackPanel Spacing="{StaticResource SpacingS}">
                         <TextBlock Text="Deployment Information"
-                                   Classes="sectionTitle" />
+                                   Classes="section-title" />
 
                         <TextBlock Text="• Docker deployment requires Docker and Docker Compose to be installed"
                                    Classes="hint" />
