@@ -1,5 +1,6 @@
 using FrapaClonia.Core.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Avalonia.Threading;
 
 namespace FrapaClonia.UI.Services;
 
@@ -33,14 +34,53 @@ public class LocalizedString : ObservableObject
         set => SetProperty(ref _value, value);
     }
 
+    /// <summary>
+    /// Gets the string value for Avalonia binding
+    /// </summary>
+    public string StringValue => _value;
+
+    /// <summary>
+    /// Implicit conversion to string for convenience
+    /// </summary>
+    public static implicit operator string(LocalizedString? localizedString)
+    {
+        return localizedString?._value ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Override ToString for XAML binding compatibility
+    /// </summary>
+    public override string ToString()
+    {
+        return _value;
+    }
+
     private void OnCultureChanged(object? sender, EventArgs e)
     {
         // Refresh the value and notify on the UI thread
         var newValue = _localizationService.GetString(_key, _args);
-        if (_value != newValue)
+
+        // Ensure updates happen on UI thread
+        if (Dispatcher.UIThread.CheckAccess())
         {
+            // Update value and check if it actually changed
+            if (_value == newValue) return;
             _value = newValue;
             OnPropertyChanged(nameof(Value));
+            OnPropertyChanged(nameof(StringValue));
+        }
+        else
+        {
+            // Capture newValue to avoid closure issues
+            var capturedValue = newValue;
+            Dispatcher.UIThread.Post(() =>
+            {
+                // Update value and check if it actually changed
+                if (_value == capturedValue) return;
+                _value = capturedValue;
+                OnPropertyChanged(nameof(Value));
+                OnPropertyChanged(nameof(StringValue));
+            });
         }
     }
 }

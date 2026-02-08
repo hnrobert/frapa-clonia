@@ -1,5 +1,6 @@
 using FrapaClonia.Core.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace FrapaClonia.UI.Services;
 
@@ -9,6 +10,7 @@ namespace FrapaClonia.UI.Services;
 public class LocalizedResources : ObservableObject
 {
     private readonly ILocalizationService _localizationService;
+    // ReSharper disable once UnusedMember.Local
     private readonly Dictionary<string, LocalizedString> _strings = new();
 
     public LocalizedResources(ILocalizationService localizationService)
@@ -73,6 +75,200 @@ public class LocalizedResources : ObservableObject
         AutoStart = Create("AutoStart");
         PortableMode = Create("PortableMode");
         QuickShare = Create("QuickShare");
+
+        // Dashboard
+        QuickAccess = Create("QuickAccess");
+        Overview = Create("Overview");
+        ActiveProxies = Create("ActiveProxies");
+        RecentActivity = Create("RecentActivity");
+        Configure = Create("Configure");
+        Manage = Create("Manage");
+        Setup = Create("Setup");
+        View = Create("View");
+
+        // Server Config
+        ConnectionSettings = Create("ConnectionSettings");
+        TheAddressOfTheFrpsServer = Create("TheAddressOfTheFrpsServer");
+        DefaultPort = Create("DefaultPort");
+        OptionalUserName = Create("OptionalUserName");
+        OptionalUserNameToAvoidProxyNameConflicts = Create("OptionalUserNameToAvoidProxyNameConflicts");
+        Authentication = Create("Authentication");
+        Method = Create("Method");
+        ClientId = Create("ClientID");
+        ClientSecret = Create("ClientSecret");
+        TokenEndpoint = Create("TokenEndpoint");
+        Audience = Create("Audience");
+        Scope = Create("Scope");
+        EnterYourAuthenticationToken = Create("EnterYourAuthenticationToken");
+        OptionalAudience = Create("OptionalAudience");
+        EgOpenidProfile = Create("EGOpenidProfile");
+        TransportSettings = Create("TransportSettings");
+        DialTimeout = Create("DialTimeout");
+        Seconds = Create("Seconds");
+        TcpMux = Create("TCPMux");
+        HeartbeatInterval = Create("HeartbeatInterval");
+        HeartbeatTimeout = Create("HeartbeatTimeout");
+        EncryptCommunicationWithTheFrpsServer = Create("EncryptCommunicationWithTheFrpsServer");
+        LoggingSection = Create("LoggingSection");
+        MaxDays = Create("MaxDays");
+        LogTo = Create("LogTo");
+        EgConsolePathToLogfile = Create("EGConsolePathToLogfile");
+        StatusSection = Create("StatusSection");
+        ConfigurationIsValid = Create("ConfigurationIsValid");
+        ResetToDefaults = Create("ResetToDefaults");
+        SaveConfiguration = Create("SaveConfiguration");
+
+        // Deployment
+        DeploymentMode = Create("DeploymentMode");
+        ChooseHowYouWantToDeployAndRunFrpc = Create("ChooseHowYouWantToDeployAndRunFrpc");
+        DockerDeployment = Create("DockerDeployment");
+        DockerStatus = Create("DockerStatus");
+        CheckDocker = Create("CheckDocker");
+        ContainerName = Create("ContainerName");
+        DockerImage = Create("DockerImage");
+        DockerComposePath = Create("DockerComposePath");
+        GenerateDockerComposeYml = Create("GenerateDockerComposeYml");
+        StartContainer = Create("StartContainer");
+        StopContainer = Create("StopContainer");
+        NativeDeployment = Create("NativeDeployment");
+        DeploymentStatus = Create("DeploymentStatus");
+        CheckDeployment = Create("CheckDeployment");
+        BinaryPath = Create("BinaryPath");
+        DownloadFrpc = Create("DownloadFrpc");
+        DeployNative = Create("DeployNative");
+        DeploymentInformation = Create("DeploymentInformation");
+        DockerDeploymentRequiresDocker = Create("DockerDeploymentRequiresDocker");
+        NativeDeploymentDownloadsAndExtracts = Create("NativeDeploymentDownloadsAndExtracts");
+        BothMethodsUse = Create("BothMethodsUse");
+
+        // Proxy List
+        ConfigureAndManageYourFrpcProxyConfigurations = Create("ConfigureAndManageYourFrpcProxyConfigurations");
+        Loading = Create("Loading");
+        ProxiesCount = Create("ProxiesCount");
+        SearchByName = Create("SearchByName");
+        AllTypes = Create("AllTypes");
+        NoProxiesConfigured = Create("NoProxiesConfigured");
+        CreateYourFirstProxyConfiguration = Create("CreateYourFirstProxyConfiguration");
+        CreateProxy = Create("CreateProxy");
+        Local = Create("Local");
+        RemotePortLabel = Create("RemotePortLabel");
+        EditProxyToolTip = Create("EditProxyToolTip");
+        DuplicateProxyToolTip = Create("DuplicateProxyToolTip");
+        DeleteProxyToolTip = Create("DeleteProxyToolTip");
+
+        // Proxy Editor
+        EditProxyWindowTitle = Create("EditProxyWindowTitle");
+        ProxyConfiguration = Create("ProxyConfiguration");
+        ConfigureYourProxySettingsBelow = Create("ConfigureYourProxySettingsBelow");
+        RequiredFieldsAreMarked = Create("RequiredFieldsAreMarked");
+        BasicSettings = Create("BasicSettings");
+        LocalSettings = Create("LocalSettings");
+        TheIPOfTheLocalService = Create("TheIPOfTheLocalService");
+        DomainSettings = Create("DomainSettings");
+        CommaSeparatedList = Create("CommaSeparatedList");
+        LeaveEmptyIfUsingCustomDomains = Create("LeaveEmptyIfUsingCustomDomains");
+        EgWwwExampleCom = Create("EG_www_example_com");
+        HTTPAuthentication = Create("HTTPAuthentication");
+        Username = Create("Username");
+        Password = Create("Password");
+        SecureTunnelSettings = Create("SecureTunnelSettings");
+        MustMatchTheVisitorsSecretKey = Create("MustMatchTheVisitorsSecretKey");
+        AllowedUsers = Create("AllowedUsers");
+        CommaSeparatedListOfAllowedUsers = Create("CommaSeparatedListOfAllowedUsers");
+        LeaveEmptyToAllowAllUsers = Create("LeaveEmptyToAllowAllUsers");
+        TcpMultiplexerSettings = Create("TCPMultiplexerSettings");
+        MultiplexerName = Create("MultiplexerName");
+        NameOfTheMultiplexer = Create("NameOfTheMultiplexer");
+        TheMultiplexerMustBeConfiguredOnTheServer = Create("TheMultiplexerMustBeConfiguredOnTheServer");
+        TransportOptions = Create("TransportOptions");
+        EncryptTheConnectionBetweenClientAndServer = Create("EncryptTheConnectionBetweenClientAndServer");
+        CompressDataToReduceBandwidthUsage = Create("CompressDataToReduceBandwidthUsage");
+        BandwidthLimit = Create("BandwidthLimit");
+        Eg1Mb256Kb = Create("EG_1MB_256KB");
+        LimitBandwidthForThisProxy = Create("LimitBandwidthForThisProxy");
+        EnableHealthCheck = Create("EnableHealthCheck");
+        MonitorTheHealthOfTheLocalService = Create("MonitorTheHealthOfTheLocalService");
+        TypeLabel = Create("TypeLabel");
+        TimeoutSeconds = Create("TimeoutSeconds");
+        MaxFailed = Create("MaxFailed");
+        IntervalSeconds = Create("IntervalSeconds");
+        PathLabel = Create("PathLabel");
+        HeadersLabel = Create("HeadersLabel");
+        HeaderNameValue = Create("HeaderNameValue");
+        OneHeaderPerLine = Create("OneHeaderPerLine");
+        PluginConfiguration = Create("PluginConfiguration");
+        PluginTypeLabel = Create("PluginTypeLabel");
+        HTTPProxyUrl = Create("HTTPProxyURL");
+        Socks5Url = Create("SOCKS5URL");
+        StaticFilePluginSettings = Create("StaticFilePluginSettings");
+        LocalPath = Create("LocalPath");
+        UrlPrefix = Create("URLPrefix");
+        HttpsToHTTPPluginSettings = Create("HTTPSToHTTPPluginSettings");
+        LocalAddress = Create("LocalAddress");
+        CrtPath = Create("CRTPath");
+        KeyPath = Create("KeyPath");
+        HTTPToHttpsPluginSettings = Create("HTTPToHTTPSPluginSettings");
+        ConfigurationError = Create("ConfigurationError");
+
+        // Visitor List
+        VisitorManagement = Create("VisitorManagement");
+        ConfigureAndManageSecureTunnelVisitors = Create("ConfigureAndManageSecureTunnelVisitors");
+        SearchVisitors = Create("SearchVisitors");
+        Active = Create("Active");
+        Total = Create("Total");
+        LoadingVisitors = Create("LoadingVisitors");
+        NoVisitorsConfigured = Create("NoVisitorsConfigured");
+        VisitorsAllowYouToConnect = Create("VisitorsAllowYouToConnect");
+        CreateYourFirstVisitor = Create("CreateYourFirstVisitor");
+        ServerBindInfo = Create("ServerBindInfo");
+        BindIPPortInfo = Create("BindIPPortInfo");
+        TransportEnabled = Create("TransportEnabled");
+
+        // Visitor Editor
+        EditVisitorWindowTitle = Create("EditVisitorWindowTitle");
+        VisitorConfiguration = Create("VisitorConfiguration");
+        ConfigureAVisitorToConnect = Create("ConfigureAVisitorToConnect");
+        SecuritySettings = Create("SecuritySettings");
+        Required = Create("Required");
+        MustMatchTheProxySecretKey = Create("MustMatchTheProxySecretKey");
+        BindSettings = Create("BindSettings");
+        LocalPortToListenOn = Create("LocalPortToListenOn");
+        SpecificIPToBindTo = Create("SpecificIPToBindTo");
+        OptionalLeaveEmptyToBindToAll = Create("OptionalLeaveEmptyToBindToAll");
+
+        // Logs
+        ViewRealtimeLogsFromFrpc = Create("ViewRealtimeLogsFromFrpc");
+        Entries = Create("Entries");
+        LogLevelLabel = Create("LogLevelLabel");
+        AllLevels = Create("AllLevels");
+        AutoScroll = Create("AutoScroll");
+        ReloadLogsFromBuffer = Create("ReloadLogsFromBuffer");
+        ClearAllLogs = Create("ClearAllLogs");
+        ExportLogsToFile = Create("ExportLogsToFile");
+        NoLogsAvailable = Create("NoLogsAvailable");
+        LogsWillAppearHere = Create("LogsWillAppearHere");
+
+        // Settings
+        LanguageAndRegion = Create("LanguageAndRegion");
+        InterfaceLanguage = Create("InterfaceLanguage");
+        ChangesWillTakeEffectAfterRestarting = Create("ChangesWillTakeEffectAfterRestarting");
+        SystemIntegration = Create("SystemIntegration");
+        StartOnSystemBoot = Create("StartOnSystemBoot");
+        AutomaticallyLaunchFrapaClonia = Create("AutomaticallyLaunchFrapaClonia");
+        Appearance = Create("Appearance");
+        Theme = Create("Theme");
+        ChooseYourPreferredColorTheme = Create("ChooseYourPreferredColorTheme");
+        Light = Create("Light");
+        Dark = Create("Dark");
+        SystemDefault = Create("SystemDefault");
+        ApplicationMode = Create("ApplicationMode");
+        ConfigurationStoredInAppDir = Create("ConfigurationStoredInAppDir");
+        ConfigurationLocation = Create("ConfigurationLocation");
+        VersionInfo = Create("VersionInfo");
+        BuildInfo = Create("BuildInfo");
+        NetRuntimeInfo = Create("NETRuntimeInfo");
+        CrossPlatformFrpcVisualClient = Create("CrossPlatformFrpcVisualClient");
+        SaveSettings = Create("SaveSettings");
     }
 
     // Localized string properties
@@ -134,10 +330,203 @@ public class LocalizedResources : ObservableObject
     public LocalizedString PortableMode { get; }
     public LocalizedString QuickShare { get; }
 
+    // Dashboard
+    public LocalizedString QuickAccess { get; }
+    public LocalizedString Overview { get; }
+    public LocalizedString ActiveProxies { get; }
+    public LocalizedString RecentActivity { get; }
+    public LocalizedString Configure { get; }
+    public LocalizedString Manage { get; }
+    public LocalizedString Setup { get; }
+    public LocalizedString View { get; }
+
+    // Server Config
+    public LocalizedString ConnectionSettings { get; }
+    public LocalizedString TheAddressOfTheFrpsServer { get; }
+    public LocalizedString DefaultPort { get; }
+    public LocalizedString OptionalUserName { get; }
+    public LocalizedString OptionalUserNameToAvoidProxyNameConflicts { get; }
+    public LocalizedString Authentication { get; }
+    public LocalizedString Method { get; }
+    public LocalizedString ClientId { get; }
+    public LocalizedString ClientSecret { get; }
+    public LocalizedString TokenEndpoint { get; }
+    public LocalizedString Audience { get; }
+    public LocalizedString Scope { get; }
+    public LocalizedString EnterYourAuthenticationToken { get; }
+    public LocalizedString OptionalAudience { get; }
+    public LocalizedString EgOpenidProfile { get; }
+    public LocalizedString TransportSettings { get; }
+    public LocalizedString DialTimeout { get; }
+    public LocalizedString Seconds { get; }
+    public LocalizedString TcpMux { get; }
+    public LocalizedString HeartbeatInterval { get; }
+    public LocalizedString HeartbeatTimeout { get; }
+    public LocalizedString EncryptCommunicationWithTheFrpsServer { get; }
+    public LocalizedString LoggingSection { get; }
+    public LocalizedString MaxDays { get; }
+    public LocalizedString LogTo { get; }
+    public LocalizedString EgConsolePathToLogfile { get; }
+    public LocalizedString StatusSection { get; }
+    public LocalizedString ConfigurationIsValid { get; }
+    public LocalizedString ResetToDefaults { get; }
+    public LocalizedString SaveConfiguration { get; }
+
+    // Deployment
+    public LocalizedString DeploymentMode { get; }
+    public LocalizedString ChooseHowYouWantToDeployAndRunFrpc { get; }
+    public LocalizedString DockerDeployment { get; }
+    public LocalizedString DockerStatus { get; }
+    public LocalizedString CheckDocker { get; }
+    public LocalizedString ContainerName { get; }
+    public LocalizedString DockerImage { get; }
+    public LocalizedString DockerComposePath { get; }
+    public LocalizedString GenerateDockerComposeYml { get; }
+    public LocalizedString StartContainer { get; }
+    public LocalizedString StopContainer { get; }
+    public LocalizedString NativeDeployment { get; }
+    public LocalizedString DeploymentStatus { get; }
+    public LocalizedString CheckDeployment { get; }
+    public LocalizedString BinaryPath { get; }
+    public LocalizedString DownloadFrpc { get; }
+    public LocalizedString DeployNative { get; }
+    public LocalizedString DeploymentInformation { get; }
+    public LocalizedString DockerDeploymentRequiresDocker { get; }
+    public LocalizedString NativeDeploymentDownloadsAndExtracts { get; }
+    public LocalizedString BothMethodsUse { get; }
+
+    // Proxy List
+    public LocalizedString ConfigureAndManageYourFrpcProxyConfigurations { get; }
+    public LocalizedString Loading { get; }
+    public LocalizedString ProxiesCount { get; }
+    public LocalizedString SearchByName { get; }
+    public LocalizedString AllTypes { get; }
+    public LocalizedString NoProxiesConfigured { get; }
+    public LocalizedString CreateYourFirstProxyConfiguration { get; }
+    public LocalizedString CreateProxy { get; }
+    public LocalizedString Local { get; }
+    public LocalizedString RemotePortLabel { get; }
+    public LocalizedString EditProxyToolTip { get; }
+    public LocalizedString DuplicateProxyToolTip { get; }
+    public LocalizedString DeleteProxyToolTip { get; }
+
+    // Proxy Editor
+    public LocalizedString EditProxyWindowTitle { get; }
+    public LocalizedString ProxyConfiguration { get; }
+    public LocalizedString ConfigureYourProxySettingsBelow { get; }
+    public LocalizedString RequiredFieldsAreMarked { get; }
+    public LocalizedString BasicSettings { get; }
+    public LocalizedString LocalSettings { get; }
+    public LocalizedString TheIPOfTheLocalService { get; }
+    public LocalizedString DomainSettings { get; }
+    public LocalizedString CommaSeparatedList { get; }
+    public LocalizedString LeaveEmptyIfUsingCustomDomains { get; }
+    public LocalizedString EgWwwExampleCom { get; }
+    public LocalizedString HTTPAuthentication { get; }
+    public LocalizedString Username { get; }
+    public LocalizedString Password { get; }
+    public LocalizedString SecureTunnelSettings { get; }
+    public LocalizedString MustMatchTheVisitorsSecretKey { get; }
+    public LocalizedString AllowedUsers { get; }
+    public LocalizedString CommaSeparatedListOfAllowedUsers { get; }
+    public LocalizedString LeaveEmptyToAllowAllUsers { get; }
+    public LocalizedString TcpMultiplexerSettings { get; }
+    public LocalizedString MultiplexerName { get; }
+    public LocalizedString NameOfTheMultiplexer { get; }
+    public LocalizedString TheMultiplexerMustBeConfiguredOnTheServer { get; }
+    public LocalizedString TransportOptions { get; }
+    public LocalizedString EncryptTheConnectionBetweenClientAndServer { get; }
+    public LocalizedString CompressDataToReduceBandwidthUsage { get; }
+    public LocalizedString BandwidthLimit { get; }
+    public LocalizedString Eg1Mb256Kb { get; }
+    public LocalizedString LimitBandwidthForThisProxy { get; }
+    public LocalizedString EnableHealthCheck { get; }
+    public LocalizedString MonitorTheHealthOfTheLocalService { get; }
+    public LocalizedString TypeLabel { get; }
+    public LocalizedString TimeoutSeconds { get; }
+    public LocalizedString MaxFailed { get; }
+    public LocalizedString IntervalSeconds { get; }
+    public LocalizedString PathLabel { get; }
+    public LocalizedString HeadersLabel { get; }
+    public LocalizedString HeaderNameValue { get; }
+    public LocalizedString OneHeaderPerLine { get; }
+    public LocalizedString PluginConfiguration { get; }
+    public LocalizedString PluginTypeLabel { get; }
+    public LocalizedString HTTPProxyUrl { get; }
+    public LocalizedString Socks5Url { get; }
+    public LocalizedString StaticFilePluginSettings { get; }
+    public LocalizedString LocalPath { get; }
+    public LocalizedString UrlPrefix { get; }
+    public LocalizedString HttpsToHTTPPluginSettings { get; }
+    public LocalizedString LocalAddress { get; }
+    public LocalizedString CrtPath { get; }
+    public LocalizedString KeyPath { get; }
+    public LocalizedString HTTPToHttpsPluginSettings { get; }
+    public LocalizedString ConfigurationError { get; }
+
+    // Visitor List
+    public LocalizedString VisitorManagement { get; }
+    public LocalizedString ConfigureAndManageSecureTunnelVisitors { get; }
+    public LocalizedString SearchVisitors { get; }
+    public LocalizedString Active { get; }
+    public LocalizedString Total { get; }
+    public LocalizedString LoadingVisitors { get; }
+    public LocalizedString NoVisitorsConfigured { get; }
+    public LocalizedString VisitorsAllowYouToConnect { get; }
+    public LocalizedString CreateYourFirstVisitor { get; }
+    public LocalizedString ServerBindInfo { get; }
+    public LocalizedString BindIPPortInfo { get; }
+    public LocalizedString TransportEnabled { get; }
+
+    // Visitor Editor
+    public LocalizedString EditVisitorWindowTitle { get; }
+    public LocalizedString VisitorConfiguration { get; }
+    public LocalizedString ConfigureAVisitorToConnect { get; }
+    public LocalizedString SecuritySettings { get; }
+    public LocalizedString Required { get; }
+    public LocalizedString MustMatchTheProxySecretKey { get; }
+    public LocalizedString BindSettings { get; }
+    public LocalizedString LocalPortToListenOn { get; }
+    public LocalizedString SpecificIPToBindTo { get; }
+    public LocalizedString OptionalLeaveEmptyToBindToAll { get; }
+
+    // Logs
+    public LocalizedString ViewRealtimeLogsFromFrpc { get; }
+    public LocalizedString Entries { get; }
+    public LocalizedString LogLevelLabel { get; }
+    public LocalizedString AllLevels { get; }
+    public LocalizedString AutoScroll { get; }
+    public LocalizedString ReloadLogsFromBuffer { get; }
+    public LocalizedString ClearAllLogs { get; }
+    public LocalizedString ExportLogsToFile { get; }
+    public LocalizedString NoLogsAvailable { get; }
+    public LocalizedString LogsWillAppearHere { get; }
+
+    // Settings
+    public LocalizedString LanguageAndRegion { get; }
+    public LocalizedString InterfaceLanguage { get; }
+    public LocalizedString ChangesWillTakeEffectAfterRestarting { get; }
+    public LocalizedString SystemIntegration { get; }
+    public LocalizedString StartOnSystemBoot { get; }
+    public LocalizedString AutomaticallyLaunchFrapaClonia { get; }
+    public LocalizedString Appearance { get; }
+    public LocalizedString Theme { get; }
+    public LocalizedString ChooseYourPreferredColorTheme { get; }
+    public LocalizedString Light { get; }
+    public LocalizedString Dark { get; }
+    public LocalizedString SystemDefault { get; }
+    public LocalizedString ApplicationMode { get; }
+    public LocalizedString ConfigurationStoredInAppDir { get; }
+    public LocalizedString ConfigurationLocation { get; }
+    public LocalizedString VersionInfo { get; }
+    public LocalizedString BuildInfo { get; }
+    public LocalizedString NetRuntimeInfo { get; }
+    public LocalizedString CrossPlatformFrpcVisualClient { get; }
+    public LocalizedString SaveSettings { get; }
+
     private LocalizedString Create(string key)
     {
-        var localized = new LocalizedString(_localizationService, key);
-        _strings[key] = localized;
-        return localized;
+        return new LocalizedString(_localizationService, key);
     }
+
 }

@@ -19,7 +19,7 @@
         <Panel Margin="{StaticResource ContentPadding}">
             <StackPanel Spacing="{StaticResource SpacingL}" MaxWidth="650">
                 <!-- Header -->
-                <TextBlock Text="Settings"
+                <TextBlock Text="{DynamicResource Localized_Settings}"
                            FontSize="{StaticResource FontSizeXXXL}"
                            FontWeight="{StaticResource FontWeightSemiBold}"
                            Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
@@ -27,13 +27,13 @@
                 <!-- Language Settings -->
                 <Border Classes="settings-card">
                     <StackPanel Spacing="0">
-                        <TextBlock Text="Language &amp; Region"
+                        <TextBlock Text="{DynamicResource Localized_LanguageAndRegion}"
                                    Classes="section-title"
                                    Margin="{StaticResource ThicknessBottomM}" />
 
                         <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="Interface Language"
+                                       Text="{DynamicResource Localized_InterfaceLanguage}"
                                        Classes="field-label" />
                             <ComboBox Grid.Row="0" Grid.Column="1"
                                       ItemsSource="{Binding AvailableLanguages}"
@@ -47,7 +47,7 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                             <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                                       Text="Changes will take effect after restarting the application"
+                                       Text="{DynamicResource Localized_ChangesWillTakeEffectAfterRestarting}"
                                        Classes="hint" />
                         </Grid>
                     </StackPanel>
@@ -56,7 +56,7 @@
                 <!-- Startup Settings -->
                 <Border Classes="settings-card">
                     <StackPanel Spacing="0">
-                        <TextBlock Text="System Integration"
+                        <TextBlock Text="{DynamicResource Localized_SystemIntegration}"
                                    Classes="section-title"
                                    Margin="{StaticResource ThicknessBottomM}" />
 
@@ -64,10 +64,10 @@
                                   Classes="settings-checkbox"
                                   AutomationProperties.Name="Start on system boot">
                             <StackPanel Spacing="{StaticResource SpacingS}">
-                                <TextBlock Text="Start on system boot"
+                                <TextBlock Text="{DynamicResource Localized_StartOnSystemBoot}"
                                            FontSize="{StaticResource FontSizeM}"
                                            FontWeight="{StaticResource FontWeightMedium}" />
-                                <TextBlock Text="Automatically launch FrapaClonia when you sign in"
+                                <TextBlock Text="{DynamicResource Localized_AutomaticallyLaunchFrapaClonia}"
                                            Classes="hint" />
                             </StackPanel>
                         </CheckBox>
@@ -77,23 +77,23 @@
                 <!-- Appearance Settings -->
                 <Border Classes="settings-card">
                     <StackPanel Spacing="0">
-                        <TextBlock Text="Appearance"
+                        <TextBlock Text="{DynamicResource Localized_Appearance}"
                                    Classes="section-title"
                                    Margin="{StaticResource ThicknessBottomM}" />
 
                         <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="Theme"
+                                       Text="{DynamicResource Localized_Theme}"
                                        Classes="field-label" />
                             <ComboBox Grid.Row="0" Grid.Column="1"
                                       Classes="settings-dropdown"
                                       SelectedIndex="{Binding ThemeIndex}">
-                                <ComboBoxItem>Light</ComboBoxItem>
-                                <ComboBoxItem>Dark</ComboBoxItem>
-                                <ComboBoxItem>System Default</ComboBoxItem>
+                                <ComboBoxItem Content="{DynamicResource Localized_Light}" />
+                                <ComboBoxItem Content="{DynamicResource Localized_Dark}" />
+                                <ComboBoxItem Content="{DynamicResource Localized_SystemDefault}" />
                             </ComboBox>
                             <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                                       Text="Choose your preferred color theme"
+                                       Text="{DynamicResource Localized_ChooseYourPreferredColorTheme}"
                                        Classes="hint" />
                         </Grid>
                     </StackPanel>
@@ -102,7 +102,7 @@
                 <!-- Application Mode -->
                 <Border Classes="settings-card">
                     <StackPanel Spacing="0">
-                        <TextBlock Text="Application Mode"
+                        <TextBlock Text="{DynamicResource Localized_ApplicationMode}"
                                    Classes="section-title"
                                    Margin="{StaticResource ThicknessBottomM}" />
 
@@ -111,10 +111,10 @@
                                   Classes="settings-checkbox"
                                   AutomationProperties.Name="Portable Mode">
                             <StackPanel Spacing="{StaticResource SpacingS}">
-                                <TextBlock Text="Portable Mode"
+                                <TextBlock Text="{DynamicResource Localized_PortableMode}"
                                            FontSize="{StaticResource FontSizeM}"
                                            FontWeight="{StaticResource FontWeightMedium}" />
-                                <TextBlock Text="Configuration stored in application directory (requires portable.txt)"
+                                <TextBlock Text="{DynamicResource Localized_ConfigurationStoredInAppDir}"
                                            Classes="hint" />
                             </StackPanel>
                         </CheckBox>
@@ -124,7 +124,7 @@
                                 Margin="{StaticResource ThicknessTopL}"
                                 Padding="{StaticResource ThicknessTopL}">
                             <StackPanel Spacing="0">
-                                <TextBlock Text="Configuration Location"
+                                <TextBlock Text="{DynamicResource Localized_ConfigurationLocation}"
                                            Classes="field-label" />
                                 <TextBlock Text="{Binding ConfigLocation}"
                                            Classes="readonly-value"
@@ -137,34 +137,34 @@
                 <!-- About Information -->
                 <Border Classes="settings-card">
                     <StackPanel Spacing="0">
-                        <TextBlock Text="About"
+                        <TextBlock Text="{DynamicResource Localized_About}"
                                    Classes="section-title"
                                    Margin="{StaticResource ThicknessBottomM}" />
 
                         <Grid ColumnDefinitions="120,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="Version"
+                                       Text="{DynamicResource Localized_VersionInfo}"
                                        Classes="field-label" />
                             <TextBlock Grid.Row="0" Grid.Column="1"
                                        Text="0.1.0"
                                        VerticalAlignment="Center" />
 
                             <TextBlock Grid.Row="1" Grid.Column="0"
-                                       Text="Build"
+                                       Text="{DynamicResource Localized_BuildInfo}"
                                        Classes="field-label" />
                             <TextBlock Grid.Row="1" Grid.Column="1"
                                        Text="Development"
                                        VerticalAlignment="Center" />
 
                             <TextBlock Grid.Row="2" Grid.Column="0"
-                                       Text=".NET Runtime"
+                                       Text="{DynamicResource Localized_NetRuntimeInfo}"
                                        Classes="field-label" />
                             <TextBlock Grid.Row="2" Grid.Column="1"
                                        Text="10.0"
                                        VerticalAlignment="Center" />
 
                             <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
-                                       Text="A cross-platform frpc visual client built with Avalonia UI"
+                                       Text="{DynamicResource Localized_CrossPlatformFrpcVisualClient}"
                                        Classes="hint"
                                        Margin="{StaticResource ThicknessTopM}" />
                         </Grid>
@@ -177,7 +177,7 @@
                             Spacing="{StaticResource SpacingM}"
                             Margin="{StaticResource ThicknessTopS}">
                     <Button Command="{Binding ResetCommand}"
-                            Content="Reset to Defaults"
+                            Content="{DynamicResource Localized_ResetToDefaults}"
                             Classes="action-button"
                             IsEnabled="{Binding !IsSaving}"
                             AutomationProperties.Name="Reset to Defaults" />
@@ -187,7 +187,7 @@
                             IsEnabled="{Binding !IsSaving}"
                             AutomationProperties.Name="Save Settings">
                         <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-                            <TextBlock Text="Save Settings" />
+                            <TextBlock Text="{DynamicResource Localized_SaveSettings}" />
                             <ProgressBar IsIndeterminate="True"
                                          Width="16"
                                          Height="16"

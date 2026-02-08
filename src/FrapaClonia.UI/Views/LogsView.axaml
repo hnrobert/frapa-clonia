@@ -26,9 +26,9 @@
         <Border Grid.Row="0" Classes="page-header">
             <Grid ColumnDefinitions="*,Auto">
                 <StackPanel Grid.Column="0" Spacing="{StaticResource SpacingS}">
-                    <TextBlock Text="Logs"
+                    <TextBlock Text="{DynamicResource Localized_Logs}"
                                Classes="page-title" />
-                    <TextBlock Text="View real-time logs from frpc process"
+                    <TextBlock Text="{DynamicResource Localized_ViewRealtimeLogsFromFrpc}"
                                Classes="page-subtitle" />
                 </StackPanel>
 
@@ -37,10 +37,11 @@
                             Orientation="Horizontal"
                             Spacing="{StaticResource SpacingM}"
                             VerticalAlignment="Center">
-                    <TextBlock Text="{Binding LogEntries.Count, StringFormat='{}{0} entries'}"
-                               FontSize="{StaticResource FontSizeM}"
-                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                               VerticalAlignment="Center" />
+                    <TextBlock>
+                        <Run Text="{Binding LogEntries.Count}" />
+                        <Run Text=" " />
+                        <Run Text="{DynamicResource Localized_Entries}" />
+                    </TextBlock>
                 </StackPanel>
             </Grid>
         </Border>
@@ -50,15 +51,16 @@
             <Grid ColumnDefinitions="*,Auto">
                 <!-- Left: Filters -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
-                    <TextBlock Text="Log Level:"
-                               Classes="field-label" />
+                    <TextBlock Classes="field-label">
+                        <Run Text="{DynamicResource Localized_LogLevelLabel}" /><Run Text=":" />
+                    </TextBlock>
                     <ComboBox ItemsSource="{Binding LogLevels}"
                               SelectedItem="{Binding SelectedLogLevel}"
-                              PlaceholderText="All Levels"
+                              PlaceholderText="{DynamicResource Localized_AllLevels}"
                               Classes="filter-box" />
 
                     <CheckBox IsChecked="{Binding IsFollowEnabled}"
-                              Content="Auto-scroll"
+                              Content="{DynamicResource Localized_AutoScroll}"
                               Margin="{StaticResource ThicknessLeftL}"
                               VerticalAlignment="Center" />
                 </StackPanel>
@@ -68,16 +70,16 @@
                             Orientation="Horizontal"
                             Spacing="{StaticResource SpacingS}">
                     <Button Command="{Binding RefreshCommand}"
-                            Content="Refresh"
-                            ToolTip.Tip="Reload logs from buffer"
+                            Content="{DynamicResource Localized_Refresh}"
+                            ToolTip.Tip="{DynamicResource Localized_ReloadLogsFromBuffer}"
                             IsEnabled="{Binding !IsClearing}" />
                     <Button Command="{Binding ClearLogsCommand}"
-                            Content="Clear"
-                            ToolTip.Tip="Clear all logs"
+                            Content="{DynamicResource Localized_ClearAll}"
+                            ToolTip.Tip="{DynamicResource Localized_ClearAllLogs}"
                             IsEnabled="{Binding !IsClearing}" />
                     <Button Command="{Binding ExportLogsCommand}"
-                            Content="Export"
-                            ToolTip.Tip="Export logs to file" />
+                            Content="{DynamicResource Localized_Export}"
+                            ToolTip.Tip="{DynamicResource Localized_ExportLogsToFile}" />
                 </StackPanel>
             </Grid>
         </Border>
@@ -96,12 +98,12 @@
                                    FontSize="48"
                                    Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
                                    HorizontalAlignment="Center" />
-                        <TextBlock Text="No logs available"
+                        <TextBlock Text="{DynamicResource Localized_NoLogsAvailable}"
                                    FontSize="{StaticResource FontSizeXL}"
                                    FontWeight="{StaticResource FontWeightSemiBold}"
                                    Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
                                    HorizontalAlignment="Center" />
-                        <TextBlock Text="Logs will appear here once frpc is started"
+                        <TextBlock Text="{DynamicResource Localized_LogsWillAppearHere}"
                                    FontSize="{StaticResource FontSizeM}"
                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                    HorizontalAlignment="Center" />

@@ -25,7 +25,7 @@
         <Panel Margin="{StaticResource ContentPadding}">
             <StackPanel Spacing="{StaticResource SpacingL}" MaxWidth="800">
                 <!-- Header -->
-                <TextBlock Text="Deployment"
+                <TextBlock Text="{DynamicResource Localized_Deployment}"
                            Classes="page-title" />
 
                 <!-- Status Bar -->
@@ -48,7 +48,7 @@
                 <!-- Deployment Mode Selection -->
                 <Border Classes="settings-card">
                     <StackPanel Spacing="0">
-                        <TextBlock Text="Deployment Mode"
+                        <TextBlock Text="{DynamicResource Localized_DeploymentMode}"
                                    Classes="section-title"
                                    Margin="{StaticResource ThicknessBottomM}" />
 
@@ -63,7 +63,7 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
 
-                        <TextBlock Text="Choose how you want to deploy and run frpc"
+                        <TextBlock Text="{DynamicResource Localized_ChooseHowYouWantToDeployAndRunFrpc}"
                                    Classes="hint"
                                    Margin="{StaticResource ThicknessTopS}" />
                     </StackPanel>
@@ -72,12 +72,12 @@
                 <!-- Docker Deployment -->
                 <Border Classes="settings-card">
                     <StackPanel Spacing="{StaticResource SpacingM}">
-                        <TextBlock Text="Docker Deployment"
+                        <TextBlock Text="{DynamicResource Localized_DockerDeployment}"
                                    Classes="section-title" />
 
                         <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="Docker Status"
+                                       Text="{DynamicResource Localized_DockerStatus}"
                                        Classes="field-label" />
                             <StackPanel Grid.Row="0" Grid.Column="1"
                                         Orientation="Horizontal"
@@ -85,13 +85,13 @@
                                 <TextBlock Text="{Binding IsDockerAvailable, Converter={StaticResource BoolToAvailableStringConverter}}"
                                            VerticalAlignment="Center" />
                                 <Button Command="{Binding CheckDockerCommand}"
-                                        Content="Check Docker"
+                                        Content="{DynamicResource Localized_CheckDocker}"
                                         IsEnabled="{Binding !IsDockerChecking}"
                                         Classes="action-button" />
                             </StackPanel>
 
                             <TextBlock Grid.Row="1" Grid.Column="0"
-                                       Text="Container Name"
+                                       Text="{DynamicResource Localized_ContainerName}"
                                        Classes="field-label" />
                             <TextBox Grid.Row="1" Grid.Column="1"
                                      Text="{Binding DockerContainerName}"
@@ -99,13 +99,13 @@
                                      MinWidth="200" />
                         </Grid>
 
-                        <TextBlock Text="Docker Image"
+                        <TextBlock Text="{DynamicResource Localized_DockerImage}"
                                    Classes="field-label"
                                    Margin="{StaticResource ThicknessTopS}" />
                         <TextBox Text="{Binding DockerImageName}"
                                  Watermark="fatedier/frpc:latest" />
 
-                        <TextBlock Text="Docker Compose Path"
+                        <TextBlock Text="{DynamicResource Localized_DockerComposePath}"
                                    Classes="field-label"
                                    Margin="{StaticResource ThicknessTopS}" />
                         <TextBox Text="{Binding DockerComposePath}"
@@ -116,15 +116,15 @@
                                     Spacing="{StaticResource SpacingM}"
                                     Margin="{StaticResource ThicknessTopS}">
                             <Button Command="{Binding GenerateDockerComposeCommand}"
-                                    Content="Generate docker-compose.yml"
+                                    Content="{DynamicResource Localized_GenerateDockerComposeYml}"
                                     IsEnabled="{Binding !IsBusy}"
                                     Classes="action-button" />
                             <Button Command="{Binding StartDockerCommand}"
-                                    Content="Start Container"
+                                    Content="{DynamicResource Localized_StartContainer}"
                                     IsEnabled="{Binding !IsBusy}"
                                     Classes="action-button" />
                             <Button Command="{Binding StopDockerCommand}"
-                                    Content="Stop Container"
+                                    Content="{DynamicResource Localized_StopContainer}"
                                     IsEnabled="{Binding !IsBusy}"
                                     Classes="action-button" />
                         </StackPanel>
@@ -134,12 +134,12 @@
                 <!-- Native Deployment -->
                 <Border Classes="settings-card">
                     <StackPanel Spacing="{StaticResource SpacingM}">
-                        <TextBlock Text="Native Deployment"
+                        <TextBlock Text="{DynamicResource Localized_NativeDeployment}"
                                    Classes="section-title" />
 
                         <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="Deployment Status"
+                                       Text="{DynamicResource Localized_DeploymentStatus}"
                                        Classes="field-label" />
                             <StackPanel Grid.Row="0" Grid.Column="1"
                                         Orientation="Horizontal"
@@ -147,13 +147,13 @@
                                 <TextBlock Text="{Binding IsNativeDeployed, Converter={StaticResource BoolToDeployedStringConverter}}"
                                            VerticalAlignment="Center" />
                                 <Button Command="{Binding CheckNativeCommand}"
-                                        Content="Check Deployment"
+                                        Content="{DynamicResource Localized_CheckDeployment}"
                                         IsEnabled="{Binding !IsNativeChecking}"
                                         Classes="action-button" />
                             </StackPanel>
 
                             <TextBlock Grid.Row="1" Grid.Column="0"
-                                       Text="Binary Path"
+                                       Text="{DynamicResource Localized_BinaryPath}"
                                        Classes="field-label" />
                             <TextBlock Grid.Row="1" Grid.Column="1"
                                        Text="{Binding DeployedBinaryPath}"
@@ -167,11 +167,11 @@
                                     Spacing="{StaticResource SpacingM}"
                                     Margin="{StaticResource ThicknessTopS}">
                             <Button Command="{Binding DownloadFrpcCommand}"
-                                    Content="Download frpc"
+                                    Content="{DynamicResource Localized_DownloadFrpc}"
                                     IsEnabled="{Binding !IsBusy}"
                                     Classes="action-button" />
                             <Button Command="{Binding DeployNativeCommand}"
-                                    Content="Deploy Native"
+                                    Content="{DynamicResource Localized_DeployNative}"
                                     IsEnabled="{Binding !IsBusy}"
                                     Classes="action-button" />
                         </StackPanel>
@@ -181,14 +181,14 @@
                 <!-- Information -->
                 <Border Classes="settings-card">
                     <StackPanel Spacing="{StaticResource SpacingS}">
-                        <TextBlock Text="Deployment Information"
+                        <TextBlock Text="{DynamicResource Localized_DeploymentInformation}"
                                    Classes="section-title" />
 
-                        <TextBlock Text="• Docker deployment requires Docker and Docker Compose to be installed"
+                        <TextBlock Text="{DynamicResource Localized_DockerDeploymentRequiresDocker}"
                                    Classes="hint" />
-                        <TextBlock Text="• Native deployment downloads and extracts the frpc binary for your platform"
+                        <TextBlock Text="{DynamicResource Localized_NativeDeploymentDownloadsAndExtracts}"
                                    Classes="hint" />
-                        <TextBlock Text="• Both methods use the same configuration file from the Server settings"
+                        <TextBlock Text="{DynamicResource Localized_BothMethodsUse}"
                                    Classes="hint" />
                     </StackPanel>
                 </Border>
