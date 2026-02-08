@@ -12,20 +12,7 @@
     </Design.DataContext>
 
     <UserControl.Styles>
-        <Style Selector="Button.action-button">
-            <Setter Property="Margin" Value="{StaticResource ThicknessRightS}" />
-        </Style>
-
-        <!-- Ensure all input controls are vertically centered -->
-        <Style Selector="TextBox">
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-        <Style Selector="ComboBox">
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-        <Style Selector="NumericUpDown">
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
+        <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
     </UserControl.Styles>
 
     <ScrollViewer HorizontalScrollBarVisibility="Disabled">

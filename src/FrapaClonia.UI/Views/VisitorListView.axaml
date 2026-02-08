@@ -19,18 +19,7 @@
     </UserControl.Resources>
 
     <UserControl.Styles>
-        <!-- Override typeBadge for visitor list -->
-        <Style Selector="Border.typeBadge">
-            <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusS}" />
-            <Setter Property="Padding" Value="6,3" />
-            <Setter Property="MinWidth" Value="45" />
-        </Style>
-
-        <Style Selector="Border.typeBadge TextBlock">
-            <Setter Property="FontSize" Value="{StaticResource FontSizeS}" />
-            <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
-            <Setter Property="Foreground" Value="White" />
-        </Style>
+        <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
     </UserControl.Styles>
 
     <Grid RowDefinitions="Auto,Auto,*">
