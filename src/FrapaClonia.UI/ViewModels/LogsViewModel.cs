@@ -65,6 +65,7 @@ public partial class LogsViewModel : ObservableObject
         UpdateStatus();
     }
 
+    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnSelectedLogLevelChanged(string value)
     {
         // Filter logs based on selected level
@@ -129,7 +130,7 @@ public partial class LogsViewModel : ObservableObject
         _logger.LogInformation("Log follow {State}", IsFollowEnabled ? "enabled" : "disabled");
     }
 
-    private async Task ClearLogsAsync()
+    private Task ClearLogsAsync()
     {
         try
         {
@@ -145,6 +146,8 @@ public partial class LogsViewModel : ObservableObject
         {
             IsClearing = false;
         }
+
+        return Task.CompletedTask;
     }
 
     private async Task ExportLogsAsync()

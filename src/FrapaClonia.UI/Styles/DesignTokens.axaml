@@ -39,6 +39,7 @@
 
     <Thickness x:Key="ThicknessLeftS">4,0,0,0</Thickness>
     <Thickness x:Key="ThicknessLeftM">8,0,0,0</Thickness>
+    <Thickness x:Key="ThicknessLeftL">16,0,0,0</Thickness>
 
     <Thickness x:Key="ThicknessRightS">0,0,4,0</Thickness>
     <Thickness x:Key="ThicknessRightM">0,0,8,0</Thickness>

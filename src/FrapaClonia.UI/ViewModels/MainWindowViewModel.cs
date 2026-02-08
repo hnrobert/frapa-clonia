@@ -11,6 +11,7 @@ namespace FrapaClonia.UI.ViewModels;
 /// </summary>
 public partial class MainWindowViewModel : ObservableObject
 {
+    // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
     private readonly ILogger<MainWindowViewModel> _logger;
     private readonly NavigationService _navigation;
 

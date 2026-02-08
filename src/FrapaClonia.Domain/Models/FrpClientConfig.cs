@@ -144,6 +144,8 @@ public class ClientTransportConfig
     public int HeartbeatInterval { get; set; } = 30;
     public int HeartbeatTimeout { get; set; } = 90;
     public TLSClientConfig? Tls { get; set; }
+    public bool UseEncryption { get; set; }
+    public bool UseCompression { get; set; }
 }
 
 /// <summary>

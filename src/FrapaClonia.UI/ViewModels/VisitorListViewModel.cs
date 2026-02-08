@@ -44,9 +44,8 @@ public partial class VisitorListViewModel : ObservableObject
     private int _activeCount;
 
     public IRelayCommand AddVisitorCommand { get; }
-    private IRelayCommand EditVisitorCommand { get; }
-    private IRelayCommand DeleteVisitorCommand { get; }
-    // ReSharper disable once UnusedAutoPropertyAccessor.Global
+    public IRelayCommand EditVisitorCommand { get; }
+    public IRelayCommand DeleteVisitorCommand { get; }
     public IRelayCommand DuplicateVisitorCommand { get; }
     public IRelayCommand RefreshCommand { get; }
 
