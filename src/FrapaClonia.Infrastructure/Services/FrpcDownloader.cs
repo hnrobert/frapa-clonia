@@ -12,6 +12,7 @@ namespace FrapaClonia.Infrastructure.Services;
 public class FrpcDownloader(ILogger<FrpcDownloader> logger) : IFrpcDownloader
 {
     private static readonly HttpClient HttpClient = new();
+    private static readonly HttpClient HTTPClient = new();
     private readonly GitHubClient _gitHubClient = new(new ProductHeaderValue("FrapaClonia"));
 
     public async Task<IReadOnlyList<FrpRelease>> GetAvailableVersionsAsync(CancellationToken cancellationToken = default)
@@ -145,8 +146,7 @@ public class FrpcDownloader(ILogger<FrpcDownloader> logger) : IFrpcDownloader
             var filePath = Path.Combine(targetDirectory, fileName);
 
             // Download the file
-            using var httpClient = new HttpClient();
-            var response = await httpClient.GetAsync(mirrorUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            var response = await HTTPClient.GetAsync(mirrorUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             response.EnsureSuccessStatusCode();
 
             var totalBytes = response.Content.Headers.ContentLength ?? 0;

@@ -4,7 +4,6 @@ using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
-using System.IO;
 using System.Text.Json;
 
 namespace FrapaClonia.UI.ViewModels;
@@ -23,12 +22,6 @@ public partial class SettingsViewModel : ObservableObject
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "FrapaClonia",
         "settings.json");
-
-    private readonly JsonSerializerOptions _jsonOptions = new()
-    {
-        WriteIndented = true,
-        PropertyNameCaseInsensitive = true
-    };
 
     [ObservableProperty]
     private LanguageOption? _selectedLanguage;
@@ -119,7 +112,7 @@ public partial class SettingsViewModel : ObservableObject
                 try
                 {
                     var json = await File.ReadAllTextAsync(_settingsFile);
-                    settings = JsonSerializer.Deserialize<AppSettings>(json, _jsonOptions);
+                    settings = JsonSerializer.Deserialize(json, AppSettingsContext.Default.AppSettings);
                 }
                 catch (Exception ex)
                 {
@@ -196,7 +189,7 @@ public partial class SettingsViewModel : ObservableObject
                 Directory.CreateDirectory(settingsDir);
             }
 
-            var json = JsonSerializer.Serialize(settings, _jsonOptions);
+            var json = JsonSerializer.Serialize(settings, AppSettingsContext.Default.AppSettings);
             await File.WriteAllTextAsync(_settingsFile, json);
 
             _logger.LogInformation("Settings saved to: {SettingsFile}", _settingsFile);

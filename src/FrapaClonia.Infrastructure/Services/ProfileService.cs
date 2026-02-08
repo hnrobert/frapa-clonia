@@ -1,6 +1,5 @@
 using FrapaClonia.Core.Interfaces;
 using Microsoft.Extensions.Logging;
-using System.IO;
 using System.Text.Json;
 
 namespace FrapaClonia.Infrastructure.Services;
@@ -19,12 +18,6 @@ public class ProfileService(ILogger<ProfileService> logger) : IProfileService
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "FrapaClonia",
         "active_profile.txt");
-
-    private readonly JsonSerializerOptions _jsonOptions = new()
-    {
-        WriteIndented = true,
-        PropertyNameCaseInsensitive = true
-    };
 
     public async Task<IReadOnlyList<ProfileInfo>> GetProfilesAsync(CancellationToken cancellationToken = default)
     {
@@ -75,7 +68,7 @@ public class ProfileService(ILogger<ProfileService> logger) : IProfileService
             }
 
             var json = await File.ReadAllTextAsync(profilePath, cancellationToken);
-            var profile = JsonSerializer.Deserialize<Profile>(json, _jsonOptions);
+            var profile = JsonSerializer.Deserialize(json, ProfileContext.Default.Profile);
 
             logger.LogInformation("Loaded profile: {ProfileName}", profileName);
             return profile;
@@ -103,11 +96,11 @@ public class ProfileService(ILogger<ProfileService> logger) : IProfileService
             {
                 Name = profileName,
                 Description = profile.Description,
-                ConfigPath = profile.ConfigPath ?? "",
-                Metadata = profile.Metadata ?? new Dictionary<string, string>()
+                ConfigPath = profile.ConfigPath,
+                Metadata = profile.Metadata
             };
 
-            var json = JsonSerializer.Serialize(profileToSave, _jsonOptions);
+            var json = JsonSerializer.Serialize(profileToSave, ProfileContext.Default.Profile);
             await File.WriteAllTextAsync(profilePath, json, cancellationToken);
 
             logger.LogInformation("Saved profile: {ProfileName}", profileName);

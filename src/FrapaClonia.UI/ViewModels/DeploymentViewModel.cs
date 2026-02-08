@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using System.IO;
 
 namespace FrapaClonia.UI.ViewModels;
 
