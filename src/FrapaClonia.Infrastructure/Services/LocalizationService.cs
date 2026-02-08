@@ -25,6 +25,7 @@ public class LocalizationService : ILocalizationService
         [
             new("en"), // English
             new("zh-CN"), // Chinese Simplified
+            new("zh-TW"), // Chinese Traditional
             new("ja"), // Japanese
             new("ko"), // Korean
             new("es"), // Spanish
@@ -208,6 +209,68 @@ public class LocalizationService : ILocalizationService
             ["Language"] = "语言",
             ["AutoStart"] = "开机启动",
             ["PortableMode"] = "便携模式",
+            ["QuickShare"] = "快速分享"
+        };
+
+        // Chinese Traditional (zh-TW)
+        _localizationData["zh-TW"] = new Dictionary<string, string>
+        {
+            ["AppTitle"] = "FrapaClonia",
+            ["Dashboard"] = "儀表板",
+            ["ServerConfig"] = "伺服器設定",
+            ["ProxyManagement"] = "代理管理",
+            ["Deployment"] = "Frpc 部署",
+            ["Settings"] = "設定",
+            ["Logs"] = "日誌",
+            ["About"] = "關於",
+            ["StartFrpc"] = "啟動 Frpc",
+            ["StopFrpc"] = "停止 Frpc",
+            ["RestartFrpc"] = "重新啟動 Frpc",
+            ["AddProxy"] = "新增代理",
+            ["EditProxy"] = "編輯代理",
+            ["DeleteProxy"] = "刪除代理",
+            ["DuplicateProxy"] = "複製代理",
+            ["ClearAll"] = "清空全部",
+            ["Save"] = "儲存",
+            ["Cancel"] = "取消",
+            ["Refresh"] = "重新整理",
+            ["Export"] = "匯出",
+            ["Import"] = "匯入",
+            ["ProxyName"] = "代理名稱",
+            ["ProxyType"] = "代理類型",
+            ["LocalIP"] = "本地 IP",
+            ["LocalPort"] = "本地埠",
+            ["RemotePort"] = "遠端埠",
+            ["CustomDomains"] = "自訂網域",
+            ["Subdomain"] = "子網域",
+            ["SecretKey"] = "金鑰",
+            ["ServerAddress"] = "伺服器位址",
+            ["ServerPort"] = "伺服器埠",
+            ["Token"] = "權杖",
+            ["OIDC"] = "OIDC",
+            ["TransportProtocol"] = "通訊協定",
+            ["EnableTLS"] = "啟用 TLS",
+            ["HealthCheck"] = "健康檢查",
+            ["Plugin"] = "外掛程式",
+            ["EnableEncryption"] = "使用加密",
+            ["EnableCompression"] = "使用壓縮",
+            ["FrpcStatus"] = "Frpc 狀態",
+            ["FrpcRunning"] = "Frpc 正在執行",
+            ["FrpcNotRunning"] = "Frpc 未執行",
+            ["ProcessId"] = "程序 ID",
+            ["Configuration"] = "設定",
+            ["Visitors"] = "訪客",
+            ["AddVisitor"] = "新增訪客",
+            ["EditVisitor"] = "編輯訪客",
+            ["DeleteVisitor"] = "刪除訪客",
+            ["VisitorName"] = "訪客名稱",
+            ["VisitorType"] = "訪客類型",
+            ["ServerName"] = "伺服器名稱",
+            ["BindAddr"] = "綁定位址",
+            ["BindPort"] = "綁定埠",
+            ["Language"] = "語言",
+            ["AutoStart"] = "開機啟動",
+            ["PortableMode"] = "便攜模式",
             ["QuickShare"] = "快速分享"
         };
 
