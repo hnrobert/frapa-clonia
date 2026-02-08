@@ -232,7 +232,7 @@
                         </Button>
 
                         <!-- About -->
-                        <Button HorizontalAlignment="Stretch"
+                        <!-- <Button HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Left"
                                 Padding="16"
                                 Background="Transparent"
@@ -250,7 +250,7 @@
                                       Margin="0,0,12,0" />
                                 <TextBlock Grid.Column="1" Text="About" />
                             </Grid>
-                        </Button>
+                        </Button> -->
                     </StackPanel>
 
                     <!-- Version Info -->

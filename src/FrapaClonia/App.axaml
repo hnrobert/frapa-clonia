@@ -21,8 +21,8 @@
             <converters:EmptyCollectionConverter x:Key="EmptyCollectionConverter" />
 
             <!-- App Theme Colors -->
-            <SolidColorBrush x:Key="AppPrimaryBrush" Color="#6366F1" />
-            <SolidColorBrush x:Key="AppPrimaryHoverBrush" Color="#4F46E5" />
+            <SolidColorBrush x:Key="AppPrimaryBrush" Color="#3B82F6" />
+            <SolidColorBrush x:Key="AppPrimaryHoverBrush" Color="#2563EB" />
             <SolidColorBrush x:Key="AppSecondaryBrush" Color="#64748B" />
             <SolidColorBrush x:Key="AppSuccessBrush" Color="#10B981" />
             <SolidColorBrush x:Key="AppWarningBrush" Color="#F59E0B" />
@@ -33,6 +33,7 @@
 
     <Application.Styles>
         <FluentTheme />
+        <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
     </Application.Styles>
 
 </Application>

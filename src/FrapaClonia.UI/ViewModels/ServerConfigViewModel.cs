@@ -326,7 +326,7 @@ public partial class ServerConfigViewModel : ObservableObject
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error saving configuration");
-            ValidationError = "Failed to save configuration";
+            ValidationError = "Failed to save configuration: " + ex.Message;
         }
         finally
         {

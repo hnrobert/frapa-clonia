@@ -12,33 +12,19 @@
     </Design.DataContext>
 
     <UserControl.Styles>
-        <Style Selector="TextBlock.sectionTitle">
-            <Setter Property="FontSize" Value="{StaticResource FontSizeL}" />
-            <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-        </Style>
-
-        <Style Selector="TextBlock.field-label">
-            <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
-            <Setter Property="VerticalAlignment" Value="Top" />
-        </Style>
-
-        <Style Selector="TextBlock.hint">
-            <Setter Property="FontSize" Value="{StaticResource FontSizeS}" />
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
-        </Style>
-
-        <Style Selector="Border.card">
-            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusL}" />
-            <Setter Property="Padding" Value="{StaticResource ThicknessL}" />
-            <Setter Property="Margin" Value="{StaticResource ThicknessBottomL}" />
-        </Style>
-
         <Style Selector="Button.action-button">
             <Setter Property="Margin" Value="{StaticResource ThicknessRightS}" />
+        </Style>
+
+        <!-- Ensure all input controls are vertically centered -->
+        <Style Selector="TextBox">
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="ComboBox">
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="NumericUpDown">
+            <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
     </UserControl.Styles>
 
@@ -48,12 +34,10 @@
 
                 <!-- Header -->
                 <TextBlock Text="Server Configuration"
-                           FontSize="{StaticResource FontSizeXXXL}"
-                           FontWeight="{StaticResource FontWeightSemiBold}"
-                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                           Classes="page-title" />
 
                 <!-- Server Connection Section -->
-                <Border Classes="card">
+                <Border Classes="settings-card">
                     <StackPanel Spacing="{StaticResource SpacingM}">
                         <TextBlock Text="Connection Settings"
                                    Classes="sectionTitle" />
