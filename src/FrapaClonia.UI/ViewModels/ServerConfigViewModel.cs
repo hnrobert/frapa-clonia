@@ -19,7 +19,9 @@ public partial class ServerConfigViewModel : ObservableObject
 
     [ObservableProperty] private string _serverAddr = "";
 
-    [ObservableProperty] private int _serverPort = 7000;
+    [ObservableProperty] private string _serverPortText = "7000";
+
+    private int ServerPort => int.TryParse(ServerPortText, out var port) ? port : 7000;
 
     [ObservableProperty] private string _user = "";
 
@@ -41,13 +43,19 @@ public partial class ServerConfigViewModel : ObservableObject
     // Transport properties
     [ObservableProperty] private string _transportProtocol = "tcp"; // tcp, kcp, quic, websocket, wss
 
-    [ObservableProperty] private int _dialServerTimeout = 10;
+    [ObservableProperty] private string _dialServerTimeoutText = "10";
+
+    private int DialServerTimeout => int.TryParse(DialServerTimeoutText, out var timeout) ? timeout : 10;
 
     [ObservableProperty] private bool _tcpMux = true;
 
-    [ObservableProperty] private int _heartbeatInterval = 30;
+    [ObservableProperty] private string _heartbeatIntervalText = "30";
 
-    [ObservableProperty] private int _heartbeatTimeout = 90;
+    private int HeartbeatInterval => int.TryParse(HeartbeatIntervalText, out var interval) ? interval : 30;
+
+    [ObservableProperty] private string _heartbeatTimeoutText = "90";
+
+    private int HeartbeatTimeout => int.TryParse(HeartbeatTimeoutText, out var timeout) ? timeout : 90;
 
     [ObservableProperty] private bool _tlsEnabled = true;
 
@@ -59,7 +67,9 @@ public partial class ServerConfigViewModel : ObservableObject
 
     [ObservableProperty] private string? _logTo;
 
-    [ObservableProperty] private int _logMaxDays = 3;
+    [ObservableProperty] private string _logMaxDaysText = "3";
+
+    private int LogMaxDays => int.TryParse(LogMaxDaysText, out var days) ? days : 3;
 
     // Validation
     [ObservableProperty] private bool _isValid = true;
@@ -175,7 +185,7 @@ public partial class ServerConfigViewModel : ObservableObject
         _ = ValidateAsync();
     }
 
-    partial void OnServerPortChanged(int value)
+    partial void OnServerPortTextChanged(string value)
     {
         _ = ValidateAsync();
     }
@@ -225,7 +235,7 @@ public partial class ServerConfigViewModel : ObservableObject
 
                     // Load server settings
                     ServerAddr = cc.ServerAddr ?? "";
-                    ServerPort = cc.ServerPort;
+                    ServerPortText = cc.ServerPort.ToString();
                     User = cc.User ?? "";
 
                     // Load auth
@@ -244,10 +254,10 @@ public partial class ServerConfigViewModel : ObservableObject
                     if (cc.Transport != null)
                     {
                         TransportProtocol = cc.Transport.Protocol;
-                        DialServerTimeout = cc.Transport.DialServerTimeout;
+                        DialServerTimeoutText = cc.Transport.DialServerTimeout.ToString();
                         TcpMux = cc.Transport.TcpMux;
-                        HeartbeatInterval = cc.Transport.HeartbeatInterval;
-                        HeartbeatTimeout = cc.Transport.HeartbeatTimeout;
+                        HeartbeatIntervalText = cc.Transport.HeartbeatInterval.ToString();
+                        HeartbeatTimeoutText = cc.Transport.HeartbeatTimeout.ToString();
                         TlsEnabled = cc.Transport.Tls?.Enable ?? true;
                     }
 
@@ -259,7 +269,7 @@ public partial class ServerConfigViewModel : ObservableObject
                     {
                         LogLevel = cc.Log.Level;
                         LogTo = cc.Log.To;
-                        LogMaxDays = cc.Log.MaxDays;
+                        LogMaxDaysText = cc.Log.MaxDays.ToString();
                     }
 
                     _logger?.LogInformation("Configuration loaded successfully");
@@ -269,11 +279,14 @@ public partial class ServerConfigViewModel : ObservableObject
                     _logger?.LogInformation("Config is null or CommonConfig is null, using defaults");
                     // Set default values
                     ServerAddr = "";
-                    ServerPort = 7000;
+                    ServerPortText = "7000";
                     User = "";
                     AuthMethod = "token";
                     Token = "";
                     TransportProtocol = "tcp";
+                    DialServerTimeoutText = "10";
+                    HeartbeatIntervalText = "30";
+                    HeartbeatTimeoutText = "90";
                     TlsEnabled = true;
                 }
             }
