@@ -44,7 +44,8 @@ public class LocalizationService : ILocalizationService
         // If no saved culture, auto-detect system language
         var systemCulture = savedCulture ?? CultureInfo.CurrentUICulture;
         var supportedCulture = SupportedCultures
-            .FirstOrDefault(c => c.Name == systemCulture.Name || c.Name.StartsWith(systemCulture.TwoLetterISOLanguageName));
+            .FirstOrDefault(c =>
+                c.Name == systemCulture.Name || c.Name.StartsWith(systemCulture.TwoLetterISOLanguageName));
 
         CurrentCulture = supportedCulture ?? SupportedCultures[0];
 
@@ -102,6 +103,7 @@ public class LocalizationService : ILocalizationService
         {
             _logger.LogWarning(ex, "Failed to load saved language from settings");
         }
+
         return null;
     }
 
@@ -268,8 +270,10 @@ public class LocalizationService : ILocalizationService
             ["DownloadFrpc"] = "Download frpc",
             ["DeployNative"] = "Deploy Native",
             ["DeploymentInformation"] = "Deployment Information",
-            ["DockerDeploymentRequiresDocker"] = "• Docker deployment requires Docker and Docker Compose to be installed",
-            ["NativeDeploymentDownloadsAndExtracts"] = "• Native deployment downloads and extracts the frpc binary for your platform",
+            ["DockerDeploymentRequiresDocker"] =
+                "• Docker deployment requires Docker and Docker Compose to be installed",
+            ["NativeDeploymentDownloadsAndExtracts"] =
+                "• Native deployment downloads and extracts the frpc binary for your platform",
             ["BothMethodsUse"] = "• Both methods use the same configuration file from the Server settings",
 
             // Proxy List
@@ -290,7 +294,8 @@ public class LocalizationService : ILocalizationService
             // Proxy Editor
             ["EditProxyWindowTitle"] = "Edit Proxy",
             ["ProxyConfiguration"] = "Proxy Configuration",
-            ["ConfigureYourProxySettingsBelow"] = "Configure your proxy settings below. Required fields are marked with an asterisk.",
+            ["ConfigureYourProxySettingsBelow"] =
+                "Configure your proxy settings below. Required fields are marked with an asterisk.",
             ["RequiredFieldsAreMarked"] = "Required fields are marked with an asterisk",
             ["BasicSettings"] = "Basic Settings",
             ["LocalSettings"] = "Local Settings",
@@ -382,7 +387,7 @@ public class LocalizationService : ILocalizationService
             // Settings
             ["LanguageAndRegion"] = "Language & Region",
             ["InterfaceLanguage"] = "Interface Language",
-            ["ChangesWillTakeEffectAfterRestarting"] = "Changes will take effect after restarting the application",
+            ["ChangesWillTakeEffectImmediately"] = "Changes will take effect immediately",
             ["SystemIntegration"] = "System Integration",
             ["StartOnSystemBoot"] = "Start on system boot",
             ["AutomaticallyLaunchFrapaClonia"] = "Automatically launch FrapaClonia when you sign in",
@@ -638,7 +643,7 @@ public class LocalizationService : ILocalizationService
             // Settings
             ["LanguageAndRegion"] = "语言和地区",
             ["InterfaceLanguage"] = "界面语言",
-            ["ChangesWillTakeEffectAfterRestarting"] = "更改将在重新启动应用程序后生效",
+            ["ChangesWillTakeEffectImmediately"] = "更改将立即生效",
             ["SystemIntegration"] = "系统集成",
             ["StartOnSystemBoot"] = "系统启动时启动",
             ["AutomaticallyLaunchFrapaClonia"] = "登录时自动启动 FrapaClonia",
@@ -894,7 +899,7 @@ public class LocalizationService : ILocalizationService
             // Settings
             ["LanguageAndRegion"] = "語言和地區",
             ["InterfaceLanguage"] = "介面語言",
-            ["ChangesWillTakeEffectAfterRestarting"] = "變更將在重新啟動應用程式後生效",
+            ["ChangesWillTakeEffectImmediately"] = "變更將立即生效",
             ["SystemIntegration"] = "系統整合",
             ["StartOnSystemBoot"] = "系統啟動時啟動",
             ["AutomaticallyLaunchFrapaClonia"] = "登入時自動啟動 FrapaClonia",
@@ -1150,7 +1155,7 @@ public class LocalizationService : ILocalizationService
             // Settings
             ["LanguageAndRegion"] = "言語と地域",
             ["InterfaceLanguage"] = "インターフェース言語",
-            ["ChangesWillTakeEffectAfterRestarting"] = "変更を適用するにはアプリケーションを再起動してください",
+            ["ChangesWillTakeEffectImmediately"] = "変更はすぐに適用されます",
             ["SystemIntegration"] = "システム統合",
             ["StartOnSystemBoot"] = "システム起動時に開始",
             ["AutomaticallyLaunchFrapaClonia"] = "サインイン時にFrapaCloniaを自動的に起動",
@@ -1406,7 +1411,7 @@ public class LocalizationService : ILocalizationService
             // Settings
             ["LanguageAndRegion"] = "언어 및 지역",
             ["InterfaceLanguage"] = "인터페이스 언어",
-            ["ChangesWillTakeEffectAfterRestarting"] = "변경 사항은 응용 프로그램을 다시 시작한 후 적용됩니다",
+            ["ChangesWillTakeEffectImmediately"] = "변경 사항이 즉시 적용됩니다",
             ["SystemIntegration"] = "시스템 통합",
             ["StartOnSystemBoot"] = "시스템 부팅 시 시작",
             ["AutomaticallyLaunchFrapaClonia"] = "로그인할 때 FrapaClonia 자동 시작",
@@ -1502,7 +1507,8 @@ public class LocalizationService : ILocalizationService
             ["TheAddressOfTheFrpsServer"] = "La dirección del servidor frps",
             ["DefaultPort"] = "Puerto predeterminado",
             ["OptionalUserName"] = "Nombre de usuario opcional",
-            ["OptionalUserNameToAvoidProxyNameConflicts"] = "Nombre de usuario opcional para evitar conflictos de nombres de proxy",
+            ["OptionalUserNameToAvoidProxyNameConflicts"] =
+                "Nombre de usuario opcional para evitar conflictos de nombres de proxy",
             ["Authentication"] = "Autenticación",
             ["Method"] = "Método",
             ["ClientID"] = "ID de Cliente",
@@ -1548,12 +1554,16 @@ public class LocalizationService : ILocalizationService
             ["DownloadFrpc"] = "Descargar frpc",
             ["DeployNative"] = "Desplegar Nativo",
             ["DeploymentInformation"] = "Información de Despliegue",
-            ["DockerDeploymentRequiresDocker"] = "• El despliegue Docker requiere que Docker y Docker Compose estén instalados",
-            ["NativeDeploymentDownloadsAndExtracts"] = "• El despliegue nativo descarga y extrae el binario frpc para su plataforma",
-            ["BothMethodsUse"] = "• Ambos métodos usan el mismo archivo de configuración de la configuración del servidor",
+            ["DockerDeploymentRequiresDocker"] =
+                "• El despliegue Docker requiere que Docker y Docker Compose estén instalados",
+            ["NativeDeploymentDownloadsAndExtracts"] =
+                "• El despliegue nativo descarga y extrae el binario frpc para su plataforma",
+            ["BothMethodsUse"] =
+                "• Ambos métodos usan el mismo archivo de configuración de la configuración del servidor",
 
             // Proxy List
-            ["ConfigureAndManageYourFrpcProxyConfigurations"] = "Configure y administre sus configuraciones de proxy frpc",
+            ["ConfigureAndManageYourFrpcProxyConfigurations"] =
+                "Configure y administre sus configuraciones de proxy frpc",
             ["Loading"] = "Cargando...",
             ["ProxiesCount"] = "{0} proxies",
             ["SearchByName"] = "Buscar por nombre...",
@@ -1570,7 +1580,8 @@ public class LocalizationService : ILocalizationService
             // Proxy Editor
             ["EditProxyWindowTitle"] = "Editar Proxy",
             ["ProxyConfiguration"] = "Configuración del Proxy",
-            ["ConfigureYourProxySettingsBelow"] = "Configure su configuración de proxy a continuación. Los campos obligatorios están marcados con un asterisco.",
+            ["ConfigureYourProxySettingsBelow"] =
+                "Configure su configuración de proxy a continuación. Los campos obligatorios están marcados con un asterisco.",
             ["RequiredFieldsAreMarked"] = "Los campos obligatorios están marcados con un asterisco",
             ["BasicSettings"] = "Configuración Básica",
             ["LocalSettings"] = "Configuración Local",
@@ -1623,13 +1634,15 @@ public class LocalizationService : ILocalizationService
 
             // Visitor List
             ["VisitorManagement"] = "Gestión de Visitantes",
-            ["ConfigureAndManageSecureTunnelVisitors"] = "Configure y administre visitantes de túnel seguro (STCP/XTCP/SUDP)",
+            ["ConfigureAndManageSecureTunnelVisitors"] =
+                "Configure y administre visitantes de túnel seguro (STCP/XTCP/SUDP)",
             ["SearchVisitors"] = "Buscar visitantes...",
             ["Active"] = "Activo",
             ["Total"] = "Total",
             ["LoadingVisitors"] = "Cargando visitantes...",
             ["NoVisitorsConfigured"] = "No Hay Visitantes Configurados",
-            ["VisitorsAllowYouToConnect"] = "Los visitantes le permiten conectarse a proxies de túnel seguro (STCP/XTCP/SUDP)",
+            ["VisitorsAllowYouToConnect"] =
+                "Los visitantes le permiten conectarse a proxies de túnel seguro (STCP/XTCP/SUDP)",
             ["CreateYourFirstVisitor"] = "Cree Su Primer Visitante",
             ["ServerBindInfo"] = "Servidor:",
             ["BindIPPortInfo"] = "Enlace:",
@@ -1662,7 +1675,7 @@ public class LocalizationService : ILocalizationService
             // Settings
             ["LanguageAndRegion"] = "Idioma y Región",
             ["InterfaceLanguage"] = "Idioma de la Interfaz",
-            ["ChangesWillTakeEffectAfterRestarting"] = "Los cambios surtirán efecto después de reiniciar la aplicación",
+            ["ChangesWillTakeEffectImmediately"] = "Los cambios surtirán efecto de inmediato",
             ["SystemIntegration"] = "Integración del Sistema",
             ["StartOnSystemBoot"] = "Iniciar al Arranque del Sistema",
             ["AutomaticallyLaunchFrapaClonia"] = "Iniciar FrapaClonia automáticamente al iniciar sesión",
@@ -1673,7 +1686,8 @@ public class LocalizationService : ILocalizationService
             ["Dark"] = "Oscuro",
             ["SystemDefault"] = "Predeterminado del Sistema",
             ["ApplicationMode"] = "Modo de Aplicación",
-            ["ConfigurationStoredInAppDir"] = "Configuración almacenada en el directorio de la aplicación (requiere portable.txt)",
+            ["ConfigurationStoredInAppDir"] =
+                "Configuración almacenada en el directorio de la aplicación (requiere portable.txt)",
             ["ConfigurationLocation"] = "Ubicación de la Configuración",
             ["VersionInfo"] = "Versión",
             ["BuildInfo"] = "Compilación",
@@ -1758,7 +1772,8 @@ public class LocalizationService : ILocalizationService
             ["TheAddressOfTheFrpsServer"] = "L'adresse du serveur frps",
             ["DefaultPort"] = "Port par défaut",
             ["OptionalUserName"] = "Nom d'utilisateur optionnel",
-            ["OptionalUserNameToAvoidProxyNameConflicts"] = "Nom d'utilisateur optionnel pour éviter les conflits de noms de proxy",
+            ["OptionalUserNameToAvoidProxyNameConflicts"] =
+                "Nom d'utilisateur optionnel pour éviter les conflits de noms de proxy",
             ["Authentication"] = "Authentification",
             ["Method"] = "Méthode",
             ["ClientID"] = "ID Client",
@@ -1804,9 +1819,12 @@ public class LocalizationService : ILocalizationService
             ["DownloadFrpc"] = "Télécharger frpc",
             ["DeployNative"] = "Déployer Natif",
             ["DeploymentInformation"] = "Informations de Déploiement",
-            ["DockerDeploymentRequiresDocker"] = "• Le déploiement Docker nécessite que Docker et Docker Compose soient installés",
-            ["NativeDeploymentDownloadsAndExtracts"] = "• Le déploiement natif télécharge et extrait le binaire frpc pour votre plateforme",
-            ["BothMethodsUse"] = "• Les deux méthodes utilisent le même fichier de configuration des paramètres du serveur",
+            ["DockerDeploymentRequiresDocker"] =
+                "• Le déploiement Docker nécessite que Docker et Docker Compose soient installés",
+            ["NativeDeploymentDownloadsAndExtracts"] =
+                "• Le déploiement natif télécharge et extrait le binaire frpc pour votre plateforme",
+            ["BothMethodsUse"] =
+                "• Les deux méthodes utilisent le même fichier de configuration des paramètres du serveur",
 
             // Proxy List
             ["ConfigureAndManageYourFrpcProxyConfigurations"] = "Configurez et gérez vos configurations de proxy frpc",
@@ -1826,7 +1844,8 @@ public class LocalizationService : ILocalizationService
             // Proxy Editor
             ["EditProxyWindowTitle"] = "Modifier le Proxy",
             ["ProxyConfiguration"] = "Configuration du Proxy",
-            ["ConfigureYourProxySettingsBelow"] = "Configurez vos paramètres de proxy ci-dessous. Les champs obligatoires sont marqués d'un astérisque.",
+            ["ConfigureYourProxySettingsBelow"] =
+                "Configurez vos paramètres de proxy ci-dessous. Les champs obligatoires sont marqués d'un astérisque.",
             ["RequiredFieldsAreMarked"] = "Les champs obligatoires sont marqués d'un astérisque",
             ["BasicSettings"] = "Paramètres de Base",
             ["LocalSettings"] = "Paramètres Locaux",
@@ -1849,7 +1868,8 @@ public class LocalizationService : ILocalizationService
             ["TheMultiplexerMustBeConfiguredOnTheServer"] = "Le multiplexeur doit être configuré sur le serveur",
             ["TransportOptions"] = "Options de Transport",
             ["EncryptTheConnectionBetweenClientAndServer"] = "Chiffrer la connexion entre le client et le serveur",
-            ["CompressDataToReduceBandwidthUsage"] = "Compresser les données pour réduire l'utilisation de la bande passante",
+            ["CompressDataToReduceBandwidthUsage"] =
+                "Compresser les données pour réduire l'utilisation de la bande passante",
             ["BandwidthLimit"] = "Limite de Bande Passante",
             ["EG_1MB_256KB"] = "ex. 1MB, 256KB",
             ["LimitBandwidthForThisProxy"] = "Limiter la bande passante pour ce proxy",
@@ -1879,13 +1899,15 @@ public class LocalizationService : ILocalizationService
 
             // Visitor List
             ["VisitorManagement"] = "Gestion des Visiteurs",
-            ["ConfigureAndManageSecureTunnelVisitors"] = "Configurez et gérez les visiteurs de tunnel sécurisé (STCP/XTCP/SUDP)",
+            ["ConfigureAndManageSecureTunnelVisitors"] =
+                "Configurez et gérez les visiteurs de tunnel sécurisé (STCP/XTCP/SUDP)",
             ["SearchVisitors"] = "Rechercher des visiteurs...",
             ["Active"] = "Actif",
             ["Total"] = "Total",
             ["LoadingVisitors"] = "Chargement des visiteurs...",
             ["NoVisitorsConfigured"] = "Aucun Visiteur Configuré",
-            ["VisitorsAllowYouToConnect"] = "Les visiteurs vous permettent de vous connecter aux proxies de tunnel sécurisé (STCP/XTCP/SUDP)",
+            ["VisitorsAllowYouToConnect"] =
+                "Les visiteurs vous permettent de vous connecter aux proxies de tunnel sécurisé (STCP/XTCP/SUDP)",
             ["CreateYourFirstVisitor"] = "Créez Votre Premier Visiteur",
             ["ServerBindInfo"] = "Serveur :",
             ["BindIPPortInfo"] = "Liaison :",
@@ -1918,7 +1940,8 @@ public class LocalizationService : ILocalizationService
             // Settings
             ["LanguageAndRegion"] = "Langue et Région",
             ["InterfaceLanguage"] = "Langue de l'Interface",
-            ["ChangesWillTakeEffectAfterRestarting"] = "Les changements prendront effet après le redémarrage de l'application",
+            ["ChangesWillTakeEffectImmediately"] =
+                "Les changements prendront effet immédiatement",
             ["SystemIntegration"] = "Intégration Système",
             ["StartOnSystemBoot"] = "Démarrer au Démarrage du Système",
             ["AutomaticallyLaunchFrapaClonia"] = "Lancer automatiquement FrapaClonia lors de la connexion",
@@ -1929,7 +1952,8 @@ public class LocalizationService : ILocalizationService
             ["Dark"] = "Sombre",
             ["SystemDefault"] = "Par Défaut du Système",
             ["ApplicationMode"] = "Mode d'Application",
-            ["ConfigurationStoredInAppDir"] = "Configuration stockée dans le répertoire de l'application (nécessite portable.txt)",
+            ["ConfigurationStoredInAppDir"] =
+                "Configuration stockée dans le répertoire de l'application (nécessite portable.txt)",
             ["ConfigurationLocation"] = "Emplacement de la Configuration",
             ["VersionInfo"] = "Version",
             ["BuildInfo"] = "Build",
@@ -2014,7 +2038,8 @@ public class LocalizationService : ILocalizationService
             ["TheAddressOfTheFrpsServer"] = "Die Adresse des frps-Servers",
             ["DefaultPort"] = "Standard-Port",
             ["OptionalUserName"] = "Optionaler Benutzername",
-            ["OptionalUserNameToAvoidProxyNameConflicts"] = "Optionaler Benutzername, um Proxy-Namenskonflikte zu vermeiden",
+            ["OptionalUserNameToAvoidProxyNameConflicts"] =
+                "Optionaler Benutzername, um Proxy-Namenskonflikte zu vermeiden",
             ["Authentication"] = "Authentifizierung",
             ["Method"] = "Methode",
             ["ClientID"] = "Client-ID",
@@ -2060,12 +2085,15 @@ public class LocalizationService : ILocalizationService
             ["DownloadFrpc"] = "frpc herunterladen",
             ["DeployNative"] = "Native bereitstellen",
             ["DeploymentInformation"] = "Bereitstellungsinformationen",
-            ["DockerDeploymentRequiresDocker"] = "• Docker-Bereitstellung erfordert installiertes Docker und Docker Compose",
-            ["NativeDeploymentDownloadsAndExtracts"] = "• Native Bereitstellung lädt das frpc-Binärprogramm für Ihre Plattform herunter und extrahiert es",
+            ["DockerDeploymentRequiresDocker"] =
+                "• Docker-Bereitstellung erfordert installiertes Docker und Docker Compose",
+            ["NativeDeploymentDownloadsAndExtracts"] =
+                "• Native Bereitstellung lädt das frpc-Binärprogramm für Ihre Plattform herunter und extrahiert es",
             ["BothMethodsUse"] = "• Beide Methoden verwenden dieselbe Konfigurationsdatei aus den Servereinstellungen",
 
             // Proxy List
-            ["ConfigureAndManageYourFrpcProxyConfigurations"] = "Konfigurieren und verwalten Sie Ihre frpc-Proxy-Konfigurationen",
+            ["ConfigureAndManageYourFrpcProxyConfigurations"] =
+                "Konfigurieren und verwalten Sie Ihre frpc-Proxy-Konfigurationen",
             ["Loading"] = "Laden...",
             ["ProxiesCount"] = "{0} Proxies",
             ["SearchByName"] = "Nach Name suchen...",
@@ -2082,7 +2110,8 @@ public class LocalizationService : ILocalizationService
             // Proxy Editor
             ["EditProxyWindowTitle"] = "Proxy bearbeiten",
             ["ProxyConfiguration"] = "Proxy-Konfiguration",
-            ["ConfigureYourProxySettingsBelow"] = "Konfigurieren Sie Ihre Proxy-Einstellungen unten. Pflichtfelder sind mit einem Sternchen gekennzeichnet.",
+            ["ConfigureYourProxySettingsBelow"] =
+                "Konfigurieren Sie Ihre Proxy-Einstellungen unten. Pflichtfelder sind mit einem Sternchen gekennzeichnet.",
             ["RequiredFieldsAreMarked"] = "Pflichtfelder sind mit einem Sternchen gekennzeichnet",
             ["BasicSettings"] = "Grundeinstellungen",
             ["LocalSettings"] = "Lokale Einstellungen",
@@ -2135,13 +2164,15 @@ public class LocalizationService : ILocalizationService
 
             // Visitor List
             ["VisitorManagement"] = "Besucherverwaltung",
-            ["ConfigureAndManageSecureTunnelVisitors"] = "Sichere Tunnel-Besucher (STCP/XTCP/SUDP) konfigurieren und verwalten",
+            ["ConfigureAndManageSecureTunnelVisitors"] =
+                "Sichere Tunnel-Besucher (STCP/XTCP/SUDP) konfigurieren und verwalten",
             ["SearchVisitors"] = "Besucher suchen...",
             ["Active"] = "Aktiv",
             ["Total"] = "Gesamt",
             ["LoadingVisitors"] = "Besucher werden geladen...",
             ["NoVisitorsConfigured"] = "Keine Besucher konfiguriert",
-            ["VisitorsAllowYouToConnect"] = "Besucher ermöglichen Ihnen die Verbindung zu sicheren Tunnel-Proxies (STCP/XTCP/SUDP)",
+            ["VisitorsAllowYouToConnect"] =
+                "Besucher ermöglichen Ihnen die Verbindung zu sicheren Tunnel-Proxies (STCP/XTCP/SUDP)",
             ["CreateYourFirstVisitor"] = "Erstellen Sie Ihren ersten Besucher",
             ["ServerBindInfo"] = "Server:",
             ["BindIPPortInfo"] = "Bind:",
@@ -2150,10 +2181,12 @@ public class LocalizationService : ILocalizationService
             // Visitor Editor
             ["EditVisitorWindowTitle"] = "Besucher bearbeiten",
             ["VisitorConfiguration"] = "Besucher-Konfiguration",
-            ["ConfigureAVisitorToConnect"] = "Konfigurieren Sie einen Besucher für die Verbindung mit STCP-, XTCP- oder SUDP-Proxies",
+            ["ConfigureAVisitorToConnect"] =
+                "Konfigurieren Sie einen Besucher für die Verbindung mit STCP-, XTCP- oder SUDP-Proxies",
             ["SecuritySettings"] = "Sicherheitseinstellungen",
             ["Required"] = "Erforderlich",
-            ["MustMatchTheProxySecretKey"] = "Erforderlich. Muss mit dem auf dem Proxy konfigurierten geheimen Schlüssel übereinstimmen",
+            ["MustMatchTheProxySecretKey"] =
+                "Erforderlich. Muss mit dem auf dem Proxy konfigurierten geheimen Schlüssel übereinstimmen",
             ["BindSettings"] = "Bind-Einstellungen",
             ["LocalPortToListenOn"] = "Lokaler Port für eingehende Verbindungen (1-65535)",
             ["SpecificIPToBindTo"] = "Spezifische IP zum Binden",
@@ -2174,7 +2207,7 @@ public class LocalizationService : ILocalizationService
             // Settings
             ["LanguageAndRegion"] = "Sprache und Region",
             ["InterfaceLanguage"] = "Interface-Sprache",
-            ["ChangesWillTakeEffectAfterRestarting"] = "Änderungen werden nach dem Neustart der Anwendung wirksam",
+            ["ChangesWillTakeEffectImmediately"] = "Änderungen werden sofort wirksam",
             ["SystemIntegration"] = "Systemintegration",
             ["StartOnSystemBoot"] = "Beim Systemstart starten",
             ["AutomaticallyLaunchFrapaClonia"] = "FrapaClonia automatisch beim Anmelden starten",
@@ -2185,12 +2218,14 @@ public class LocalizationService : ILocalizationService
             ["Dark"] = "Dunkel",
             ["SystemDefault"] = "Systemstandard",
             ["ApplicationMode"] = "Anwendungsmodus",
-            ["ConfigurationStoredInAppDir"] = "Konfiguration im Anwendungsverzeichnis gespeichert (erfordert portable.txt)",
+            ["ConfigurationStoredInAppDir"] =
+                "Konfiguration im Anwendungsverzeichnis gespeichert (erfordert portable.txt)",
             ["ConfigurationLocation"] = "Konfigurationsspeicherort",
             ["VersionInfo"] = "Version",
             ["BuildInfo"] = "Build",
             ["NETRuntimeInfo"] = ".NET-Laufzeit",
-            ["CrossPlatformFrpcVisualClient"] = "Plattformübergreifender visueller frpc-Client, erstellt mit Avalonia UI",
+            ["CrossPlatformFrpcVisualClient"] =
+                "Plattformübergreifender visueller frpc-Client, erstellt mit Avalonia UI",
             ["SaveSettings"] = "Einstellungen speichern"
         };
 
@@ -2270,7 +2305,8 @@ public class LocalizationService : ILocalizationService
             ["TheAddressOfTheFrpsServer"] = "Адрес сервера frps",
             ["DefaultPort"] = "Порт по умолчанию",
             ["OptionalUserName"] = "Необязательное имя пользователя",
-            ["OptionalUserNameToAvoidProxyNameConflicts"] = "Необязательное имя пользователя для предотвращения конфликтов имён прокси",
+            ["OptionalUserNameToAvoidProxyNameConflicts"] =
+                "Необязательное имя пользователя для предотвращения конфликтов имён прокси",
             ["Authentication"] = "Аутентификация",
             ["Method"] = "Метод",
             ["ClientID"] = "ID клиента",
@@ -2317,7 +2353,8 @@ public class LocalizationService : ILocalizationService
             ["DeployNative"] = "Развернуть нативно",
             ["DeploymentInformation"] = "Информация о развертывании",
             ["DockerDeploymentRequiresDocker"] = "• Развертывание Docker требует установки Docker и Docker Compose",
-            ["NativeDeploymentDownloadsAndExtracts"] = "• Нативное развертывание загружает и распаковывает бинарный файл frpc для вашей платформы",
+            ["NativeDeploymentDownloadsAndExtracts"] =
+                "• Нативное развертывание загружает и распаковывает бинарный файл frpc для вашей платформы",
             ["BothMethodsUse"] = "• Оба метода используют один и тот же файл конфигурации из настроек сервера",
 
             // Proxy List
@@ -2338,7 +2375,8 @@ public class LocalizationService : ILocalizationService
             // Proxy Editor
             ["EditProxyWindowTitle"] = "Редактировать прокси",
             ["ProxyConfiguration"] = "Конфигурация прокси",
-            ["ConfigureYourProxySettingsBelow"] = "Настройте параметры прокси ниже. Обязательные поля отмечены звёздочкой.",
+            ["ConfigureYourProxySettingsBelow"] =
+                "Настройте параметры прокси ниже. Обязательные поля отмечены звёздочкой.",
             ["RequiredFieldsAreMarked"] = "Обязательные поля отмечены звёздочкой",
             ["BasicSettings"] = "Основные настройки",
             ["LocalSettings"] = "Локальные настройки",
@@ -2391,13 +2429,15 @@ public class LocalizationService : ILocalizationService
 
             // Visitor List
             ["VisitorManagement"] = "Управление посетителями",
-            ["ConfigureAndManageSecureTunnelVisitors"] = "Настройте и управляйте посетителями защищённого туннеля (STCP/XTCP/SUDP)",
+            ["ConfigureAndManageSecureTunnelVisitors"] =
+                "Настройте и управляйте посетителями защищённого туннеля (STCP/XTCP/SUDP)",
             ["SearchVisitors"] = "Поиск посетителей...",
             ["Active"] = "Активный",
             ["Total"] = "Всего",
             ["LoadingVisitors"] = "Загрузка посетителей...",
             ["NoVisitorsConfigured"] = "Посетители не настроены",
-            ["VisitorsAllowYouToConnect"] = "Посетители позволяют вам подключаться к прокси защищённого туннеля (STCP/XTCP/SUDP)",
+            ["VisitorsAllowYouToConnect"] =
+                "Посетители позволяют вам подключаться к прокси защищённого туннеля (STCP/XTCP/SUDP)",
             ["CreateYourFirstVisitor"] = "Создайте своего первого посетителя",
             ["ServerBindInfo"] = "Сервер：",
             ["BindIPPortInfo"] = "Привязка：",
@@ -2430,7 +2470,7 @@ public class LocalizationService : ILocalizationService
             // Settings
             ["LanguageAndRegion"] = "Язык и регион",
             ["InterfaceLanguage"] = "Язык интерфейса",
-            ["ChangesWillTakeEffectAfterRestarting"] = "Изменения вступят в силу после перезапуска приложения",
+            ["ChangesWillTakeEffectImmediately"] = "Изменения вступят в силу немедленно",
             ["SystemIntegration"] = "Системная интеграция",
             ["StartOnSystemBoot"] = "Запуск при загрузке системы",
             ["AutomaticallyLaunchFrapaClonia"] = "Автоматически запускать FrapaClonia при входе в систему",
@@ -2446,7 +2486,8 @@ public class LocalizationService : ILocalizationService
             ["VersionInfo"] = "Версия",
             ["BuildInfo"] = "Сборка",
             ["NETRuntimeInfo"] = "Среда выполнения .NET",
-            ["CrossPlatformFrpcVisualClient"] = "Кроссплатформенный визуальный клиент frpc, созданный с помощью Avalonia UI",
+            ["CrossPlatformFrpcVisualClient"] =
+                "Кроссплатформенный визуальный клиент frpc, созданный с помощью Avalonia UI",
             ["SaveSettings"] = "Сохранить настройки"
         };
     }

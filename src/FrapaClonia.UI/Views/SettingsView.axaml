@@ -47,7 +47,7 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                             <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                                       Text="{DynamicResource Localized_ChangesWillTakeEffectAfterRestarting}"
+                                       Text="{DynamicResource Localized_ChangesWillTakeEffectImmediately}"
                                        Classes="hint" />
                         </Grid>
                     </StackPanel>

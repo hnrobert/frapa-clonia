@@ -267,8 +267,8 @@ public static class ResourceInitializer
         // Settings
         AddResource(resources, "Localized_LanguageAndRegion", localizedResources.LanguageAndRegion);
         AddResource(resources, "Localized_InterfaceLanguage", localizedResources.InterfaceLanguage);
-        AddResource(resources, "Localized_ChangesWillTakeEffectAfterRestarting",
-            localizedResources.ChangesWillTakeEffectAfterRestarting);
+        AddResource(resources, "Localized_ChangesWillTakeEffectImmediately",
+            localizedResources.ChangesWillTakeEffectImmediately);
         AddResource(resources, "Localized_SystemIntegration", localizedResources.SystemIntegration);
         AddResource(resources, "Localized_StartOnSystemBoot", localizedResources.StartOnSystemBoot);
         AddResource(resources, "Localized_AutomaticallyLaunchFrapaClonia",
