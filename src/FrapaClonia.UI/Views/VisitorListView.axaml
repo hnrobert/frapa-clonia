@@ -8,284 +8,294 @@
              x:Class="FrapaClonia.UI.Views.VisitorListView"
              x:DataType="vm:VisitorListViewModel">
 
-    <Design.DataContext>
-        <vm:VisitorListViewModel />
-    </Design.DataContext>
+  <Design.DataContext>
+    <vm:VisitorListViewModel />
+  </Design.DataContext>
 
-    <UserControl.Resources>
-        <converters:TypeToColorConverter x:Key="TypeToColorConverter" />
-        <converters:NotNullConverter x:Key="NotNullConverter" />
-        <converters:EmptyCollectionConverter x:Key="EmptyCollectionConverter" />
-    </UserControl.Resources>
+  <UserControl.Resources>
+    <converters:TypeToColorConverter x:Key="TypeToColorConverter" />
+    <converters:NotNullConverter x:Key="NotNullConverter" />
+    <converters:EmptyCollectionConverter x:Key="EmptyCollectionConverter" />
+  </UserControl.Resources>
 
-    <UserControl.Styles>
-        <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
-    </UserControl.Styles>
+  <UserControl.Styles>
+    <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
+  </UserControl.Styles>
 
-    <Grid RowDefinitions="Auto,Auto,*">
+  <Grid RowDefinitions="Auto,Auto,*">
 
-        <!-- Page Header -->
-        <Border Grid.Row="0" Classes="page-header">
-            <Grid ColumnDefinitions="*,Auto">
-                <StackPanel Grid.Column="0" Spacing="{StaticResource SpacingS}">
-                    <TextBlock Text="{DynamicResource Localized_VisitorManagement}"
-                               Classes="page-title" />
-                    <TextBlock Text="{DynamicResource Localized_ConfigureAndManageSecureTunnelVisitors}"
-                               Classes="page-subtitle" />
-                </StackPanel>
+    <!-- Page Header -->
+    <Border Grid.Row="0" Classes="page-header">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Grid.Column="0" Spacing="{StaticResource SpacingS}">
+          <TextBlock Text="{DynamicResource Localized_VisitorManagement}"
+                     Classes="page-title" />
+          <TextBlock Text="{DynamicResource Localized_ConfigureAndManageSecureTunnelVisitors}"
+                     Classes="page-subtitle" />
+        </StackPanel>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
-                    <Button Command="{Binding RefreshCommand}"
-                            Classes="secondary"
-                            IsEnabled="{Binding !IsLoading}"
-                            ToolTip.Tip="Refresh visitor list">
-                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-                            <TextBlock Text="&#xE117;"
-                                       FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                       FontSize="{StaticResource IconSizeM}" />
-                            <TextBlock Text="{DynamicResource Localized_Refresh}" />
-                        </StackPanel>
-                    </Button>
-                    <Button Command="{Binding AddVisitorCommand}"
-                            Classes="primary"
-                            ToolTip.Tip="Add a new visitor configuration">
-                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-                            <TextBlock Text="+" FontSize="{StaticResource FontSizeL}" FontWeight="{StaticResource FontWeightBold}" />
-                            <TextBlock Text="{DynamicResource Localized_AddVisitor}" />
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-            </Grid>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
+          <Button Command="{Binding RefreshCommand}"
+                  Classes="secondary"
+                  IsEnabled="{Binding !IsLoading}"
+                  ToolTip.Tip="Refresh visitor list">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+              <TextBlock Text="&#xE117;"
+                         FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                         FontSize="{StaticResource IconSizeM}" />
+              <TextBlock Text="{DynamicResource Localized_Refresh}" />
+            </StackPanel>
+          </Button>
+          <Button Command="{Binding AddVisitorCommand}"
+                  Classes="primary"
+                  ToolTip.Tip="Add a new visitor configuration">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+              <TextBlock Text="+" FontSize="{StaticResource FontSizeL}"
+                         FontWeight="{StaticResource FontWeightBold}" />
+              <TextBlock Text="{DynamicResource Localized_AddVisitor}" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- Page Toolbar -->
+    <Border Grid.Row="1"
+            Classes="page-toolbar"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+            BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
+          <TextBox Text="{Binding SearchQuery}"
+                   Watermark="{DynamicResource Localized_SearchVisitors}"
+                   Classes="search-box" />
+
+          <ComboBox SelectedIndex="{Binding SelectedTypeFilter}"
+                    PlaceholderText="{DynamicResource Localized_AllTypes}"
+                    Classes="filter-box">
+            <ComboBoxItem Content="{DynamicResource Localized_AllTypes}" />
+            <ComboBoxItem Content="STCP" />
+            <ComboBoxItem Content="XTCP" />
+            <ComboBoxItem Content="SUDP" />
+          </ComboBox>
+        </StackPanel>
+
+        <!-- Status Info -->
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{StaticResource SpacingL}">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+            <Border Classes="status-dot active" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding ActiveCount, FallbackValue='0'}"
+                       FontSize="{StaticResource FontSizeM}"
+                       FontWeight="{StaticResource FontWeightSemiBold}"
+                       VerticalAlignment="Center" />
+            <TextBlock Text="{DynamicResource Localized_Active}"
+                       FontSize="{StaticResource FontSizeM}"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+            <Border Classes="status-dot inactive" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding Visitors.Count, FallbackValue='0'}"
+                       FontSize="{StaticResource FontSizeM}"
+                       FontWeight="{StaticResource FontWeightSemiBold}"
+                       VerticalAlignment="Center" />
+            <TextBlock Text="{DynamicResource Localized_Total}"
+                       FontSize="{StaticResource FontSizeM}"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- Page Content -->
+    <Border Grid.Row="2" Classes="page-content">
+      <Grid>
+        <!-- Loading Overlay -->
+        <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
+                Opacity="0.8"
+                IsVisible="{Binding IsLoading}"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch">
+          <StackPanel Spacing="{StaticResource SpacingM}" HorizontalAlignment="Center"
+                      VerticalAlignment="Center">
+            <ProgressBar IsIndeterminate="True" Width="60" Height="60" />
+            <TextBlock Text="{DynamicResource Localized_LoadingVisitors}"
+                       FontSize="{StaticResource FontSizeL}"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+          </StackPanel>
         </Border>
 
-        <!-- Page Toolbar -->
-        <Border Grid.Row="1"
-                Classes="page-toolbar"
-                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                BorderThickness="0,0,0,1">
-            <Grid ColumnDefinitions="*,Auto">
-                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
-                    <TextBox Text="{Binding SearchQuery}"
-                             Watermark="{DynamicResource Localized_SearchVisitors}"
-                             Classes="search-box" />
-
-                    <ComboBox SelectedIndex="{Binding SelectedTypeFilter}"
-                              PlaceholderText="{DynamicResource Localized_AllTypes}"
-                              Classes="filter-box">
-                        <ComboBoxItem Content="{DynamicResource Localized_AllTypes}" />
-                        <ComboBoxItem Content="STCP" />
-                        <ComboBoxItem Content="XTCP" />
-                        <ComboBoxItem Content="SUDP" />
-                    </ComboBox>
-                </StackPanel>
-
-                <!-- Status Info -->
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{StaticResource SpacingL}">
-                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-                        <Border Classes="status-dot active" VerticalAlignment="Center" />
-                        <TextBlock Text="{Binding ActiveCount, FallbackValue='0'}"
-                                   FontSize="{StaticResource FontSizeM}"
-                                   FontWeight="{StaticResource FontWeightSemiBold}"
-                                   VerticalAlignment="Center" />
-                        <TextBlock Text="{DynamicResource Localized_Active}"
-                                   FontSize="{StaticResource FontSizeM}"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                   VerticalAlignment="Center" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-                        <Border Classes="status-dot inactive" VerticalAlignment="Center" />
-                        <TextBlock Text="{Binding Visitors.Count, FallbackValue='0'}"
-                                   FontSize="{StaticResource FontSizeM}"
-                                   FontWeight="{StaticResource FontWeightSemiBold}"
-                                   VerticalAlignment="Center" />
-                        <TextBlock Text="{DynamicResource Localized_Total}"
-                                   FontSize="{StaticResource FontSizeM}"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                   VerticalAlignment="Center" />
-                    </StackPanel>
-                </StackPanel>
-            </Grid>
-        </Border>
-
-        <!-- Page Content -->
-        <Border Grid.Row="2" Classes="page-content">
-            <Grid>
-                <!-- Loading Overlay -->
-                <Border Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
-                        Opacity="0.8"
-                        IsVisible="{Binding IsLoading}"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch">
-                    <StackPanel Spacing="{StaticResource SpacingM}" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <ProgressBar IsIndeterminate="True" Width="60" Height="60" />
-                        <TextBlock Text="{DynamicResource Localized_LoadingVisitors}"
-                                   FontSize="{StaticResource FontSizeL}"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-                    </StackPanel>
-                </Border>
-
-                <!-- Content -->
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-                    <StackPanel Spacing="0">
-                        <!-- Visitor Cards -->
-                        <ItemsControl ItemsSource="{Binding Visitors}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Classes="list-card">
-                                        <Grid ColumnDefinitions="Auto,*,Auto">
-                                            <!-- Type Badge & Status -->
-                                            <StackPanel Grid.Column="0"
-                                                       Orientation="Horizontal"
-                                                       Spacing="{StaticResource SpacingM}"
-                                                       Margin="{StaticResource SpacingRightM}">
-                                                <Border Classes="status-dot active"
-                                                        VerticalAlignment="Top"
-                                                        Margin="0,4,0,0" />
-                                                <Border Background="{Binding Type, Converter={StaticResource TypeToColorConverter}}"
-                                                       Classes="typeBadge"
-                                                       VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding Type}"
-                                                               HorizontalAlignment="Center" />
-                                                </Border>
-                                            </StackPanel>
-
-                                            <!-- Visitor Information -->
-                                            <StackPanel Grid.Column="1" Spacing="{StaticResource SpacingS}">
-                                                <!-- Name -->
-                                                <TextBlock Text="{Binding Name}"
-                                                           FontSize="{StaticResource FontSizeL}"
-                                                           FontWeight="{StaticResource FontWeightSemiBold}"
-                                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-
-                                                <!-- Connection Details -->
-                                                <Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto">
-                                                    <!-- Row 1: Server and Bind Address -->
-                                                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="{StaticResource SpacingXS}">
-                                                        <TextBlock Text="Server:"
-                                                                   Classes="label" />
-                                                        <TextBlock Text="{Binding ServerName}"
-                                                                   Classes="value" />
-                                                    </StackPanel>
-
-                                                    <Border Grid.Row="0" Grid.Column="1"
-                                                           Width="1"
-                                                           Margin="{StaticResource ThicknessHorizontalS}"
-                                                           Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-
-                                                    <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" Spacing="{StaticResource SpacingXS}">
-                                                        <TextBlock Text="Bind:"
-                                                                   Classes="label" />
-                                                        <TextBlock>
-                                                            <Run Text="{Binding BindAddr}" />
-                                                            <Run Text=":" />
-                                                            <Run Text="{Binding BindPort}" />
-                                                        </TextBlock>
-                                                    </StackPanel>
-
-                                                    <!-- Row 2: Optional Bind IP -->
-                                                    <StackPanel Grid.Row="1" Grid.Column="0"
-                                                               Orientation="Horizontal"
-                                                               Spacing="{StaticResource SpacingXS}"
-                                                               IsVisible="{Binding BindIp, Converter={StaticResource NotNullConverter}}">
-                                                        <TextBlock Text="Bind IP:"
-                                                                   Classes="label" />
-                                                        <TextBlock Text="{Binding BindIp}"
-                                                                   Classes="value" />
-                                                    </StackPanel>
-                                                </Grid>
-
-                                                <!-- Transport Info -->
-                                                <Border Background="{DynamicResource SystemControlPageBackgroundTransparent}"
-                                                       CornerRadius="{StaticResource CornerRadiusS}"
-                                                       Padding="{StaticResource ThicknessS}"
-                                                       IsVisible="{Binding Transport, Converter={StaticResource NotNullConverter}}">
-                                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
-                                                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingXS}">
-                                                            <TextBlock Text="&#xE72E;"
-                                                                       FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                                                       FontSize="{StaticResource FontSizeS}"
-                                                                       IsVisible="{Binding Transport.UseEncryption}" />
-                                                            <TextBlock Text="&#xF8AF;"
-                                                                       FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                                                       FontSize="{StaticResource FontSizeS}"
-                                                                       IsVisible="{Binding Transport.UseCompression}" />
-                                                        </StackPanel>
-                                                        <TextBlock Text="Transport enabled"
-                                                                   FontSize="{StaticResource FontSizeS}"
-                                                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-                                                    </StackPanel>
-                                                </Border>
-                                            </StackPanel>
-
-                                            <!-- Action Buttons -->
-                                            <StackPanel Grid.Column="2"
-                                                       Orientation="Horizontal"
-                                                       Spacing="{StaticResource SpacingS}"
-                                                       VerticalAlignment="Center">
-                                                <Button Click="OnEditClick"
-                                                        Classes="icon-button"
-                                                        ToolTip.Tip="{DynamicResource Localized_EditVisitor}">
-                                                    <TextBlock Text="&#xE70F;"
-                                                               FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                                               FontSize="{StaticResource IconSizeM}" />
-                                                </Button>
-                                                <Button Click="OnDuplicateClick"
-                                                        Classes="icon-button"
-                                                        ToolTip.Tip="Duplicate visitor">
-                                                    <TextBlock Text="&#xF817;"
-                                                               FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                                               FontSize="{StaticResource IconSizeM}" />
-                                                </Button>
-                                                <Button Click="OnDeleteClick"
-                                                        Classes="icon-button"
-                                                        ToolTip.Tip="{DynamicResource Localized_DeleteVisitor}"
-                                                        Foreground="{DynamicResource AppErrorBrush}">
-                                                    <TextBlock Text="&#xE74D;"
-                                                               FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                                               FontSize="{StaticResource IconSizeM}" />
-                                                </Button>
-                                            </StackPanel>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-
-                        <!-- Empty State -->
-                        <Border IsVisible="{Binding Visitors, Converter={StaticResource EmptyCollectionConverter}}"
-                               Classes="empty-state"
-                               HorizontalAlignment="Center">
-                            <StackPanel Spacing="{StaticResource SpacingL}" HorizontalAlignment="Center">
-                                <TextBlock Text="&#xE711;"
-                                           FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                           FontSize="48"
-                                           Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                                           HorizontalAlignment="Center" />
-                                <TextBlock Text="{DynamicResource Localized_NoVisitorsConfigured}"
-                                           FontSize="{StaticResource FontSizeXL}"
-                                           FontWeight="{StaticResource FontWeightSemiBold}"
-                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
-                                           HorizontalAlignment="Center" />
-                                <TextBlock Text="{DynamicResource Localized_VisitorsAllowYouToConnect}"
-                                           FontSize="{StaticResource FontSizeM}"
-                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                           TextWrapping="Wrap"
-                                           TextAlignment="Center"
-                                           MaxWidth="400" />
-                                <Button Command="{Binding AddVisitorCommand}"
-                                       Classes="primary"
-                                       HorizontalAlignment="Center"
-                                       Margin="{StaticResource ThicknessTopS}">
-                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-                                        <TextBlock Text="+" FontSize="{StaticResource FontSizeL}" FontWeight="{StaticResource FontWeightBold}" />
-                                        <TextBlock Text="{DynamicResource Localized_CreateYourFirstVisitor}" />
-                                    </StackPanel>
-                                </Button>
-                            </StackPanel>
+        <!-- Content -->
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+          <StackPanel Spacing="0">
+            <!-- Visitor Cards -->
+            <ItemsControl ItemsSource="{Binding Visitors}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Border Classes="list-card">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                      <!-- Type Badge & Status -->
+                      <StackPanel Grid.Column="0"
+                                  Orientation="Horizontal"
+                                  Spacing="{StaticResource SpacingM}"
+                                  Margin="{StaticResource SpacingRightM}">
+                        <Border Classes="status-dot active"
+                                VerticalAlignment="Top"
+                                Margin="0,4,0,0" />
+                        <Border
+                          Background="{Binding Type, Converter={StaticResource TypeToColorConverter}}"
+                          Classes="typeBadge"
+                          VerticalAlignment="Center">
+                          <TextBlock Text="{Binding Type}"
+                                     HorizontalAlignment="Center" />
                         </Border>
-                    </StackPanel>
-                </ScrollViewer>
-            </Grid>
-        </Border>
-    </Grid>
+                      </StackPanel>
+
+                      <!-- Visitor Information -->
+                      <StackPanel Grid.Column="1" Spacing="{StaticResource SpacingS}">
+                        <!-- Name -->
+                        <TextBlock Text="{Binding Name}"
+                                   FontSize="{StaticResource FontSizeL}"
+                                   FontWeight="{StaticResource FontWeightSemiBold}"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+
+                        <!-- Connection Details -->
+                        <Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto">
+                          <!-- Row 1: Server and Bind Address -->
+                          <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal"
+                                      Spacing="{StaticResource SpacingXS}">
+                            <TextBlock Text="Server:"
+                                       Classes="label" />
+                            <TextBlock Text="{Binding ServerName}"
+                                       Classes="value" />
+                          </StackPanel>
+
+                          <Border Grid.Row="0" Grid.Column="1"
+                                  Width="1"
+                                  Margin="{StaticResource ThicknessHorizontalS}"
+                                  Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+
+                          <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal"
+                                      Spacing="{StaticResource SpacingXS}">
+                            <TextBlock Text="Bind:"
+                                       Classes="label" />
+                            <TextBlock>
+                              <Run Text="{Binding BindAddr}" />
+                              <Run Text=":" />
+                              <Run Text="{Binding BindPort}" />
+                            </TextBlock>
+                          </StackPanel>
+
+                          <!-- Row 2: Optional Bind IP -->
+                          <StackPanel Grid.Row="1" Grid.Column="0"
+                                      Orientation="Horizontal"
+                                      Spacing="{StaticResource SpacingXS}"
+                                      IsVisible="{Binding BindIp, Converter={StaticResource NotNullConverter}}">
+                            <TextBlock Text="Bind IP:"
+                                       Classes="label" />
+                            <TextBlock Text="{Binding BindIp}"
+                                       Classes="value" />
+                          </StackPanel>
+                        </Grid>
+
+                        <!-- Transport Info -->
+                        <Border
+                          Background="{DynamicResource SystemControlPageBackgroundTransparent}"
+                          CornerRadius="{StaticResource CornerRadiusS}"
+                          Padding="{StaticResource ThicknessS}"
+                          IsVisible="{Binding Transport, Converter={StaticResource NotNullConverter}}">
+                          <StackPanel Orientation="Horizontal"
+                                      Spacing="{StaticResource SpacingM}">
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="{StaticResource SpacingXS}">
+                              <TextBlock Text="&#xE72E;"
+                                         FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                         FontSize="{StaticResource FontSizeS}"
+                                         IsVisible="{Binding Transport.UseEncryption}" />
+                              <TextBlock Text="&#xF8AF;"
+                                         FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                         FontSize="{StaticResource FontSizeS}"
+                                         IsVisible="{Binding Transport.UseCompression}" />
+                            </StackPanel>
+                            <TextBlock Text="Transport enabled"
+                                       FontSize="{StaticResource FontSizeS}"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                          </StackPanel>
+                        </Border>
+                      </StackPanel>
+
+                      <!-- Action Buttons -->
+                      <StackPanel Grid.Column="2"
+                                  Orientation="Horizontal"
+                                  Spacing="{StaticResource SpacingS}"
+                                  VerticalAlignment="Center">
+                        <Button Click="OnEditClick"
+                                Classes="icon-button"
+                                ToolTip.Tip="{DynamicResource Localized_EditVisitor}">
+                          <TextBlock Text="&#xE70F;"
+                                     FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                     FontSize="{StaticResource IconSizeM}" />
+                        </Button>
+                        <Button Click="OnDuplicateClick"
+                                Classes="icon-button"
+                                ToolTip.Tip="Duplicate visitor">
+                          <TextBlock Text="&#xF817;"
+                                     FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                     FontSize="{StaticResource IconSizeM}" />
+                        </Button>
+                        <Button Click="OnDeleteClick"
+                                Classes="icon-button"
+                                ToolTip.Tip="{DynamicResource Localized_DeleteVisitor}"
+                                Foreground="{DynamicResource AppErrorBrush}">
+                          <TextBlock Text="&#xE74D;"
+                                     FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                     FontSize="{StaticResource IconSizeM}" />
+                        </Button>
+                      </StackPanel>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Empty State -->
+            <Border IsVisible="{Binding Visitors, Converter={StaticResource EmptyCollectionConverter}}"
+                    Classes="empty-state"
+                    HorizontalAlignment="Center">
+              <StackPanel Spacing="{StaticResource SpacingL}" HorizontalAlignment="Center">
+                <TextBlock Text="&#xE711;"
+                           FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                           FontSize="48"
+                           Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="{DynamicResource Localized_NoVisitorsConfigured}"
+                           FontSize="{StaticResource FontSizeXL}"
+                           FontWeight="{StaticResource FontWeightSemiBold}"
+                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="{DynamicResource Localized_VisitorsAllowYouToConnect}"
+                           FontSize="{StaticResource FontSizeM}"
+                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"
+                           MaxWidth="400" />
+                <Button Command="{Binding AddVisitorCommand}"
+                        Classes="primary"
+                        HorizontalAlignment="Center"
+                        Margin="{StaticResource ThicknessTopS}">
+                  <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+                    <TextBlock Text="+" FontSize="{StaticResource FontSizeL}"
+                               FontWeight="{StaticResource FontWeightBold}" />
+                    <TextBlock Text="{DynamicResource Localized_CreateYourFirstVisitor}" />
+                  </StackPanel>
+                </Button>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
+    </Border>
+  </Grid>
 </UserControl>
+

@@ -12,321 +12,322 @@
         MinWidth="550"
         MinHeight="450">
 
-    <Design.DataContext>
-        <vm:VisitorEditorViewModel />
-    </Design.DataContext>
+  <Design.DataContext>
+    <vm:VisitorEditorViewModel />
+  </Design.DataContext>
 
-    <Window.Styles>
-        <!-- Section Border Style -->
-        <Style Selector="Border.section-border">
-            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" />
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Padding" Value="16" />
-            <Setter Property="Margin" Value="0" />
-        </Style>
+  <Window.Styles>
+    <!-- Section Border Style -->
+    <Style Selector="Border.section-border">
+      <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="16" />
+      <Setter Property="Margin" Value="0" />
+    </Style>
 
-        <!-- Section Header Style -->
-        <Style Selector="TextBlock.section-header">
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-            <Setter Property="Margin" Value="0,0,0,12" />
-        </Style>
+    <!-- Section Header Style -->
+    <Style Selector="TextBlock.section-header">
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+      <Setter Property="Margin" Value="0,0,0,12" />
+    </Style>
 
-        <!-- Form Label Style -->
-        <Style Selector="TextBlock.form-label">
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-        </Style>
+    <!-- Form Label Style -->
+    <Style Selector="TextBlock.form-label">
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+    </Style>
 
-        <!-- Form Hint Style -->
-        <Style Selector="TextBlock.form-hint">
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-        </Style>
+    <!-- Form Hint Style -->
+    <Style Selector="TextBlock.form-hint">
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
 
-        <!-- Form Field StackPanel Style -->
-        <Style Selector="StackPanel.form-field">
-            <Setter Property="Spacing" Value="4" />
-        </Style>
+    <!-- Form Field StackPanel Style -->
+    <Style Selector="StackPanel.form-field">
+      <Setter Property="Spacing" Value="4" />
+    </Style>
 
-        <!-- Primary Button Style -->
-        <Style Selector="Button.primary-button">
-            <Setter Property="MinHeight" Value="36" />
-            <Setter Property="MinWidth" Value="100" />
-            <Setter Property="Padding" Value="16,8" />
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundAltHighBrush}" />
-            <Setter Property="CornerRadius" Value="4" />
-        </Style>
+    <!-- Primary Button Style -->
+    <Style Selector="Button.primary-button">
+      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="MinWidth" Value="100" />
+      <Setter Property="Padding" Value="16,8" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundAltHighBrush}" />
+      <Setter Property="CornerRadius" Value="4" />
+    </Style>
 
-        <!-- Secondary Button Style -->
-        <Style Selector="Button.secondary-button">
-            <Setter Property="MinHeight" Value="36" />
-            <Setter Property="MinWidth" Value="100" />
-            <Setter Property="Padding" Value="16,8" />
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="CornerRadius" Value="4" />
-        </Style>
+    <!-- Secondary Button Style -->
+    <Style Selector="Button.secondary-button">
+      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="MinWidth" Value="100" />
+      <Setter Property="Padding" Value="16,8" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="CornerRadius" Value="4" />
+    </Style>
 
-        <!-- Error Border Style -->
-        <Style Selector="Border.error-border">
-            <Setter Property="Background" Value="{DynamicResource SystemControlErrorToastForegroundBrush}" />
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Padding" Value="16" />
-            <Setter Property="Margin" Value="0" />
-        </Style>
-    </Window.Styles>
+    <!-- Error Border Style -->
+    <Style Selector="Border.error-border">
+      <Setter Property="Background" Value="{DynamicResource SystemControlErrorToastForegroundBrush}" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="16" />
+      <Setter Property="Margin" Value="0" />
+    </Style>
+  </Window.Styles>
 
-    <Grid RowDefinitions="Auto,*,Auto">
-        <!-- Header Section -->
-        <Border Grid.Row="0"
-                Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
-                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                BorderThickness="0,0,0,1"
-                Padding="24,16">
-            <StackPanel Spacing="4">
-                <TextBlock Text="{DynamicResource Localized_VisitorConfiguration}"
-                           FontSize="20"
-                           FontWeight="SemiBold"
-                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-                <TextBlock Text="{DynamicResource Localized_ConfigureAVisitorToConnect}"
-                           FontSize="13"
-                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+  <Grid RowDefinitions="Auto,*,Auto">
+    <!-- Header Section -->
+    <Border Grid.Row="0"
+            Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+            BorderThickness="0,0,0,1"
+            Padding="24,16">
+      <StackPanel Spacing="4">
+        <TextBlock Text="{DynamicResource Localized_VisitorConfiguration}"
+                   FontSize="20"
+                   FontWeight="SemiBold"
+                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+        <TextBlock Text="{DynamicResource Localized_ConfigureAVisitorToConnect}"
+                   FontSize="13"
+                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+      </StackPanel>
+    </Border>
+
+    <!-- Main Content -->
+    <ScrollViewer Grid.Row="1"
+                  HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto">
+      <StackPanel Margin="24" Spacing="16">
+
+        <!-- Basic Settings Section -->
+        <Border Classes="section-border">
+          <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                ColumnDefinitions="120,*"
+                RowSpacing="12"
+                ColumnSpacing="12">
+
+            <!-- Section Header -->
+            <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
+                       Classes="section-header"
+                       Text="{DynamicResource Localized_BasicSettings}" />
+
+            <!-- Visitor Name -->
+            <TextBlock Grid.Row="1" Grid.Column="0"
+                       Classes="form-label"
+                       Text="{DynamicResource Localized_VisitorName}"
+                       VerticalAlignment="Top" />
+            <StackPanel Grid.Row="1" Grid.Column="1"
+                        Classes="form-field">
+              <TextBox Text="{Binding VisitorName}"
+                       MinHeight="32"
+                       Padding="8,6"
+                       FontSize="13"
+                       Watermark="e.g., my-ssh-visitor"
+                       AutomationProperties.Name="Visitor Name input field"
+                       AutomationProperties.HelpText="Enter a unique name for this visitor configuration" />
+              <TextBlock Classes="form-hint"
+                         Text="{DynamicResource Localized_Required}" />
             </StackPanel>
+
+            <!-- Visitor Type -->
+            <TextBlock Grid.Row="2" Grid.Column="0"
+                       Classes="form-label"
+                       Text="{DynamicResource Localized_VisitorType}"
+                       VerticalAlignment="Top" />
+            <StackPanel Grid.Row="2" Grid.Column="1"
+                        Classes="form-field">
+              <ComboBox ItemsSource="{Binding VisitorTypes}"
+                        SelectedItem="{Binding VisitorType}"
+                        MinHeight="32"
+                        Padding="8,4"
+                        FontSize="13"
+                        HorizontalAlignment="Stretch"
+                        AutomationProperties.Name="Visitor Type selector"
+                        AutomationProperties.HelpText="Select the type of visitor: STCP, XTCP, or SUDP" />
+              <TextBlock Classes="form-hint"
+                         Text="{DynamicResource Localized_Required}" />
+            </StackPanel>
+
+            <!-- Server Name -->
+            <TextBlock Grid.Row="3" Grid.Column="0"
+                       Classes="form-label"
+                       Text="{DynamicResource Localized_ServerName}"
+                       VerticalAlignment="Top" />
+            <StackPanel Grid.Row="3" Grid.Column="1"
+                        Classes="form-field">
+              <TextBox Text="{Binding ServerName}"
+                       MinHeight="32"
+                       Padding="8,6"
+                       FontSize="13"
+                       Watermark="Name of the proxy this visitor connects to"
+                       AutomationProperties.Name="Server Name input field"
+                       AutomationProperties.HelpText="Enter the name of the STCP, XTCP, or SUDP proxy to visit" />
+              <TextBlock Classes="form-hint"
+                         Text="The name of the STCP/XTCP/SUDP proxy to visit" />
+            </StackPanel>
+          </Grid>
         </Border>
 
-        <!-- Main Content -->
-        <ScrollViewer Grid.Row="1"
-                      HorizontalScrollBarVisibility="Disabled"
-                      VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="24" Spacing="16">
+        <!-- Security Settings Section -->
+        <Border Classes="section-border">
+          <Grid RowDefinitions="Auto,Auto"
+                ColumnDefinitions="120,*"
+                RowSpacing="12"
+                ColumnSpacing="12">
 
-                <!-- Basic Settings Section -->
-                <Border Classes="section-border">
-                    <Grid RowDefinitions="Auto,Auto,Auto,Auto"
-                          ColumnDefinitions="120,*"
-                          RowSpacing="12"
-                          ColumnSpacing="12">
+            <!-- Section Header -->
+            <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
+                       Classes="section-header"
+                       Text="{DynamicResource Localized_SecuritySettings}" />
 
-                        <!-- Section Header -->
-                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
-                                   Classes="section-header"
-                                   Text="{DynamicResource Localized_BasicSettings}" />
-
-                        <!-- Visitor Name -->
-                        <TextBlock Grid.Row="1" Grid.Column="0"
-                                   Classes="form-label"
-                                   Text="{DynamicResource Localized_VisitorName}"
-                                   VerticalAlignment="Top" />
-                        <StackPanel Grid.Row="1" Grid.Column="1"
-                                   Classes="form-field">
-                            <TextBox Text="{Binding VisitorName}"
-                                    MinHeight="32"
-                                    Padding="8,6"
-                                    FontSize="13"
-                                    Watermark="e.g., my-ssh-visitor"
-                                    AutomationProperties.Name="Visitor Name input field"
-                                    AutomationProperties.HelpText="Enter a unique name for this visitor configuration" />
-                            <TextBlock Classes="form-hint"
-                                       Text="{DynamicResource Localized_Required}" />
-                        </StackPanel>
-
-                        <!-- Visitor Type -->
-                        <TextBlock Grid.Row="2" Grid.Column="0"
-                                   Classes="form-label"
-                                   Text="{DynamicResource Localized_VisitorType}"
-                                   VerticalAlignment="Top" />
-                        <StackPanel Grid.Row="2" Grid.Column="1"
-                                   Classes="form-field">
-                            <ComboBox ItemsSource="{Binding VisitorTypes}"
-                                      SelectedItem="{Binding VisitorType}"
-                                      MinHeight="32"
-                                      Padding="8,4"
-                                      FontSize="13"
-                                      HorizontalAlignment="Stretch"
-                                      AutomationProperties.Name="Visitor Type selector"
-                                      AutomationProperties.HelpText="Select the type of visitor: STCP, XTCP, or SUDP" />
-                            <TextBlock Classes="form-hint"
-                                       Text="{DynamicResource Localized_Required}" />
-                        </StackPanel>
-
-                        <!-- Server Name -->
-                        <TextBlock Grid.Row="3" Grid.Column="0"
-                                   Classes="form-label"
-                                   Text="{DynamicResource Localized_ServerName}"
-                                   VerticalAlignment="Top" />
-                        <StackPanel Grid.Row="3" Grid.Column="1"
-                                   Classes="form-field">
-                            <TextBox Text="{Binding ServerName}"
-                                    MinHeight="32"
-                                    Padding="8,6"
-                                    FontSize="13"
-                                    Watermark="Name of the proxy this visitor connects to"
-                                    AutomationProperties.Name="Server Name input field"
-                                    AutomationProperties.HelpText="Enter the name of the STCP, XTCP, or SUDP proxy to visit" />
-                            <TextBlock Classes="form-hint"
-                                       Text="The name of the STCP/XTCP/SUDP proxy to visit" />
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <!-- Security Settings Section -->
-                <Border Classes="section-border">
-                    <Grid RowDefinitions="Auto,Auto"
-                          ColumnDefinitions="120,*"
-                          RowSpacing="12"
-                          ColumnSpacing="12">
-
-                        <!-- Section Header -->
-                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
-                                   Classes="section-header"
-                                   Text="{DynamicResource Localized_SecuritySettings}" />
-
-                        <!-- Secret Key -->
-                        <TextBlock Grid.Row="1" Grid.Column="0"
-                                   Classes="form-label"
-                                   Text="{DynamicResource Localized_SecretKey}"
-                                   VerticalAlignment="Top" />
-                        <StackPanel Grid.Row="1" Grid.Column="1"
-                                   Classes="form-field">
-                            <TextBox Text="{Binding SecretKey}"
-                                    MinHeight="32"
-                                    Padding="8,6"
-                                    FontSize="13"
-                                    PasswordChar="*"
-                                    Watermark="Shared secret key (must match proxy)"
-                                    AutomationProperties.Name="Secret Key input field"
-                                    AutomationProperties.HelpText="Enter the shared secret key that matches the proxy configuration" />
-                            <TextBlock Classes="form-hint"
-                                       Text="{DynamicResource Localized_MustMatchTheProxySecretKey}" />
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <!-- Bind Settings Section -->
-                <Border Classes="section-border">
-                    <Grid RowDefinitions="Auto,Auto,Auto,Auto"
-                          ColumnDefinitions="120,*"
-                          RowSpacing="12"
-                          ColumnSpacing="12">
-
-                        <!-- Section Header -->
-                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
-                                   Classes="section-header"
-                                   Text="{DynamicResource Localized_BindSettings}" />
-
-                        <!-- Bind Address -->
-                        <TextBlock Grid.Row="1" Grid.Column="0"
-                                   Classes="form-label"
-                                   Text="{DynamicResource Localized_BindAddr}"
-                                   VerticalAlignment="Top" />
-                        <StackPanel Grid.Row="1" Grid.Column="1"
-                                   Classes="form-field">
-                            <TextBox Text="{Binding BindAddr}"
-                                    MinHeight="32"
-                                    Padding="8,6"
-                                    FontSize="13"
-                                    Watermark="127.0.0.1"
-                                    AutomationProperties.Name="Bind Address input field"
-                                    AutomationProperties.HelpText="Enter the IP address to bind to" />
-                        </StackPanel>
-
-                        <!-- Bind Port -->
-                        <TextBlock Grid.Row="2" Grid.Column="0"
-                                   Classes="form-label"
-                                   Text="{DynamicResource Localized_BindPort}"
-                                   VerticalAlignment="Top" />
-                        <StackPanel Grid.Row="2" Grid.Column="1"
-                                   Classes="form-field">
-                            <NumericUpDown Value="{Binding BindPort}"
-                                          MinHeight="32"
-                                          Padding="8,4"
-                                          FontSize="13"
-                                          Minimum="1"
-                                          Maximum="65535"
-                                          Increment="1"
-                                          FormatString="0"
-                                          HorizontalAlignment="Stretch"
-                                          AutomationProperties.Name="Bind Port input field"
-                                          AutomationProperties.HelpText="Enter the local port to listen on for incoming connections" />
-                            <TextBlock Classes="form-hint"
-                                       Text="{DynamicResource Localized_LocalPortToListenOn}" />
-                        </StackPanel>
-
-                        <!-- Bind IP (Optional) -->
-                        <TextBlock Grid.Row="3" Grid.Column="0"
-                                   Classes="form-label"
-                                   Text="Bind IP"
-                                   VerticalAlignment="Top" />
-                        <StackPanel Grid.Row="3" Grid.Column="1"
-                                   Classes="form-field">
-                            <TextBox Text="{Binding BindIp}"
-                                    MinHeight="32"
-                                    Padding="8,6"
-                                    FontSize="13"
-                                    Watermark="{DynamicResource Localized_SpecificIPToBindTo}"
-                                    AutomationProperties.Name="Bind IP input field"
-                                    AutomationProperties.HelpText="Optional: Enter a specific IP address to bind to" />
-                            <TextBlock Classes="form-hint"
-                                       Text="{DynamicResource Localized_OptionalLeaveEmptyToBindToAll}" />
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <!-- Validation Status (Conditional) -->
-                <Border Classes="error-border"
-                        IsVisible="{Binding HasValidationError}">
-                    <StackPanel Spacing="8">
-                        <TextBlock FontSize="13"
-                                   FontWeight="SemiBold"
-                                   Foreground="White">
-                            <Run Text="{DynamicResource Localized_ConfigurationError}" />
-                        </TextBlock>
-                        <TextBlock Text="{Binding ValidationError}"
-                                   FontSize="11"
-                                   Foreground="White"
-                                   TextWrapping="Wrap" />
-                    </StackPanel>
-                </Border>
-
+            <!-- Secret Key -->
+            <TextBlock Grid.Row="1" Grid.Column="0"
+                       Classes="form-label"
+                       Text="{DynamicResource Localized_SecretKey}"
+                       VerticalAlignment="Top" />
+            <StackPanel Grid.Row="1" Grid.Column="1"
+                        Classes="form-field">
+              <TextBox Text="{Binding SecretKey}"
+                       MinHeight="32"
+                       Padding="8,6"
+                       FontSize="13"
+                       PasswordChar="*"
+                       Watermark="Shared secret key (must match proxy)"
+                       AutomationProperties.Name="Secret Key input field"
+                       AutomationProperties.HelpText="Enter the shared secret key that matches the proxy configuration" />
+              <TextBlock Classes="form-hint"
+                         Text="{DynamicResource Localized_MustMatchTheProxySecretKey}" />
             </StackPanel>
-        </ScrollViewer>
-
-        <!-- Action Bar -->
-        <Border Grid.Row="2"
-                Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
-                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                BorderThickness="0,1,0,0"
-                Padding="24,12"
-                CornerRadius="0,0,8,8">
-            <StackPanel Orientation="Horizontal"
-                       HorizontalAlignment="Right"
-                       Spacing="12">
-                <Button Command="{Binding CancelCommand}"
-                        Classes="secondary-button"
-                        Content="{DynamicResource Localized_Cancel}"
-                        IsEnabled="{Binding !IsSaving}"
-                        AutomationProperties.Name="Cancel button"
-                        AutomationProperties.HelpText="Discard changes and close the editor" />
-
-                <Button Command="{Binding SaveCommand}"
-                        Classes="primary-button"
-                        IsEnabled="{Binding !IsSaving}"
-                        AutomationProperties.Name="Save button"
-                        AutomationProperties.HelpText="Save the visitor configuration">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="{DynamicResource Localized_Save}" />
-                        <ProgressBar IsIndeterminate="True"
-                                    Width="16" Height="16"
-                                    IsVisible="{Binding IsSaving}" />
-                    </StackPanel>
-                </Button>
-            </StackPanel>
+          </Grid>
         </Border>
-    </Grid>
+
+        <!-- Bind Settings Section -->
+        <Border Classes="section-border">
+          <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                ColumnDefinitions="120,*"
+                RowSpacing="12"
+                ColumnSpacing="12">
+
+            <!-- Section Header -->
+            <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
+                       Classes="section-header"
+                       Text="{DynamicResource Localized_BindSettings}" />
+
+            <!-- Bind Address -->
+            <TextBlock Grid.Row="1" Grid.Column="0"
+                       Classes="form-label"
+                       Text="{DynamicResource Localized_BindAddr}"
+                       VerticalAlignment="Top" />
+            <StackPanel Grid.Row="1" Grid.Column="1"
+                        Classes="form-field">
+              <TextBox Text="{Binding BindAddr}"
+                       MinHeight="32"
+                       Padding="8,6"
+                       FontSize="13"
+                       Watermark="127.0.0.1"
+                       AutomationProperties.Name="Bind Address input field"
+                       AutomationProperties.HelpText="Enter the IP address to bind to" />
+            </StackPanel>
+
+            <!-- Bind Port -->
+            <TextBlock Grid.Row="2" Grid.Column="0"
+                       Classes="form-label"
+                       Text="{DynamicResource Localized_BindPort}"
+                       VerticalAlignment="Top" />
+            <StackPanel Grid.Row="2" Grid.Column="1"
+                        Classes="form-field">
+              <NumericUpDown Value="{Binding BindPort}"
+                             MinHeight="32"
+                             Padding="8,4"
+                             FontSize="13"
+                             Minimum="1"
+                             Maximum="65535"
+                             Increment="1"
+                             FormatString="0"
+                             HorizontalAlignment="Stretch"
+                             AutomationProperties.Name="Bind Port input field"
+                             AutomationProperties.HelpText="Enter the local port to listen on for incoming connections" />
+              <TextBlock Classes="form-hint"
+                         Text="{DynamicResource Localized_LocalPortToListenOn}" />
+            </StackPanel>
+
+            <!-- Bind IP (Optional) -->
+            <TextBlock Grid.Row="3" Grid.Column="0"
+                       Classes="form-label"
+                       Text="Bind IP"
+                       VerticalAlignment="Top" />
+            <StackPanel Grid.Row="3" Grid.Column="1"
+                        Classes="form-field">
+              <TextBox Text="{Binding BindIp}"
+                       MinHeight="32"
+                       Padding="8,6"
+                       FontSize="13"
+                       Watermark="{DynamicResource Localized_SpecificIPToBindTo}"
+                       AutomationProperties.Name="Bind IP input field"
+                       AutomationProperties.HelpText="Optional: Enter a specific IP address to bind to" />
+              <TextBlock Classes="form-hint"
+                         Text="{DynamicResource Localized_OptionalLeaveEmptyToBindToAll}" />
+            </StackPanel>
+          </Grid>
+        </Border>
+
+        <!-- Validation Status (Conditional) -->
+        <Border Classes="error-border"
+                IsVisible="{Binding HasValidationError}">
+          <StackPanel Spacing="8">
+            <TextBlock FontSize="13"
+                       FontWeight="SemiBold"
+                       Foreground="White">
+              <Run Text="{DynamicResource Localized_ConfigurationError}" />
+            </TextBlock>
+            <TextBlock Text="{Binding ValidationError}"
+                       FontSize="11"
+                       Foreground="White"
+                       TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- Action Bar -->
+    <Border Grid.Row="2"
+            Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+            BorderThickness="0,1,0,0"
+            Padding="24,12"
+            CornerRadius="0,0,8,8">
+      <StackPanel Orientation="Horizontal"
+                  HorizontalAlignment="Right"
+                  Spacing="12">
+        <Button Command="{Binding CancelCommand}"
+                Classes="secondary-button"
+                Content="{DynamicResource Localized_Cancel}"
+                IsEnabled="{Binding !IsSaving}"
+                AutomationProperties.Name="Cancel button"
+                AutomationProperties.HelpText="Discard changes and close the editor" />
+
+        <Button Command="{Binding SaveCommand}"
+                Classes="primary-button"
+                IsEnabled="{Binding !IsSaving}"
+                AutomationProperties.Name="Save button"
+                AutomationProperties.HelpText="Save the visitor configuration">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="{DynamicResource Localized_Save}" />
+            <ProgressBar IsIndeterminate="True"
+                         Width="16" Height="16"
+                         IsVisible="{Binding IsSaving}" />
+          </StackPanel>
+        </Button>
+      </StackPanel>
+    </Border>
+  </Grid>
 </Window>
+

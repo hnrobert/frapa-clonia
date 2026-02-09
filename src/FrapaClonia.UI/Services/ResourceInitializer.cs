@@ -100,7 +100,7 @@ public static class ResourceInitializer
             localizedResources.OptionalUserNameToAvoidProxyNameConflicts);
         AddResource(resources, "Localized_Authentication", localizedResources.Authentication);
         AddResource(resources, "Localized_Method", localizedResources.Method);
-        AddResource(resources, "Localized_ClientID", localizedResources.ClientId);
+        AddResource(resources, "Localized_ClientId", localizedResources.ClientId);
         AddResource(resources, "Localized_ClientSecret", localizedResources.ClientSecret);
         AddResource(resources, "Localized_TokenEndpoint", localizedResources.TokenEndpoint);
         AddResource(resources, "Localized_Audience", localizedResources.Audience);
@@ -108,11 +108,11 @@ public static class ResourceInitializer
         AddResource(resources, "Localized_EnterYourAuthenticationToken",
             localizedResources.EnterYourAuthenticationToken);
         AddResource(resources, "Localized_OptionalAudience", localizedResources.OptionalAudience);
-        AddResource(resources, "Localized_EGOpenidProfile", localizedResources.EgOpenidProfile);
+        AddResource(resources, "Localized_EgOpenidProfile", localizedResources.EgOpenidProfile);
         AddResource(resources, "Localized_TransportSettings", localizedResources.TransportSettings);
         AddResource(resources, "Localized_DialTimeout", localizedResources.DialTimeout);
         AddResource(resources, "Localized_Seconds", localizedResources.Seconds);
-        AddResource(resources, "Localized_TCPMux", localizedResources.TcpMux);
+        AddResource(resources, "Localized_TcpMux", localizedResources.TcpMux);
         AddResource(resources, "Localized_HeartbeatInterval", localizedResources.HeartbeatInterval);
         AddResource(resources, "Localized_HeartbeatTimeout", localizedResources.HeartbeatTimeout);
         AddResource(resources, "Localized_EncryptCommunicationWithTheFrpsServer",
@@ -120,7 +120,7 @@ public static class ResourceInitializer
         AddResource(resources, "Localized_LoggingSection", localizedResources.LoggingSection);
         AddResource(resources, "Localized_MaxDays", localizedResources.MaxDays);
         AddResource(resources, "Localized_LogTo", localizedResources.LogTo);
-        AddResource(resources, "Localized_EGConsolePathToLogfile", localizedResources.EgConsolePathToLogfile);
+        AddResource(resources, "Localized_EgConsolePathToLogfile", localizedResources.EgConsolePathToLogfile);
         AddResource(resources, "Localized_StatusSection", localizedResources.StatusSection);
         AddResource(resources, "Localized_ConfigurationIsValid", localizedResources.ConfigurationIsValid);
         AddResource(resources, "Localized_ResetToDefaults", localizedResources.ResetToDefaults);
@@ -181,7 +181,7 @@ public static class ResourceInitializer
         AddResource(resources, "Localized_CommaSeparatedList", localizedResources.CommaSeparatedList);
         AddResource(resources, "Localized_LeaveEmptyIfUsingCustomDomains",
             localizedResources.LeaveEmptyIfUsingCustomDomains);
-        AddResource(resources, "Localized_EG_www_example_com", localizedResources.EgWwwExampleCom);
+        AddResource(resources, "Localized_EgWwwExampleCom", localizedResources.EgWwwExampleCom);
         AddResource(resources, "Localized_HTTPAuthentication", localizedResources.HTTPAuthentication);
         AddResource(resources, "Localized_Username", localizedResources.Username);
         AddResource(resources, "Localized_Password", localizedResources.Password);
@@ -192,7 +192,7 @@ public static class ResourceInitializer
         AddResource(resources, "Localized_CommaSeparatedListOfAllowedUsers",
             localizedResources.CommaSeparatedListOfAllowedUsers);
         AddResource(resources, "Localized_LeaveEmptyToAllowAllUsers", localizedResources.LeaveEmptyToAllowAllUsers);
-        AddResource(resources, "Localized_TCPMultiplexerSettings", localizedResources.TcpMultiplexerSettings);
+        AddResource(resources, "Localized_TcpMultiplexerSettings", localizedResources.TcpMultiplexerSettings);
         AddResource(resources, "Localized_MultiplexerName", localizedResources.MultiplexerName);
         AddResource(resources, "Localized_NameOfTheMultiplexer", localizedResources.NameOfTheMultiplexer);
         AddResource(resources, "Localized_TheMultiplexerMustBeConfiguredOnTheServer",
@@ -203,7 +203,7 @@ public static class ResourceInitializer
         AddResource(resources, "Localized_CompressDataToReduceBandwidthUsage",
             localizedResources.CompressDataToReduceBandwidthUsage);
         AddResource(resources, "Localized_BandwidthLimit", localizedResources.BandwidthLimit);
-        AddResource(resources, "Localized_EG_1MB_256KB", localizedResources.Eg1Mb256Kb);
+        AddResource(resources, "Localized_Eg1Mb256Kb", localizedResources.Eg1Mb256Kb);
         AddResource(resources, "Localized_LimitBandwidthForThisProxy", localizedResources.LimitBandwidthForThisProxy);
         AddResource(resources, "Localized_EnableHealthCheck", localizedResources.EnableHealthCheck);
         AddResource(resources, "Localized_MonitorTheHealthOfTheLocalService",
@@ -218,16 +218,16 @@ public static class ResourceInitializer
         AddResource(resources, "Localized_OneHeaderPerLine", localizedResources.OneHeaderPerLine);
         AddResource(resources, "Localized_PluginConfiguration", localizedResources.PluginConfiguration);
         AddResource(resources, "Localized_PluginTypeLabel", localizedResources.PluginTypeLabel);
-        AddResource(resources, "Localized_HTTPProxyURL", localizedResources.HTTPProxyUrl);
-        AddResource(resources, "Localized_SOCKS5URL", localizedResources.Socks5Url);
+        AddResource(resources, "Localized_HTTPProxyUrl", localizedResources.HTTPProxyUrl);
+        AddResource(resources, "Localized_Socks5Url", localizedResources.Socks5Url);
         AddResource(resources, "Localized_StaticFilePluginSettings", localizedResources.StaticFilePluginSettings);
         AddResource(resources, "Localized_LocalPath", localizedResources.LocalPath);
-        AddResource(resources, "Localized_URLPrefix", localizedResources.UrlPrefix);
-        AddResource(resources, "Localized_HTTPSToHTTPPluginSettings", localizedResources.HttpsToHTTPPluginSettings);
+        AddResource(resources, "Localized_UrlPrefix", localizedResources.UrlPrefix);
+        AddResource(resources, "Localized_HttpsToHTTPPluginSettings", localizedResources.HttpsToHTTPPluginSettings);
         AddResource(resources, "Localized_LocalAddress", localizedResources.LocalAddress);
-        AddResource(resources, "Localized_CRTPath", localizedResources.CrtPath);
-        AddResource(resources, "Localized_KeyPath", localizedResources.KeyPath);
-        AddResource(resources, "Localized_HTTPToHTTPSPluginSettings", localizedResources.HTTPToHttpsPluginSettings);
+        AddResource(resources, "Localized_CrtPath", localizedResources.CrtPath);
+        AddResource(resources, "Localized_Keypath", localizedResources.KeyPath);
+        AddResource(resources, "Localized_HTTPToHttpsPluginSettings", localizedResources.HTTPToHttpsPluginSettings);
         AddResource(resources, "Localized_ConfigurationError", localizedResources.ConfigurationError);
 
         // Visitor List
@@ -285,7 +285,7 @@ public static class ResourceInitializer
         AddResource(resources, "Localized_ConfigurationLocation", localizedResources.ConfigurationLocation);
         AddResource(resources, "Localized_VersionInfo", localizedResources.VersionInfo);
         AddResource(resources, "Localized_BuildInfo", localizedResources.BuildInfo);
-        AddResource(resources, "Localized_NETRuntimeInfo", localizedResources.NetRuntimeInfo);
+        AddResource(resources, "Localized_NetRuntimeInfo", localizedResources.NetRuntimeInfo);
         AddResource(resources, "Localized_CrossPlatformFrpcVisualClient",
             localizedResources.CrossPlatformFrpcVisualClient);
         AddResource(resources, "Localized_SaveSettings", localizedResources.SaveSettings);

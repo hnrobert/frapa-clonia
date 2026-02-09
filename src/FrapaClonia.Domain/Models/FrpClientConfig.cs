@@ -61,7 +61,7 @@ public class ClientCommonConfig
     public int UdpPacketSize { get; set; } = 1500;
 
     // Metadata
-    public Dictionary<string, string>? Metadatas { get; set; }
+    public Dictionary<string, string>? Metadata { get; set; }
 
     // Include additional config files
     public List<string>? Includes { get; set; }

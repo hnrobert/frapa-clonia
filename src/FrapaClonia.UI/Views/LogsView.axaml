@@ -8,135 +8,136 @@
              x:Class="FrapaClonia.UI.Views.LogsView"
              x:DataType="vm:LogsViewModel">
 
-    <Design.DataContext>
-        <vm:LogsViewModel />
-    </Design.DataContext>
+  <Design.DataContext>
+    <vm:LogsViewModel />
+  </Design.DataContext>
 
-    <UserControl.Resources>
-        <converters:LevelToLowerConverter x:Key="LevelToLowerConverter" />
-    </UserControl.Resources>
+  <UserControl.Resources>
+    <converters:LevelToLowerConverter x:Key="LevelToLowerConverter" />
+  </UserControl.Resources>
 
-    <UserControl.Styles>
-        <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
-    </UserControl.Styles>
+  <UserControl.Styles>
+    <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
+  </UserControl.Styles>
 
-    <Grid RowDefinitions="Auto,Auto,*">
+  <Grid RowDefinitions="Auto,Auto,*">
 
-        <!-- Page Header -->
-        <Border Grid.Row="0" Classes="page-header">
-            <Grid ColumnDefinitions="*,Auto">
-                <StackPanel Grid.Column="0" Spacing="{StaticResource SpacingS}">
-                    <TextBlock Text="{DynamicResource Localized_Logs}"
-                               Classes="page-title" />
-                    <TextBlock Text="{DynamicResource Localized_ViewRealtimeLogsFromFrpc}"
-                               Classes="page-subtitle" />
-                </StackPanel>
+    <!-- Page Header -->
+    <Border Grid.Row="0" Classes="page-header">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Grid.Column="0" Spacing="{StaticResource SpacingS}">
+          <TextBlock Text="{DynamicResource Localized_Logs}"
+                     Classes="page-title" />
+          <TextBlock Text="{DynamicResource Localized_ViewRealtimeLogsFromFrpc}"
+                     Classes="page-subtitle" />
+        </StackPanel>
 
-                <!-- Status Info -->
-                <StackPanel Grid.Column="1"
-                            Orientation="Horizontal"
-                            Spacing="{StaticResource SpacingM}"
-                            VerticalAlignment="Center">
-                    <TextBlock>
-                        <Run Text="{Binding LogEntries.Count}" />
-                        <Run Text=" " />
-                        <Run Text="{DynamicResource Localized_Entries}" />
-                    </TextBlock>
-                </StackPanel>
-            </Grid>
+        <!-- Status Info -->
+        <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    Spacing="{StaticResource SpacingM}"
+                    VerticalAlignment="Center">
+          <TextBlock>
+            <Run Text="{Binding LogEntries.Count}" />
+            <Run Text=" " />
+            <Run Text="{DynamicResource Localized_Entries}" />
+          </TextBlock>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- Page Toolbar -->
+    <Border Grid.Row="1" Classes="page-toolbar">
+      <Grid ColumnDefinitions="*,Auto">
+        <!-- Left: Filters -->
+        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
+          <TextBlock Classes="field-label">
+            <Run Text="{DynamicResource Localized_LogLevelLabel}" /><Run Text=":" />
+          </TextBlock>
+          <ComboBox ItemsSource="{Binding LogLevels}"
+                    SelectedItem="{Binding SelectedLogLevel}"
+                    PlaceholderText="{DynamicResource Localized_AllLevels}"
+                    Classes="filter-box" />
+
+          <CheckBox IsChecked="{Binding IsFollowEnabled}"
+                    Content="{DynamicResource Localized_AutoScroll}"
+                    Margin="{StaticResource ThicknessLeftL}"
+                    VerticalAlignment="Center" />
+        </StackPanel>
+
+        <!-- Right: Action Buttons -->
+        <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    Spacing="{StaticResource SpacingS}">
+          <Button Command="{Binding RefreshCommand}"
+                  Content="{DynamicResource Localized_Refresh}"
+                  ToolTip.Tip="{DynamicResource Localized_ReloadLogsFromBuffer}"
+                  IsEnabled="{Binding !IsClearing}" />
+          <Button Command="{Binding ClearLogsCommand}"
+                  Content="{DynamicResource Localized_ClearAll}"
+                  ToolTip.Tip="{DynamicResource Localized_ClearAllLogs}"
+                  IsEnabled="{Binding !IsClearing}" />
+          <Button Command="{Binding ExportLogsCommand}"
+                  Content="{DynamicResource Localized_Export}"
+                  ToolTip.Tip="{DynamicResource Localized_ExportLogsToFile}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- Page Content -->
+    <Border Grid.Row="2" Classes="page-content">
+      <Grid>
+        <!-- Empty State -->
+        <Border IsVisible="{Binding LogEntries.Count, Converter={x:Static ObjectConverters.IsNull}}"
+                Classes="empty-state"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+          <StackPanel Spacing="{StaticResource SpacingM}" HorizontalAlignment="Center">
+            <TextBlock Text="&#xF8D7;"
+                       FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                       FontSize="48"
+                       Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{DynamicResource Localized_NoLogsAvailable}"
+                       FontSize="{StaticResource FontSizeXL}"
+                       FontWeight="{StaticResource FontWeightSemiBold}"
+                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{DynamicResource Localized_LogsWillAppearHere}"
+                       FontSize="{StaticResource FontSizeM}"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
         </Border>
 
-        <!-- Page Toolbar -->
-        <Border Grid.Row="1" Classes="page-toolbar">
-            <Grid ColumnDefinitions="*,Auto">
-                <!-- Left: Filters -->
-                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
-                    <TextBlock Classes="field-label">
-                        <Run Text="{DynamicResource Localized_LogLevelLabel}" /><Run Text=":" />
-                    </TextBlock>
-                    <ComboBox ItemsSource="{Binding LogLevels}"
-                              SelectedItem="{Binding SelectedLogLevel}"
-                              PlaceholderText="{DynamicResource Localized_AllLevels}"
-                              Classes="filter-box" />
-
-                    <CheckBox IsChecked="{Binding IsFollowEnabled}"
-                              Content="{DynamicResource Localized_AutoScroll}"
-                              Margin="{StaticResource ThicknessLeftL}"
-                              VerticalAlignment="Center" />
+        <!-- Log Viewer -->
+        <ScrollViewer IsVisible="{Binding LogEntries.Count, Converter={x:Static ObjectConverters.IsNotNull}}"
+                      HorizontalScrollBarVisibility="Disabled">
+          <ListBox ItemsSource="{Binding LogEntries}"
+                   Classes="logViewer"
+                   HorizontalAlignment="Stretch">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="0">
+                  <TextBlock Text="{Binding Timestamp, StringFormat='[{0:HH:mm:ss.fff}]'}"
+                             Classes="log-timestamp" />
+                  <TextBlock Text="["
+                             Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+                  <TextBlock Text="{Binding Level, Converter={StaticResource LevelToLowerConverter}}"
+                             Classes="log-level" />
+                  <TextBlock Text="]"
+                             Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+                  <TextBlock Text=" "
+                             Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+                  <TextBlock Text="{Binding Message}"
+                             TextWrapping="NoWrap" />
                 </StackPanel>
-
-                <!-- Right: Action Buttons -->
-                <StackPanel Grid.Column="1"
-                            Orientation="Horizontal"
-                            Spacing="{StaticResource SpacingS}">
-                    <Button Command="{Binding RefreshCommand}"
-                            Content="{DynamicResource Localized_Refresh}"
-                            ToolTip.Tip="{DynamicResource Localized_ReloadLogsFromBuffer}"
-                            IsEnabled="{Binding !IsClearing}" />
-                    <Button Command="{Binding ClearLogsCommand}"
-                            Content="{DynamicResource Localized_ClearAll}"
-                            ToolTip.Tip="{DynamicResource Localized_ClearAllLogs}"
-                            IsEnabled="{Binding !IsClearing}" />
-                    <Button Command="{Binding ExportLogsCommand}"
-                            Content="{DynamicResource Localized_Export}"
-                            ToolTip.Tip="{DynamicResource Localized_ExportLogsToFile}" />
-                </StackPanel>
-            </Grid>
-        </Border>
-
-        <!-- Page Content -->
-        <Border Grid.Row="2" Classes="page-content">
-            <Grid>
-                <!-- Empty State -->
-                <Border IsVisible="{Binding LogEntries.Count, Converter={x:Static ObjectConverters.IsNull}}"
-                        Classes="empty-state"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
-                    <StackPanel Spacing="{StaticResource SpacingM}" HorizontalAlignment="Center">
-                        <TextBlock Text="&#xF8D7;"
-                                   FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                   FontSize="48"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                                   HorizontalAlignment="Center" />
-                        <TextBlock Text="{DynamicResource Localized_NoLogsAvailable}"
-                                   FontSize="{StaticResource FontSizeXL}"
-                                   FontWeight="{StaticResource FontWeightSemiBold}"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
-                                   HorizontalAlignment="Center" />
-                        <TextBlock Text="{DynamicResource Localized_LogsWillAppearHere}"
-                                   FontSize="{StaticResource FontSizeM}"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                   HorizontalAlignment="Center" />
-                    </StackPanel>
-                </Border>
-
-                <!-- Log Viewer -->
-                <ScrollViewer IsVisible="{Binding LogEntries.Count, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                HorizontalScrollBarVisibility="Disabled">
-                    <ListBox ItemsSource="{Binding LogEntries}"
-                             Classes="logViewer"
-                             HorizontalAlignment="Stretch">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Spacing="0">
-                                    <TextBlock Text="{Binding Timestamp, StringFormat='[{0:HH:mm:ss.fff}]'}"
-                                               Classes="log-timestamp" />
-                                    <TextBlock Text="["
-                                               Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-                                    <TextBlock Text="{Binding Level, Converter={StaticResource LevelToLowerConverter}}"
-                                               Classes="log-level" />
-                                    <TextBlock Text="]"
-                                               Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-                                    <TextBlock Text=" "
-                                               Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-                                    <TextBlock Text="{Binding Message}"
-                                               TextWrapping="NoWrap" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </ScrollViewer>
-            </Grid>
-        </Border>
-    </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </ScrollViewer>
+      </Grid>
+    </Border>
+  </Grid>
 </UserControl>
+

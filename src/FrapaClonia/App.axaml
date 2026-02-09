@@ -3,37 +3,40 @@
              x:Class="FrapaClonia.App"
              xmlns:local="using:FrapaClonia"
              xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              RequestedThemeVariant="Default">
 
-    <Application.DataTemplates>
-        <local:ViewLocator/>
-    </Application.DataTemplates>
+  <Application.DataTemplates>
+    <local:ViewLocator />
+  </Application.DataTemplates>
 
-    <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="avares://FrapaClonia.UI/Styles/DesignTokens.axaml" />
-            </ResourceDictionary.MergedDictionaries>
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://FrapaClonia.UI/Styles/DesignTokens.axaml" />
+      </ResourceDictionary.MergedDictionaries>
 
-            <!-- Converters -->
-            <converters:TypeToColorConverter x:Key="TypeToColorConverter" />
-            <converters:NotNullConverter x:Key="NotNullConverter" />
-            <converters:EmptyCollectionConverter x:Key="EmptyCollectionConverter" />
+      <!-- Converters -->
+      <converters:TypeToColorConverter x:Key="TypeToColorConverter" />
+      <converters:NotNullConverter x:Key="NotNullConverter" />
+      <converters:EmptyCollectionConverter x:Key="EmptyCollectionConverter" />
 
-            <!-- App Theme Colors -->
-            <SolidColorBrush x:Key="AppPrimaryBrush" Color="#3B82F6" />
-            <SolidColorBrush x:Key="AppPrimaryHoverBrush" Color="#2563EB" />
-            <SolidColorBrush x:Key="AppSecondaryBrush" Color="#64748B" />
-            <SolidColorBrush x:Key="AppSuccessBrush" Color="#10B981" />
-            <SolidColorBrush x:Key="AppWarningBrush" Color="#F59E0B" />
-            <SolidColorBrush x:Key="AppErrorBrush" Color="#EF4444" />
-            <SolidColorBrush x:Key="AppInfoBrush" Color="#3B82F6" />
-        </ResourceDictionary>
-    </Application.Resources>
+      <!-- App Theme Colors -->
+      <SolidColorBrush x:Key="AppPrimaryBrush" Color="#3B82F6" />
+      <SolidColorBrush x:Key="AppPrimaryHoverBrush" Color="#2563EB" />
+      <SolidColorBrush x:Key="AppSecondaryBrush" Color="#64748B" />
+      <SolidColorBrush x:Key="AppSuccessBrush" Color="#10B981" />
+      <SolidColorBrush x:Key="AppWarningBrush" Color="#F59E0B" />
+      <SolidColorBrush x:Key="AppErrorBrush" Color="#EF4444" />
+      <SolidColorBrush x:Key="AppInfoBrush" Color="#3B82F6" />
+    </ResourceDictionary>
+  </Application.Resources>
 
-    <Application.Styles>
-        <FluentTheme />
-        <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
-    </Application.Styles>
+  <Application.Styles>
+    <FluentTheme />
+    <avalonia:MaterialIconStyles />
+    <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
+  </Application.Styles>
 
 </Application>
+
