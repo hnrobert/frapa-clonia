@@ -57,30 +57,28 @@ public class LocalizedString : ObservableObject
 
     private void OnCultureChanged(object? sender, EventArgs e)
     {
-        // Refresh the value and notify on the UI thread
+        // Get the new value synchronously
         var newValue = _localizationService.GetString(_key, _args);
 
-        // Ensure updates happen on UI thread
+        // Always update on UI thread
         if (Dispatcher.UIThread.CheckAccess())
         {
-            // Update value and check if it actually changed
-            if (_value == newValue) return;
-            _value = newValue;
-            OnPropertyChanged(nameof(Value));
-            OnPropertyChanged(nameof(StringValue));
+            UpdateValue(newValue);
         }
         else
         {
-            // Capture newValue to avoid closure issues
+            // Post to UI thread - capture newValue to avoid closure issues
             var capturedValue = newValue;
-            Dispatcher.UIThread.Post(() =>
-            {
-                // Update value and check if it actually changed
-                if (_value == capturedValue) return;
-                _value = capturedValue;
-                OnPropertyChanged(nameof(Value));
-                OnPropertyChanged(nameof(StringValue));
-            });
+            Dispatcher.UIThread.Post(() => UpdateValue(capturedValue));
         }
+    }
+
+    private void UpdateValue(string newValue)
+    {
+        // Only update if value actually changed
+        if (_value == newValue) return;
+        _value = newValue;
+        OnPropertyChanged(nameof(Value));
+        OnPropertyChanged(nameof(StringValue));
     }
 }
