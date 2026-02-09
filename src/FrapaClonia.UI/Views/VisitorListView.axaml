@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
              xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="650"
@@ -40,9 +41,10 @@
                   IsEnabled="{Binding !IsLoading}"
                   ToolTip.Tip="Refresh visitor list">
             <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-              <TextBlock Text="&#xE117;"
-                         FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                         FontSize="{StaticResource IconSizeM}" />
+              <mi:MaterialIcon Kind="Refresh"
+                               Width="{StaticResource IconSizeM}"
+                               Height="{StaticResource IconSizeM}"
+                               VerticalAlignment="Center" />
               <TextBlock Text="{DynamicResource Localized_Refresh}" />
             </StackPanel>
           </Button>
@@ -50,8 +52,10 @@
                   Classes="primary"
                   ToolTip.Tip="Add a new visitor configuration">
             <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-              <TextBlock Text="+" FontSize="{StaticResource FontSizeL}"
-                         FontWeight="{StaticResource FontWeightBold}" />
+              <mi:MaterialIcon Kind="Plus"
+                               Width="18"
+                               Height="18"
+                               VerticalAlignment="Center" />
               <TextBlock Text="{DynamicResource Localized_AddVisitor}" />
             </StackPanel>
           </Button>
@@ -208,15 +212,17 @@
                           <StackPanel Orientation="Horizontal"
                                       Spacing="{StaticResource SpacingM}">
                             <StackPanel Orientation="Horizontal"
-                                        Spacing="{StaticResource SpacingXS}">
-                              <TextBlock Text="&#xE72E;"
-                                         FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                         FontSize="{StaticResource FontSizeS}"
-                                         IsVisible="{Binding Transport.UseEncryption}" />
-                              <TextBlock Text="&#xF8AF;"
-                                         FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                         FontSize="{StaticResource FontSizeS}"
-                                         IsVisible="{Binding Transport.UseCompression}" />
+                                        Spacing="{StaticResource SpacingS}">
+                              <mi:MaterialIcon Kind="Lock"
+                                               Width="14"
+                                               Height="14"
+                                               VerticalAlignment="Center"
+                                               IsVisible="{Binding Transport.UseEncryption, FallbackValue=False}" />
+                              <mi:MaterialIcon Kind="Compress"
+                                               Width="14"
+                                               Height="14"
+                                               VerticalAlignment="Center"
+                                               IsVisible="{Binding Transport.UseCompression, FallbackValue=False}" />
                             </StackPanel>
                             <TextBlock Text="Transport enabled"
                                        FontSize="{StaticResource FontSizeS}"
@@ -233,24 +239,24 @@
                         <Button Click="OnEditClick"
                                 Classes="icon-button"
                                 ToolTip.Tip="{DynamicResource Localized_EditVisitor}">
-                          <TextBlock Text="&#xE70F;"
-                                     FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                     FontSize="{StaticResource IconSizeM}" />
+                          <mi:MaterialIcon Kind="Pencil"
+                                           Width="{StaticResource IconSizeM}"
+                                           Height="{StaticResource IconSizeM}" />
                         </Button>
                         <Button Click="OnDuplicateClick"
                                 Classes="icon-button"
                                 ToolTip.Tip="Duplicate visitor">
-                          <TextBlock Text="&#xF817;"
-                                     FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                     FontSize="{StaticResource IconSizeM}" />
+                          <mi:MaterialIcon Kind="ContentCopy"
+                                           Width="{StaticResource IconSizeM}"
+                                           Height="{StaticResource IconSizeM}" />
                         </Button>
                         <Button Click="OnDeleteClick"
                                 Classes="icon-button"
                                 ToolTip.Tip="{DynamicResource Localized_DeleteVisitor}"
                                 Foreground="{DynamicResource AppErrorBrush}">
-                          <TextBlock Text="&#xE74D;"
-                                     FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                     FontSize="{StaticResource IconSizeM}" />
+                          <mi:MaterialIcon Kind="Delete"
+                                           Width="{StaticResource IconSizeM}"
+                                           Height="{StaticResource IconSizeM}" />
                         </Button>
                       </StackPanel>
                     </Grid>
@@ -264,11 +270,11 @@
                     Classes="empty-state"
                     HorizontalAlignment="Center">
               <StackPanel Spacing="{StaticResource SpacingL}" HorizontalAlignment="Center">
-                <TextBlock Text="&#xE711;"
-                           FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                           FontSize="48"
-                           Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                           HorizontalAlignment="Center" />
+                <mi:MaterialIcon Kind="AccountMultipleOutline"
+                                 Width="48"
+                                 Height="48"
+                                 Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                 HorizontalAlignment="Center" />
                 <TextBlock Text="{DynamicResource Localized_NoVisitorsConfigured}"
                            FontSize="{StaticResource FontSizeXL}"
                            FontWeight="{StaticResource FontWeightSemiBold}"
@@ -285,8 +291,10 @@
                         HorizontalAlignment="Center"
                         Margin="{StaticResource ThicknessTopS}">
                   <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-                    <TextBlock Text="+" FontSize="{StaticResource FontSizeL}"
-                               FontWeight="{StaticResource FontWeightBold}" />
+                    <mi:MaterialIcon Kind="Plus"
+                                     Width="18"
+                                     Height="18"
+                                     VerticalAlignment="Center" />
                     <TextBlock Text="{DynamicResource Localized_CreateYourFirstVisitor}" />
                   </StackPanel>
                 </Button>

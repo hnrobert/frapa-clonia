@@ -3,7 +3,7 @@
              x:Class="FrapaClonia.App"
              xmlns:local="using:FrapaClonia"
              xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
-             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              RequestedThemeVariant="Default">
 
   <Application.DataTemplates>
@@ -34,7 +34,7 @@
 
   <Application.Styles>
     <FluentTheme />
-    <avalonia:MaterialIconStyles />
+    <mi:MaterialIconStyles />
     <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
   </Application.Styles>
 

@@ -1,6 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
+        xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
 
   <!-- Global font settings for proper CJK character rendering -->
   <Style Selector="Window">
@@ -652,7 +652,7 @@
          HINT TOOLTIP ICON STYLES
          ============================================= -->
 
-  <!-- Hint Icon Button - Question mark icon using Material Icons -->
+  <!-- Hint icon -->
   <Style Selector="Button.hint-icon">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />
@@ -661,10 +661,8 @@
     <Setter Property="VerticalAlignment" Value="Center" />
     <Setter Property="Template">
       <ControlTemplate>
-        <avalonia:MaterialIcon Kind="HelpCircle"
-                               Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
-                               Width="15"
-                               Height="15" />
+        <mi:MaterialIcon Kind="Information"
+                         Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
       </ControlTemplate>
     </Setter>
   </Style>
@@ -673,7 +671,7 @@
     <Setter Property="Cursor" Value="Hand" />
   </Style>
 
-  <Style Selector="Button.hint-icon:pointerover /template/ avalonia|MaterialIcon">
+  <Style Selector="Button.hint-icon:pointerover /template/ mi|MaterialIcon">
     <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
   </Style>
 

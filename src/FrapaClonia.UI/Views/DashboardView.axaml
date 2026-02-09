@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
@@ -66,12 +67,15 @@
                         Orientation="Horizontal"
                         Spacing="{StaticResource SpacingM}"
                         VerticalAlignment="Center">
-              <Button Content="{DynamicResource Localized_StartFrpc}"
-                      Command="{Binding StartFrpcCommand}"
-                      Classes="primary" />
+              <Button Command="{Binding StartFrpcCommand}"
+                      Classes="primary">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+                  <mi:MaterialIcon Kind="Play" Width="16" Height="16" VerticalAlignment="Center" />
+                  <TextBlock Text="{DynamicResource Localized_StartFrpc}" />
+                </StackPanel>
+              </Button>
 
-              <Button Content="{DynamicResource Localized_StopFrpc}"
-                      Command="{Binding StopFrpcCommand}"
+              <Button Command="{Binding StopFrpcCommand}"
                       Classes="secondary">
                 <Button.Styles>
                   <Style Selector="Button:pointerover">
@@ -79,10 +83,13 @@
                     <Setter Property="BorderBrush" Value="{DynamicResource AppErrorBrush}" />
                   </Style>
                 </Button.Styles>
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+                  <mi:MaterialIcon Kind="Stop" Width="16" Height="16" VerticalAlignment="Center" />
+                  <TextBlock Text="{DynamicResource Localized_StopFrpc}" />
+                </StackPanel>
               </Button>
 
-              <Button Content="{DynamicResource Localized_RestartFrpc}"
-                      Command="{Binding RestartFrpcCommand}"
+              <Button Command="{Binding RestartFrpcCommand}"
                       Classes="secondary">
                 <Button.Styles>
                   <Style Selector="Button:pointerover">
@@ -90,6 +97,10 @@
                     <Setter Property="BorderBrush" Value="{DynamicResource AppAccentColor2Brush}" />
                   </Style>
                 </Button.Styles>
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+                  <mi:MaterialIcon Kind="Refresh" Width="16" Height="16" VerticalAlignment="Center" />
+                  <TextBlock Text="{DynamicResource Localized_RestartFrpc}" />
+                </StackPanel>
               </Button>
             </StackPanel>
 
@@ -133,9 +144,12 @@
           <!-- Server Configuration Card -->
           <Border Grid.Column="0" Classes="card">
             <Grid RowDefinitions="Auto,*,Auto" Height="120">
-              <TextBlock Grid.Row="0"
-                         Text="{DynamicResource Localized_ServerConfig}"
-                         Classes="card-title" />
+              <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+                <mi:MaterialIcon Kind="Server" Width="18" Height="18" VerticalAlignment="Center"
+                                 Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                <TextBlock Text="{DynamicResource Localized_ServerConfig}"
+                           Classes="card-title" />
+              </StackPanel>
               <TextBlock Grid.Row="1"
                          Classes="card-description"
                          TextWrapping="Wrap"
@@ -154,9 +168,12 @@
           <!-- Proxy Management Card -->
           <Border Grid.Column="1" Classes="card">
             <Grid RowDefinitions="Auto,*,Auto" Height="120">
-              <TextBlock Grid.Row="0"
-                         Text="{DynamicResource Localized_ProxyManagement}"
-                         Classes="card-title" />
+              <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+                <mi:MaterialIcon Kind="Proxy" Width="18" Height="18" VerticalAlignment="Center"
+                                 Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                <TextBlock Text="{DynamicResource Localized_ProxyManagement}"
+                           Classes="card-title" />
+              </StackPanel>
               <TextBlock Grid.Row="1"
                          Classes="card-description"
                          TextWrapping="Wrap"
@@ -175,9 +192,12 @@
           <!-- Deployment Card -->
           <Border Grid.Column="2" Classes="card">
             <Grid RowDefinitions="Auto,*,Auto" Height="120">
-              <TextBlock Grid.Row="0"
-                         Text="{DynamicResource Localized_Deployment}"
-                         Classes="card-title" />
+              <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+                <mi:MaterialIcon Kind="CloudDownload" Width="18" Height="18" VerticalAlignment="Center"
+                                 Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                <TextBlock Text="{DynamicResource Localized_Deployment}"
+                           Classes="card-title" />
+              </StackPanel>
               <TextBlock Grid.Row="1"
                          Classes="card-description"
                          TextWrapping="Wrap"
@@ -196,9 +216,12 @@
           <!-- Logs Card -->
           <Border Grid.Column="3" Classes="card">
             <Grid RowDefinitions="Auto,*,Auto" Height="120">
-              <TextBlock Grid.Row="0"
-                         Text="{DynamicResource Localized_Logs}"
-                         Classes="card-title" />
+              <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+                <mi:MaterialIcon Kind="FileDocument" Width="18" Height="18" VerticalAlignment="Center"
+                                 Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                <TextBlock Text="{DynamicResource Localized_Logs}"
+                           Classes="card-title" />
+              </StackPanel>
               <TextBlock Grid.Row="1"
                          Classes="card-description"
                          TextWrapping="Wrap"
@@ -232,12 +255,12 @@
                       CornerRadius="{StaticResource CornerRadiusS}"
                       Background="{DynamicResource AppAccentColor}"
                       Margin="{StaticResource ThicknessRightM}">
-                <TextBlock Text="P"
-                           FontSize="24"
-                           FontWeight="Bold"
-                           Foreground="{DynamicResource SystemControlForegroundAltMediumHighBrush}"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center" />
+                <mi:MaterialIcon Kind="Proxy"
+                                 Width="24"
+                                 Height="24"
+                                 Foreground="{DynamicResource SystemControlForegroundAltMediumHighBrush}"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center" />
               </Border>
               <StackPanel Grid.Column="1" VerticalAlignment="Center">
                 <TextBlock Text="{Binding ProxyCount, StringFormat={}{0}}"
@@ -262,12 +285,12 @@
                       CornerRadius="{StaticResource CornerRadiusS}"
                       Background="{DynamicResource AppAccentColor}"
                       Margin="{StaticResource ThicknessRightM}">
-                <TextBlock Text="C"
-                           FontSize="24"
-                           FontWeight="Bold"
-                           Foreground="{DynamicResource SystemControlForegroundAltMediumHighBrush}"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center" />
+                <mi:MaterialIcon Kind="Cog"
+                                 Width="24"
+                                 Height="24"
+                                 Foreground="{DynamicResource SystemControlForegroundAltMediumHighBrush}"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center" />
               </Border>
               <StackPanel Grid.Column="1" VerticalAlignment="Center">
                 <TextBlock Text="{DynamicResource Localized_FrpcNotRunning}"

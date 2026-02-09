@@ -35,6 +35,7 @@ public static class ResourceInitializer
         AddResource(resources, "Localized_Cancel", localizedResources.Cancel);
         AddResource(resources, "Localized_Refresh", localizedResources.Refresh);
         AddResource(resources, "Localized_Export", localizedResources.Export);
+        AddResource(resources, "Localized_ExportAll", localizedResources.ExportAll);
         AddResource(resources, "Localized_Import", localizedResources.Import);
 
         // Proxy Properties

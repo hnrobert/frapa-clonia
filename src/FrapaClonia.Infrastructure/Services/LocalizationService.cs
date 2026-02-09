@@ -171,6 +171,7 @@ public class LocalizationService : ILocalizationService
             ["Cancel"] = "Cancel",
             ["Refresh"] = "Refresh",
             ["Export"] = "Export",
+            ["ExportAll"] = "Export All",
             ["Import"] = "Import",
             ["ProxyName"] = "Proxy Name",
             ["ProxyType"] = "Proxy Type",
