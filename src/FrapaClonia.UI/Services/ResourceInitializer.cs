@@ -1,4 +1,3 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
 
@@ -97,7 +96,8 @@ public static class ResourceInitializer
         AddResource(resources, "Localized_TheAddressOfTheFrpsServer", localizedResources.TheAddressOfTheFrpsServer);
         AddResource(resources, "Localized_DefaultPort", localizedResources.DefaultPort);
         AddResource(resources, "Localized_OptionalUserName", localizedResources.OptionalUserName);
-        AddResource(resources, "Localized_OptionalUserNameToAvoidProxyNameConflicts", localizedResources.OptionalUserNameToAvoidProxyNameConflicts);
+        AddResource(resources, "Localized_OptionalUserNameToAvoidProxyNameConflicts",
+            localizedResources.OptionalUserNameToAvoidProxyNameConflicts);
         AddResource(resources, "Localized_Authentication", localizedResources.Authentication);
         AddResource(resources, "Localized_Method", localizedResources.Method);
         AddResource(resources, "Localized_ClientID", localizedResources.ClientId);
@@ -105,7 +105,8 @@ public static class ResourceInitializer
         AddResource(resources, "Localized_TokenEndpoint", localizedResources.TokenEndpoint);
         AddResource(resources, "Localized_Audience", localizedResources.Audience);
         AddResource(resources, "Localized_Scope", localizedResources.Scope);
-        AddResource(resources, "Localized_EnterYourAuthenticationToken", localizedResources.EnterYourAuthenticationToken);
+        AddResource(resources, "Localized_EnterYourAuthenticationToken",
+            localizedResources.EnterYourAuthenticationToken);
         AddResource(resources, "Localized_OptionalAudience", localizedResources.OptionalAudience);
         AddResource(resources, "Localized_EGOpenidProfile", localizedResources.EgOpenidProfile);
         AddResource(resources, "Localized_TransportSettings", localizedResources.TransportSettings);
@@ -114,7 +115,8 @@ public static class ResourceInitializer
         AddResource(resources, "Localized_TCPMux", localizedResources.TcpMux);
         AddResource(resources, "Localized_HeartbeatInterval", localizedResources.HeartbeatInterval);
         AddResource(resources, "Localized_HeartbeatTimeout", localizedResources.HeartbeatTimeout);
-        AddResource(resources, "Localized_EncryptCommunicationWithTheFrpsServer", localizedResources.EncryptCommunicationWithTheFrpsServer);
+        AddResource(resources, "Localized_EncryptCommunicationWithTheFrpsServer",
+            localizedResources.EncryptCommunicationWithTheFrpsServer);
         AddResource(resources, "Localized_LoggingSection", localizedResources.LoggingSection);
         AddResource(resources, "Localized_MaxDays", localizedResources.MaxDays);
         AddResource(resources, "Localized_LogTo", localizedResources.LogTo);
@@ -126,7 +128,8 @@ public static class ResourceInitializer
 
         // Deployment
         AddResource(resources, "Localized_DeploymentMode", localizedResources.DeploymentMode);
-        AddResource(resources, "Localized_ChooseHowYouWantToDeployAndRunFrpc", localizedResources.ChooseHowYouWantToDeployAndRunFrpc);
+        AddResource(resources, "Localized_ChooseHowYouWantToDeployAndRunFrpc",
+            localizedResources.ChooseHowYouWantToDeployAndRunFrpc);
         AddResource(resources, "Localized_DockerDeployment", localizedResources.DockerDeployment);
         AddResource(resources, "Localized_DockerStatus", localizedResources.DockerStatus);
         AddResource(resources, "Localized_CheckDocker", localizedResources.CheckDocker);
@@ -143,18 +146,22 @@ public static class ResourceInitializer
         AddResource(resources, "Localized_DownloadFrpc", localizedResources.DownloadFrpc);
         AddResource(resources, "Localized_DeployNative", localizedResources.DeployNative);
         AddResource(resources, "Localized_DeploymentInformation", localizedResources.DeploymentInformation);
-        AddResource(resources, "Localized_DockerDeploymentRequiresDocker", localizedResources.DockerDeploymentRequiresDocker);
-        AddResource(resources, "Localized_NativeDeploymentDownloadsAndExtracts", localizedResources.NativeDeploymentDownloadsAndExtracts);
+        AddResource(resources, "Localized_DockerDeploymentRequiresDocker",
+            localizedResources.DockerDeploymentRequiresDocker);
+        AddResource(resources, "Localized_NativeDeploymentDownloadsAndExtracts",
+            localizedResources.NativeDeploymentDownloadsAndExtracts);
         AddResource(resources, "Localized_BothMethodsUse", localizedResources.BothMethodsUse);
 
         // Proxy List
-        AddResource(resources, "Localized_ConfigureAndManageYourFrpcProxyConfigurations", localizedResources.ConfigureAndManageYourFrpcProxyConfigurations);
+        AddResource(resources, "Localized_ConfigureAndManageYourFrpcProxyConfigurations",
+            localizedResources.ConfigureAndManageYourFrpcProxyConfigurations);
         AddResource(resources, "Localized_Loading", localizedResources.Loading);
         AddResource(resources, "Localized_ProxiesCount", localizedResources.ProxiesCount);
         AddResource(resources, "Localized_SearchByName", localizedResources.SearchByName);
         AddResource(resources, "Localized_AllTypes", localizedResources.AllTypes);
         AddResource(resources, "Localized_NoProxiesConfigured", localizedResources.NoProxiesConfigured);
-        AddResource(resources, "Localized_CreateYourFirstProxyConfiguration", localizedResources.CreateYourFirstProxyConfiguration);
+        AddResource(resources, "Localized_CreateYourFirstProxyConfiguration",
+            localizedResources.CreateYourFirstProxyConfiguration);
         AddResource(resources, "Localized_CreateProxy", localizedResources.CreateProxy);
         AddResource(resources, "Localized_Local", localizedResources.Local);
         AddResource(resources, "Localized_RemotePortLabel", localizedResources.RemotePortLabel);
@@ -164,35 +171,43 @@ public static class ResourceInitializer
 
         // Proxy Editor
         AddResource(resources, "Localized_ProxyConfiguration", localizedResources.ProxyConfiguration);
-        AddResource(resources, "Localized_ConfigureYourProxySettingsBelow", localizedResources.ConfigureYourProxySettingsBelow);
+        AddResource(resources, "Localized_ConfigureYourProxySettingsBelow",
+            localizedResources.ConfigureYourProxySettingsBelow);
         AddResource(resources, "Localized_RequiredFieldsAreMarked", localizedResources.RequiredFieldsAreMarked);
         AddResource(resources, "Localized_BasicSettings", localizedResources.BasicSettings);
         AddResource(resources, "Localized_LocalSettings", localizedResources.LocalSettings);
         AddResource(resources, "Localized_TheIPOfTheLocalService", localizedResources.TheIPOfTheLocalService);
         AddResource(resources, "Localized_DomainSettings", localizedResources.DomainSettings);
         AddResource(resources, "Localized_CommaSeparatedList", localizedResources.CommaSeparatedList);
-        AddResource(resources, "Localized_LeaveEmptyIfUsingCustomDomains", localizedResources.LeaveEmptyIfUsingCustomDomains);
+        AddResource(resources, "Localized_LeaveEmptyIfUsingCustomDomains",
+            localizedResources.LeaveEmptyIfUsingCustomDomains);
         AddResource(resources, "Localized_EG_www_example_com", localizedResources.EgWwwExampleCom);
         AddResource(resources, "Localized_HTTPAuthentication", localizedResources.HTTPAuthentication);
         AddResource(resources, "Localized_Username", localizedResources.Username);
         AddResource(resources, "Localized_Password", localizedResources.Password);
         AddResource(resources, "Localized_SecureTunnelSettings", localizedResources.SecureTunnelSettings);
-        AddResource(resources, "Localized_MustMatchTheVisitorsSecretKey", localizedResources.MustMatchTheVisitorsSecretKey);
+        AddResource(resources, "Localized_MustMatchTheVisitorsSecretKey",
+            localizedResources.MustMatchTheVisitorsSecretKey);
         AddResource(resources, "Localized_AllowedUsers", localizedResources.AllowedUsers);
-        AddResource(resources, "Localized_CommaSeparatedListOfAllowedUsers", localizedResources.CommaSeparatedListOfAllowedUsers);
+        AddResource(resources, "Localized_CommaSeparatedListOfAllowedUsers",
+            localizedResources.CommaSeparatedListOfAllowedUsers);
         AddResource(resources, "Localized_LeaveEmptyToAllowAllUsers", localizedResources.LeaveEmptyToAllowAllUsers);
         AddResource(resources, "Localized_TCPMultiplexerSettings", localizedResources.TcpMultiplexerSettings);
         AddResource(resources, "Localized_MultiplexerName", localizedResources.MultiplexerName);
         AddResource(resources, "Localized_NameOfTheMultiplexer", localizedResources.NameOfTheMultiplexer);
-        AddResource(resources, "Localized_TheMultiplexerMustBeConfiguredOnTheServer", localizedResources.TheMultiplexerMustBeConfiguredOnTheServer);
+        AddResource(resources, "Localized_TheMultiplexerMustBeConfiguredOnTheServer",
+            localizedResources.TheMultiplexerMustBeConfiguredOnTheServer);
         AddResource(resources, "Localized_TransportOptions", localizedResources.TransportOptions);
-        AddResource(resources, "Localized_EncryptTheConnectionBetweenClientAndServer", localizedResources.EncryptTheConnectionBetweenClientAndServer);
-        AddResource(resources, "Localized_CompressDataToReduceBandwidthUsage", localizedResources.CompressDataToReduceBandwidthUsage);
+        AddResource(resources, "Localized_EncryptTheConnectionBetweenClientAndServer",
+            localizedResources.EncryptTheConnectionBetweenClientAndServer);
+        AddResource(resources, "Localized_CompressDataToReduceBandwidthUsage",
+            localizedResources.CompressDataToReduceBandwidthUsage);
         AddResource(resources, "Localized_BandwidthLimit", localizedResources.BandwidthLimit);
         AddResource(resources, "Localized_EG_1MB_256KB", localizedResources.Eg1Mb256Kb);
         AddResource(resources, "Localized_LimitBandwidthForThisProxy", localizedResources.LimitBandwidthForThisProxy);
         AddResource(resources, "Localized_EnableHealthCheck", localizedResources.EnableHealthCheck);
-        AddResource(resources, "Localized_MonitorTheHealthOfTheLocalService", localizedResources.MonitorTheHealthOfTheLocalService);
+        AddResource(resources, "Localized_MonitorTheHealthOfTheLocalService",
+            localizedResources.MonitorTheHealthOfTheLocalService);
         AddResource(resources, "Localized_TypeLabel", localizedResources.TypeLabel);
         AddResource(resources, "Localized_TimeoutSeconds", localizedResources.TimeoutSeconds);
         AddResource(resources, "Localized_MaxFailed", localizedResources.MaxFailed);
@@ -217,7 +232,8 @@ public static class ResourceInitializer
 
         // Visitor List
         AddResource(resources, "Localized_VisitorManagement", localizedResources.VisitorManagement);
-        AddResource(resources, "Localized_ConfigureAndManageSecureTunnelVisitors", localizedResources.ConfigureAndManageSecureTunnelVisitors);
+        AddResource(resources, "Localized_ConfigureAndManageSecureTunnelVisitors",
+            localizedResources.ConfigureAndManageSecureTunnelVisitors);
         AddResource(resources, "Localized_SearchVisitors", localizedResources.SearchVisitors);
         AddResource(resources, "Localized_Active", localizedResources.Active);
         AddResource(resources, "Localized_Total", localizedResources.Total);
@@ -233,7 +249,8 @@ public static class ResourceInitializer
         AddResource(resources, "Localized_BindSettings", localizedResources.BindSettings);
         AddResource(resources, "Localized_LocalPortToListenOn", localizedResources.LocalPortToListenOn);
         AddResource(resources, "Localized_SpecificIPToBindTo", localizedResources.SpecificIPToBindTo);
-        AddResource(resources, "Localized_OptionalLeaveEmptyToBindToAll", localizedResources.OptionalLeaveEmptyToBindToAll);
+        AddResource(resources, "Localized_OptionalLeaveEmptyToBindToAll",
+            localizedResources.OptionalLeaveEmptyToBindToAll);
 
         // Logs
         AddResource(resources, "Localized_ViewRealtimeLogsFromFrpc", localizedResources.ViewRealtimeLogsFromFrpc);
@@ -250,13 +267,16 @@ public static class ResourceInitializer
         // Settings
         AddResource(resources, "Localized_LanguageAndRegion", localizedResources.LanguageAndRegion);
         AddResource(resources, "Localized_InterfaceLanguage", localizedResources.InterfaceLanguage);
-        AddResource(resources, "Localized_ChangesWillTakeEffectAfterRestarting", localizedResources.ChangesWillTakeEffectAfterRestarting);
+        AddResource(resources, "Localized_ChangesWillTakeEffectAfterRestarting",
+            localizedResources.ChangesWillTakeEffectAfterRestarting);
         AddResource(resources, "Localized_SystemIntegration", localizedResources.SystemIntegration);
         AddResource(resources, "Localized_StartOnSystemBoot", localizedResources.StartOnSystemBoot);
-        AddResource(resources, "Localized_AutomaticallyLaunchFrapaClonia", localizedResources.AutomaticallyLaunchFrapaClonia);
+        AddResource(resources, "Localized_AutomaticallyLaunchFrapaClonia",
+            localizedResources.AutomaticallyLaunchFrapaClonia);
         AddResource(resources, "Localized_Appearance", localizedResources.Appearance);
         AddResource(resources, "Localized_Theme", localizedResources.Theme);
-        AddResource(resources, "Localized_ChooseYourPreferredColorTheme", localizedResources.ChooseYourPreferredColorTheme);
+        AddResource(resources, "Localized_ChooseYourPreferredColorTheme",
+            localizedResources.ChooseYourPreferredColorTheme);
         AddResource(resources, "Localized_Light", localizedResources.Light);
         AddResource(resources, "Localized_Dark", localizedResources.Dark);
         AddResource(resources, "Localized_SystemDefault", localizedResources.SystemDefault);
@@ -266,7 +286,8 @@ public static class ResourceInitializer
         AddResource(resources, "Localized_VersionInfo", localizedResources.VersionInfo);
         AddResource(resources, "Localized_BuildInfo", localizedResources.BuildInfo);
         AddResource(resources, "Localized_NETRuntimeInfo", localizedResources.NetRuntimeInfo);
-        AddResource(resources, "Localized_CrossPlatformFrpcVisualClient", localizedResources.CrossPlatformFrpcVisualClient);
+        AddResource(resources, "Localized_CrossPlatformFrpcVisualClient",
+            localizedResources.CrossPlatformFrpcVisualClient);
         AddResource(resources, "Localized_SaveSettings", localizedResources.SaveSettings);
     }
 
@@ -274,45 +295,26 @@ public static class ResourceInitializer
     {
         resources[key] = localizedString.Value;
 
-        // Subscribe to property changes to update the resource when culture changes
+        // Subscribe to property changes and immediately update the resource dictionary
         localizedString.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName != nameof(LocalizedString.Value)) return;
 
-            void UpdateAction()
+            var value = localizedString.Value;
+            if (string.IsNullOrEmpty(value))
             {
-                try
-                {
-                    var value = localizedString.Value;
-
-                    // Validate the string value before updating
-                    if (string.IsNullOrEmpty(value))
-                    {
-                        value = key; // Fallback to key name if value is empty
-                    }
-
-                    lock (ResourceInitializer.ResourceUpdateLock)
-                    {
-                        resources[key] = value;
-                    }
-                }
-                catch
-                {
-                    // Ignore errors during resource update to prevent cascading failures
-                }
+                value = key;
             }
 
-            // Ensure the update happens on the UI thread
+            // Update immediately on UI thread
             if (Dispatcher.UIThread.CheckAccess())
             {
-                UpdateAction();
+                resources[key] = value;
             }
             else
             {
-                Dispatcher.UIThread.Post(UpdateAction);
+                Dispatcher.UIThread.Post(() => resources[key] = value);
             }
         };
     }
-
-    private static readonly object ResourceUpdateLock = new();
 }

@@ -3,23 +3,28 @@
 
     <!-- Global font settings for proper CJK character rendering -->
     <Style Selector="Window">
-        <Setter Property="FontFamily" Value="Microsoft YaHei UI,Meiryo UI,Malgun Gothic,Segoe UI,sans-serif" />
+        <Setter Property="FontFamily"
+                Value="PingFang SC,Hiragino Sans GB,Microsoft YaHei UI,Meiryo UI,Malgun Gothic,Gulim,Dotum,Segoe UI,Apple System,WenQuanYi Micro Hei,Noto Sans CJK SC,Noto Sans KR,sans-serif" />
     </Style>
 
     <Style Selector="TextBlock">
-        <Setter Property="FontFamily" Value="Microsoft YaHei UI,Meiryo UI,Malgun Gothic,Segoe UI,sans-serif" />
+        <Setter Property="FontFamily"
+                Value="PingFang SC,Hiragino Sans GB,Microsoft YaHei UI,Meiryo UI,Malgun Gothic,Gulim,Dotum,Segoe UI,Apple System,WenQuanYi Micro Hei,Noto Sans CJK SC,Noto Sans KR,sans-serif" />
     </Style>
 
     <Style Selector="Button">
-        <Setter Property="FontFamily" Value="Microsoft YaHei UI,Meiryo UI,Malgun Gothic,Segoe UI,sans-serif" />
+        <Setter Property="FontFamily"
+                Value="PingFang SC,Hiragino Sans GB,Microsoft YaHei UI,Meiryo UI,Malgun Gothic,Gulim,Dotum,Segoe UI,Apple System,WenQuanYi Micro Hei,Noto Sans CJK SC,Noto Sans KR,sans-serif" />
     </Style>
 
     <Style Selector="TextBox">
-        <Setter Property="FontFamily" Value="Microsoft YaHei UI,Meiryo UI,Malgun Gothic,Segoe UI,sans-serif" />
+        <Setter Property="FontFamily"
+                Value="PingFang SC,Hiragino Sans GB,Microsoft YaHei UI,Meiryo UI,Malgun Gothic,Gulim,Dotum,Segoe UI,Apple System,WenQuanYi Micro Hei,Noto Sans CJK SC,Noto Sans KR,sans-serif" />
     </Style>
 
     <Style Selector="ComboBox">
-        <Setter Property="FontFamily" Value="Microsoft YaHei UI,Meiryo UI,Malgun Gothic,Segoe UI,sans-serif" />
+        <Setter Property="FontFamily"
+                Value="PingFang SC,Hiragino Sans GB,Microsoft YaHei UI,Meiryo UI,Malgun Gothic,Gulim,Dotum,Segoe UI,Apple System,WenQuanYi Micro Hei,Noto Sans CJK SC,Noto Sans KR,sans-serif" />
     </Style>
 
     <!-- Card Styles -->
@@ -643,3 +648,4 @@
     </Style>
 
 </Styles>
+
