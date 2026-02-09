@@ -23,7 +23,7 @@
 
     <ScrollViewer HorizontalScrollBarVisibility="Disabled">
         <Panel Margin="{StaticResource ContentPadding}">
-            <StackPanel Spacing="{StaticResource SpacingL}" MaxWidth="800">
+            <StackPanel Spacing="{StaticResource SpacingL}">
                 <!-- Header -->
                 <TextBlock Text="{DynamicResource Localized_Deployment}"
                            Classes="page-title" />

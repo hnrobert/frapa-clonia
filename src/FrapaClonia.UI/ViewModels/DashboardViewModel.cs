@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
+using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
 
 namespace FrapaClonia.UI.ViewModels;
@@ -45,6 +46,7 @@ public partial class DashboardViewModel : ObservableObject
         Microsoft.Extensions.Logging.Abstractions.NullLogger<DashboardViewModel>.Instance,
         null!,
         null!,
+        null!,
         null!)
     {
     }
@@ -53,7 +55,8 @@ public partial class DashboardViewModel : ObservableObject
         ILogger<DashboardViewModel> logger,
         IFrpcProcessService frpcProcessService,
         IConfigurationService configurationService,
-        IValidationService validationService)
+        IValidationService validationService,
+        NavigationService navigationService)
     {
         _logger = logger;
         _frpcProcessService = frpcProcessService;
@@ -61,12 +64,11 @@ public partial class DashboardViewModel : ObservableObject
         _validationService = validationService;
 
         // For design-time or when services are null, use empty commands
-
-        NavigateToServerConfigCommand = new RelayCommand(() => _logger.LogInformation("Navigate to Server Config"));
-        NavigateToProxyListCommand = new RelayCommand(() => _logger.LogInformation("Navigate to Proxy List"));
-        NavigateToDeploymentCommand = new RelayCommand(() => _logger.LogInformation("Navigate to Deployment"));
-        NavigateToSettingsCommand = new RelayCommand(() => _logger.LogInformation("Navigate to Settings"));
-        NavigateToLogsCommand = new RelayCommand(() => _logger.LogInformation("Navigate to Logs"));
+        NavigateToServerConfigCommand = new RelayCommand(() => navigationService.NavigateTo("server"));
+        NavigateToProxyListCommand = new RelayCommand(() => navigationService.NavigateTo("proxies"));
+        NavigateToDeploymentCommand = new RelayCommand(() => navigationService.NavigateTo("deployment"));
+        NavigateToSettingsCommand = new RelayCommand(() => navigationService.NavigateTo("settings"));
+        NavigateToLogsCommand = new RelayCommand(() => navigationService.NavigateTo("logs"));
 
         StartFrpcCommand = new RelayCommand(async void () =>
         {

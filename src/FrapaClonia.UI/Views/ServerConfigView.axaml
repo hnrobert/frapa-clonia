@@ -17,7 +17,7 @@
 
     <ScrollViewer HorizontalScrollBarVisibility="Disabled">
         <Panel Margin="{StaticResource ContentPadding}">
-            <StackPanel Spacing="{StaticResource SpacingL}" MaxWidth="800">
+            <StackPanel Spacing="{StaticResource SpacingL}">
 
                 <!-- Header -->
                 <TextBlock Text="{DynamicResource Localized_ServerConfig}"
@@ -30,7 +30,7 @@
                                    Classes="section-title" />
 
                         <!-- Server Address -->
-                        <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,Auto">
+                        <Grid ColumnDefinitions="280,*" RowDefinitions="Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
                                        Text="{DynamicResource Localized_ServerAddress}"
                                        Classes="field-label" />
@@ -43,16 +43,13 @@
                         </Grid>
 
                         <!-- Server Port -->
-                        <Grid ColumnDefinitions="140,120,*,*" RowDefinitions="Auto,Auto">
+                        <Grid ColumnDefinitions="280,120,10,*" RowDefinitions="Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
                                        Text="{DynamicResource Localized_ServerPort}"
                                        Classes="field-label" />
-                            <NumericUpDown Grid.Row="0" Grid.Column="1"
-                                           Value="{Binding ServerPort}"
-                                           Minimum="1"
-                                           Maximum="65535"
-                                           Increment="1"
-                                           FormatString="0" />
+                            <TextBox Grid.Row="0" Grid.Column="1"
+                                     Text="{Binding ServerPortText}"
+                                     Watermark="7000" />
                             <TextBlock Grid.Row="0" Grid.Column="3"
                                        VerticalAlignment="Center">
                                 <Run Text="{DynamicResource Localized_DefaultPort}" /><Run Text=": 7000" />
@@ -60,7 +57,7 @@
                         </Grid>
 
                         <!-- User -->
-                        <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,Auto">
+                        <Grid ColumnDefinitions="280,*" RowDefinitions="Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
                                        Text="{DynamicResource Localized_OptionalUserName}"
                                        Classes="field-label" />
@@ -186,12 +183,9 @@
                             <TextBlock Grid.Row="0" Grid.Column="0"
                                        Text="{DynamicResource Localized_DialTimeout}"
                                        Classes="field-label" />
-                            <NumericUpDown Grid.Row="0" Grid.Column="1"
-                                           Value="{Binding DialServerTimeout}"
-                                           Minimum="1"
-                                           Maximum="300"
-                                           Increment="1"
-                                           FormatString="0" />
+                            <TextBox Grid.Row="0" Grid.Column="1"
+                                     Text="{Binding DialServerTimeoutText}"
+                                     Watermark="10" />
                             <TextBlock Grid.Row="0" Grid.Column="2"
                                        Text="{DynamicResource Localized_Seconds}"
                                        VerticalAlignment="Center" />
@@ -211,12 +205,9 @@
                             <TextBlock Grid.Row="0" Grid.Column="0"
                                        Text="{DynamicResource Localized_HeartbeatInterval}"
                                        Classes="field-label" />
-                            <NumericUpDown Grid.Row="0" Grid.Column="1"
-                                           Value="{Binding HeartbeatInterval}"
-                                           Minimum="5"
-                                           Maximum="300"
-                                           Increment="5"
-                                           FormatString="0" />
+                            <TextBox Grid.Row="0" Grid.Column="1"
+                                     Text="{Binding HeartbeatIntervalText}"
+                                     Watermark="30" />
                             <TextBlock Grid.Row="0" Grid.Column="2"
                                        Text="{DynamicResource Localized_Seconds}"
                                        VerticalAlignment="Center" />
@@ -225,12 +216,9 @@
                             <TextBlock Grid.Row="0" Grid.Column="3"
                                        Text="{DynamicResource Localized_HeartbeatTimeout}"
                                        Classes="field-label" />
-                            <NumericUpDown Grid.Row="0" Grid.Column="4"
-                                           Value="{Binding HeartbeatTimeout}"
-                                           Minimum="5"
-                                           Maximum="600"
-                                           Increment="5"
-                                           FormatString="0" />
+                            <TextBox Grid.Row="0" Grid.Column="4"
+                                     Text="{Binding HeartbeatTimeoutText}"
+                                     Watermark="90" />
                         </Grid>
 
                         <!-- TLS -->
@@ -270,12 +258,9 @@
                             <TextBlock Grid.Column="3"
                                        Text="{DynamicResource Localized_MaxDays}"
                                        Classes="field-label" />
-                            <NumericUpDown Grid.Column="4"
-                                           Value="{Binding LogMaxDays}"
-                                           Minimum="1"
-                                           Maximum="365"
-                                           Increment="1"
-                                           FormatString="0" />
+                            <TextBox Grid.Column="4"
+                                     Text="{Binding LogMaxDaysText}"
+                                     Watermark="3" />
                         </Grid>
 
                         <!-- Log To -->
