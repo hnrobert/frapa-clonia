@@ -40,6 +40,8 @@ public partial class SettingsViewModel : ObservableObject
 
     public List<LanguageOption> AvailableLanguages { get; }
 
+    public List<ThemeOption> AvailableThemes { get; }
+
     // Default constructor for design-time support
     public SettingsViewModel() : this(
         Microsoft.Extensions.Logging.Abstractions.NullLogger<SettingsViewModel>.Instance,
@@ -110,6 +112,14 @@ public partial class SettingsViewModel : ObservableObject
             SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.Code == cultureCode)
                                ?? AvailableLanguages.First();
         };
+
+        // Initialize available themes
+        AvailableThemes =
+        [
+            new ThemeOption(0, "Light", _localizationService),
+            new ThemeOption(1, "Dark", _localizationService),
+            new ThemeOption(2, "SystemDefault", _localizationService)
+        ];
 
         // Load saved settings on initialization
         _ = Task.Run(async () => await LoadSettingsAsync());
@@ -275,4 +285,29 @@ public class AppSettings
     public string Theme { get; init; } = "Default";
     public bool AutoStart { get; init; }
     public bool PortableMode { get; init; }
+}
+
+/// <summary>
+/// Theme option for selection
+/// </summary>
+public class ThemeOption : ObservableObject
+{
+    private readonly ILocalizationService? _localizationService;
+    private readonly string _resourceKey;
+
+    public int Index { get; }
+
+    public string Name => _localizationService?.GetString(_resourceKey) ?? _resourceKey;
+
+    public ThemeOption(int index, string resourceKey, ILocalizationService? localizationService)
+    {
+        Index = index;
+        _resourceKey = resourceKey;
+        _localizationService = localizationService;
+
+        if (_localizationService != null)
+        {
+            _localizationService.CultureChanged += (_, _) => OnPropertyChanged(nameof(Name));
+        }
+    }
 }

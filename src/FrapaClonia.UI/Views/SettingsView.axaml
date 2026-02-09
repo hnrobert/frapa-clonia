@@ -86,11 +86,15 @@
                                        Text="{DynamicResource Localized_Theme}"
                                        Classes="field-label" />
                             <ComboBox Grid.Row="0" Grid.Column="1"
+                                      ItemsSource="{Binding AvailableThemes}"
+                                      SelectedIndex="{Binding ThemeIndex}"
                                       Classes="settings-dropdown"
-                                      SelectedIndex="{Binding ThemeIndex}">
-                                <ComboBoxItem Content="{DynamicResource Localized_Light}" />
-                                <ComboBoxItem Content="{DynamicResource Localized_Dark}" />
-                                <ComboBoxItem Content="{DynamicResource Localized_SystemDefault}" />
+                                      AutomationProperties.Name="Theme">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
                             </ComboBox>
                             <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                                        Text="{DynamicResource Localized_ChooseYourPreferredColorTheme}"
