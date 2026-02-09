@@ -40,6 +40,7 @@ public class LocalizedResources : ObservableObject
         Cancel = Create("Cancel");
         Refresh = Create("Refresh");
         Export = Create("Export");
+        ExportAll = Create("ExportAll");
         Import = Create("Import");
         ProxyName = Create("ProxyName");
         ProxyType = Create("ProxyType");
@@ -294,6 +295,7 @@ public class LocalizedResources : ObservableObject
     public LocalizedString Cancel { get; }
     public LocalizedString Refresh { get; }
     public LocalizedString Export { get; }
+    public LocalizedString ExportAll { get; }
     public LocalizedString Import { get; }
     public LocalizedString ProxyName { get; }
     public LocalizedString ProxyType { get; }

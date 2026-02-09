@@ -24,7 +24,7 @@
                    Classes="page-title" />
 
         <!-- Server Connection Section -->
-        <Border Classes="settings-card">
+        <Border Classes="card">
           <StackPanel Spacing="{StaticResource SpacingM}">
             <TextBlock Text="{DynamicResource Localized_ConnectionSettings}"
                        Classes="section-title" />
@@ -339,4 +339,3 @@
     </Panel>
   </ScrollViewer>
 </UserControl>
-

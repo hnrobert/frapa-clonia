@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
@@ -78,8 +79,7 @@
                 Command="{Binding AddProxyCommand}"
                 Classes="primary">
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-            <TextBlock Text="+" FontSize="{StaticResource FontSizeL}"
-                       FontWeight="{StaticResource FontWeightBold}" />
+            <mi:MaterialIcon Kind="Plus" Width="18" Height="18" VerticalAlignment="Center" />
             <TextBlock Text="{DynamicResource Localized_AddProxy}" />
           </StackPanel>
         </Button>
@@ -93,23 +93,35 @@
             BorderThickness="0,0,0,1"
             IsVisible="{Binding Proxies.Count, Converter={x:Static ObjectConverters.IsNotNull}}">
       <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingM}" HorizontalAlignment="Right">
-        <Button Content="{DynamicResource Localized_Refresh}"
-                Command="{Binding RefreshCommand}"
-                IsEnabled="{Binding !IsLoading}" />
-
-        <Button Command="{Binding ExportAllCommand}">
-          <StackPanel Orientation="Horizontal" Spacing="4">
-            <TextBlock Text="{DynamicResource Localized_Export}" />
-            <TextBlock Text="All" />
+        <Button Command="{Binding RefreshCommand}"
+                IsEnabled="{Binding !IsLoading}">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+            <mi:MaterialIcon Kind="Refresh" Width="16" Height="16" VerticalAlignment="Center" />
+            <TextBlock Text="{DynamicResource Localized_Refresh}" />
           </StackPanel>
         </Button>
 
-        <Button Content="{DynamicResource Localized_Import}"
-                Command="{Binding ImportCommand}" />
+        <Button Command="{Binding ExportAllCommand}">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+            <mi:MaterialIcon Kind="Export" Width="16" Height="16" VerticalAlignment="Center" />
+            <TextBlock Text="{DynamicResource Localized_ExportAll}" />
+          </StackPanel>
+        </Button>
 
-        <Button Content="{DynamicResource Localized_ClearAll}"
-                Command="{Binding ClearAllCommand}"
-                Classes="destructive" />
+        <Button Command="{Binding ImportCommand}">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+            <mi:MaterialIcon Kind="Import" Width="16" Height="16" VerticalAlignment="Center" />
+            <TextBlock Text="{DynamicResource Localized_Import}" />
+          </StackPanel>
+        </Button>
+
+        <Button Command="{Binding ClearAllCommand}"
+                Classes="destructive">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+            <mi:MaterialIcon Kind="DeleteVariant" Width="16" Height="16" VerticalAlignment="Center" />
+            <TextBlock Text="{DynamicResource Localized_ClearAll}" />
+          </StackPanel>
+        </Button>
       </StackPanel>
     </Border>
 
@@ -122,11 +134,11 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">
           <StackPanel Spacing="{StaticResource SpacingM}" HorizontalAlignment="Center">
-            <TextBlock Text="&#xF5E7;"
-                       FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                       FontSize="48"
-                       Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                       HorizontalAlignment="Center" />
+            <mi:MaterialIcon Kind="ProxyOutline"
+                             Width="48"
+                             Height="48"
+                             Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                             HorizontalAlignment="Center" />
             <TextBlock Text="{DynamicResource Localized_NoProxiesConfigured}"
                        FontSize="{StaticResource FontSizeXL}"
                        FontWeight="{StaticResource FontWeightSemiBold}"
@@ -136,11 +148,15 @@
                        FontSize="{StaticResource FontSizeM}"
                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                        HorizontalAlignment="Center" />
-            <Button Content="+ {DynamicResource Localized_CreateProxy}"
-                    Command="{Binding AddProxyCommand}"
+            <Button Command="{Binding AddProxyCommand}"
                     Classes="primary"
                     HorizontalAlignment="Center"
-                    Margin="{StaticResource ThicknessTopL}" />
+                    Margin="{StaticResource ThicknessTopL}">
+              <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+                <mi:MaterialIcon Kind="Plus" Width="18" Height="18" VerticalAlignment="Center" />
+                <TextBlock Text="{DynamicResource Localized_CreateProxy}" />
+              </StackPanel>
+            </Button>
           </StackPanel>
         </Border>
 
@@ -217,15 +233,17 @@
                       </StackPanel>
 
                       <!-- Additional Info (Optional) -->
-                      <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingL}"
+                      <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}"
                                   IsVisible="{Binding CustomDomains, Converter={x:Static ObjectConverters.IsNotNull}}"
                                   Margin="{StaticResource ThicknessTopS}">
-                        <TextBlock FontSize="{StaticResource FontSizeS}"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}">
-                          <Run Text="&#xF8E2;"
-                               FontFamily="{DynamicResource SymbolThemeFontFamily}" />
-                          <Run Text="{Binding CustomDomains}" />
-                        </TextBlock>
+                        <mi:MaterialIcon Kind="Web"
+                                         Width="14"
+                                         Height="14"
+                                         VerticalAlignment="Center"
+                                         Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        <TextBlock Text="{Binding CustomDomains}"
+                                   FontSize="{StaticResource FontSizeS}"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                       </StackPanel>
                     </StackPanel>
 
@@ -236,12 +254,12 @@
                             Height="40"
                             Margin="{StaticResource ThicknessRightM}"
                             VerticalAlignment="Center">
-                      <TextBlock Text="&#xE8FB;"
-                                 FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                 FontSize="{StaticResource IconSizeL}"
-                                 Foreground="White"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Center" />
+                      <mi:MaterialIcon Kind="CheckCircle"
+                                       Width="{StaticResource IconSizeL}"
+                                       Height="{StaticResource IconSizeL}"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
                     </Border>
 
                     <!-- Action Buttons -->
@@ -252,26 +270,26 @@
                       <Button Click="OnEditClick"
                               Classes="icon-button"
                               ToolTip.Tip="{DynamicResource Localized_EditProxyToolTip}">
-                        <TextBlock Text="&#xE70F;"
-                                   FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                   FontSize="{StaticResource IconSizeM}" />
+                        <mi:MaterialIcon Kind="Pencil"
+                                         Width="{StaticResource IconSizeM}"
+                                         Height="{StaticResource IconSizeM}" />
                       </Button>
 
                       <Button Click="OnDuplicateClick"
                               Classes="icon-button"
                               ToolTip.Tip="{DynamicResource Localized_DuplicateProxyToolTip}">
-                        <TextBlock Text="&#xF817;"
-                                   FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                   FontSize="{StaticResource IconSizeM}" />
+                        <mi:MaterialIcon Kind="ContentCopy"
+                                         Width="{StaticResource IconSizeM}"
+                                         Height="{StaticResource IconSizeM}" />
                       </Button>
 
                       <Button Click="OnDeleteClick"
                               Classes="icon-button"
                               ToolTip.Tip="{DynamicResource Localized_DeleteProxyToolTip}"
                               Foreground="{DynamicResource AppErrorBrush}">
-                        <TextBlock Text="&#xE74D;"
-                                   FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                   FontSize="{StaticResource IconSizeM}" />
+                        <mi:MaterialIcon Kind="Delete"
+                                         Width="{StaticResource IconSizeM}"
+                                         Height="{StaticResource IconSizeM}" />
                       </Button>
                     </StackPanel>
                   </Grid>
@@ -284,4 +302,3 @@
     </Border>
   </Grid>
 </UserControl>
-
