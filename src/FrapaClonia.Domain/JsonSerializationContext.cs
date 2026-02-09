@@ -35,6 +35,4 @@ namespace FrapaClonia.Domain;
 [JsonSerializable(typeof(Dictionary<string, bool>))]
 [JsonSerializable(typeof(Dictionary<string, string>))]
 [JsonSerializable(typeof(List<string>))]
-public partial class FrpClientConfigContext : JsonSerializerContext
-{
-}
+public partial class FrpClientConfigContext : JsonSerializerContext;

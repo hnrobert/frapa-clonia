@@ -7,319 +7,336 @@
              x:Class="FrapaClonia.UI.Views.ServerConfigView"
              x:DataType="vm:ServerConfigViewModel">
 
-    <Design.DataContext>
-        <vm:ServerConfigViewModel />
-    </Design.DataContext>
+  <Design.DataContext>
+    <vm:ServerConfigViewModel />
+  </Design.DataContext>
 
-    <UserControl.Styles>
-        <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
-    </UserControl.Styles>
+  <UserControl.Styles>
+    <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
+  </UserControl.Styles>
 
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-        <Panel Margin="{StaticResource ContentPadding}">
-            <StackPanel Spacing="{StaticResource SpacingL}">
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <Panel Margin="{StaticResource ContentPadding}">
+      <StackPanel Spacing="{StaticResource SpacingL}">
 
-                <!-- Header -->
-                <TextBlock Text="{DynamicResource Localized_ServerConfig}"
-                           Classes="page-title" />
+        <!-- Header -->
+        <TextBlock Text="{DynamicResource Localized_ServerConfig}"
+                   Classes="page-title" />
 
-                <!-- Server Connection Section -->
-                <Border Classes="settings-card">
-                    <StackPanel Spacing="{StaticResource SpacingM}">
-                        <TextBlock Text="{DynamicResource Localized_ConnectionSettings}"
-                                   Classes="section-title" />
+        <!-- Server Connection Section -->
+        <Border Classes="settings-card">
+          <StackPanel Spacing="{StaticResource SpacingM}">
+            <TextBlock Text="{DynamicResource Localized_ConnectionSettings}"
+                       Classes="section-title" />
 
-                        <!-- Server Address -->
-                        <Grid ColumnDefinitions="280,*" RowDefinitions="Auto,Auto">
-                            <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="{DynamicResource Localized_ServerAddress}"
-                                       Classes="field-label" />
-                            <TextBox Grid.Row="0" Grid.Column="1"
-                                     Text="{Binding ServerAddr}"
-                                     Watermark="e.g., 127.0.0.1 or your-server.com" />
-                            <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                                       Text="{DynamicResource Localized_TheAddressOfTheFrpsServer}"
-                                       Classes="hint" />
-                        </Grid>
+            <!-- Server Address -->
+            <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+              <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="4">
+                <TextBlock Text="{DynamicResource Localized_ServerAddress}"
+                           Classes="field-label" />
+                <Button Classes="hint-icon">
+                  <ToolTip.Tip>
+                    <TextBlock Text="{DynamicResource Localized_TheAddressOfTheFrpsServer}" />
+                  </ToolTip.Tip>
+                </Button>
+              </StackPanel>
+              <TextBox Grid.Row="0" Grid.Column="1"
+                       Text="{Binding ServerAddr}"
+                       Watermark="e.g., 127.0.0.1 or your-server.com" />
+            </Grid>
 
-                        <!-- Server Port -->
-                        <Grid ColumnDefinitions="280,120,10,*" RowDefinitions="Auto,Auto">
-                            <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="{DynamicResource Localized_ServerPort}"
-                                       Classes="field-label" />
-                            <TextBox Grid.Row="0" Grid.Column="1"
-                                     Text="{Binding ServerPortText}"
-                                     Watermark="7000" />
-                            <TextBlock Grid.Row="0" Grid.Column="3"
-                                       VerticalAlignment="Center">
-                                <Run Text="{DynamicResource Localized_DefaultPort}" /><Run Text=": 7000" />
-                            </TextBlock>
-                        </Grid>
+            <!-- Server Port -->
+            <Grid ColumnDefinitions="160,120,10,*" RowDefinitions="Auto,Auto">
+              <TextBlock Grid.Row="0" Grid.Column="0"
+                         Text="{DynamicResource Localized_ServerPort}"
+                         Classes="field-label" />
+              <TextBox Grid.Row="0" Grid.Column="1"
+                       Text="{Binding ServerPortText}"
+                       Watermark="7000" />
+              <TextBlock Grid.Row="0" Grid.Column="3"
+                         VerticalAlignment="Center">
+                <Run Text="{DynamicResource Localized_DefaultPort}" /><Run Text=": 7000" />
+              </TextBlock>
+            </Grid>
 
-                        <!-- User -->
-                        <Grid ColumnDefinitions="280,*" RowDefinitions="Auto,Auto">
-                            <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="{DynamicResource Localized_OptionalUserName}"
-                                       Classes="field-label" />
-                            <TextBox Grid.Row="0" Grid.Column="1"
-                                     Text="{Binding User}"
-                                     Watermark="Optional user name" />
-                            <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                                       Text="{DynamicResource Localized_OptionalUserNameToAvoidProxyNameConflicts}"
-                                       Classes="hint" />
-                        </Grid>
-                    </StackPanel>
-                </Border>
+            <!-- User -->
+            <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+              <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="4">
+                <TextBlock Text="{DynamicResource Localized_OptionalUserName}"
+                           Classes="field-label" />
+                <Button Classes="hint-icon">
+                  <ToolTip.Tip>
+                    <TextBlock Text="{DynamicResource Localized_OptionalUserNameToAvoidProxyNameConflicts}" />
+                  </ToolTip.Tip>
+                </Button>
+              </StackPanel>
+              <TextBox Grid.Row="0" Grid.Column="1"
+                       Text="{Binding User}"
+                       Watermark="Optional user name" />
+            </Grid>
+          </StackPanel>
+        </Border>
 
-                <!-- Authentication Section -->
-                <Border Classes="card">
-                    <StackPanel Spacing="{StaticResource SpacingM}">
-                        <TextBlock Text="{DynamicResource Localized_Authentication}"
-                                   Classes="section-title" />
+        <!-- Authentication Section -->
+        <Border Classes="card">
+          <StackPanel Spacing="{StaticResource SpacingM}">
+            <TextBlock Text="{DynamicResource Localized_Authentication}"
+                       Classes="section-title" />
 
-                        <!-- Auth Method -->
-                        <Grid ColumnDefinitions="140,180,*" RowDefinitions="Auto">
-                            <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="{DynamicResource Localized_Method}"
-                                       Classes="field-label" />
-                            <ComboBox Grid.Column="1"
-                                      SelectedIndex="{Binding AuthMethodIndex}">
-                                <ComboBoxItem>Token</ComboBoxItem>
-                                <ComboBoxItem>{DynamicResource Localized_OIDC}</ComboBoxItem>
-                            </ComboBox>
-                        </Grid>
+            <!-- Auth Method -->
+            <Grid ColumnDefinitions="160,180,*" RowDefinitions="Auto">
+              <TextBlock Grid.Row="0" Grid.Column="0"
+                         Text="{DynamicResource Localized_Method}"
+                         Classes="field-label" />
+              <ComboBox Grid.Column="1"
+                        SelectedIndex="{Binding AuthMethodIndex}">
+                <ComboBoxItem>Token</ComboBoxItem>
+                <ComboBoxItem>{DynamicResource Localized_OIDC}</ComboBoxItem>
+              </ComboBox>
+            </Grid>
 
-                        <!-- Token Auth -->
-                        <StackPanel Spacing="{StaticResource SpacingM}" IsVisible="{Binding !IsOidcAuth}">
-                            <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
-                                <TextBlock Grid.Row="0" Grid.Column="0"
-                                           Text="{DynamicResource Localized_Token}"
-                                           Classes="field-label" />
-                                <TextBox Grid.Column="1"
-                                         Text="{Binding Token}"
-                                         PasswordChar="*"
-                                         Watermark="{DynamicResource Localized_EnterYourAuthenticationToken}" />
-                            </Grid>
-                        </StackPanel>
-
-                        <!-- OIDC Auth -->
-                        <StackPanel Spacing="{StaticResource SpacingM}" IsVisible="{Binding IsOidcAuth}">
-                            <!-- Client ID -->
-                            <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
-                                <TextBlock Grid.Row="0" Grid.Column="0"
-                                           Text="{DynamicResource Localized_ClientId}"
-                                           Classes="field-label" />
-                                <TextBox Grid.Column="1"
-                                         Text="{Binding OidcClientId}" />
-                            </Grid>
-
-                            <!-- Client Secret -->
-                            <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
-                                <TextBlock Grid.Row="0" Grid.Column="0"
-                                           Text="{DynamicResource Localized_ClientSecret}"
-                                           Classes="field-label" />
-                                <TextBox Grid.Column="1"
-                                         Text="{Binding OidcClientSecret}"
-                                         PasswordChar="*" />
-                            </Grid>
-
-                            <!-- Token Endpoint -->
-                            <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
-                                <TextBlock Grid.Row="0" Grid.Column="0"
-                                           Text="{DynamicResource Localized_TokenEndpoint}"
-                                           Classes="field-label" />
-                                <TextBox Grid.Column="1"
-                                         Text="{Binding OidcTokenEndpointUrl}"
-                                         Watermark="https://" />
-                            </Grid>
-
-                            <!-- Audience -->
-                            <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
-                                <TextBlock Grid.Row="0" Grid.Column="0"
-                                           Text="{DynamicResource Localized_Audience}"
-                                           Classes="field-label" />
-                                <TextBox Grid.Column="1"
-                                         Text="{Binding OidcAudience}"
-                                         Watermark="{DynamicResource Localized_OptionalAudience}" />
-                            </Grid>
-
-                            <!-- Scope -->
-                            <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
-                                <TextBlock Grid.Row="0" Grid.Column="0"
-                                           Text="{DynamicResource Localized_Scope}"
-                                           Classes="field-label" />
-                                <TextBox Grid.Column="1"
-                                         Text="{Binding OidcScope}"
-                                         Watermark="{DynamicResource Localized_EgOpenidProfile}" />
-                            </Grid>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
-
-                <!-- Transport Section -->
-                <Border Classes="card">
-                    <StackPanel Spacing="{StaticResource SpacingM}">
-                        <TextBlock Text="{DynamicResource Localized_TransportSettings}"
-                                   Classes="section-title" />
-
-                        <!-- Protocol -->
-                        <Grid ColumnDefinitions="140,180,*" RowDefinitions="Auto">
-                            <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="{DynamicResource Localized_TransportProtocol}"
-                                       Classes="field-label" />
-                            <ComboBox Grid.Column="1"
-                                      SelectedIndex="{Binding TransportProtocolIndex}">
-                                <ComboBoxItem>TCP</ComboBoxItem>
-                                <ComboBoxItem>KCP</ComboBoxItem>
-                                <ComboBoxItem>QUIC</ComboBoxItem>
-                                <ComboBoxItem>WebSocket</ComboBoxItem>
-                                <ComboBoxItem>Secure WebSocket (WSS)</ComboBoxItem>
-                            </ComboBox>
-                        </Grid>
-
-                        <!-- Timeout and Mux -->
-                        <Grid ColumnDefinitions="140,120,20,Auto,*" RowDefinitions="Auto,Auto">
-                            <!-- Dial Timeout -->
-                            <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="{DynamicResource Localized_DialTimeout}"
-                                       Classes="field-label" />
-                            <TextBox Grid.Row="0" Grid.Column="1"
-                                     Text="{Binding DialServerTimeoutText}"
-                                     Watermark="10" />
-                            <TextBlock Grid.Row="0" Grid.Column="2"
-                                       Text="{DynamicResource Localized_Seconds}"
-                                       VerticalAlignment="Center" />
-
-                            <!-- TCP Mux -->
-                            <TextBlock Grid.Row="0" Grid.Column="3"
-                                       Text="{DynamicResource Localized_TcpMux}"
-                                       VerticalAlignment="Center" />
-                            <CheckBox Grid.Row="0" Grid.Column="4"
-                                      IsChecked="{Binding TcpMux}"
-                                      VerticalAlignment="Center" />
-                        </Grid>
-
-                        <!-- Heartbeat -->
-                        <Grid ColumnDefinitions="140,120,20,120,*" RowDefinitions="Auto,Auto">
-                            <!-- Heartbeat Interval -->
-                            <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="{DynamicResource Localized_HeartbeatInterval}"
-                                       Classes="field-label" />
-                            <TextBox Grid.Row="0" Grid.Column="1"
-                                     Text="{Binding HeartbeatIntervalText}"
-                                     Watermark="30" />
-                            <TextBlock Grid.Row="0" Grid.Column="2"
-                                       Text="{DynamicResource Localized_Seconds}"
-                                       VerticalAlignment="Center" />
-
-                            <!-- Heartbeat Timeout -->
-                            <TextBlock Grid.Row="0" Grid.Column="3"
-                                       Text="{DynamicResource Localized_HeartbeatTimeout}"
-                                       Classes="field-label" />
-                            <TextBox Grid.Row="0" Grid.Column="4"
-                                     Text="{Binding HeartbeatTimeoutText}"
-                                     Watermark="90" />
-                        </Grid>
-
-                        <!-- TLS -->
-                        <CheckBox IsChecked="{Binding TlsEnabled}">
-                            <StackPanel Spacing="2">
-                                <TextBlock Text="{DynamicResource Localized_EnableTLS}"
-                                           FontWeight="Medium" />
-                                <TextBlock Text="{DynamicResource Localized_EncryptCommunicationWithTheFrpsServer}"
-                                           Classes="hint" />
-                            </StackPanel>
-                        </CheckBox>
-                    </StackPanel>
-                </Border>
-
-                <!-- Logging Section -->
-                <Border Classes="card">
-                    <StackPanel Spacing="{StaticResource SpacingM}">
-                        <TextBlock Text="{DynamicResource Localized_LoggingSection}"
-                                   Classes="section-title" />
-
-                        <!-- Log Level and Max Days -->
-                        <Grid ColumnDefinitions="140,180,20,Auto,120" RowDefinitions="Auto">
-                            <!-- Log Level -->
-                            <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="Log Level"
-                                       Classes="field-label" />
-                            <ComboBox Grid.Column="1"
-                                      SelectedIndex="{Binding LogLevelIndex}">
-                                <ComboBoxItem>Trace</ComboBoxItem>
-                                <ComboBoxItem>Debug</ComboBoxItem>
-                                <ComboBoxItem>Info</ComboBoxItem>
-                                <ComboBoxItem>Warn</ComboBoxItem>
-                                <ComboBoxItem>Error</ComboBoxItem>
-                            </ComboBox>
-
-                            <!-- Max Days -->
-                            <TextBlock Grid.Column="3"
-                                       Text="{DynamicResource Localized_MaxDays}"
-                                       Classes="field-label" />
-                            <TextBox Grid.Column="4"
-                                     Text="{Binding LogMaxDaysText}"
-                                     Watermark="3" />
-                        </Grid>
-
-                        <!-- Log To -->
-                        <Grid ColumnDefinitions="140,*" RowDefinitions="Auto">
-                            <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="{DynamicResource Localized_LogTo}"
-                                       Classes="field-label" />
-                            <TextBox Grid.Column="1"
-                                     Text="{Binding LogTo}"
-                                     Watermark="{DynamicResource Localized_EgConsolePathToLogfile}" />
-                        </Grid>
-                    </StackPanel>
-                </Border>
-
-                <!-- Status Section -->
-                <Border Classes="card"
-                        IsVisible="{Binding IsValid}">
-                    <StackPanel Spacing="{StaticResource SpacingS}">
-                        <TextBlock Text="{DynamicResource Localized_StatusSection}"
-                                   Classes="section-title" />
-
-                        <TextBlock Text="{Binding ValidationError}"
-                                   Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}"
-                                   IsVisible="{Binding HasValidationError}" />
-
-                        <TextBlock Text="{Binding ValidationWarning}"
-                                   Foreground="Orange"
-                                   IsVisible="{Binding HasValidationWarning}" />
-
-                        <TextBlock Text="{DynamicResource Localized_ConfigurationIsValid}"
-                                   Foreground="{DynamicResource SystemAccentColor1Brush}"
-                                   IsVisible="{Binding IsValid}" />
-                    </StackPanel>
-                </Border>
-
-                <!-- Action Buttons -->
-                <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Right"
-                            Spacing="{StaticResource SpacingM}"
-                            Margin="{StaticResource ThicknessTopS}">
-                    <Button Content="{DynamicResource Localized_ResetToDefaults}"
-                            Command="{Binding ResetCommand}"
-                            IsEnabled="{Binding !IsSaving}"
-                            Classes="action-button" />
-
-                    <Button Command="{Binding SaveCommand}"
-                            IsEnabled="{Binding !IsSaving}"
-                            Classes="action-button primary">
-                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-                            <TextBlock Text="{DynamicResource Localized_SaveConfiguration}" />
-                            <ProgressBar IsIndeterminate="True"
-                                          Width="16"
-                                          Height="16"
-                                          IsVisible="{Binding IsSaving}" />
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-
+            <!-- Token Auth -->
+            <StackPanel Spacing="{StaticResource SpacingM}" IsVisible="{Binding !IsOidcAuth}">
+              <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="{DynamicResource Localized_Token}"
+                           Classes="field-label" />
+                <TextBox Grid.Column="1"
+                         Text="{Binding Token}"
+                         PasswordChar="*"
+                         Watermark="{DynamicResource Localized_EnterYourAuthenticationToken}" />
+              </Grid>
             </StackPanel>
-        </Panel>
-    </ScrollViewer>
+
+            <!-- OIDC Auth -->
+            <StackPanel Spacing="{StaticResource SpacingM}" IsVisible="{Binding IsOidcAuth}">
+              <!-- Client ID -->
+              <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="{DynamicResource Localized_ClientId}"
+                           Classes="field-label" />
+                <TextBox Grid.Column="1"
+                         Text="{Binding OidcClientId}" />
+              </Grid>
+
+              <!-- Client Secret -->
+              <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="{DynamicResource Localized_ClientSecret}"
+                           Classes="field-label" />
+                <TextBox Grid.Column="1"
+                         Text="{Binding OidcClientSecret}"
+                         PasswordChar="*" />
+              </Grid>
+
+              <!-- Token Endpoint -->
+              <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="{DynamicResource Localized_TokenEndpoint}"
+                           Classes="field-label" />
+                <TextBox Grid.Column="1"
+                         Text="{Binding OidcTokenEndpointUrl}"
+                         Watermark="https://" />
+              </Grid>
+
+              <!-- Audience -->
+              <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="{DynamicResource Localized_Audience}"
+                           Classes="field-label" />
+                <TextBox Grid.Column="1"
+                         Text="{Binding OidcAudience}"
+                         Watermark="{DynamicResource Localized_OptionalAudience}" />
+              </Grid>
+
+              <!-- Scope -->
+              <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="{DynamicResource Localized_Scope}"
+                           Classes="field-label" />
+                <TextBox Grid.Column="1"
+                         Text="{Binding OidcScope}"
+                         Watermark="{DynamicResource Localized_EgOpenidProfile}" />
+              </Grid>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <!-- Transport Section -->
+        <Border Classes="card">
+          <StackPanel Spacing="{StaticResource SpacingM}">
+            <TextBlock Text="{DynamicResource Localized_TransportSettings}"
+                       Classes="section-title" />
+
+            <!-- Protocol -->
+            <Grid ColumnDefinitions="160,180,*" RowDefinitions="Auto">
+              <TextBlock Grid.Row="0" Grid.Column="0"
+                         Text="{DynamicResource Localized_TransportProtocol}"
+                         Classes="field-label" />
+              <ComboBox Grid.Column="1"
+                        SelectedIndex="{Binding TransportProtocolIndex}">
+                <ComboBoxItem>TCP</ComboBoxItem>
+                <ComboBoxItem>KCP</ComboBoxItem>
+                <ComboBoxItem>QUIC</ComboBoxItem>
+                <ComboBoxItem>WebSocket</ComboBoxItem>
+                <ComboBoxItem>Secure WebSocket (WSS)</ComboBoxItem>
+              </ComboBox>
+            </Grid>
+
+            <!-- Timeout and Mux -->
+            <Grid ColumnDefinitions="160,120,10,*" RowDefinitions="Auto,Auto">
+              <!-- Dial Timeout -->
+              <TextBlock Grid.Row="0" Grid.Column="0"
+                         Text="{DynamicResource Localized_DialTimeout}"
+                         Classes="field-label" />
+              <TextBox Grid.Row="0" Grid.Column="1"
+                       Text="{Binding DialServerTimeoutText}"
+                       Watermark="10" />
+              <TextBlock Grid.Row="0" Grid.Column="3"
+                         Text="{DynamicResource Localized_Seconds}"
+                         VerticalAlignment="Center" />
+
+            </Grid>
+
+            <!-- TCP Mux -->
+            <Grid ColumnDefinitions="160,120,*" RowDefinitions="Auto,Auto">
+              <TextBlock Grid.Row="0" Grid.Column="0"
+                         Text="{DynamicResource Localized_TcpMux}"
+                         Classes="field-label" />
+              <CheckBox Grid.Row="0" Grid.Column="1"
+                        IsChecked="{Binding TcpMux}"
+                        VerticalAlignment="Center" />
+            </Grid>
+
+            <!-- Heartbeat Interval -->
+            <Grid ColumnDefinitions="160,120,10,*" RowDefinitions="Auto,Auto">
+              <TextBlock Grid.Row="0" Grid.Column="0"
+                         Text="{DynamicResource Localized_HeartbeatInterval}"
+                         Classes="field-label" />
+              <TextBox Grid.Row="0" Grid.Column="1"
+                       Text="{Binding HeartbeatIntervalText}"
+                       Watermark="30" />
+              <TextBlock Grid.Row="0" Grid.Column="3"
+                         Text="{DynamicResource Localized_Seconds}"
+                         VerticalAlignment="Center" />
+            </Grid>
+
+            <!-- Heartbeat Timeout -->
+            <Grid ColumnDefinitions="160,120,*" RowDefinitions="Auto,Auto">
+              <TextBlock Grid.Row="1" Grid.Column="0"
+                         Text="{DynamicResource Localized_HeartbeatTimeout}"
+                         Classes="field-label" />
+              <TextBox Grid.Row="1" Grid.Column="1"
+                       Text="{Binding HeartbeatTimeoutText}"
+                       Watermark="90" />
+            </Grid>
+
+            <!-- TLS -->
+            <Grid ColumnDefinitions="160,120,*" RowDefinitions="Auto">
+              <StackPanel Orientation="Horizontal" Spacing="4">
+                <TextBlock Text="{DynamicResource Localized_EnableTLS}"
+                           Classes="field-label" />
+                <Button Classes="hint-icon">
+                  <ToolTip.Tip>
+                    <TextBlock Text="{DynamicResource Localized_EncryptCommunicationWithTheFrpsServer}" />
+                  </ToolTip.Tip>
+                </Button>
+              </StackPanel>
+              <CheckBox Grid.Row="0" Grid.Column="1"
+                        IsChecked="{Binding TlsEnabled}"
+                        VerticalAlignment="Center" />
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- Logging Section -->
+        <Border Classes="card">
+          <StackPanel Spacing="{StaticResource SpacingM}">
+            <TextBlock Text="{DynamicResource Localized_LoggingSection}"
+                       Classes="section-title" />
+
+            <!-- Log Level and Max Days -->
+            <Grid ColumnDefinitions="160,180,20,Auto,120" RowDefinitions="Auto">
+              <!-- Log Level -->
+              <TextBlock Grid.Row="0" Grid.Column="0"
+                         Text="Log Level"
+                         Classes="field-label" />
+              <ComboBox Grid.Column="1"
+                        SelectedIndex="{Binding LogLevelIndex}">
+                <ComboBoxItem>Trace</ComboBoxItem>
+                <ComboBoxItem>Debug</ComboBoxItem>
+                <ComboBoxItem>Info</ComboBoxItem>
+                <ComboBoxItem>Warn</ComboBoxItem>
+                <ComboBoxItem>Error</ComboBoxItem>
+              </ComboBox>
+
+              <!-- Max Days -->
+              <TextBlock Grid.Column="3"
+                         Text="{DynamicResource Localized_MaxDays}"
+                         Classes="field-label" />
+              <TextBox Grid.Column="4"
+                       Text="{Binding LogMaxDaysText}"
+                       Watermark="3" />
+            </Grid>
+
+            <!-- Log To -->
+            <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+              <TextBlock Grid.Row="0" Grid.Column="0"
+                         Text="{DynamicResource Localized_LogTo}"
+                         Classes="field-label" />
+              <TextBox Grid.Column="1"
+                       Text="{Binding LogTo}"
+                       Watermark="{DynamicResource Localized_EgConsolePathToLogfile}" />
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- Status Section -->
+        <Border Classes="card"
+                IsVisible="{Binding IsValid}">
+          <StackPanel Spacing="{StaticResource SpacingS}">
+            <TextBlock Text="{DynamicResource Localized_StatusSection}"
+                       Classes="section-title" />
+
+            <TextBlock Text="{Binding ValidationError}"
+                       Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}"
+                       IsVisible="{Binding HasValidationError}" />
+
+            <TextBlock Text="{Binding ValidationWarning}"
+                       Foreground="Orange"
+                       IsVisible="{Binding HasValidationWarning}" />
+
+            <TextBlock Text="{DynamicResource Localized_ConfigurationIsValid}"
+                       Foreground="{DynamicResource SystemAccentColor1Brush}"
+                       IsVisible="{Binding IsValid}" />
+          </StackPanel>
+        </Border>
+
+        <!-- Action Buttons -->
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="{StaticResource SpacingM}"
+                    Margin="{StaticResource ThicknessTopS}">
+          <Button Content="{DynamicResource Localized_ResetToDefaults}"
+                  Command="{Binding ResetCommand}"
+                  IsEnabled="{Binding !IsSaving}"
+                  Classes="action-button" />
+
+          <Button Command="{Binding SaveCommand}"
+                  IsEnabled="{Binding !IsSaving}"
+                  Classes="action-button primary">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+              <TextBlock Text="{DynamicResource Localized_SaveConfiguration}" />
+              <ProgressBar IsIndeterminate="True"
+                           Width="16"
+                           Height="16"
+                           IsVisible="{Binding IsSaving}" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+
+      </StackPanel>
+    </Panel>
+  </ScrollViewer>
 </UserControl>
+

@@ -57,6 +57,7 @@
         "Iniciar",
         "Jeton",
         "Journaux",
+        "Keepalive",
         "Konfiguration",
         "Langue",
         "Limpiar",
@@ -66,6 +67,7 @@
         "Modo",
         "mscorlib",
         "Mvvm",
+        "myapp",
         "Nicht",
         "Nombre",
         "Personalizados",
@@ -77,8 +79,10 @@
         "Stcp",
         "Sudp",
         "Tcpmux",
+        "Viewbox",
         "Xtcp",
         "XXXL",
+        "yourdomain",
         "Русский"
     ]
 }

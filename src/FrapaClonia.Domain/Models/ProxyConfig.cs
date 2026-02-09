@@ -9,7 +9,7 @@ public class ProxyConfig
     public string Type { get; set; } = "tcp";  // tcp, udp, http, https, tcpmux, stcp, sudp, xtcp
     public Dictionary<string, string>? Annotations { get; set; }
     public ProxyTransport? Transport { get; set; }
-    public Dictionary<string, string>? Metadatas { get; set; }
+    public Dictionary<string, string>? Metadata { get; set; }
     public LoadBalancerConfig? LoadBalancer { get; set; }
     public HealthCheckConfig? HealthCheck { get; set; }
 
@@ -154,5 +154,5 @@ public class VisitorConfig
     public int BindPort { get; set; }
     public string? BindIp { get; set; }
     public ClientTransportConfig? Transport { get; set; }
-    public Dictionary<string, string>? Metadatas { get; set; }
+    public Dictionary<string, string>? Metadata { get; set; }
 }
