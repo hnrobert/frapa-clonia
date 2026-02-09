@@ -1,5 +1,6 @@
 using FrapaClonia.Core.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
+
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace FrapaClonia.UI.Services;
@@ -10,6 +11,7 @@ namespace FrapaClonia.UI.Services;
 public class LocalizedResources : ObservableObject
 {
     private readonly ILocalizationService _localizationService;
+
     // ReSharper disable once UnusedMember.Local
     private readonly Dictionary<string, LocalizedString> _strings = new();
 
@@ -251,7 +253,7 @@ public class LocalizedResources : ObservableObject
         // Settings
         LanguageAndRegion = Create("LanguageAndRegion");
         InterfaceLanguage = Create("InterfaceLanguage");
-        ChangesWillTakeEffectAfterRestarting = Create("ChangesWillTakeEffectAfterRestarting");
+        ChangesWillTakeEffectImmediately = Create("ChangesWillTakeEffectImmediately");
         SystemIntegration = Create("SystemIntegration");
         StartOnSystemBoot = Create("StartOnSystemBoot");
         AutomaticallyLaunchFrapaClonia = Create("AutomaticallyLaunchFrapaClonia");
@@ -505,7 +507,7 @@ public class LocalizedResources : ObservableObject
     // Settings
     public LocalizedString LanguageAndRegion { get; }
     public LocalizedString InterfaceLanguage { get; }
-    public LocalizedString ChangesWillTakeEffectAfterRestarting { get; }
+    public LocalizedString ChangesWillTakeEffectImmediately { get; }
     public LocalizedString SystemIntegration { get; }
     public LocalizedString StartOnSystemBoot { get; }
     public LocalizedString AutomaticallyLaunchFrapaClonia { get; }
@@ -528,5 +530,4 @@ public class LocalizedResources : ObservableObject
     {
         return new LocalizedString(_localizationService, key);
     }
-
 }

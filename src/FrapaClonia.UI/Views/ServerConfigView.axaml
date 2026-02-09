@@ -43,7 +43,7 @@
                         </Grid>
 
                         <!-- Server Port -->
-                        <Grid ColumnDefinitions="140,120,*" RowDefinitions="Auto,Auto">
+                        <Grid ColumnDefinitions="140,120,*,*" RowDefinitions="Auto,Auto">
                             <TextBlock Grid.Row="0" Grid.Column="0"
                                        Text="{DynamicResource Localized_ServerPort}"
                                        Classes="field-label" />
@@ -53,7 +53,7 @@
                                            Maximum="65535"
                                            Increment="1"
                                            FormatString="0" />
-                            <TextBlock Grid.Row="0" Grid.Column="2"
+                            <TextBlock Grid.Row="0" Grid.Column="3"
                                        VerticalAlignment="Center">
                                 <Run Text="{DynamicResource Localized_DefaultPort}" /><Run Text=": 7000" />
                             </TextBlock>
