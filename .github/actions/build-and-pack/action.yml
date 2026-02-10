@@ -65,10 +65,21 @@ runs:
 
         # NativeAOT uses `objcopy` to split debug symbols. When cross-building ARM64 on x64,
         # using aarch64 objcopy is more reliable.
-        infile="${@: -2:1}" || infile=""
+        infile=""
+        # Try to find the input file by walking args from the end and picking the first
+        # existing regular file. This works for common forms like:
+        #   objcopy --strip-debug --strip-unneeded <infile>
+        #   objcopy --only-keep-debug <infile> <outfile>
+        for ((i=$#; i>=1; i--)); do
+          candidate="${!i}"
+          if [[ -n "${candidate:-}" && "${candidate}" != -* && -f "${candidate}" ]]; then
+            infile="${candidate}"
+            break
+          fi
+        done
 
-        if [ -n "${infile:-}" ] && command -v file >/dev/null 2>&1; then
-          if file "$infile" 2>/dev/null | grep -qi "aarch64"; then
+        if [[ -n "${infile:-}" ]] && command -v file >/dev/null 2>&1; then
+          if file "$infile" 2>/dev/null | grep -Eqi "aarch64|ARM aarch64"; then
             if command -v aarch64-linux-gnu-objcopy >/dev/null 2>&1; then
               exec aarch64-linux-gnu-objcopy "$@"
             fi

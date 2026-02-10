@@ -108,7 +108,7 @@ jobs:
         with:
           version: ${{ needs.version.outputs.version }}
           publish_root: out
-          icon_icns: docs/images/favicon.icns
+          icon_icns: assets/images/favicon.icns
           output_dir: .
 
       - name: Upload DMG artifacts

@@ -29,7 +29,12 @@ inputs:
   icon_icns:
     description: "Path to .icns file to embed into the app bundle"
     required: false
-    default: "docs/images/favicon.icns"
+    default: "assets/images/favicon.icns"
+
+  plist_template:
+    description: "Path to Info.plist template containing @APP_NAME@, @BUNDLE_ID@, @VERSION@ placeholders"
+    required: false
+    default: "assets/manifests/Info.plist.template"
 
   output_dir:
     description: "Where to place generated .dmg files"
@@ -54,12 +59,18 @@ runs:
         ZIP_DIR="${{ inputs.zip_dir }}"
         PUBLISH_ROOT="${{ inputs.publish_root }}"
         ICON_SRC="${{ inputs.icon_icns }}"
+        PLIST_TEMPLATE="${{ inputs.plist_template }}"
         OUT_DIR="${{ inputs.output_dir }}"
         BUNDLE_ID="${{ inputs.bundle_id }}"
         RIDS="${{ inputs.rids }}"
 
         if [ ! -f "$ICON_SRC" ]; then
           echo "Missing icon: $ICON_SRC" >&2
+          exit 1
+        fi
+
+        if [ ! -f "$PLIST_TEMPLATE" ]; then
+          echo "Missing plist template: $PLIST_TEMPLATE" >&2
           exit 1
         fi
 
@@ -100,32 +111,19 @@ runs:
           cp -R "$SRC_DIR/"* "$MACOS_DIR/"
           cp "$ICON_SRC" "$RES_DIR/AppIcon.icns"
 
-          cat > "$CONTENTS_DIR/Info.plist" <<PLIST
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>CFBundleName</key>
-            <string>$APP_NAME</string>
-            <key>CFBundleDisplayName</key>
-            <string>$APP_NAME</string>
-            <key>CFBundleIdentifier</key>
-            <string>$BUNDLE_ID</string>
-            <key>CFBundleVersion</key>
-            <string>$VERSION</string>
-            <key>CFBundleShortVersionString</key>
-            <string>$VERSION</string>
-            <key>CFBundlePackageType</key>
-            <string>APPL</string>
-            <key>CFBundleExecutable</key>
-            <string>$APP_NAME</string>
-            <key>CFBundleIconFile</key>
-            <string>AppIcon</string>
-            <key>NSHighResolutionCapable</key>
-            <true/>
-          </dict>
-          </plist>
-          PLIST
+          escape_sed_repl() {
+            printf '%s' "$1" | sed -e 's/[\\/&]/\\&/g'
+          }
+
+          APP_NAME_ESC="$(escape_sed_repl "$APP_NAME")"
+          BUNDLE_ID_ESC="$(escape_sed_repl "$BUNDLE_ID")"
+          VERSION_ESC="$(escape_sed_repl "$VERSION")"
+
+          sed \
+            -e "s/@APP_NAME@/${APP_NAME_ESC}/g" \
+            -e "s/@BUNDLE_ID@/${BUNDLE_ID_ESC}/g" \
+            -e "s/@VERSION@/${VERSION_ESC}/g" \
+            "$PLIST_TEMPLATE" > "$CONTENTS_DIR/Info.plist"
 
           chmod +x "$MACOS_DIR/$APP_NAME" || true
           rm -f "$DMG_PATH"
