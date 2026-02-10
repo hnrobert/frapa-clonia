@@ -251,7 +251,7 @@ public partial class LogsViewModel : ObservableObject
         return entry.Level == SelectedLogLevel;
     }
 
-    private string MapLogLevel(LogLevel logLevel)
+    private static string MapLogLevel(LogLevel logLevel)
     {
         return logLevel switch
         {

@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
 using Avalonia.Controls;
+using System.Reflection;
 
 namespace FrapaClonia.UI.ViewModels;
 
@@ -16,6 +17,29 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly NavigationService? _navigation;
 
     [ObservableProperty] private Control? _currentView;
+
+    public static string Version
+    {
+        get
+        {
+            var informationalVersion = Assembly.GetEntryAssembly()
+                ?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+
+            if (string.IsNullOrEmpty(informationalVersion))
+                return Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "Unknown";
+
+#if DEBUG
+            // Debug: Show full version with build metadata
+            return informationalVersion;
+#else
+            // Release: Strip build metadata (everything after '+')
+            var plusIndex = informationalVersion.IndexOf('+');
+            return plusIndex > 0 ? informationalVersion[..plusIndex] : informationalVersion;
+#endif
+        }
+    }
+
+    public static string Copyright => "© 2025 Robert He";
 
     public IRelayCommand NavigateToDashboardCommand { get; }
     public IRelayCommand NavigateToServerConfigCommand { get; }

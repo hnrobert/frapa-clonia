@@ -196,7 +196,7 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
         return config;
     }
 
-    private void SetConfigValue(FrpClientConfig config, string section, string arrayName, bool inArray, string key, object value)
+    private static void SetConfigValue(FrpClientConfig config, string section, string arrayName, bool inArray, string key, object value)
     {
         if (inArray)
         {
@@ -274,7 +274,7 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
         }
     }
 
-    private string SerializeClientCommonConfig(ClientCommonConfig config)
+    private static string SerializeClientCommonConfig(ClientCommonConfig config)
     {
         var sb = new StringBuilder();
 
@@ -298,7 +298,7 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
         return sb.ToString().TrimEnd();
     }
 
-    private string SerializeProxy(ProxyConfig proxy)
+    private static string SerializeProxy(ProxyConfig proxy)
     {
         var sb = new StringBuilder();
         sb.AppendLine($"name = \"{EscapeString(proxy.Name)}\"");
@@ -321,7 +321,7 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
         return sb.ToString().TrimEnd();
     }
 
-    private string SerializeVisitor(VisitorConfig visitor)
+    private static string SerializeVisitor(VisitorConfig visitor)
     {
         var sb = new StringBuilder();
         sb.AppendLine($"name = \"{EscapeString(visitor.Name)}\"");

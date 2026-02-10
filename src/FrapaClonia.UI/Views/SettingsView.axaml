@@ -151,8 +151,8 @@
             </Border>
           </StackPanel>
         </Border>
-
         <!-- About Information -->
+        <!-- 
         <Border Classes="settings-card">
           <StackPanel Spacing="0">
             <TextBlock Text="{DynamicResource Localized_About}"
@@ -188,7 +188,7 @@
               </StackPanel>
             </Grid>
           </StackPanel>
-        </Border>
+        </Border> -->
 
         <!-- Action Buttons -->
         <StackPanel Orientation="Horizontal"
