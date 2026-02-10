@@ -16,8 +16,12 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly ILogger<MainWindowViewModel>? _logger;
     private readonly NavigationService? _navigation;
 
+    private const double MinSidebarWidth = 190;
+    private const double MaxSidebarWidth = 280;
+
     [ObservableProperty] private Control? _currentView;
     [ObservableProperty] private string _currentPage = "dashboard";
+    [ObservableProperty] private double _sidebarWidth = MinSidebarWidth;
 
     // Active state properties for navigation
     public bool IsDashboardActive => CurrentPage == "dashboard";
@@ -38,6 +42,17 @@ public partial class MainWindowViewModel : ObservableObject
         OnPropertyChanged(nameof(IsDeploymentActive));
         OnPropertyChanged(nameof(IsLogsActive));
         OnPropertyChanged(nameof(IsSettingsActive));
+    }
+
+    partial void OnSidebarWidthChanged(double value)
+    {
+        SidebarWidth = value switch
+        {
+            // Clamp width to min/max bounds
+            < MinSidebarWidth => MinSidebarWidth,
+            > MaxSidebarWidth => MaxSidebarWidth,
+            _ => value
+        };
     }
 
     public static string Version

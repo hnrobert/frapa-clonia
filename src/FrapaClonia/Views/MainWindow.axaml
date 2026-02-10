@@ -19,6 +19,7 @@
   <Grid>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="240" />
+      <ColumnDefinition Width="4" />
       <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
 
@@ -29,15 +30,15 @@
             BorderThickness="0,0,1,0">
       <Grid RowDefinitions="Auto,Auto,*,138">
         <!-- App Title Section -->
-        <Border Padding="12, 0" Margin="16">
+        <Border Padding=" 0" Margin="16">
           <Grid ColumnDefinitions="Auto,*">
             <!-- App Icon -->
             <Border Grid.Column="0"
-                    Width="60" Height="60"
+                    Width="45" Height="45"
                     Margin="0,0,12,0">
               <Image Source="/Assets/favicon.ico"
-                     Width="60"
-                     Height="60"
+                     Width="45"
+                     Height="45"
                      HorizontalAlignment="Center"
                      VerticalAlignment="Center" />
             </Border>
@@ -70,32 +71,32 @@
               <!-- Dashboard -->
               <Button Command="{Binding NavigateToDashboardCommand}"
                       HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Left"
-                      Padding="16"
+                      HorizontalContentAlignment="Stretch"
+                      Padding="0"
                       BorderThickness="0"
                       CornerRadius="4"
                       FontSize="14"
                       MinHeight="40"
                       Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
                       Classes="nav-button">
-                <Grid ColumnDefinitions="Auto,*">
-                  <!-- Active indicator -->
-                  <Border Grid.Column="0"
-                          Width="3"
-                          Height="24"
-                          CornerRadius="1"
-                          VerticalAlignment="Center"
-                          Margin="0,0,9,0"
-                          IsVisible="{Binding IsDashboardActive}"
-                          Background="{DynamicResource AppPrimaryBrush}" />
-                  <Grid ColumnDefinitions="Auto,*" Grid.Column="1">
+                <Grid>
+                  <!-- Active background (full button highlight) -->
+                  <Border IsVisible="{Binding IsDashboardActive}"
+                          Background="{DynamicResource SystemControlHighlightListLowBrush}"
+                          CornerRadius="4"
+                          Opacity="1"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch" />
+                  <!-- Content -->
+                  <Grid ColumnDefinitions="Auto,*" Margin="16">
                     <mi:MaterialIcon Grid.Column="0"
                                      Kind="ViewDashboard"
                                      Width="18"
                                      Height="18"
+                                     VerticalAlignment="Center"
                                      Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
                                      Margin="0,0,12,0" />
-                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Dashboard}" />
+                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Dashboard}" VerticalAlignment="Center" />
                   </Grid>
                 </Grid>
               </Button>
@@ -103,32 +104,32 @@
               <!-- Server Config -->
               <Button Command="{Binding NavigateToServerConfigCommand}"
                       HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Left"
-                      Padding="16"
+                      HorizontalContentAlignment="Stretch"
+                      Padding="0"
                       BorderThickness="0"
                       CornerRadius="4"
                       FontSize="14"
                       MinHeight="40"
                       Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
                       Classes="nav-button">
-                <Grid ColumnDefinitions="Auto,*">
-                  <!-- Active indicator -->
-                  <Border Grid.Column="0"
-                          Width="3"
-                          Height="24"
-                          CornerRadius="1"
-                          VerticalAlignment="Center"
-                          Margin="0,0,9,0"
-                          IsVisible="{Binding IsServerActive}"
-                          Background="{DynamicResource AppPrimaryBrush}" />
-                  <Grid ColumnDefinitions="Auto,*" Grid.Column="1">
+                <Grid>
+                  <!-- Active background (full button highlight) -->
+                  <Border IsVisible="{Binding IsServerActive}"
+                          Background="{DynamicResource SystemControlHighlightListLowBrush}"
+                          CornerRadius="4"
+                          Opacity="1"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch" />
+                  <!-- Content -->
+                  <Grid ColumnDefinitions="Auto,*" Margin="16">
                     <mi:MaterialIcon Grid.Column="0"
                                      Kind="Server"
                                      Width="18"
                                      Height="18"
+                                     VerticalAlignment="Center"
                                      Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
                                      Margin="0,0,12,0" />
-                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ServerConfig}" />
+                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ServerConfig}" VerticalAlignment="Center" />
                   </Grid>
                 </Grid>
               </Button>
@@ -136,32 +137,32 @@
               <!-- Proxies -->
               <Button Command="{Binding NavigateToProxiesCommand}"
                       HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Left"
-                      Padding="16"
+                      HorizontalContentAlignment="Stretch"
+                      Padding="0"
                       BorderThickness="0"
                       CornerRadius="4"
                       FontSize="14"
                       MinHeight="40"
                       Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
                       Classes="nav-button">
-                <Grid ColumnDefinitions="Auto,*">
-                  <!-- Active indicator -->
-                  <Border Grid.Column="0"
-                          Width="3"
-                          Height="24"
-                          CornerRadius="1"
-                          VerticalAlignment="Center"
-                          Margin="0,0,9,0"
-                          IsVisible="{Binding IsProxiesActive}"
-                          Background="{DynamicResource AppPrimaryBrush}" />
-                  <Grid ColumnDefinitions="Auto,*" Grid.Column="1">
+                <Grid>
+                  <!-- Active background (full button highlight) -->
+                  <Border IsVisible="{Binding IsProxiesActive}"
+                          Background="{DynamicResource SystemControlHighlightListLowBrush}"
+                          CornerRadius="4"
+                          Opacity="1"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch" />
+                  <!-- Content -->
+                  <Grid ColumnDefinitions="Auto,*" Margin="16">
                     <mi:MaterialIcon Grid.Column="0"
                                      Kind="Proxy"
                                      Width="18"
                                      Height="18"
+                                     VerticalAlignment="Center"
                                      Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
                                      Margin="0,0,12,0" />
-                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ProxyManagement}" />
+                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ProxyManagement}" VerticalAlignment="Center" />
                   </Grid>
                 </Grid>
               </Button>
@@ -169,32 +170,32 @@
               <!-- Visitors -->
               <Button Command="{Binding NavigateToVisitorsCommand}"
                       HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Left"
-                      Padding="16"
+                      HorizontalContentAlignment="Stretch"
+                      Padding="0"
                       BorderThickness="0"
                       CornerRadius="4"
                       FontSize="14"
                       MinHeight="40"
                       Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
                       Classes="nav-button">
-                <Grid ColumnDefinitions="Auto,*">
-                  <!-- Active indicator -->
-                  <Border Grid.Column="0"
-                          Width="3"
-                          Height="24"
-                          CornerRadius="1"
-                          VerticalAlignment="Center"
-                          Margin="0,0,9,0"
-                          IsVisible="{Binding IsVisitorsActive}"
-                          Background="{DynamicResource AppPrimaryBrush}" />
-                  <Grid ColumnDefinitions="Auto,*" Grid.Column="1">
+                <Grid>
+                  <!-- Active background (full button highlight) -->
+                  <Border IsVisible="{Binding IsVisitorsActive}"
+                          Background="{DynamicResource SystemControlHighlightListLowBrush}"
+                          CornerRadius="4"
+                          Opacity="1"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch" />
+                  <!-- Content -->
+                  <Grid ColumnDefinitions="Auto,*" Margin="16">
                     <mi:MaterialIcon Grid.Column="0"
                                      Kind="AccountMultiple"
                                      Width="18"
                                      Height="18"
+                                     VerticalAlignment="Center"
                                      Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
                                      Margin="0,0,12,0" />
-                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Visitors}" />
+                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Visitors}" VerticalAlignment="Center" />
                   </Grid>
                 </Grid>
               </Button>
@@ -202,32 +203,32 @@
               <!-- Deployment -->
               <Button Command="{Binding NavigateToDeploymentCommand}"
                       HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Left"
-                      Padding="16"
+                      HorizontalContentAlignment="Stretch"
+                      Padding="0"
                       BorderThickness="0"
                       CornerRadius="4"
                       FontSize="14"
                       MinHeight="40"
                       Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
                       Classes="nav-button">
-                <Grid ColumnDefinitions="Auto,*">
-                  <!-- Active indicator -->
-                  <Border Grid.Column="0"
-                          Width="3"
-                          Height="24"
-                          CornerRadius="1"
-                          VerticalAlignment="Center"
-                          Margin="0,0,9,0"
-                          IsVisible="{Binding IsDeploymentActive}"
-                          Background="{DynamicResource AppPrimaryBrush}" />
-                  <Grid ColumnDefinitions="Auto,*" Grid.Column="1">
+                <Grid>
+                  <!-- Active background (full button highlight) -->
+                  <Border IsVisible="{Binding IsDeploymentActive}"
+                          Background="{DynamicResource SystemControlHighlightListLowBrush}"
+                          CornerRadius="4"
+                          Opacity="1"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch" />
+                  <!-- Content -->
+                  <Grid ColumnDefinitions="Auto,*" Margin="16">
                     <mi:MaterialIcon Grid.Column="0"
                                      Kind="CloudDownload"
                                      Width="18"
                                      Height="18"
+                                     VerticalAlignment="Center"
                                      Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
                                      Margin="0,0,12,0" />
-                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Deployment}" />
+                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Deployment}" VerticalAlignment="Center" />
                   </Grid>
                 </Grid>
               </Button>
@@ -235,32 +236,32 @@
               <!-- Logs -->
               <Button Command="{Binding NavigateToLogsCommand}"
                       HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Left"
-                      Padding="16"
+                      HorizontalContentAlignment="Stretch"
+                      Padding="0"
                       BorderThickness="0"
                       CornerRadius="4"
                       FontSize="14"
                       MinHeight="40"
                       Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
                       Classes="nav-button">
-                <Grid ColumnDefinitions="Auto,*">
-                  <!-- Active indicator -->
-                  <Border Grid.Column="0"
-                          Width="3"
-                          Height="24"
-                          CornerRadius="1"
-                          VerticalAlignment="Center"
-                          Margin="0,0,9,0"
-                          IsVisible="{Binding IsLogsActive}"
-                          Background="{DynamicResource AppPrimaryBrush}" />
-                  <Grid ColumnDefinitions="Auto,*" Grid.Column="1">
+                <Grid>
+                  <!-- Active background (full button highlight) -->
+                  <Border IsVisible="{Binding IsLogsActive}"
+                          Background="{DynamicResource SystemControlHighlightListLowBrush}"
+                          CornerRadius="4"
+                          Opacity="1"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch" />
+                  <!-- Content -->
+                  <Grid ColumnDefinitions="Auto,*" Margin="16">
                     <mi:MaterialIcon Grid.Column="0"
                                      Kind="FileDocument"
                                      Width="18"
                                      Height="18"
+                                     VerticalAlignment="Center"
                                      Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
                                      Margin="0,0,12,0" />
-                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Logs}" />
+                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Logs}" VerticalAlignment="Center" />
                   </Grid>
                 </Grid>
               </Button>
@@ -275,32 +276,32 @@
           <!-- Settings Button -->
           <Button Command="{Binding NavigateToSettingsCommand}"
                   HorizontalAlignment="Stretch"
-                  HorizontalContentAlignment="Left"
-                  Padding="16"
+                  HorizontalContentAlignment="Stretch"
+                  Padding="0"
                   BorderThickness="0"
                   CornerRadius="4"
                   FontSize="14"
                   MinHeight="40"
                   Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
                   Classes="nav-button">
-            <Grid ColumnDefinitions="Auto,*">
-              <!-- Active indicator -->
-              <Border Grid.Column="0"
-                      Width="3"
-                      Height="24"
-                      CornerRadius="1"
-                      VerticalAlignment="Center"
-                      Margin="0,0,9,0"
-                      IsVisible="{Binding IsSettingsActive}"
-                      Background="{DynamicResource AppPrimaryBrush}" />
-              <Grid ColumnDefinitions="Auto,*" Grid.Column="1">
+            <Grid>
+              <!-- Active background (full button highlight) -->
+              <Border IsVisible="{Binding IsSettingsActive}"
+                      Background="{DynamicResource AppPrimaryBrush}"
+                      CornerRadius="4"
+                      Opacity="0.15"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch" />
+              <!-- Content -->
+              <Grid ColumnDefinitions="Auto,*" Margin="16">
                 <mi:MaterialIcon Grid.Column="0"
                                  Kind="Cog"
                                  Width="18"
                                  Height="18"
+                                 VerticalAlignment="Center"
                                  Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
                                  Margin="0,0,12,0" />
-                <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Settings}" />
+                <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Settings}" VerticalAlignment="Center" />
               </Grid>
             </Grid>
           </Button>
@@ -313,12 +314,13 @@
               <TextBlock Text="{Binding Copyright}"
                          FontSize="10"
                          FontWeight="Bold"
-                         TextWrapping="Wrap"
                          Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}" />
               <TextBlock FontSize="10"
+                         TextWrapping="Wrap"
                          Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}">
                 <Run Text="Licensed under" />
-                <Run Text="Apache License 2.0" FontWeight="Bold" />
+                <Run Text="Apache License 2.0"
+                     FontWeight="Bold" />
               </TextBlock>
               <TextBlock FontSize="12"
                          Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}">
@@ -332,8 +334,13 @@
       </Grid>
     </Border>
 
+    <!-- GridSplitter for resizing -->
+    <GridSplitter Grid.Column="1"
+                  Background="Transparent"
+                  ResizeDirection="Columns" />
+
     <!-- Main Content Area -->
-    <Border Grid.Column="1"
+    <Border Grid.Column="2"
             Background="{DynamicResource SystemPageBackgroundBrush}">
       <Grid RowDefinitions="Auto,*">
         <!-- Top Bar (optional for future use) -->
