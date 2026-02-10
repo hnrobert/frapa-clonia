@@ -12,6 +12,10 @@
     <Nullable>enable</Nullable>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 
+    <!-- Windows executable icon -->
+    <ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
+    <Win32Icon>Assets\favicon.ico</Win32Icon>
+
     <!-- NativeAOT: Enabled by default for smaller size -->
     <!-- Disable with: -p:PublishAot=false if needed -->
     <PublishAot>true</PublishAot>
