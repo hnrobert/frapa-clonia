@@ -133,6 +133,7 @@ runs:
           # Remove debug symbols from shipped artifacts.
           find "out/$RID" -name '*.pdb' -type f -delete || true
           find "out/$RID" -name '*.dSYM' -type d -prune -exec rm -rf {} + || true
+          find "out/$RID" -name '*.dbg' -type f -delete || true
         done
 
     - name: Publish (Windows)
@@ -161,6 +162,10 @@ runs:
           Get-ChildItem -Path ("out/" + $Rid) -Recurse -Force -ErrorAction SilentlyContinue |
             Where-Object { $_.PSIsContainer -and $_.Name -like '*.dSYM' } |
             Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
+          Get-ChildItem -Path ("out/" + $Rid) -Recurse -Force -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -like '*.dbg' } |
+            Remove-Item -Force -ErrorAction SilentlyContinue
         }
 
     - name: Pack (macOS ZIP)

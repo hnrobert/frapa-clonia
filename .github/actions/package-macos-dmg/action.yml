@@ -128,6 +128,7 @@ runs:
           # Remove debug artifacts from the shipped app bundle.
           find "$MACOS_DIR" -name '*.pdb' -type f -delete || true
           find "$MACOS_DIR" -name '*.dSYM' -type d -prune -exec rm -rf {} + || true
+          find "$MACOS_DIR" -name '*.dbg' -type f -delete || true
 
           # Ensure the main binary is executable.
           chmod +x "$MACOS_DIR/$APP_NAME" || true
@@ -139,7 +140,15 @@ runs:
           fi
 
           rm -f "$DMG_PATH"
-          hdiutil create -volname "$APP_NAME" -srcfolder "$APP_DIR" -ov -format UDZO "$DMG_PATH"
+
+          # Build DMG from a staging folder so we can include an /Applications shortcut.
+          DMG_STAGE="$BUNDLE_DIR/dmg-stage"
+          rm -rf "$DMG_STAGE"
+          mkdir -p "$DMG_STAGE"
+          cp -R "$APP_DIR" "$DMG_STAGE/"
+          ln -s "/Applications" "$DMG_STAGE/Applications" || true
+
+          hdiutil create -volname "$APP_NAME" -srcfolder "$DMG_STAGE" -ov -format UDZO "$DMG_PATH"
 
           echo "Created: $DMG_PATH"
 
