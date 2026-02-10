@@ -24,15 +24,15 @@ public class LocalizationService : ILocalizationService
 
         SupportedCultures =
         [
-            new("en"), // English
-            new("zh-CN"), // Chinese Simplified
-            new("zh-TW"), // Chinese Traditional
-            new("ja"), // Japanese
-            new("ko"), // Korean
-            new("es"), // Spanish
-            new("fr"), // French
-            new("de"), // German
-            new("ru")
+            new CultureInfo("en"), // English
+            new CultureInfo("zh-CN"), // Chinese Simplified
+            new CultureInfo("zh-TW"), // Chinese Traditional
+            new CultureInfo("ja"), // Japanese
+            new CultureInfo("ko"), // Korean
+            new CultureInfo("es"), // Spanish
+            new CultureInfo("fr"), // French
+            new CultureInfo("de"), // German
+            new CultureInfo("ru")
         ];
 
         _localizationData = new Dictionary<string, Dictionary<string, string>>();
