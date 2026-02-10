@@ -69,12 +69,32 @@ jobs:
           version: ${{ needs.version.outputs.version }}
           rids: linux-x64 linux-arm64 linux-musl-x64 linux-musl-arm64
 
-      - name: Upload Artifacts (Linux)
+      - name: Upload Artifacts (linux-x64)
         uses: actions/upload-artifact@v4
         with:
-          name: frapaclonia-${{ needs.version.outputs.version }}-linux
-          path: |
-            FrapaClonia-*.tar.gz
+          name: frapaclonia-${{ needs.version.outputs.version }}-linux-x64
+          path: FrapaClonia-${{ needs.version.outputs.version }}-linux-x64.tar.gz
+          retention-days: 30
+
+      - name: Upload Artifacts (linux-arm64)
+        uses: actions/upload-artifact@v4
+        with:
+          name: frapaclonia-${{ needs.version.outputs.version }}-linux-arm64
+          path: FrapaClonia-${{ needs.version.outputs.version }}-linux-arm64.tar.gz
+          retention-days: 30
+
+      - name: Upload Artifacts (linux-musl-x64)
+        uses: actions/upload-artifact@v4
+        with:
+          name: frapaclonia-${{ needs.version.outputs.version }}-linux-musl-x64
+          path: FrapaClonia-${{ needs.version.outputs.version }}-linux-musl-x64.tar.gz
+          retention-days: 30
+
+      - name: Upload Artifacts (linux-musl-arm64)
+        uses: actions/upload-artifact@v4
+        with:
+          name: frapaclonia-${{ needs.version.outputs.version }}-linux-musl-arm64
+          path: FrapaClonia-${{ needs.version.outputs.version }}-linux-musl-arm64.tar.gz
           retention-days: 30
 
   build-macos:
@@ -101,7 +121,13 @@ jobs:
       - name: Upload DMG artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: frapaclonia-${{ needs.version.outputs.version }}-dmg
-          path: |
-            FrapaClonia-*.dmg
+          name: frapaclonia-${{ needs.version.outputs.version }}-macos-x64
+          path: FrapaClonia-${{ needs.version.outputs.version }}-macos-x64.dmg
+          retention-days: 30
+
+      - name: Upload DMG artifacts (arm64)
+        uses: actions/upload-artifact@v4
+        with:
+          name: frapaclonia-${{ needs.version.outputs.version }}-macos-arm64
+          path: FrapaClonia-${{ needs.version.outputs.version }}-macos-arm64.dmg
           retention-days: 30
