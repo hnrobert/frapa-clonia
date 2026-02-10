@@ -1,122 +1,130 @@
-name: 'Build and Pack FrapaClonia'
-description: 'Build and pack FrapaClonia for multiple platforms'
+name: "Build and Pack FrapaClonia"
+description: "Build and pack FrapaClonia for multiple platforms"
 
 inputs:
   version:
-    description: 'Version tag for the output files'
+    description: "Version tag for the output files"
     required: true
-    default: '0.0.1'
+    default: "0.0.1"
+
+  rids:
+    description: "Space-separated list of RuntimeIdentifiers to build on this runner"
+    required: true
+
+  configuration:
+    description: "Build configuration"
+    required: false
+    default: "Release"
+
+  publish_aot:
+    description: "Enable NativeAOT"
+    required: false
+    default: "true"
+
+  self_contained:
+    description: "Publish self-contained"
+    required: false
+    default: "true"
+
+  pack_macos_zip:
+    description: "Whether to create macOS zip archives (normally false when packaging DMG directly)"
+    required: false
+    default: "false"
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '10.0.x'
+        dotnet-version: "10.0.x"
+
+    - name: Install Linux toolchains (for AOT/cross-arch)
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        set -euo pipefail
+        sudo apt-get update
+        # Tooling commonly needed by NativeAOT and cross-arch Linux targets.
+        sudo apt-get install -y --no-install-recommends \
+          clang lld zlib1g-dev \
+          musl-tools \
+          gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-dev-arm64-cross
 
     - name: Restore dependencies
       shell: bash
       run: dotnet restore
 
-    - name: Build Windows x64
+    - name: Publish (macOS/Linux)
+      if: runner.os != 'Windows'
       shell: bash
       run: |
-        dotnet publish src/FrapaClonia/FrapaClonia.csproj \
-          -c Release \
-          -r win-x64 \
-          -p:PublishAot=true \
-          -p:Version=${{ inputs.version }} \
-          --self-contained \
-          -o out/win-x64
+        set -euo pipefail
+        CONFIG='${{ inputs.configuration }}'
+        VERSION='${{ inputs.version }}'
+        AOT='${{ inputs.publish_aot }}'
+        SELF='${{ inputs.self_contained }}'
+        for RID in ${{ inputs.rids }}; do
+          echo "Publishing $RID (AOT=$AOT, self-contained=$SELF)"
+          dotnet publish src/FrapaClonia/FrapaClonia.csproj \
+            -c "$CONFIG" \
+            -r "$RID" \
+            -p:PublishAot=$AOT \
+            -p:Version=$VERSION \
+            --self-contained $SELF \
+            -o "out/$RID"
+        done
 
-    - name: Build Windows arm64
-      shell: bash
+    - name: Publish (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
       run: |
-        dotnet publish src/FrapaClonia/FrapaClonia.csproj \
-          -c Release \
-          -r win-arm64 \
-          -p:PublishAot=true \
-          -p:Version=${{ inputs.version }} \
-          --self-contained \
-          -o out/win-arm64
+        $Config = '${{ inputs.configuration }}'
+        $Version = '${{ inputs.version }}'
+        $Aot = '${{ inputs.publish_aot }}'
+        $Self = '${{ inputs.self_contained }}'
+        foreach ($Rid in '${{ inputs.rids }}'.Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries)) {
+          Write-Host "Publishing $Rid (AOT=$Aot, self-contained=$Self)"
+          dotnet publish src/FrapaClonia/FrapaClonia.csproj `
+            -c $Config `
+            -r $Rid `
+            -p:PublishAot=$Aot `
+            -p:Version=$Version `
+            --self-contained $Self `
+            -o ("out/" + $Rid)
+        }
 
-    - name: Build macOS x64
+    - name: Pack (macOS ZIP)
+      if: runner.os == 'macOS' && inputs.pack_macos_zip == 'true'
       shell: bash
       run: |
-        dotnet publish src/FrapaClonia/FrapaClonia.csproj \
-          -c Release \
-          -r osx-x64 \
-          -p:PublishAot=true \
-          -p:Version=${{ inputs.version }} \
-          --self-contained \
-          -o out/osx-x64
+        set -euo pipefail
+        VERSION='${{ inputs.version }}'
+        for RID in ${{ inputs.rids }}; do
+          cd "out/$RID"
+          zip -r "../../FrapaClonia-${VERSION}-${RID}.zip" .
+          cd ../..
+        done
 
-    - name: Build macOS arm64 (Apple Silicon)
-      shell: bash
+    - name: Pack (Windows ZIP)
+      if: runner.os == 'Windows'
+      shell: pwsh
       run: |
-        dotnet publish src/FrapaClonia/FrapaClonia.csproj \
-          -c Release \
-          -r osx-arm64 \
-          -p:PublishAot=true \
-          -p:Version=${{ inputs.version }} \
-          --self-contained \
-          -o out/osx-arm64
+        $Version = '${{ inputs.version }}'
+        foreach ($Rid in '${{ inputs.rids }}'.Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries)) {
+          $Zip = "FrapaClonia-$Version-$Rid.zip"
+          if (Test-Path $Zip) { Remove-Item $Zip -Force }
+          Compress-Archive -Path ("out/" + $Rid + "/*") -DestinationPath $Zip
+        }
 
-    - name: Build Linux x64
+    - name: Pack (Linux tar.gz)
+      if: runner.os == 'Linux'
       shell: bash
       run: |
-        dotnet publish src/FrapaClonia/FrapaClonia.csproj \
-          -c Release \
-          -r linux-x64 \
-          -p:PublishAot=true \
-          -p:Version=${{ inputs.version }} \
-          --self-contained \
-          -o out/linux-x64
-
-    - name: Build Linux arm64
-      shell: bash
-      run: |
-        dotnet publish src/FrapaClonia/FrapaClonia.csproj \
-          -c Release \
-          -r linux-arm64 \
-          -p:PublishAot=true \
-          -p:Version=${{ inputs.version }} \
-          --self-contained \
-          -o out/linux-arm64
-
-    - name: Pack Windows x64
-      shell: bash
-      run: |
-        cd out/win-x64
-        zip -r ../../FrapaClonia-${{ inputs.version }}-win-x64.zip .
-
-    - name: Pack Windows arm64
-      shell: bash
-      run: |
-        cd out/win-arm64
-        zip -r ../../FrapaClonia-${{ inputs.version }}-win-arm64.zip .
-
-    - name: Pack macOS x64
-      shell: bash
-      run: |
-        cd out/osx-x64
-        zip -r ../../FrapaClonia-${{ inputs.version }}-osx-x64.zip .
-
-    - name: Pack macOS arm64
-      shell: bash
-      run: |
-        cd out/osx-arm64
-        zip -r ../../FrapaClonia-${{ inputs.version }}-osx-arm64.zip .
-
-    - name: Pack Linux x64
-      shell: bash
-      run: |
-        cd out/linux-x64
-        tar -czf ../../FrapaClonia-${{ inputs.version }}-linux-x64.tar.gz .
-
-    - name: Pack Linux arm64
-      shell: bash
-      run: |
-        cd out/linux-arm64
-        tar -czf ../../FrapaClonia-${{ inputs.version }}-linux-arm64.tar.gz .
+        set -euo pipefail
+        VERSION='${{ inputs.version }}'
+        for RID in ${{ inputs.rids }}; do
+          cd "out/$RID"
+          tar -czf "../../FrapaClonia-${VERSION}-${RID}.tar.gz" .
+          cd ../..
+        done

@@ -17,99 +17,88 @@ on:
       - "docs/images/favicon.icns"
 
 jobs:
-  build:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract version from csproj
+        id: version
+        run: |
+          VERSION=$(grep '<Version>' src/FrapaClonia/FrapaClonia.csproj | sed 's/.*<Version>\(.*\)<\/Version>.*/\1/' | tr -d ' ')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Build version: $VERSION"
+
+  build-windows:
+    needs: version
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build and Pack (win-x64)
+        uses: ./.github/actions/build-and-pack
+        with:
+          version: ${{ needs.version.outputs.version }}
+          rids: win-x64
+
+      - name: Upload Artifacts (Windows)
+        uses: actions/upload-artifact@v4
+        with:
+          name: frapaclonia-${{ needs.version.outputs.version }}-windows
+          path: |
+            FrapaClonia-*.zip
+          retention-days: 30
+
+  build-linux:
+    needs: version
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Extract version from csproj
-        id: version
-        run: |
-          VERSION=$(grep '<Version>' src/FrapaClonia/FrapaClonia.csproj | sed 's/.*<Version>\(.*\)<\/Version>.*/\1/' | tr -d ' ')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Build version: $VERSION"
-
-      - name: Build and Pack
+      - name: Build and Pack (Linux)
         uses: ./.github/actions/build-and-pack
         with:
-          version: ${{ steps.version.outputs.version }}
+          version: ${{ needs.version.outputs.version }}
+          rids: linux-x64 linux-arm64 linux-musl-x64 linux-musl-arm64
 
-      - name: Upload Artifacts
+      - name: Upload Artifacts (Linux)
         uses: actions/upload-artifact@v4
         with:
-          name: frapaclonia-${{ steps.version.outputs.version }}
+          name: frapaclonia-${{ needs.version.outputs.version }}-linux
           path: |
-            FrapaClonia-*.zip
-            !FrapaClonia-*osx-*.zip
             FrapaClonia-*.tar.gz
           retention-days: 30
 
-      - name: Upload macOS zip artifacts (temporary)
-        uses: actions/upload-artifact@v4
-        with:
-          name: frapaclonia-${{ steps.version.outputs.version }}-macos-zips
-          path: |
-            FrapaClonia-*osx-*.zip
-          retention-days: 1
-
-  macos-dmg:
-    needs: build
+  build-macos:
+    needs: version
     runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Extract version from csproj
-        id: version
-        shell: bash
-        run: |
-          VERSION=$(grep '<Version>' src/FrapaClonia/FrapaClonia.csproj | sed 's/.*<Version>\(.*\)<\/Version>.*/\1/' | tr -d ' ')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Build version: $VERSION"
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
+      - name: Build and Pack (macOS)
+        uses: ./.github/actions/build-and-pack
         with:
-          name: frapaclonia-${{ steps.version.outputs.version }}-macos-zips
-          path: artifacts
+          version: ${{ needs.version.outputs.version }}
+          rids: osx-x64 osx-arm64
 
       - name: Create DMG from macOS zips
         uses: ./.github/actions/package-macos-dmg
         with:
-          version: ${{ steps.version.outputs.version }}
-          zip_dir: artifacts
+          version: ${{ needs.version.outputs.version }}
+          publish_root: out
           icon_icns: docs/images/favicon.icns
           output_dir: .
 
       - name: Upload DMG artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: frapaclonia-${{ steps.version.outputs.version }}-dmg
+          name: frapaclonia-${{ needs.version.outputs.version }}-dmg
           path: |
             FrapaClonia-*.dmg
           retention-days: 30
-
-      - name: Delete macOS zip artifacts
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          VERSION="${{ steps.version.outputs.version }}"
-          ARTIFACT_NAME="frapaclonia-${VERSION}-macos-zips"
-
-          # Find artifact id for this workflow run and delete it
-          ARTIFACT_ID=$(gh api \
-            -H "Accept: application/vnd.github+json" \
-            "/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" \
-            --jq ".artifacts[] | select(.name == \"$ARTIFACT_NAME\") | .id" | head -n 1)
-
-          if [ -n "${ARTIFACT_ID:-}" ]; then
-            gh api -X DELETE \
-              -H "Accept: application/vnd.github+json" \
-              "/repos/${{ github.repository }}/actions/artifacts/${ARTIFACT_ID}"
-            echo "Deleted artifact: $ARTIFACT_NAME ($ARTIFACT_ID)"
-          else
-            echo "Artifact not found (already deleted?): $ARTIFACT_NAME"
-          fi
