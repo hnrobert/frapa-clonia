@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 jobs:
   release:
@@ -29,25 +30,16 @@ jobs:
         with:
           version: ${{ steps.version.outputs.version }}
 
-      - name: Upload Release Assets
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release upload ${{ steps.version.outputs.version }} \
-            FrapaClonia-*.zip \
-            FrapaClonia-*.tar.gz \
-            --clobber
-
-  release-macos-dmg:
-    needs: release
-    runs-on: macos-latest
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Get release version from tag
         id: version
-        shell: bash
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
           if [ "$VERSION" = "$GITHUB_REF" ]; then
@@ -56,40 +48,112 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Release version: $VERSION"
 
-      - name: Download macOS zip assets
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          VERSION="${{ steps.version.outputs.version }}"
-          gh release download "$VERSION" \
-            --pattern "FrapaClonia-${VERSION}-osx-*.zip"
+  build-windows:
+    needs: version
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build and Pack (win-x64)
+        uses: ./.github/actions/build-and-pack
+        with:
+          version: ${{ needs.version.outputs.version }}
+          rids: win-x64
+
+      - name: Upload build artifacts (Windows)
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ needs.version.outputs.version }}-windows
+          path: |
+            FrapaClonia-*.zip
+          retention-days: 7
+
+  build-linux:
+    needs: version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build and Pack (Linux)
+        uses: ./.github/actions/build-and-pack
+        with:
+          version: ${{ needs.version.outputs.version }}
+          rids: linux-x64 linux-arm64 linux-musl-x64 linux-musl-arm64
+
+      - name: Upload build artifacts (Linux)
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ needs.version.outputs.version }}-linux
+          path: |
+            FrapaClonia-*.tar.gz
+          retention-days: 7
+
+  build-macos:
+    needs: version
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build and Pack (macOS)
+        uses: ./.github/actions/build-and-pack
+        with:
+          version: ${{ needs.version.outputs.version }}
+          rids: osx-x64 osx-arm64
 
       - name: Create DMG from macOS zips
         uses: ./.github/actions/package-macos-dmg
         with:
-          version: ${{ steps.version.outputs.version }}
-          zip_dir: .
+          version: ${{ needs.version.outputs.version }}
+          publish_root: out
           icon_icns: docs/images/favicon.icns
           output_dir: .
 
-      - name: Upload DMG assets to Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          gh release upload "$VERSION" \
-            FrapaClonia-*-macos-*.dmg \
-            --clobber
+      - name: Upload DMG artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ needs.version.outputs.version }}-dmg
+          path: |
+            FrapaClonia-*.dmg
+          retention-days: 7
 
-      - name: Delete macOS zip assets from Release
+  upload-release-assets:
+    needs: [version, build-windows, build-linux, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Windows assets
+        uses: actions/download-artifact@v3
+        with:
+          name: release-${{ needs.version.outputs.version }}-windows
+          path: dist
+
+      - name: Download Linux assets
+        uses: actions/download-artifact@v3
+        with:
+          name: release-${{ needs.version.outputs.version }}-linux
+          path: dist
+
+      - name: Download DMG assets
+        uses: actions/download-artifact@v3
+        with:
+          name: release-${{ needs.version.outputs.version }}-dmg
+          path: dist
+
+      - name: Upload Release Assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
-          VERSION="${{ steps.version.outputs.version }}"
-          gh release delete-asset "$VERSION" "FrapaClonia-$VERSION-osx-arm64.zip" --yes || true
-          gh release delete-asset "$VERSION" "FrapaClonia-$VERSION-osx-x64.zip" --yes || true
+          VERSION="${{ needs.version.outputs.version }}"
+          gh release upload "$VERSION" \
+            dist/FrapaClonia-${VERSION}-win-x64.zip \
+            dist/FrapaClonia-${VERSION}-linux-x64.tar.gz \
+            dist/FrapaClonia-${VERSION}-linux-arm64.tar.gz \
+            dist/FrapaClonia-${VERSION}-linux-musl-x64.tar.gz \
+            dist/FrapaClonia-${VERSION}-linux-musl-arm64.tar.gz \
+            dist/FrapaClonia-${VERSION}-macos-x64.dmg \
+            dist/FrapaClonia-${VERSION}-macos-arm64.dmg \
+            --clobber

@@ -11,6 +11,11 @@ inputs:
     required: false
     default: "."
 
+  publish_root:
+    description: "Directory containing published outputs under <publish_root>/<rid> (preferred over zips when present)"
+    required: false
+    default: "out"
+
   app_name:
     description: "App bundle name (also expected executable name inside the zip)"
     required: false
@@ -47,6 +52,7 @@ runs:
         APP_NAME="${{ inputs.app_name }}"
         VERSION="${{ inputs.version }}"
         ZIP_DIR="${{ inputs.zip_dir }}"
+        PUBLISH_ROOT="${{ inputs.publish_root }}"
         ICON_SRC="${{ inputs.icon_icns }}"
         OUT_DIR="${{ inputs.output_dir }}"
         BUNDLE_ID="${{ inputs.bundle_id }}"
@@ -61,13 +67,18 @@ runs:
         mkdir -p work bundle "$OUT_DIR"
 
         for RID in $RIDS; do
-          ZIP_PATH="$ZIP_DIR/$APP_NAME-$VERSION-$RID.zip"
-          if [ ! -f "$ZIP_PATH" ]; then
-            echo "Missing zip: $ZIP_PATH" >&2
-            exit 1
+          SRC_DIR=""
+          if [ -d "$PUBLISH_ROOT/$RID" ]; then
+            SRC_DIR="$PUBLISH_ROOT/$RID"
+          else
+            ZIP_PATH="$ZIP_DIR/$APP_NAME-$VERSION-$RID.zip"
+            if [ ! -f "$ZIP_PATH" ]; then
+              echo "Missing published dir ($PUBLISH_ROOT/$RID) and missing zip: $ZIP_PATH" >&2
+              exit 1
+            fi
+            unzip -q "$ZIP_PATH" -d "work/$RID"
+            SRC_DIR="work/$RID"
           fi
-
-          unzip -q "$ZIP_PATH" -d "work/$RID"
 
           case "$RID" in
             osx-arm64) DMG_SUFFIX="macos-arm64" ;;
@@ -86,7 +97,7 @@ runs:
           rm -rf "$BUNDLE_DIR"
           mkdir -p "$MACOS_DIR" "$RES_DIR"
 
-          cp -R "work/$RID/"* "$MACOS_DIR/"
+          cp -R "$SRC_DIR/"* "$MACOS_DIR/"
           cp "$ICON_SRC" "$RES_DIR/AppIcon.icns"
 
           cat > "$CONTENTS_DIR/Info.plist" <<PLIST
