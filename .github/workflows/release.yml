@@ -1,0 +1,95 @@
+name: Release
+
+on:
+  release:
+    types: [created]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get release version from tag
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          if [ "$VERSION" = "$GITHUB_REF" ]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Release version: $VERSION"
+
+      - name: Build and Pack
+        uses: ./.github/actions/build-and-pack
+        with:
+          version: ${{ steps.version.outputs.version }}
+
+      - name: Upload Release Assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ steps.version.outputs.version }} \
+            FrapaClonia-*.zip \
+            FrapaClonia-*.tar.gz \
+            --clobber
+
+  release-macos-dmg:
+    needs: release
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get release version from tag
+        id: version
+        shell: bash
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          if [ "$VERSION" = "$GITHUB_REF" ]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Release version: $VERSION"
+
+      - name: Download macOS zip assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.version.outputs.version }}"
+          gh release download "$VERSION" \
+            --pattern "FrapaClonia-${VERSION}-osx-*.zip"
+
+      - name: Create DMG from macOS zips
+        uses: ./.github/actions/package-macos-dmg
+        with:
+          version: ${{ steps.version.outputs.version }}
+          zip_dir: .
+          icon_icns: docs/images/favicon.icns
+          output_dir: .
+
+      - name: Upload DMG assets to Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          gh release upload "$VERSION" \
+            FrapaClonia-*-macos-*.dmg \
+            --clobber
+
+      - name: Delete macOS zip assets from Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.version.outputs.version }}"
+          gh release delete-asset "$VERSION" "FrapaClonia-$VERSION-osx-arm64.zip" --yes || true
+          gh release delete-asset "$VERSION" "FrapaClonia-$VERSION-osx-x64.zip" --yes || true
