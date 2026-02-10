@@ -114,6 +114,10 @@ runs:
             -p:Version=$VERSION \
             --self-contained $SELF \
             -o "out/$RID"
+
+          # Remove debug symbols from shipped artifacts.
+          find "out/$RID" -name '*.pdb' -type f -delete || true
+          find "out/$RID" -name '*.dSYM' -type d -prune -exec rm -rf {} + || true
         done
 
     - name: Publish (Windows)
@@ -133,6 +137,15 @@ runs:
             -p:Version=$Version `
             --self-contained $Self `
             -o ("out/" + $Rid)
+
+          # Remove debug symbols from shipped artifacts.
+          Get-ChildItem -Path ("out/" + $Rid) -Recurse -Force -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -like '*.pdb' } |
+            Remove-Item -Force -ErrorAction SilentlyContinue
+
+          Get-ChildItem -Path ("out/" + $Rid) -Recurse -Force -ErrorAction SilentlyContinue |
+            Where-Object { $_.PSIsContainer -and $_.Name -like '*.dSYM' } |
+            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
         }
 
     - name: Pack (macOS ZIP)
