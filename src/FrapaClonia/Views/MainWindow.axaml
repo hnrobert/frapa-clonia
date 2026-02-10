@@ -72,20 +72,31 @@
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Left"
                       Padding="16"
-                      Background="Transparent"
                       BorderThickness="0"
                       CornerRadius="4"
                       FontSize="14"
                       MinHeight="40"
-                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
+                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
+                      Classes="nav-button">
                 <Grid ColumnDefinitions="Auto,*">
-                  <mi:MaterialIcon Grid.Column="0"
-                                   Kind="ViewDashboard"
-                                   Width="18"
-                                   Height="18"
-                                   Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                   Margin="0,0,12,0" />
-                  <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Dashboard}" />
+                  <!-- Active indicator -->
+                  <Border Grid.Column="0"
+                          Width="3"
+                          Height="24"
+                          CornerRadius="1"
+                          VerticalAlignment="Center"
+                          Margin="0,0,9,0"
+                          IsVisible="{Binding IsDashboardActive}"
+                          Background="{DynamicResource AppPrimaryBrush}" />
+                  <Grid ColumnDefinitions="Auto,*" Grid.Column="1">
+                    <mi:MaterialIcon Grid.Column="0"
+                                     Kind="ViewDashboard"
+                                     Width="18"
+                                     Height="18"
+                                     Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                     Margin="0,0,12,0" />
+                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Dashboard}" />
+                  </Grid>
                 </Grid>
               </Button>
 
@@ -94,20 +105,31 @@
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Left"
                       Padding="16"
-                      Background="Transparent"
                       BorderThickness="0"
                       CornerRadius="4"
                       FontSize="14"
                       MinHeight="40"
-                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
+                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
+                      Classes="nav-button">
                 <Grid ColumnDefinitions="Auto,*">
-                  <mi:MaterialIcon Grid.Column="0"
-                                   Kind="Server"
-                                   Width="18"
-                                   Height="18"
-                                   Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                   Margin="0,0,12,0" />
-                  <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ServerConfig}" />
+                  <!-- Active indicator -->
+                  <Border Grid.Column="0"
+                          Width="3"
+                          Height="24"
+                          CornerRadius="1"
+                          VerticalAlignment="Center"
+                          Margin="0,0,9,0"
+                          IsVisible="{Binding IsServerActive}"
+                          Background="{DynamicResource AppPrimaryBrush}" />
+                  <Grid ColumnDefinitions="Auto,*" Grid.Column="1">
+                    <mi:MaterialIcon Grid.Column="0"
+                                     Kind="Server"
+                                     Width="18"
+                                     Height="18"
+                                     Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                     Margin="0,0,12,0" />
+                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ServerConfig}" />
+                  </Grid>
                 </Grid>
               </Button>
 
@@ -116,20 +138,31 @@
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Left"
                       Padding="16"
-                      Background="Transparent"
                       BorderThickness="0"
                       CornerRadius="4"
                       FontSize="14"
                       MinHeight="40"
-                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
+                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
+                      Classes="nav-button">
                 <Grid ColumnDefinitions="Auto,*">
-                  <mi:MaterialIcon Grid.Column="0"
-                                   Kind="Proxy"
-                                   Width="18"
-                                   Height="18"
-                                   Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                   Margin="0,0,12,0" />
-                  <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ProxyManagement}" />
+                  <!-- Active indicator -->
+                  <Border Grid.Column="0"
+                          Width="3"
+                          Height="24"
+                          CornerRadius="1"
+                          VerticalAlignment="Center"
+                          Margin="0,0,9,0"
+                          IsVisible="{Binding IsProxiesActive}"
+                          Background="{DynamicResource AppPrimaryBrush}" />
+                  <Grid ColumnDefinitions="Auto,*" Grid.Column="1">
+                    <mi:MaterialIcon Grid.Column="0"
+                                     Kind="Proxy"
+                                     Width="18"
+                                     Height="18"
+                                     Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                     Margin="0,0,12,0" />
+                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ProxyManagement}" />
+                  </Grid>
                 </Grid>
               </Button>
 
@@ -138,20 +171,31 @@
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Left"
                       Padding="16"
-                      Background="Transparent"
                       BorderThickness="0"
                       CornerRadius="4"
                       FontSize="14"
                       MinHeight="40"
-                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
+                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
+                      Classes="nav-button">
                 <Grid ColumnDefinitions="Auto,*">
-                  <mi:MaterialIcon Grid.Column="0"
-                                   Kind="AccountMultiple"
-                                   Width="18"
-                                   Height="18"
-                                   Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                   Margin="0,0,12,0" />
-                  <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Visitors}" />
+                  <!-- Active indicator -->
+                  <Border Grid.Column="0"
+                          Width="3"
+                          Height="24"
+                          CornerRadius="1"
+                          VerticalAlignment="Center"
+                          Margin="0,0,9,0"
+                          IsVisible="{Binding IsVisitorsActive}"
+                          Background="{DynamicResource AppPrimaryBrush}" />
+                  <Grid ColumnDefinitions="Auto,*" Grid.Column="1">
+                    <mi:MaterialIcon Grid.Column="0"
+                                     Kind="AccountMultiple"
+                                     Width="18"
+                                     Height="18"
+                                     Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                     Margin="0,0,12,0" />
+                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Visitors}" />
+                  </Grid>
                 </Grid>
               </Button>
 
@@ -160,20 +204,31 @@
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Left"
                       Padding="16"
-                      Background="Transparent"
                       BorderThickness="0"
                       CornerRadius="4"
                       FontSize="14"
                       MinHeight="40"
-                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
+                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
+                      Classes="nav-button">
                 <Grid ColumnDefinitions="Auto,*">
-                  <mi:MaterialIcon Grid.Column="0"
-                                   Kind="CloudDownload"
-                                   Width="18"
-                                   Height="18"
-                                   Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                   Margin="0,0,12,0" />
-                  <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Deployment}" />
+                  <!-- Active indicator -->
+                  <Border Grid.Column="0"
+                          Width="3"
+                          Height="24"
+                          CornerRadius="1"
+                          VerticalAlignment="Center"
+                          Margin="0,0,9,0"
+                          IsVisible="{Binding IsDeploymentActive}"
+                          Background="{DynamicResource AppPrimaryBrush}" />
+                  <Grid ColumnDefinitions="Auto,*" Grid.Column="1">
+                    <mi:MaterialIcon Grid.Column="0"
+                                     Kind="CloudDownload"
+                                     Width="18"
+                                     Height="18"
+                                     Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                     Margin="0,0,12,0" />
+                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Deployment}" />
+                  </Grid>
                 </Grid>
               </Button>
 
@@ -182,20 +237,31 @@
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Left"
                       Padding="16"
-                      Background="Transparent"
                       BorderThickness="0"
                       CornerRadius="4"
                       FontSize="14"
                       MinHeight="40"
-                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
+                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
+                      Classes="nav-button">
                 <Grid ColumnDefinitions="Auto,*">
-                  <mi:MaterialIcon Grid.Column="0"
-                                   Kind="FileDocument"
-                                   Width="18"
-                                   Height="18"
-                                   Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                   Margin="0,0,12,0" />
-                  <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Logs}" />
+                  <!-- Active indicator -->
+                  <Border Grid.Column="0"
+                          Width="3"
+                          Height="24"
+                          CornerRadius="1"
+                          VerticalAlignment="Center"
+                          Margin="0,0,9,0"
+                          IsVisible="{Binding IsLogsActive}"
+                          Background="{DynamicResource AppPrimaryBrush}" />
+                  <Grid ColumnDefinitions="Auto,*" Grid.Column="1">
+                    <mi:MaterialIcon Grid.Column="0"
+                                     Kind="FileDocument"
+                                     Width="18"
+                                     Height="18"
+                                     Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                     Margin="0,0,12,0" />
+                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Logs}" />
+                  </Grid>
                 </Grid>
               </Button>
             </StackPanel>
@@ -211,20 +277,31 @@
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Left"
                   Padding="16"
-                  Background="Transparent"
                   BorderThickness="0"
                   CornerRadius="4"
                   FontSize="14"
                   MinHeight="40"
-                  Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
+                  Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
+                  Classes="nav-button">
             <Grid ColumnDefinitions="Auto,*">
-              <mi:MaterialIcon Grid.Column="0"
-                               Kind="Cog"
-                               Width="18"
-                               Height="18"
-                               Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                               Margin="0,0,12,0" />
-              <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Settings}" />
+              <!-- Active indicator -->
+              <Border Grid.Column="0"
+                      Width="3"
+                      Height="24"
+                      CornerRadius="1"
+                      VerticalAlignment="Center"
+                      Margin="0,0,9,0"
+                      IsVisible="{Binding IsSettingsActive}"
+                      Background="{DynamicResource AppPrimaryBrush}" />
+              <Grid ColumnDefinitions="Auto,*" Grid.Column="1">
+                <mi:MaterialIcon Grid.Column="0"
+                                 Kind="Cog"
+                                 Width="18"
+                                 Height="18"
+                                 Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                 Margin="0,0,12,0" />
+                <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Settings}" />
+              </Grid>
             </Grid>
           </Button>
 

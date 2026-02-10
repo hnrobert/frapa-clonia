@@ -17,6 +17,28 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly NavigationService? _navigation;
 
     [ObservableProperty] private Control? _currentView;
+    [ObservableProperty] private string _currentPage = "dashboard";
+
+    // Active state properties for navigation
+    public bool IsDashboardActive => CurrentPage == "dashboard";
+    public bool IsServerActive => CurrentPage == "server";
+    public bool IsProxiesActive => CurrentPage == "proxies";
+    public bool IsVisitorsActive => CurrentPage == "visitors";
+    public bool IsDeploymentActive => CurrentPage == "deployment";
+    public bool IsLogsActive => CurrentPage == "logs";
+    public bool IsSettingsActive => CurrentPage == "settings";
+
+    partial void OnCurrentPageChanged(string value)
+    {
+        _ = value; // Discard parameter without warning
+        OnPropertyChanged(nameof(IsDashboardActive));
+        OnPropertyChanged(nameof(IsServerActive));
+        OnPropertyChanged(nameof(IsProxiesActive));
+        OnPropertyChanged(nameof(IsVisitorsActive));
+        OnPropertyChanged(nameof(IsDeploymentActive));
+        OnPropertyChanged(nameof(IsLogsActive));
+        OnPropertyChanged(nameof(IsSettingsActive));
+    }
 
     public static string Version
     {
@@ -72,7 +94,11 @@ public partial class MainWindowViewModel : ObservableObject
         NavigateToSettingsCommand = new RelayCommand(() => Navigate("settings"));
 
         // Subscribe to navigation changes
-        _navigation.PageChanged += (_, _) => { CurrentView = _navigation.CurrentView; };
+        _navigation.PageChanged += (_, _) =>
+        {
+            CurrentView = _navigation.CurrentView;
+            CurrentPage = _navigation.CurrentPage;
+        };
 
         // Initialize with dashboard
         Navigate("dashboard");

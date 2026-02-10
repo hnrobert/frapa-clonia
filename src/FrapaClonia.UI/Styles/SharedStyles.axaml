@@ -292,6 +292,14 @@
     <Setter Property="Opacity" Value="0.5" />
   </Style>
 
+  <Style Selector="Button.nav-button.active">
+    <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumHighBrush}" />
+  </Style>
+
+  <Style Selector="Button.nav-button.active Path.nav-icon">
+    <Setter Property="Fill" Value="{DynamicResource SystemControlHighlightAltBaseHighBrush}" />
+  </Style>
+
   <Style Selector="Path.nav-icon">
     <Setter Property="Width" Value="{StaticResource IconSizeL}" />
     <Setter Property="Height" Value="{StaticResource IconSizeL}" />
