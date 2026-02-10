@@ -15,6 +15,9 @@ on:
       - "**.sln"
       - "CLAUDE.md"
       - "docs/images/favicon.icns"
+      - ".github/actions/build-and-pack/**"
+      - ".github/actions/package-macos-dmg/**"
+      - ".github/workflows/build.yml"
 
 jobs:
   version:
