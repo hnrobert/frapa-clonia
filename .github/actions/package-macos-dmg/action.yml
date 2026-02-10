@@ -1,0 +1,123 @@
+name: "Package macOS DMG"
+description: "Create macOS .dmg disk images from previously built macOS zip artifacts"
+
+inputs:
+  version:
+    description: "Version string used in input zip names and output dmg names"
+    required: true
+
+  zip_dir:
+    description: "Directory containing FrapaClonia-<version>-osx-*.zip files"
+    required: false
+    default: "."
+
+  app_name:
+    description: "App bundle name (also expected executable name inside the zip)"
+    required: false
+    default: "FrapaClonia"
+
+  bundle_id:
+    description: "CFBundleIdentifier"
+    required: false
+    default: "com.hnrobert.frapaclonia"
+
+  icon_icns:
+    description: "Path to .icns file to embed into the app bundle"
+    required: false
+    default: "docs/images/favicon.icns"
+
+  output_dir:
+    description: "Where to place generated .dmg files"
+    required: false
+    default: "."
+
+  rids:
+    description: "Space-separated list of macOS RIDs to package"
+    required: false
+    default: "osx-arm64 osx-x64"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create DMG(s)
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        APP_NAME="${{ inputs.app_name }}"
+        VERSION="${{ inputs.version }}"
+        ZIP_DIR="${{ inputs.zip_dir }}"
+        ICON_SRC="${{ inputs.icon_icns }}"
+        OUT_DIR="${{ inputs.output_dir }}"
+        BUNDLE_ID="${{ inputs.bundle_id }}"
+        RIDS="${{ inputs.rids }}"
+
+        if [ ! -f "$ICON_SRC" ]; then
+          echo "Missing icon: $ICON_SRC" >&2
+          exit 1
+        fi
+
+        rm -rf work bundle
+        mkdir -p work bundle "$OUT_DIR"
+
+        for RID in $RIDS; do
+          ZIP_PATH="$ZIP_DIR/$APP_NAME-$VERSION-$RID.zip"
+          if [ ! -f "$ZIP_PATH" ]; then
+            echo "Missing zip: $ZIP_PATH" >&2
+            exit 1
+          fi
+
+          unzip -q "$ZIP_PATH" -d "work/$RID"
+
+          case "$RID" in
+            osx-arm64) DMG_SUFFIX="macos-arm64" ;;
+            osx-x64) DMG_SUFFIX="macos-x64" ;;
+            *) DMG_SUFFIX="$RID" ;;
+          esac
+
+          BUNDLE_DIR="bundle/$RID"
+          APP_DIR="$BUNDLE_DIR/$APP_NAME.app"
+          CONTENTS_DIR="$APP_DIR/Contents"
+          MACOS_DIR="$CONTENTS_DIR/MacOS"
+          RES_DIR="$CONTENTS_DIR/Resources"
+          DMG_NAME="$APP_NAME-$VERSION-$DMG_SUFFIX.dmg"
+          DMG_PATH="$OUT_DIR/$DMG_NAME"
+
+          rm -rf "$BUNDLE_DIR"
+          mkdir -p "$MACOS_DIR" "$RES_DIR"
+
+          cp -R "work/$RID/"* "$MACOS_DIR/"
+          cp "$ICON_SRC" "$RES_DIR/AppIcon.icns"
+
+          cat > "$CONTENTS_DIR/Info.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>CFBundleName</key>
+            <string>$APP_NAME</string>
+            <key>CFBundleDisplayName</key>
+            <string>$APP_NAME</string>
+            <key>CFBundleIdentifier</key>
+            <string>$BUNDLE_ID</string>
+            <key>CFBundleVersion</key>
+            <string>$VERSION</string>
+            <key>CFBundleShortVersionString</key>
+            <string>$VERSION</string>
+            <key>CFBundlePackageType</key>
+            <string>APPL</string>
+            <key>CFBundleExecutable</key>
+            <string>$APP_NAME</string>
+            <key>CFBundleIconFile</key>
+            <string>AppIcon</string>
+            <key>NSHighResolutionCapable</key>
+            <true/>
+          </dict>
+          </plist>
+          PLIST
+
+          chmod +x "$MACOS_DIR/$APP_NAME" || true
+          rm -f "$DMG_PATH"
+          hdiutil create -volname "$APP_NAME" -srcfolder "$APP_DIR" -ov -format UDZO "$DMG_PATH"
+
+          echo "Created: $DMG_PATH"

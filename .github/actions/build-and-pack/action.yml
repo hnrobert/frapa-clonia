@@ -1,0 +1,122 @@
+name: 'Build and Pack FrapaClonia'
+description: 'Build and pack FrapaClonia for multiple platforms'
+
+inputs:
+  version:
+    description: 'Version tag for the output files'
+    required: true
+    default: '0.0.1'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Restore dependencies
+      shell: bash
+      run: dotnet restore
+
+    - name: Build Windows x64
+      shell: bash
+      run: |
+        dotnet publish src/FrapaClonia/FrapaClonia.csproj \
+          -c Release \
+          -r win-x64 \
+          -p:PublishAot=true \
+          -p:Version=${{ inputs.version }} \
+          --self-contained \
+          -o out/win-x64
+
+    - name: Build Windows arm64
+      shell: bash
+      run: |
+        dotnet publish src/FrapaClonia/FrapaClonia.csproj \
+          -c Release \
+          -r win-arm64 \
+          -p:PublishAot=true \
+          -p:Version=${{ inputs.version }} \
+          --self-contained \
+          -o out/win-arm64
+
+    - name: Build macOS x64
+      shell: bash
+      run: |
+        dotnet publish src/FrapaClonia/FrapaClonia.csproj \
+          -c Release \
+          -r osx-x64 \
+          -p:PublishAot=true \
+          -p:Version=${{ inputs.version }} \
+          --self-contained \
+          -o out/osx-x64
+
+    - name: Build macOS arm64 (Apple Silicon)
+      shell: bash
+      run: |
+        dotnet publish src/FrapaClonia/FrapaClonia.csproj \
+          -c Release \
+          -r osx-arm64 \
+          -p:PublishAot=true \
+          -p:Version=${{ inputs.version }} \
+          --self-contained \
+          -o out/osx-arm64
+
+    - name: Build Linux x64
+      shell: bash
+      run: |
+        dotnet publish src/FrapaClonia/FrapaClonia.csproj \
+          -c Release \
+          -r linux-x64 \
+          -p:PublishAot=true \
+          -p:Version=${{ inputs.version }} \
+          --self-contained \
+          -o out/linux-x64
+
+    - name: Build Linux arm64
+      shell: bash
+      run: |
+        dotnet publish src/FrapaClonia/FrapaClonia.csproj \
+          -c Release \
+          -r linux-arm64 \
+          -p:PublishAot=true \
+          -p:Version=${{ inputs.version }} \
+          --self-contained \
+          -o out/linux-arm64
+
+    - name: Pack Windows x64
+      shell: bash
+      run: |
+        cd out/win-x64
+        zip -r ../../FrapaClonia-${{ inputs.version }}-win-x64.zip .
+
+    - name: Pack Windows arm64
+      shell: bash
+      run: |
+        cd out/win-arm64
+        zip -r ../../FrapaClonia-${{ inputs.version }}-win-arm64.zip .
+
+    - name: Pack macOS x64
+      shell: bash
+      run: |
+        cd out/osx-x64
+        zip -r ../../FrapaClonia-${{ inputs.version }}-osx-x64.zip .
+
+    - name: Pack macOS arm64
+      shell: bash
+      run: |
+        cd out/osx-arm64
+        zip -r ../../FrapaClonia-${{ inputs.version }}-osx-arm64.zip .
+
+    - name: Pack Linux x64
+      shell: bash
+      run: |
+        cd out/linux-x64
+        tar -czf ../../FrapaClonia-${{ inputs.version }}-linux-x64.tar.gz .
+
+    - name: Pack Linux arm64
+      shell: bash
+      run: |
+        cd out/linux-arm64
+        tar -czf ../../FrapaClonia-${{ inputs.version }}-linux-arm64.tar.gz .
