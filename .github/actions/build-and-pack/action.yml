@@ -51,6 +51,36 @@ runs:
           musl-tools \
           gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-dev-arm64-cross
 
+    - name: Configure objcopy for cross-arch NativeAOT
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        mkdir -p .ci-bin
+
+        cat > .ci-bin/objcopy <<'SH'
+        #!/usr/bin/env bash
+        set -euo pipefail
+
+        # NativeAOT uses `objcopy` to split debug symbols. When cross-building ARM64 on x64,
+        # using aarch64 objcopy is more reliable.
+        infile="${@: -2:1}" || infile=""
+
+        if [ -n "${infile:-}" ] && command -v file >/dev/null 2>&1; then
+          if file "$infile" 2>/dev/null | grep -qi "aarch64"; then
+            if command -v aarch64-linux-gnu-objcopy >/dev/null 2>&1; then
+              exec aarch64-linux-gnu-objcopy "$@"
+            fi
+          fi
+        fi
+
+        exec /usr/bin/objcopy "$@"
+        SH
+
+        chmod +x .ci-bin/objcopy
+        echo "$GITHUB_WORKSPACE/.ci-bin" >> "$GITHUB_PATH"
+
     - name: Restore dependencies
       shell: bash
       run: dotnet restore
