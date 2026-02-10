@@ -1,9 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <!-- Version Information -->
+  <PropertyGroup>
+    <Version>0.0.1</Version>
+    <!-- <AssemblyVersion>x.x.x</AssemblyVersion> -->
+    <!-- <FileVersion>x.x.x</FileVersion> -->
+  </PropertyGroup>
+
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 
     <!-- NativeAOT: Enabled by default for smaller size -->
@@ -43,11 +49,13 @@
   </ItemGroup>
 
   <!-- Target to copy project-referenced assemblies for NativeAOT -->
-  <Target Name="CopyProjectReferencesForNativeAot" BeforeTargets="IlcCompile" Condition="'$(PublishAot)' == 'true'">
-    <Copy SourceFiles="@(ProjectReference->'%(RootDir)%(Directory)bin\$(Configuration)\$(TargetFramework)\%(Filename).dll')"
-          DestinationFolder="$(IntermediateOutputPath)"
-          SkipUnchangedFiles="true"
-          Condition="Exists('%(RootDir)%(Directory)bin\$(Configuration)\$(TargetFramework)\%(Filename).dll')" />
+  <Target Name="CopyProjectReferencesForNativeAot" BeforeTargets="IlcCompile"
+    Condition="'$(PublishAot)' == 'true'">
+    <Copy
+      SourceFiles="@(ProjectReference->'%(RootDir)%(Directory)bin\$(Configuration)\$(TargetFramework)\%(Filename).dll')"
+      DestinationFolder="$(IntermediateOutputPath)"
+      SkipUnchangedFiles="true"
+      Condition="Exists('%(RootDir)%(Directory)bin\$(Configuration)\$(TargetFramework)\%(Filename).dll')" />
   </Target>
 
   <ItemGroup>
@@ -59,7 +67,9 @@
     <PackageReference Include="Avalonia.Desktop" Version="11.3.11" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.11" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.11" />
-    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <!--Condition
+    below is needed to remove Avalonia.Diagnostics package from build output in Release
+    configuration.-->
     <PackageReference Include="Avalonia.Diagnostics" Version="11.3.11">
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>

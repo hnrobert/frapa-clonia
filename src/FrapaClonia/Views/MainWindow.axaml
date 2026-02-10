@@ -26,252 +26,236 @@
             Background="{DynamicResource SystemAltMediumHighBackgroundColor}"
             BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
             BorderThickness="0,0,1,0">
-      <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Spacing="4" Margin="16">
-          <!-- App Title Section -->
-          <Border Padding="0,0,0,16">
+      <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Scrollable Content -->
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+          <StackPanel Spacing="4" Margin="16">
+            <!-- App Title Section -->
+            <Border Padding="0,0,0,16">
+              <Grid ColumnDefinitions="Auto,*">
+                <!-- App Icon -->
+                <Border Grid.Column="0"
+                        Width="36" Height="36"
+                        CornerRadius="6"
+                        Background="{DynamicResource SystemAccentColor}"
+                        Margin="0,0,12,0">
+                  <TextBlock Text="F"
+                             FontSize="20"
+                             FontWeight="SemiBold"
+                             Foreground="White"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center" />
+                </Border>
+
+                <!-- App Title -->
+                <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                  <TextBlock Text="FrapaClonia"
+                             FontSize="16"
+                             FontWeight="SemiBold"
+                             Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}" />
+                  <TextBlock Text="frpc Client Manager"
+                             FontSize="11"
+                             Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}" />
+                </StackPanel>
+              </Grid>
+            </Border>
+
+            <Separator Margin="0" Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+
+            <!-- Navigation Section -->
+            <StackPanel Spacing="4" Margin="0,12,0,0">
+              <!-- <TextBlock Text="Navigation"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   Margin="0,0,0,8" /> -->
+
+              <!-- Dashboard -->
+              <Button Command="{Binding NavigateToDashboardCommand}"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Left"
+                      Padding="16"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      CornerRadius="4"
+                      FontSize="14"
+                      MinHeight="40"
+                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
+                <Grid ColumnDefinitions="Auto,*">
+                  <mi:MaterialIcon Grid.Column="0"
+                                   Kind="ViewDashboard"
+                                   Width="18"
+                                   Height="18"
+                                   Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                   Margin="0,0,12,0" />
+                  <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Dashboard}" />
+                </Grid>
+              </Button>
+
+              <!-- Server Config -->
+              <Button Command="{Binding NavigateToServerConfigCommand}"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Left"
+                      Padding="16"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      CornerRadius="4"
+                      FontSize="14"
+                      MinHeight="40"
+                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
+                <Grid ColumnDefinitions="Auto,*">
+                  <mi:MaterialIcon Grid.Column="0"
+                                   Kind="Server"
+                                   Width="18"
+                                   Height="18"
+                                   Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                   Margin="0,0,12,0" />
+                  <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ServerConfig}" />
+                </Grid>
+              </Button>
+
+              <!-- Proxies -->
+              <Button Command="{Binding NavigateToProxiesCommand}"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Left"
+                      Padding="16"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      CornerRadius="4"
+                      FontSize="14"
+                      MinHeight="40"
+                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
+                <Grid ColumnDefinitions="Auto,*">
+                  <mi:MaterialIcon Grid.Column="0"
+                                   Kind="Proxy"
+                                   Width="18"
+                                   Height="18"
+                                   Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                   Margin="0,0,12,0" />
+                  <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ProxyManagement}" />
+                </Grid>
+              </Button>
+
+              <!-- Visitors -->
+              <Button Command="{Binding NavigateToVisitorsCommand}"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Left"
+                      Padding="16"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      CornerRadius="4"
+                      FontSize="14"
+                      MinHeight="40"
+                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
+                <Grid ColumnDefinitions="Auto,*">
+                  <mi:MaterialIcon Grid.Column="0"
+                                   Kind="AccountMultiple"
+                                   Width="18"
+                                   Height="18"
+                                   Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                   Margin="0,0,12,0" />
+                  <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Visitors}" />
+                </Grid>
+              </Button>
+
+              <!-- Deployment -->
+              <Button Command="{Binding NavigateToDeploymentCommand}"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Left"
+                      Padding="16"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      CornerRadius="4"
+                      FontSize="14"
+                      MinHeight="40"
+                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
+                <Grid ColumnDefinitions="Auto,*">
+                  <mi:MaterialIcon Grid.Column="0"
+                                   Kind="CloudDownload"
+                                   Width="18"
+                                   Height="18"
+                                   Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                   Margin="0,0,12,0" />
+                  <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Deployment}" />
+                </Grid>
+              </Button>
+
+              <!-- Logs -->
+              <Button Command="{Binding NavigateToLogsCommand}"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Left"
+                      Padding="16"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      CornerRadius="4"
+                      FontSize="14"
+                      MinHeight="40"
+                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
+                <Grid ColumnDefinitions="Auto,*">
+                  <mi:MaterialIcon Grid.Column="0"
+                                   Kind="FileDocument"
+                                   Width="18"
+                                   Height="18"
+                                   Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                   Margin="0,0,12,0" />
+                  <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Logs}" />
+                </Grid>
+              </Button>
+            </StackPanel>
+          </StackPanel>
+        </ScrollViewer>
+
+        <!-- Bottom Section: Settings and Copyright -->
+        <StackPanel Grid.Row="2" Spacing="8" Margin="16">
+          <Separator Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+
+          <!-- Settings Button -->
+          <Button Command="{Binding NavigateToSettingsCommand}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Left"
+                  Padding="16"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  CornerRadius="4"
+                  FontSize="14"
+                  MinHeight="40"
+                  Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
             <Grid ColumnDefinitions="Auto,*">
-              <!-- App Icon -->
-              <Border Grid.Column="0"
-                      Width="36" Height="36"
-                      CornerRadius="6"
-                      Background="{DynamicResource SystemAccentColor}"
-                      Margin="0,0,12,0">
-                <TextBlock Text="F"
-                           FontSize="20"
-                           FontWeight="SemiBold"
-                           Foreground="White"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center" />
-              </Border>
-
-              <!-- App Title -->
-              <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
-                <TextBlock Text="FrapaClonia"
-                           FontSize="16"
-                           FontWeight="SemiBold"
-                           Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}" />
-                <TextBlock Text="frpc Client Manager"
-                           FontSize="11"
-                           Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}" />
-              </StackPanel>
+              <mi:MaterialIcon Grid.Column="0"
+                               Kind="Cog"
+                               Width="18"
+                               Height="18"
+                               Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                               Margin="0,0,12,0" />
+              <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Settings}" />
             </Grid>
-          </Border>
+          </Button>
 
-          <Separator Margin="0" Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-
-          <!-- Navigation Section -->
-          <StackPanel Spacing="4" Margin="0,12,0,0">
-            <!-- <TextBlock Text="Navigation"
-                                   FontSize="11"
-                                   FontWeight="SemiBold"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                   Margin="0,0,0,8" /> -->
-
-            <!-- Dashboard -->
-            <Button Command="{Binding NavigateToDashboardCommand}"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Left"
-                    Padding="16"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    CornerRadius="4"
-                    FontSize="14"
-                    MinHeight="40"
-                    Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
-              <Grid ColumnDefinitions="Auto,*">
-                <mi:MaterialIcon Grid.Column="0"
-                                 Kind="ViewDashboard"
-                                 Width="18"
-                                 Height="18"
-                                 Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                 Margin="0,0,12,0" />
-                <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Dashboard}" />
-              </Grid>
-            </Button>
-
-            <!-- Server Config -->
-            <Button Command="{Binding NavigateToServerConfigCommand}"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Left"
-                    Padding="16"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    CornerRadius="4"
-                    FontSize="14"
-                    MinHeight="40"
-                    Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
-              <Grid ColumnDefinitions="Auto,*">
-                <mi:MaterialIcon Grid.Column="0"
-                                 Kind="Server"
-                                 Width="18"
-                                 Height="18"
-                                 Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                 Margin="0,0,12,0" />
-                <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ServerConfig}" />
-              </Grid>
-            </Button>
-
-            <!-- Proxies -->
-            <Button Command="{Binding NavigateToProxiesCommand}"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Left"
-                    Padding="16"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    CornerRadius="4"
-                    FontSize="14"
-                    MinHeight="40"
-                    Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
-              <Grid ColumnDefinitions="Auto,*">
-                <mi:MaterialIcon Grid.Column="0"
-                                 Kind="Proxy"
-                                 Width="18"
-                                 Height="18"
-                                 Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                 Margin="0,0,12,0" />
-                <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ProxyManagement}" />
-              </Grid>
-            </Button>
-
-            <!-- Visitors -->
-            <Button Command="{Binding NavigateToVisitorsCommand}"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Left"
-                    Padding="16"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    CornerRadius="4"
-                    FontSize="14"
-                    MinHeight="40"
-                    Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
-              <Grid ColumnDefinitions="Auto,*">
-                <mi:MaterialIcon Grid.Column="0"
-                                 Kind="AccountMultiple"
-                                 Width="18"
-                                 Height="18"
-                                 Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                 Margin="0,0,12,0" />
-                <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Visitors}" />
-              </Grid>
-            </Button>
-
-            <!-- Deployment -->
-            <Button Command="{Binding NavigateToDeploymentCommand}"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Left"
-                    Padding="16"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    CornerRadius="4"
-                    FontSize="14"
-                    MinHeight="40"
-                    Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
-              <Grid ColumnDefinitions="Auto,*">
-                <mi:MaterialIcon Grid.Column="0"
-                                 Kind="CloudDownload"
-                                 Width="18"
-                                 Height="18"
-                                 Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                 Margin="0,0,12,0" />
-                <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Deployment}" />
-              </Grid>
-            </Button>
-
-            <!-- Logs -->
-            <Button Command="{Binding NavigateToLogsCommand}"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Left"
-                    Padding="16"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    CornerRadius="4"
-                    FontSize="14"
-                    MinHeight="40"
-                    Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
-              <Grid ColumnDefinitions="Auto,*">
-                <mi:MaterialIcon Grid.Column="0"
-                                 Kind="FileDocument"
-                                 Width="18"
-                                 Height="18"
-                                 Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                 Margin="0,0,12,0" />
-                <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Logs}" />
-              </Grid>
-            </Button>
-          </StackPanel>
-
-          <Separator Margin="0,16,0,16" Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-
-          <!-- Settings Section -->
-          <StackPanel Spacing="4">
-            <!-- <TextBlock Text="App"
-                                   FontSize="11"
-                                   FontWeight="SemiBold"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                   Margin="0,0,0,8" /> -->
-
-            <!-- Settings -->
-            <Button Command="{Binding NavigateToSettingsCommand}"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Left"
-                    Padding="16"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    CornerRadius="4"
-                    FontSize="14"
-                    MinHeight="40"
-                    Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
-              <Grid ColumnDefinitions="Auto,*">
-                <mi:MaterialIcon Grid.Column="0"
-                                 Kind="Cog"
-                                 Width="18"
-                                 Height="18"
-                                 Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                 Margin="0,0,12,0" />
-                <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Settings}" />
-              </Grid>
-            </Button>
-
-            <!-- About -->
-            <!-- <Button HorizontalAlignment="Stretch"
-                                HorizontalContentAlignment="Left"
-                                Padding="16"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                CornerRadius="4"
-                                FontSize="14"
-                                MinHeight="40"
-                                Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
-                            <Grid ColumnDefinitions="Auto,*">
-                                <Path Grid.Column="0"
-                                      Width="18" Height="18"
-                                      Stretch="Uniform"
-                                      Fill="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                      Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
-                                      Margin="0,0,12,0" />
-                                <TextBlock Grid.Column="1" Text="About" />
-                            </Grid>
-                        </Button> -->
-          </StackPanel>
-
-          <!-- Version Info -->
-          <Border Margin="0,16,0,0"
-                  Padding="12"
+          <!-- Copyright Info -->
+          <Border Padding="12"
                   CornerRadius="4"
                   Background="{DynamicResource SystemControlChromeLowBrush}">
             <StackPanel Spacing="4">
-              <TextBlock Text="FrapaClonia"
-                         FontSize="13"
-                         FontWeight="SemiBold"
-                         Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}" />
-              <TextBlock Text="Version 1.0.0"
-                         FontSize="11"
+              <TextBlock Text="{Binding Copyright}"
+                         FontSize="10"
+                         FontWeight="Bold"
+                         TextWrapping="Wrap"
                          Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}" />
+              <TextBlock FontSize="10"
+                         Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}">
+                <Run Text="Licensed under" />
+                <Run Text="Apache License 2.0" FontWeight="Bold" />
+              </TextBlock>
+              <TextBlock FontSize="12"
+                         Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}">
+                <Run Text="{DynamicResource Localized_VersionInfo}" />
+                <Run Text=" " />
+                <Run Text="{Binding Version}" />
+              </TextBlock>
             </StackPanel>
           </Border>
         </StackPanel>
-      </ScrollViewer>
+      </Grid>
     </Border>
 
     <!-- Main Content Area -->
