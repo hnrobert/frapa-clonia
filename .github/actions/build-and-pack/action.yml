@@ -108,22 +108,27 @@ runs:
         for RID in ${{ inputs.rids }}; do
           echo "Publishing $RID (AOT=$AOT, self-contained=$SELF)"
 
-          EXTRA_MSBUILD_ARGS=()
           # Cross-linking linux-musl-arm64 on ubuntu-x64 with ld.bfd fails with:
           #   ld.bfd: unrecognised emulation mode: aarch64linux
           # Force lld for this RID.
           if [[ "${RUNNER_OS:-}" == "Linux" && "$RID" == "linux-musl-arm64" ]]; then
-            EXTRA_MSBUILD_ARGS+=("-p:LinkerFlavor=lld")
+            dotnet publish src/FrapaClonia/FrapaClonia.csproj \
+              -c "$CONFIG" \
+              -r "$RID" \
+              -p:PublishAot=$AOT \
+              -p:Version=$VERSION \
+              -p:LinkerFlavor=lld \
+              --self-contained $SELF \
+              -o "out/$RID"
+          else
+            dotnet publish src/FrapaClonia/FrapaClonia.csproj \
+              -c "$CONFIG" \
+              -r "$RID" \
+              -p:PublishAot=$AOT \
+              -p:Version=$VERSION \
+              --self-contained $SELF \
+              -o "out/$RID"
           fi
-
-          dotnet publish src/FrapaClonia/FrapaClonia.csproj \
-            -c "$CONFIG" \
-            -r "$RID" \
-            -p:PublishAot=$AOT \
-            -p:Version=$VERSION \
-            "${EXTRA_MSBUILD_ARGS[@]}" \
-            --self-contained $SELF \
-            -o "out/$RID"
 
           # Remove debug symbols from shipped artifacts.
           find "out/$RID" -name '*.pdb' -type f -delete || true
