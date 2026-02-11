@@ -12,6 +12,4 @@ namespace FrapaClonia.Infrastructure;
 [JsonSerializable(typeof(Profile))]
 [JsonSerializable(typeof(ProfileInfo))]
 [JsonSerializable(typeof(Dictionary<string, string>))]
-public partial class ProfileContext : JsonSerializerContext
-{
-}
+public partial class ProfileContext : JsonSerializerContext;
