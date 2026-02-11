@@ -21,4 +21,9 @@
     <EnableAotAnalyzer>true</EnableAotAnalyzer>
   </PropertyGroup>
 
+  <!-- Suppress common ILLink/Trim/AOT warnings only when trimming/AOT is enabled -->
+  <PropertyGroup Condition="'$(PublishTrimmed)' == 'true' Or '$(PublishAot)' == 'true'">
+    <NoWarn>$(NoWarn);IL2026;IL2070;IL2072;IL2075;IL2067;IL3050</NoWarn>
+  </PropertyGroup>
+
 </Project>
