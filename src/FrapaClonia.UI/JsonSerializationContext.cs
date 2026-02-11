@@ -10,6 +10,4 @@ namespace FrapaClonia.UI;
     WriteIndented = true,
     PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 [JsonSerializable(typeof(AppSettings))]
-public partial class AppSettingsContext : JsonSerializerContext
-{
-}
+public partial class AppSettingsContext : JsonSerializerContext;
