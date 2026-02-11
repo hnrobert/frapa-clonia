@@ -42,6 +42,12 @@
     <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
 
+  <!-- Suppress common ILLink/Trim/AOT warnings when trimming/AOT is intentionally enabled -->
+  <PropertyGroup Condition="'$(PublishTrimmed)' == 'true' Or '$(PublishAot)' == 'true'">
+    <!-- Add any ILXXXXX codes you want to silence here -->
+    <NoWarn>$(NoWarn);IL2026;IL2070;IL2072;IL2075;IL2067;IL3050</NoWarn>
+  </PropertyGroup>
+
   <!-- Preserve root assemblies for trimming (when enabled) -->
   <!-- Note: Use actual assembly names, not project names -->
   <ItemGroup Condition="'$(PublishTrimmed)' == 'true' Or '$(PublishAot)' == 'true'">
