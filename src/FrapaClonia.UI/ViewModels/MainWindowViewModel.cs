@@ -1,8 +1,10 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FrapaClonia.UI.Models;
 using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
 using Avalonia.Controls;
+using System.Collections.ObjectModel;
 using System.Reflection;
 
 namespace FrapaClonia.UI.ViewModels;
@@ -27,6 +29,11 @@ public partial class MainWindowViewModel : ObservableObject
     /// The toast notification service
     /// </summary>
     public ToastService? ToastService { get; private set; }
+
+    /// <summary>
+    /// Collection of active toast notifications for binding
+    /// </summary>
+    public ObservableCollection<ToastItem> Toasts => ToastService?.Toasts ?? [];
 
     // Active state properties for navigation
     public bool IsDashboardActive => CurrentPage == "dashboard";

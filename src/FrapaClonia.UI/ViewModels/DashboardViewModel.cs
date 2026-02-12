@@ -15,6 +15,7 @@ public partial class DashboardViewModel : ObservableObject
     private readonly IFrpcProcessService? _frpcProcessService;
     private readonly IConfigurationService? _configurationService;
     private readonly IValidationService? _validationService;
+    private readonly ToastService? _toastService;
 
     [ObservableProperty] private bool _isFrpcRunning;
 
@@ -47,6 +48,7 @@ public partial class DashboardViewModel : ObservableObject
         null!,
         null!,
         null!,
+        null!,
         null!)
     {
     }
@@ -56,12 +58,14 @@ public partial class DashboardViewModel : ObservableObject
         IFrpcProcessService frpcProcessService,
         IConfigurationService configurationService,
         IValidationService validationService,
-        NavigationService navigationService)
+        NavigationService navigationService,
+        ToastService? toastService)
     {
         _logger = logger;
         _frpcProcessService = frpcProcessService;
         _configurationService = configurationService;
         _validationService = validationService;
+        _toastService = toastService;
 
         // For design-time or when services are null, use empty commands
         NavigateToServerConfigCommand = new RelayCommand(() => navigationService.NavigateTo("server"));
@@ -79,6 +83,7 @@ public partial class DashboardViewModel : ObservableObject
             catch (Exception e)
             {
                 _logger.LogError(e, "Could not start frpc");
+                _toastService?.Error("Start Failed", $"Could not start frpc: {e.Message}");
             }
         }, () => !IsFrpcRunning);
         StopFrpcCommand = new RelayCommand(async void () =>
@@ -90,6 +95,7 @@ public partial class DashboardViewModel : ObservableObject
             catch (Exception e)
             {
                 _logger.LogError(e, "Could not stop frpc");
+                _toastService?.Error("Stop Failed", $"Could not stop frpc: {e.Message}");
             }
         }, () => IsFrpcRunning);
         RestartFrpcCommand = new RelayCommand(async void () =>
@@ -101,6 +107,7 @@ public partial class DashboardViewModel : ObservableObject
             catch (Exception e)
             {
                 _logger.LogError(e, "Could not restart frpc");
+                _toastService?.Error("Restart Failed", $"Could not restart frpc: {e.Message}");
             }
         }, () => IsFrpcRunning);
 
@@ -156,8 +163,9 @@ public partial class DashboardViewModel : ObservableObject
                 var validation = _validationService.ValidateConfiguration(config);
                 if (!validation.IsValid)
                 {
-                    _logger?.LogError("Configuration validation failed: {Errors}",
-                        string.Join(", ", validation.Errors));
+                    var errors = string.Join(", ", validation.Errors);
+                    _logger?.LogError("Configuration validation failed: {Errors}", errors);
+                    _toastService?.Error("Configuration Error", $"Validation failed: {errors}");
                     return;
                 }
 
@@ -171,9 +179,14 @@ public partial class DashboardViewModel : ObservableObject
 
         _logger?.LogInformation("Starting frpc...");
         var success = await _frpcProcessService.StartAsync(configPath);
-        if (!success)
+        if (success)
+        {
+            _toastService?.Success("Frpc Started", "Frpc client is now running");
+        }
+        else
         {
             _logger?.LogWarning("Failed to start frpc with config: {ConfigPath}", configPath);
+            _toastService?.Error("Start Failed", "Could not start frpc client");
         }
     }
 
@@ -182,6 +195,7 @@ public partial class DashboardViewModel : ObservableObject
         if (_frpcProcessService == null) return;
         _logger?.LogInformation("Stopping frpc...");
         await _frpcProcessService.StopAsync();
+        _toastService?.Success("Frpc Stopped", "Frpc client has been stopped");
     }
 
     private async Task RestartFrpcAsync()
@@ -190,9 +204,14 @@ public partial class DashboardViewModel : ObservableObject
         _logger?.LogInformation("Restarting frpc...");
         var configPath = _configurationService.GetDefaultConfigPath();
         var success = await _frpcProcessService.RestartAsync(configPath);
-        if (!success)
+        if (success)
+        {
+            _toastService?.Success("Frpc Restarted", "Frpc client has been restarted");
+        }
+        else
         {
             _logger?.LogWarning("Failed to restart frpc with config: {ConfigPath}", configPath);
+            _toastService?.Error("Restart Failed", "Could not restart frpc client");
         }
     }
 }

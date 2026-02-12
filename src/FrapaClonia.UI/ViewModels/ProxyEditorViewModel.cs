@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.Domain.Models;
+using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -16,6 +17,7 @@ public partial class ProxyEditorViewModel : ObservableObject
     private readonly ILogger<ProxyEditorViewModel>? _logger;
     private readonly IConfigurationService? _configurationService;
     private readonly IValidationService? _validationService;
+    private readonly ToastService? _toastService;
     private readonly ProxyConfig? _originalProxy;
 
     [ObservableProperty] private string _proxyName = "";
@@ -125,6 +127,7 @@ public partial class ProxyEditorViewModel : ObservableObject
     public ProxyEditorViewModel() : this(
         Microsoft.Extensions.Logging.Abstractions.NullLogger<ProxyEditorViewModel>.Instance,
         null!,
+        null!,
         null!)
     {
     }
@@ -133,11 +136,13 @@ public partial class ProxyEditorViewModel : ObservableObject
         ILogger<ProxyEditorViewModel> logger,
         IConfigurationService configurationService,
         IValidationService validationService,
+        ToastService? toastService,
         ProxyConfig? proxyToEdit = null)
     {
         _logger = logger;
         _configurationService = configurationService;
         _validationService = validationService;
+        _toastService = toastService;
         _originalProxy = proxyToEdit;
 
         SaveCommand = new RelayCommand(async void () =>
@@ -344,6 +349,7 @@ public partial class ProxyEditorViewModel : ObservableObject
 
             if (!IsValid)
             {
+                _toastService?.Error("Validation Failed", ValidationError ?? "Please check the form for errors");
                 return;
             }
 
@@ -365,12 +371,14 @@ public partial class ProxyEditorViewModel : ObservableObject
                 await _configurationService!.SaveConfigurationAsync(configPath, config);
 
                 _logger?.LogInformation("Proxy saved: {ProxyName}", proxy.Name);
+                _toastService?.Success("Saved", $"Proxy '{proxy.Name}' saved successfully");
             }
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error saving proxy");
             ValidationError = "Failed to save proxy";
+            _toastService?.Error("Save Failed", $"Could not save proxy: {ex.Message}");
         }
         finally
         {

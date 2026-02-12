@@ -3,18 +3,23 @@
              xmlns:controls="clr-namespace:FrapaClonia.UI.Controls"
              xmlns:services="clr-namespace:FrapaClonia.UI.Services"
              x:Class="FrapaClonia.UI.Controls.ToastContainer"
-             x:DataType="services:ToastService">
+             x:DataType="services:ToastService"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch"
+             IsHitTestVisible="False">
 
   <UserControl.Styles>
     <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
   </UserControl.Styles>
 
   <!-- Toast Container positioned in top-right corner -->
-  <Canvas IsHitTestVisible="False">
+  <Grid HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch">
     <ItemsControl ItemsSource="{Binding Toasts}"
                   x:Name="ToastList"
-                  Canvas.Right="{StaticResource SpacingL}"
-                  Canvas.Top="{StaticResource SpacingL}"
+                  Margin="{StaticResource ThicknessL}"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Top"
                   IsHitTestVisible="True">
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
@@ -29,5 +34,5 @@
         </DataTemplate>
       </ItemsControl.ItemTemplate>
     </ItemsControl>
-  </Canvas>
+  </Grid>
 </UserControl>

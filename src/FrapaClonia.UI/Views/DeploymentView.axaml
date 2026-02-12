@@ -29,43 +29,29 @@
         <TextBlock Text="{DynamicResource Localized_Deployment}"
                    Classes="page-title" />
 
-        <!-- Status Bar -->
-        <Border Classes="settings-card">
-          <Grid ColumnDefinitions="*,Auto">
-            <TextBlock Grid.Column="0"
-                       Text="{Binding StatusMessage}"
-                       VerticalAlignment="Center" />
-            <StackPanel Grid.Column="1"
-                        Orientation="Horizontal"
-                        Spacing="{StaticResource SpacingS}">
-              <ProgressBar IsIndeterminate="True"
-                           Width="24"
-                           Height="24"
-                           IsVisible="{Binding IsBusy}" />
-            </StackPanel>
-          </Grid>
-        </Border>
-
         <!-- Deployment Mode Selection -->
         <Border Classes="settings-card">
-          <StackPanel Spacing="0">
-            <TextBlock Text="{DynamicResource Localized_DeploymentMode}"
-                       Classes="section-title"
-                       Margin="{StaticResource ThicknessBottomM}" />
+          <StackPanel Spacing="{StaticResource SpacingM}">
+            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+              <TextBlock Text="{DynamicResource Localized_DeploymentMode}"
+                         Classes="section-title"
+                         VerticalAlignment="Center" />
+            </StackPanel>
 
-            <ComboBox ItemsSource="{Binding DeploymentModes}"
-                      SelectedItem="{Binding SelectedDeploymentMode}"
-                      MinWidth="200"
-                      HorizontalAlignment="Left">
-              <ComboBox.ItemTemplate>
-                <DataTemplate>
-                  <TextBlock Text="{Binding}" />
-                </DataTemplate>
-              </ComboBox.ItemTemplate>
-            </ComboBox>
+            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+              <ComboBox ItemsSource="{Binding DeploymentModes}"
+                        SelectedItem="{Binding SelectedDeploymentMode}"
+                        MinWidth="200"
+                        HorizontalAlignment="Left">
+                <ComboBox.ItemTemplate>
+                  <DataTemplate>
+                    <TextBlock Text="{Binding}" />
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
+              </ComboBox>
 
-            <StackPanel Orientation="Horizontal" Spacing="4" Margin="{StaticResource ThicknessTopS}">
-              <Button Classes="icon-button">
+              <Button Classes="hint-icon"
+                      VerticalAlignment="Center">
                 <ToolTip.Tip>
                   <TextBlock Text="{DynamicResource Localized_ChooseHowYouWantToDeployAndRunFrpc}" />
                 </ToolTip.Tip>
@@ -122,7 +108,6 @@
                         Spacing="{StaticResource SpacingM}"
                         Margin="{StaticResource ThicknessTopS}">
               <Button Command="{Binding GenerateDockerComposeCommand}"
-                      IsEnabled="{Binding !IsBusy}"
                       Classes="action-button icon-text-button">
                 <StackPanel>
                   <mi:MaterialIcon Kind="FileDocument" />
@@ -130,7 +115,6 @@
                 </StackPanel>
               </Button>
               <Button Command="{Binding StartDockerCommand}"
-                      IsEnabled="{Binding !IsBusy}"
                       Classes="action-button primary icon-text-button">
                 <StackPanel>
                   <mi:MaterialIcon Kind="Play" />
@@ -138,7 +122,6 @@
                 </StackPanel>
               </Button>
               <Button Command="{Binding StopDockerCommand}"
-                      IsEnabled="{Binding !IsBusy}"
                       Classes="action-button destructive icon-text-button">
                 <StackPanel>
                   <mi:MaterialIcon Kind="Stop" />
@@ -190,7 +173,6 @@
                         Spacing="{StaticResource SpacingM}"
                         Margin="{StaticResource ThicknessTopS}">
               <Button Command="{Binding DownloadFrpcCommand}"
-                      IsEnabled="{Binding !IsBusy}"
                       Classes="action-button icon-text-button">
                 <StackPanel>
                   <mi:MaterialIcon Kind="Download" />
@@ -198,7 +180,6 @@
                 </StackPanel>
               </Button>
               <Button Command="{Binding DeployNativeCommand}"
-                      IsEnabled="{Binding !IsBusy}"
                       Classes="action-button primary icon-text-button">
                 <StackPanel>
                   <mi:MaterialIcon Kind="RocketLaunch" />

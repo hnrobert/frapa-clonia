@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.Domain.Models;
+using FrapaClonia.UI.Services;
 using FrapaClonia.UI.Views;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +25,7 @@ public partial class ProxyListViewModel : ObservableObject
     private readonly IConfigurationService? _configurationService;
     private readonly IValidationService? _validationService;
     private readonly IServiceProvider? _serviceProvider;
+    private readonly ToastService? _toastService;
 
     [ObservableProperty] private List<ProxyConfig> _proxies = [];
 
@@ -56,6 +58,7 @@ public partial class ProxyListViewModel : ObservableObject
         Microsoft.Extensions.Logging.Abstractions.NullLogger<ProxyListViewModel>.Instance,
         null!,
         null!,
+        null!,
         null!)
     {
     }
@@ -64,12 +67,14 @@ public partial class ProxyListViewModel : ObservableObject
         ILogger<ProxyListViewModel> logger,
         IConfigurationService configurationService,
         IValidationService validationService,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        ToastService? toastService)
     {
         _logger = logger;
         _configurationService = configurationService;
         _validationService = validationService;
         _serviceProvider = serviceProvider;
+        _toastService = toastService;
 
         AddProxyCommand = new RelayCommand(AddProxy);
         EditProxyCommand = new RelayCommand(EditProxy, () => SelectedProxy != null);
@@ -239,7 +244,7 @@ public partial class ProxyListViewModel : ObservableObject
             if (_validationService == null) return;
 
             var viewModel =
-                new ProxyEditorViewModel(editorLogger, _configurationService, _validationService, newProxy);
+                new ProxyEditorViewModel(editorLogger, _configurationService, _validationService, _toastService, newProxy);
 
             var editorWindow = new ProxyEditorView
             {
@@ -282,7 +287,7 @@ public partial class ProxyListViewModel : ObservableObject
             if (_validationService == null) return;
 
             var viewModel =
-                new ProxyEditorViewModel(editorLogger, _configurationService, _validationService, proxyClone);
+                new ProxyEditorViewModel(editorLogger, _configurationService, _validationService, _toastService, proxyClone);
 
             var editorWindow = new ProxyEditorView
             {

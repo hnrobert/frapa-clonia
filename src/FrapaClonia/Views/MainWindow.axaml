@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
         xmlns:controls="clr-namespace:FrapaClonia.UI.Controls;assembly=FrapaClonia.UI"
+        xmlns:models="clr-namespace:FrapaClonia.UI.Models;assembly=FrapaClonia.UI"
         xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -359,10 +360,26 @@
   </Grid>
 
   <!-- Toast Notification Container (overlays everything) -->
-  <controls:ToastContainer DataContext="{Binding ToastService}"
-                           ZIndex="{StaticResource ZIndexToast}"
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Top" />
+  <Panel>
+    <ItemsControl ItemsSource="{Binding Toasts}"
+                  Margin="20"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Top"
+                  IsHitTestVisible="True">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <StackPanel Orientation="Vertical"
+                      Spacing="8" />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+
+      <ItemsControl.ItemTemplate>
+        <DataTemplate x:DataType="models:ToastItem">
+          <controls:ToastNotification />
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </Panel>
   </Grid>
 
 </Window>

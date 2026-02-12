@@ -17,6 +17,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ILocalizationService? _localizationService;
     private readonly IAutoStartService? _autoStartService;
     private readonly ThemeService? _themeService;
+    private readonly ToastService? _toastService;
 
     private readonly string _settingsFile = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -47,6 +48,7 @@ public partial class SettingsViewModel : ObservableObject
         Microsoft.Extensions.Logging.Abstractions.NullLogger<SettingsViewModel>.Instance,
         null!,
         null!,
+        null!,
         null!)
     {
     }
@@ -55,12 +57,14 @@ public partial class SettingsViewModel : ObservableObject
         ILogger<SettingsViewModel> logger,
         ILocalizationService localizationService,
         IAutoStartService autoStartService,
-        ThemeService themeService)
+        ThemeService themeService,
+        ToastService? toastService)
     {
         _logger = logger;
         _localizationService = localizationService;
         _autoStartService = autoStartService;
         _themeService = themeService;
+        _toastService = toastService;
 
         AvailableLanguages =
         [
@@ -195,6 +199,7 @@ public partial class SettingsViewModel : ObservableObject
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error loading settings");
+            _toastService?.Error("Load Failed", "Could not load settings");
         }
     }
 
@@ -239,10 +244,12 @@ public partial class SettingsViewModel : ObservableObject
             await File.WriteAllTextAsync(_settingsFile, json);
 
             _logger?.LogInformation("Settings saved to: {SettingsFile}", _settingsFile);
+            _toastService?.Success("Saved", "Settings saved successfully");
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error saving settings");
+            _toastService?.Error("Save Failed", $"Could not save settings: {ex.Message}");
         }
         finally
         {

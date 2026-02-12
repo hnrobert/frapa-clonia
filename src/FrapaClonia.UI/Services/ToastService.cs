@@ -151,7 +151,9 @@ public class ToastService : ObservableObject
 
         if (Toasts.Contains(toast))
         {
-            RemoveToast(toast);
+            // Request close triggers animation in ToastNotification,
+            // which will then call RemoveToast when animation completes
+            toast.RequestClose();
         }
     }
 }

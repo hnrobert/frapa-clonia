@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.Domain.Models;
+using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
 
 namespace FrapaClonia.UI.ViewModels;
@@ -14,6 +15,7 @@ public partial class VisitorEditorViewModel : ObservableObject
     private readonly ILogger<VisitorEditorViewModel>? _logger;
     private readonly IConfigurationService? _configurationService;
     private readonly IValidationService? _validationService;
+    private readonly ToastService? _toastService;
     private readonly VisitorConfig? _originalVisitor;
 
     [ObservableProperty]
@@ -57,6 +59,7 @@ public partial class VisitorEditorViewModel : ObservableObject
     public VisitorEditorViewModel() : this(
         Microsoft.Extensions.Logging.Abstractions.NullLogger<VisitorEditorViewModel>.Instance,
         null!,
+        null!,
         null!)
     {
     }
@@ -65,11 +68,13 @@ public partial class VisitorEditorViewModel : ObservableObject
         ILogger<VisitorEditorViewModel> logger,
         IConfigurationService configurationService,
         IValidationService validationService,
+        ToastService? toastService,
         VisitorConfig? visitorToEdit = null)
     {
         _logger = logger;
         _configurationService = configurationService;
         _validationService = validationService;
+        _toastService = toastService;
         _originalVisitor = visitorToEdit;
 
         SaveCommand = new RelayCommand(async void () =>
@@ -169,6 +174,7 @@ public partial class VisitorEditorViewModel : ObservableObject
 
             if (!IsValid)
             {
+                _toastService?.Error("Validation Failed", ValidationError ?? "Please check the form for errors");
                 return;
             }
 
@@ -190,12 +196,14 @@ public partial class VisitorEditorViewModel : ObservableObject
                 await _configurationService!.SaveConfigurationAsync(configPath, config);
 
                 _logger?.LogInformation("Visitor saved: {VisitorName}", visitor.Name);
+                _toastService?.Success("Saved", $"Visitor '{visitor.Name}' saved successfully");
             }
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error saving visitor");
             ValidationError = "Failed to save visitor";
+            _toastService?.Error("Save Failed", $"Could not save visitor: {ex.Message}");
         }
         finally
         {

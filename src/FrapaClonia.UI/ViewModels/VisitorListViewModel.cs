@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.Domain.Models;
+using FrapaClonia.UI.Services;
 using FrapaClonia.UI.Views;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,7 @@ public partial class VisitorListViewModel : ObservableObject
     private readonly IConfigurationService? _configurationService;
     private readonly IValidationService? _validationService;
     private readonly IServiceProvider? _serviceProvider;
+    private readonly ToastService? _toastService;
 
     [ObservableProperty] private List<VisitorConfig> _visitors = [];
 
@@ -52,6 +54,7 @@ public partial class VisitorListViewModel : ObservableObject
         Microsoft.Extensions.Logging.Abstractions.NullLogger<VisitorListViewModel>.Instance,
         null!,
         null!,
+        null!,
         null!)
     {
     }
@@ -60,12 +63,14 @@ public partial class VisitorListViewModel : ObservableObject
         ILogger<VisitorListViewModel> logger,
         IConfigurationService configurationService,
         IValidationService validationService,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        ToastService? toastService)
     {
         _logger = logger;
         _configurationService = configurationService;
         _validationService = validationService;
         _serviceProvider = serviceProvider;
+        _toastService = toastService;
 
         AddVisitorCommand = new RelayCommand(AddVisitor);
         EditVisitorCommand = new RelayCommand(EditVisitor, () => SelectedVisitor != null);
@@ -173,7 +178,7 @@ public partial class VisitorListViewModel : ObservableObject
             var editorLogger = _serviceProvider.GetRequiredService<ILogger<VisitorEditorViewModel>>();
             if (_configurationService == null) return;
             if (_validationService == null) return;
-            var viewModel = new VisitorEditorViewModel(editorLogger, _configurationService, _validationService, newVisitor);
+            var viewModel = new VisitorEditorViewModel(editorLogger, _configurationService, _validationService, _toastService, newVisitor);
 
             var editorWindow = new VisitorEditorView
             {
@@ -214,7 +219,7 @@ public partial class VisitorListViewModel : ObservableObject
 
             if (_configurationService == null) return;
             if (_validationService == null) return;
-            var viewModel = new VisitorEditorViewModel(editorLogger, _configurationService, _validationService, visitorClone);
+            var viewModel = new VisitorEditorViewModel(editorLogger, _configurationService, _validationService, _toastService, visitorClone);
 
             var editorWindow = new VisitorEditorView
             {
