@@ -115,7 +115,7 @@
                 <TextBlock Grid.Row="1" Grid.Column="1"
                            Text="{Binding ServerAddress}"
                            Classes="value"
-                           Margin="{StaticResource ThicknessLeftS}" />
+                           Margin="{StaticResource ThicknessLeftTopS}" />
               </Grid>
             </Border>
           </Grid>
@@ -129,29 +129,6 @@
         <!-- Quick Access Cards -->
         <Grid ColumnDefinitions="*,*,*"
               ColumnSpacing="{StaticResource CardGridSpacing}">
-          <!-- Server Configuration Card -->
-          <!-- <Border Grid.Column="0" Classes="card">
-            <Grid RowDefinitions="Auto,*,Auto" Height="120">
-              <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-                <mi:MaterialIcon Kind="Server" Width="18" Height="18" VerticalAlignment="Center"
-                                 Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-                <TextBlock Text="{DynamicResource Localized_ServerConfig}"
-                           Classes="card-title" />
-              </StackPanel>
-              <TextBlock Grid.Row="1"
-                         Classes="card-description"
-                         TextWrapping="Wrap"
-                         VerticalAlignment="Center">
-                <Run Text="{DynamicResource Localized_Configure}" /><Run Text=" " />
-                <Run Text="{DynamicResource Localized_FrpcStatus}" />
-              </TextBlock>
-              <Button Grid.Row="2"
-                      Content="{DynamicResource Localized_Configure}"
-                      Command="{Binding NavigateToServerConfigCommand}"
-                      HorizontalAlignment="Left"
-                      Classes="secondary" />
-            </Grid>
-          </Border> -->
 
           <!-- Proxy Management Card -->
           <Border Grid.Column="0" Classes="card">
