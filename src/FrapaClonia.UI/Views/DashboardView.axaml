@@ -68,37 +68,25 @@
                         Spacing="{StaticResource SpacingM}"
                         VerticalAlignment="Center">
               <Button Command="{Binding StartFrpcCommand}"
-                      Classes="primary">
-                <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-                  <mi:MaterialIcon Kind="Play" Width="16" Height="16" VerticalAlignment="Center" />
+                      Classes="primary icon-text-button">
+                <StackPanel>
+                  <mi:MaterialIcon Kind="Play" />
                   <TextBlock Text="{DynamicResource Localized_StartFrpc}" />
                 </StackPanel>
               </Button>
 
               <Button Command="{Binding StopFrpcCommand}"
-                      Classes="secondary">
-                <Button.Styles>
-                  <Style Selector="Button:pointerover">
-                    <Setter Property="Foreground" Value="{DynamicResource AppErrorBrush}" />
-                    <Setter Property="BorderBrush" Value="{DynamicResource AppErrorBrush}" />
-                  </Style>
-                </Button.Styles>
-                <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-                  <mi:MaterialIcon Kind="Stop" Width="16" Height="16" VerticalAlignment="Center" />
+                      Classes="destructive icon-text-button">
+                <StackPanel>
+                  <mi:MaterialIcon Kind="Stop" />
                   <TextBlock Text="{DynamicResource Localized_StopFrpc}" />
                 </StackPanel>
               </Button>
 
               <Button Command="{Binding RestartFrpcCommand}"
-                      Classes="secondary">
-                <Button.Styles>
-                  <Style Selector="Button:pointerover">
-                    <Setter Property="Foreground" Value="{DynamicResource AppAccentColor2Brush}" />
-                    <Setter Property="BorderBrush" Value="{DynamicResource AppAccentColor2Brush}" />
-                  </Style>
-                </Button.Styles>
-                <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-                  <mi:MaterialIcon Kind="Refresh" Width="16" Height="16" VerticalAlignment="Center" />
+                      Classes="secondary icon-text-button">
+                <StackPanel>
+                  <mi:MaterialIcon Kind="Refresh" />
                   <TextBlock Text="{DynamicResource Localized_RestartFrpc}" />
                 </StackPanel>
               </Button>
@@ -139,10 +127,10 @@
                    Margin="{StaticResource ThicknessTopS}" />
 
         <!-- Quick Access Cards -->
-        <Grid ColumnDefinitions="*,*,*,*"
+        <Grid ColumnDefinitions="*,*,*"
               ColumnSpacing="{StaticResource CardGridSpacing}">
           <!-- Server Configuration Card -->
-          <Border Grid.Column="0" Classes="card">
+          <!-- <Border Grid.Column="0" Classes="card">
             <Grid RowDefinitions="Auto,*,Auto" Height="120">
               <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
                 <mi:MaterialIcon Kind="Server" Width="18" Height="18" VerticalAlignment="Center"
@@ -163,10 +151,10 @@
                       HorizontalAlignment="Left"
                       Classes="secondary" />
             </Grid>
-          </Border>
+          </Border> -->
 
           <!-- Proxy Management Card -->
-          <Border Grid.Column="1" Classes="card">
+          <Border Grid.Column="0" Classes="card">
             <Grid RowDefinitions="Auto,*,Auto" Height="120">
               <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
                 <mi:MaterialIcon Kind="Proxy" Width="18" Height="18" VerticalAlignment="Center"
@@ -190,7 +178,7 @@
           </Border>
 
           <!-- Deployment Card -->
-          <Border Grid.Column="2" Classes="card">
+          <Border Grid.Column="1" Classes="card">
             <Grid RowDefinitions="Auto,*,Auto" Height="120">
               <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
                 <mi:MaterialIcon Kind="CloudDownload" Width="18" Height="18" VerticalAlignment="Center"
@@ -214,7 +202,7 @@
           </Border>
 
           <!-- Logs Card -->
-          <Border Grid.Column="3" Classes="card">
+          <Border Grid.Column="2" Classes="card">
             <Grid RowDefinitions="Auto,*,Auto" Height="120">
               <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
                 <mi:MaterialIcon Kind="FileDocument" Width="18" Height="18" VerticalAlignment="Center"

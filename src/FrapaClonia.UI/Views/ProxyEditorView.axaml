@@ -17,6 +17,8 @@
   </Design.DataContext>
 
   <Window.Styles>
+    <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
+
     <Style Selector="TextBlock.sectionHeader">
       <Setter Property="FontSize" Value="18" />
       <Setter Property="FontWeight" Value="SemiBold" />
@@ -65,23 +67,6 @@
       <Setter Property="MinHeight" Value="32" />
       <Setter Property="Padding" Value="10,6" />
       <Setter Property="FontSize" Value="13" />
-    </Style>
-
-    <Style Selector="Button.actionButton">
-      <Setter Property="MinHeight" Value="36" />
-      <Setter Property="MinWidth" Value="100" />
-      <Setter Property="Padding" Value="20,10" />
-      <Setter Property="FontSize" Value="13" />
-      <Setter Property="FontWeight" Value="Medium" />
-    </Style>
-
-    <Style Selector="Button.primaryButton">
-      <Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
-      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundAltHighBrush}" />
-    </Style>
-
-    <Style Selector="Button.primaryButton:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource SystemAccentColorLight1}" />
     </Style>
 
     <Style Selector="CheckBox.settingsCheckBox">
@@ -584,16 +569,16 @@
                       Spacing="12"
                       Margin="0,8,0,16">
             <Button Command="{Binding CancelCommand}"
-                    Classes="actionButton"
+                    Classes="action-button"
                     IsEnabled="{Binding !IsSaving}"
                     Content="{DynamicResource Localized_Cancel}"
                     Name="CancelButton" />
 
             <Button Command="{Binding SaveCommand}"
-                    Classes="actionButton primaryButton"
+                    Classes="action-button primary icon-text-button"
                     IsEnabled="{Binding !IsSaving}"
                     Name="SaveButton">
-              <StackPanel Orientation="Horizontal" Spacing="10">
+              <StackPanel>
                 <TextBlock Text="{DynamicResource Localized_Save}" />
                 <ProgressBar IsIndeterminate="True"
                              Width="16" Height="16"

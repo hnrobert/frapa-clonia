@@ -131,23 +131,62 @@
     <Setter Property="TextWrapping" Value="Wrap" />
   </Style>
 
-  <!-- Button Styles -->
+  <!-- =============================================
+       BUTTON STYLES - Unified System
+       =============================================
+
+       Button Classes can be combined:
+       - Variant: primary, secondary, destructive, ghost
+       - Layout: icon-text-button (icon + text), icon-button (icon only)
+       - Size: button-sm, button-lg (optional overrides)
+
+       Examples:
+       - Classes="primary icon-text-button" → Primary button with icon + text
+       - Classes="secondary icon-button" → Secondary icon-only button
+       - Classes="destructive icon-text-button" → Destructive action button
+
+       Icon-Text Button Layout:
+       - Equal left/right padding (12px)
+       - Icon-to-text spacing: 6px
+       - Content: <StackPanel Orientation="Horizontal"><mi:MaterialIcon/><TextBlock/></StackPanel>
+  -->
+
+  <!-- Base Button Style -->
   <Style Selector="Button">
     <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="MinHeight" Value="{StaticResource ButtonHeightL}" />
+    <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusM}" />
+    <Setter Property="BorderThickness" Value="1" />
   </Style>
 
+  <!-- Icon-Text Button Layout Style -->
+  <Style Selector="Button.icon-text-button">
+    <Setter Property="Padding" Value="12,0" />
+    <Setter Property="MinHeight" Value="{StaticResource ButtonHeightL}" />
+  </Style>
+
+  <Style Selector="Button.icon-text-button > StackPanel">
+    <Setter Property="Orientation" Value="Horizontal" />
+    <Setter Property="Spacing" Value="6" />
+  </Style>
+
+  <Style Selector="Button.icon-text-button > StackPanel > mi|MaterialIcon">
+    <Setter Property="Width" Value="{StaticResource IconSizeM}" />
+    <Setter Property="Height" Value="{StaticResource IconSizeM}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="Button.icon-text-button > StackPanel > TextBlock">
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <!-- Primary Variant -->
   <Style Selector="Button.primary">
     <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}" />
     <Setter Property="Foreground" Value="White" />
     <Setter Property="BorderBrush" Value="{DynamicResource AppPrimaryBrush}" />
-    <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusM}" />
-    <Setter Property="Padding" Value="{StaticResource ThicknessHorizontalM}" />
     <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
-    <Setter Property="MinHeight" Value="{StaticResource ButtonHeightL}" />
-    <Setter Property="VerticalContentAlignment" Value="Center" />
-    <Setter Property="HorizontalContentAlignment" Value="Center" />
   </Style>
 
   <Style Selector="Button.primary:pointerover">
@@ -155,26 +194,29 @@
     <Setter Property="BorderBrush" Value="{DynamicResource AppPrimaryHoverBrush}" />
   </Style>
 
+  <Style Selector="Button.primary:pressed">
+    <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}" />
+  </Style>
+
   <Style Selector="Button.primary:disabled /template/ ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource SystemControlDisabledBaseMediumLowBrush}" />
     <Setter Property="Foreground" Value="{DynamicResource SystemControlDisabledBaseMediumBrush}" />
   </Style>
 
+  <!-- Secondary Variant -->
   <Style Selector="Button.secondary">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}" />
     <Setter Property="BorderBrush" Value="{DynamicResource AppPrimaryBrush}" />
-    <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusM}" />
-    <Setter Property="Padding" Value="{StaticResource ThicknessHorizontalM}" />
-    <Setter Property="MinHeight" Value="{StaticResource ButtonHeightL}" />
-    <Setter Property="VerticalContentAlignment" Value="Center" />
-    <Setter Property="HorizontalContentAlignment" Value="Center" />
   </Style>
 
   <Style Selector="Button.secondary:pointerover">
     <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}" />
     <Setter Property="Foreground" Value="White" />
+  </Style>
+
+  <Style Selector="Button.secondary:pressed">
+    <Setter Property="Background" Value="{DynamicResource AppPrimaryHoverBrush}" />
   </Style>
 
   <Style Selector="Button.secondary:disabled /template/ ContentPresenter">
@@ -183,12 +225,11 @@
     <Setter Property="Foreground" Value="{DynamicResource SystemControlDisabledBaseMediumBrush}" />
   </Style>
 
+  <!-- Destructive Variant -->
   <Style Selector="Button.destructive">
-    <Setter Property="Foreground" Value="{DynamicResource AppErrorBrush}" />
-    <Setter Property="BorderBrush" Value="Transparent" />
     <Setter Property="Background" Value="Transparent" />
-    <Setter Property="VerticalContentAlignment" Value="Center" />
-    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="Foreground" Value="{DynamicResource AppErrorBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AppErrorBrush}" />
   </Style>
 
   <Style Selector="Button.destructive:pointerover">
@@ -196,13 +237,77 @@
     <Setter Property="Foreground" Value="White" />
   </Style>
 
+  <Style Selector="Button.destructive:pressed">
+    <Setter Property="Background" Value="#C62828" />
+  </Style>
+
+  <Style Selector="Button.destructive:disabled /template/ ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{DynamicResource SystemControlDisabledBaseMediumBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlDisabledBaseMediumBrush}" />
+  </Style>
+
+  <!-- Ghost Variant (transparent, subtle hover) -->
+  <Style Selector="Button.ghost">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+  </Style>
+
+  <Style Selector="Button.ghost:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+  </Style>
+
+  <Style Selector="Button.ghost:pressed /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumBrush}" />
+  </Style>
+
+  <!-- Icon-Only Button (square, centered icon) -->
+  <Style Selector="Button.icon-button">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Width" Value="36" />
+    <Setter Property="Height" Value="36" />
+    <Setter Property="MinHeight" Value="36" />
+    <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusS}" />
+  </Style>
+
+  <Style Selector="Button.icon-button:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+  </Style>
+
+  <Style Selector="Button.icon-button:pressed /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumBrush}" />
+  </Style>
+
+  <!-- Action Button (for toolbars, with consistent sizing) -->
   <Style Selector="Button.action-button">
     <Setter Property="Height" Value="{StaticResource ButtonHeightL}" />
     <Setter Property="MinWidth" Value="100" />
-    <Setter Property="Padding" Value="{StaticResource ThicknessHorizontalM}" />
-    <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusS}" />
-    <Setter Property="VerticalContentAlignment" Value="Center" />
-    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="Padding" Value="12,0" />
+    <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusM}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+  </Style>
+
+  <Style Selector="Button.action-button:pointerover">
+    <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+  </Style>
+
+  <!-- Action Button + Primary Variant -->
+  <Style Selector="Button.action-button.primary">
+    <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}" />
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AppPrimaryBrush}" />
+    <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+  </Style>
+
+  <Style Selector="Button.action-button.primary:pointerover">
+    <Setter Property="Background" Value="{DynamicResource AppPrimaryHoverBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AppPrimaryHoverBrush}" />
   </Style>
 
   <!-- Input Styles -->
@@ -355,19 +460,6 @@
     <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}" />
   </Style>
 
-  <!-- Icon Button -->
-  <Style Selector="Button.icon-button">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="BorderThickness" Value="0" />
-    <Setter Property="Padding" Value="8" />
-    <Setter Property="Width" Value="36" />
-    <Setter Property="Height" Value="36" />
-    <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusS}" />
-  </Style>
-
-  <Style Selector="Button.icon-button:pointerover /template/ ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
-  </Style>
 
   <!-- Status Dot -->
   <Style Selector="Border.status-dot">
@@ -406,32 +498,6 @@
   <!-- =============================================
          ADDITIONAL STYLES
          ============================================= -->
-
-  <!-- Button Variants -->
-  <Style Selector="Button.primary-button">
-    <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}" />
-    <Setter Property="Foreground" Value="White" />
-    <Setter Property="BorderBrush" Value="{DynamicResource AppPrimaryBrush}" />
-    <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusM}" />
-    <Setter Property="Padding" Value="{StaticResource ThicknessHorizontalM}" />
-    <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
-    <Setter Property="MinHeight" Value="{StaticResource ButtonHeightL}" />
-    <Setter Property="VerticalContentAlignment" Value="Center" />
-    <Setter Property="HorizontalContentAlignment" Value="Center" />
-  </Style>
-
-  <Style Selector="Button.secondary-button">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource AppPrimaryBrush}" />
-    <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusM}" />
-    <Setter Property="Padding" Value="{StaticResource ThicknessHorizontalM}" />
-    <Setter Property="MinHeight" Value="{StaticResource ButtonHeightL}" />
-    <Setter Property="VerticalContentAlignment" Value="Center" />
-    <Setter Property="HorizontalContentAlignment" Value="Center" />
-  </Style>
 
   <!-- Readonly Value -->
   <Style Selector="TextBlock.readonly-value">
@@ -561,47 +627,6 @@
   </Style>
 
   <!-- Type Badge -->
-  <Style Selector="Border.typeBadge">
-    <Setter Property="Background" Value="{DynamicResource AccentColor}" />
-    <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusS}" />
-    <Setter Property="Padding" Value="6,3" />
-    <Setter Property="MinWidth" Value="45" />
-  </Style>
-
-  <Style Selector="Border.typeBadge TextBlock">
-    <Setter Property="Foreground" Value="{DynamicResource AccentColorForegroundBrush}" />
-    <Setter Property="FontSize" Value="{StaticResource FontSizeS}" />
-    <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
-  </Style>
-
-  <!-- Action Button (with margin) -->
-  <Style Selector="Button.action-button">
-    <Setter Property="Margin" Value="{StaticResource ThicknessRightS}" />
-    <Setter Property="Height" Value="{StaticResource ButtonHeightL}" />
-    <Setter Property="MinWidth" Value="100" />
-    <Setter Property="Padding" Value="{StaticResource ThicknessHorizontalM}" />
-    <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusS}" />
-    <Setter Property="VerticalContentAlignment" Value="Center" />
-    <Setter Property="HorizontalContentAlignment" Value="Center" />
-    <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-  </Style>
-
-  <!-- Primary Action Button -->
-  <Style Selector="Button.action-button.primary">
-    <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}" />
-    <Setter Property="Foreground" Value="White" />
-    <Setter Property="BorderBrush" Value="{DynamicResource AppPrimaryBrush}" />
-    <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
-  </Style>
-
-  <Style Selector="Button.action-button.primary:pointerover">
-    <Setter Property="Background" Value="{DynamicResource AppPrimaryHoverBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource AppPrimaryHoverBrush}" />
-  </Style>
-
-  <!-- Readonly Value -->
   <Style Selector="TextBlock.readonly-value">
     <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
     <Setter Property="FontFamily" Value="{DynamicResource MonoFontFamily}" />

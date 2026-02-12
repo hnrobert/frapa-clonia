@@ -96,6 +96,39 @@
                 </Grid>
               </Button>
 
+              <!-- Deployment -->
+              <Button Command="{Binding NavigateToDeploymentCommand}"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Stretch"
+                      Padding="0"
+                      BorderThickness="0"
+                      CornerRadius="4"
+                      FontSize="14"
+                      MinHeight="40"
+                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
+                      Classes="nav-button">
+                <Grid>
+                  <!-- Active background (full button highlight) -->
+                  <Border IsVisible="{Binding IsDeploymentActive}"
+                          Background="{DynamicResource SystemControlHighlightListLowBrush}"
+                          CornerRadius="4"
+                          Opacity="1"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch" />
+                  <!-- Content -->
+                  <Grid ColumnDefinitions="Auto,*" Margin="16">
+                    <mi:MaterialIcon Grid.Column="0"
+                                     Kind="CloudDownload"
+                                     Width="18"
+                                     Height="18"
+                                     VerticalAlignment="Center"
+                                     Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                     Margin="0,0,12,0" />
+                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Deployment}" VerticalAlignment="Center" />
+                  </Grid>
+                </Grid>
+              </Button>
+
               <!-- Server Config -->
               <Button Command="{Binding NavigateToServerConfigCommand}"
                       HorizontalAlignment="Stretch"
@@ -124,7 +157,8 @@
                                      VerticalAlignment="Center"
                                      Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
                                      Margin="0,0,12,0" />
-                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ServerConfig}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ServerConfig}"
+                               VerticalAlignment="Center" />
                   </Grid>
                 </Grid>
               </Button>
@@ -157,7 +191,8 @@
                                      VerticalAlignment="Center"
                                      Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
                                      Margin="0,0,12,0" />
-                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ProxyManagement}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ProxyManagement}"
+                               VerticalAlignment="Center" />
                   </Grid>
                 </Grid>
               </Button>
@@ -195,38 +230,6 @@
                 </Grid>
               </Button>
 
-              <!-- Deployment -->
-              <Button Command="{Binding NavigateToDeploymentCommand}"
-                      HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Stretch"
-                      Padding="0"
-                      BorderThickness="0"
-                      CornerRadius="4"
-                      FontSize="14"
-                      MinHeight="40"
-                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
-                      Classes="nav-button">
-                <Grid>
-                  <!-- Active background (full button highlight) -->
-                  <Border IsVisible="{Binding IsDeploymentActive}"
-                          Background="{DynamicResource SystemControlHighlightListLowBrush}"
-                          CornerRadius="4"
-                          Opacity="1"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch" />
-                  <!-- Content -->
-                  <Grid ColumnDefinitions="Auto,*" Margin="16">
-                    <mi:MaterialIcon Grid.Column="0"
-                                     Kind="CloudDownload"
-                                     Width="18"
-                                     Height="18"
-                                     VerticalAlignment="Center"
-                                     Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                     Margin="0,0,12,0" />
-                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Deployment}" VerticalAlignment="Center" />
-                  </Grid>
-                </Grid>
-              </Button>
 
               <!-- Logs -->
               <Button Command="{Binding NavigateToLogsCommand}"

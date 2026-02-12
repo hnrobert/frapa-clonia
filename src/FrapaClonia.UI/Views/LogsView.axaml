@@ -71,25 +71,28 @@
                     Orientation="Horizontal"
                     Spacing="{StaticResource SpacingS}">
           <Button Command="{Binding RefreshCommand}"
+                  Classes="secondary icon-text-button"
                   ToolTip.Tip="{DynamicResource Localized_ReloadLogsFromBuffer}"
                   IsEnabled="{Binding !IsClearing}">
-            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-              <mi:MaterialIcon Kind="Refresh" Width="16" Height="16" VerticalAlignment="Center" />
+            <StackPanel>
+              <mi:MaterialIcon Kind="Refresh" />
               <TextBlock Text="{DynamicResource Localized_Refresh}" />
             </StackPanel>
           </Button>
           <Button Command="{Binding ClearLogsCommand}"
+                  Classes="destructive icon-text-button"
                   ToolTip.Tip="{DynamicResource Localized_ClearAllLogs}"
                   IsEnabled="{Binding !IsClearing}">
-            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-              <mi:MaterialIcon Kind="DeleteVariant" Width="16" Height="16" VerticalAlignment="Center" />
+            <StackPanel>
+              <mi:MaterialIcon Kind="DeleteVariant" />
               <TextBlock Text="{DynamicResource Localized_ClearAll}" />
             </StackPanel>
           </Button>
           <Button Command="{Binding ExportLogsCommand}"
+                  Classes="secondary icon-text-button"
                   ToolTip.Tip="{DynamicResource Localized_ExportLogsToFile}">
-            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-              <mi:MaterialIcon Kind="Export" Width="16" Height="16" VerticalAlignment="Center" />
+            <StackPanel>
+              <mi:MaterialIcon Kind="Export" />
               <TextBlock Text="{DynamicResource Localized_Export}" />
             </StackPanel>
           </Button>

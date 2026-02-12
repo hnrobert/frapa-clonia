@@ -37,25 +37,19 @@
 
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
           <Button Command="{Binding RefreshCommand}"
-                  Classes="secondary"
+                  Classes="secondary icon-text-button"
                   IsEnabled="{Binding !IsLoading}"
                   ToolTip.Tip="Refresh visitor list">
-            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-              <mi:MaterialIcon Kind="Refresh"
-                               Width="{StaticResource IconSizeM}"
-                               Height="{StaticResource IconSizeM}"
-                               VerticalAlignment="Center" />
+            <StackPanel>
+              <mi:MaterialIcon Kind="Refresh" />
               <TextBlock Text="{DynamicResource Localized_Refresh}" />
             </StackPanel>
           </Button>
           <Button Command="{Binding AddVisitorCommand}"
-                  Classes="primary"
+                  Classes="primary icon-text-button"
                   ToolTip.Tip="Add a new visitor configuration">
-            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-              <mi:MaterialIcon Kind="Plus"
-                               Width="18"
-                               Height="18"
-                               VerticalAlignment="Center" />
+            <StackPanel>
+              <mi:MaterialIcon Kind="Plus" />
               <TextBlock Text="{DynamicResource Localized_AddVisitor}" />
             </StackPanel>
           </Button>
@@ -149,7 +143,7 @@
                                 Margin="0,4,0,0" />
                         <Border
                           Background="{Binding Type, Converter={StaticResource TypeToColorConverter}}"
-                          Classes="typeBadge"
+                          Classes="type-badge"
                           VerticalAlignment="Center">
                           <TextBlock Text="{Binding Type}"
                                      HorizontalAlignment="Center" />
@@ -237,26 +231,19 @@
                                   Spacing="{StaticResource SpacingS}"
                                   VerticalAlignment="Center">
                         <Button Click="OnEditClick"
-                                Classes="icon-button"
+                                Classes="ghost icon-button"
                                 ToolTip.Tip="{DynamicResource Localized_EditVisitor}">
-                          <mi:MaterialIcon Kind="Pencil"
-                                           Width="{StaticResource IconSizeM}"
-                                           Height="{StaticResource IconSizeM}" />
+                          <mi:MaterialIcon Kind="Pencil" />
                         </Button>
                         <Button Click="OnDuplicateClick"
-                                Classes="icon-button"
+                                Classes="ghost icon-button"
                                 ToolTip.Tip="Duplicate visitor">
-                          <mi:MaterialIcon Kind="ContentCopy"
-                                           Width="{StaticResource IconSizeM}"
-                                           Height="{StaticResource IconSizeM}" />
+                          <mi:MaterialIcon Kind="ContentCopy" />
                         </Button>
                         <Button Click="OnDeleteClick"
-                                Classes="icon-button"
-                                ToolTip.Tip="{DynamicResource Localized_DeleteVisitor}"
-                                Foreground="{DynamicResource AppErrorBrush}">
-                          <mi:MaterialIcon Kind="Delete"
-                                           Width="{StaticResource IconSizeM}"
-                                           Height="{StaticResource IconSizeM}" />
+                                Classes="destructive icon-button"
+                                ToolTip.Tip="{DynamicResource Localized_DeleteVisitor}">
+                          <mi:MaterialIcon Kind="Delete" />
                         </Button>
                       </StackPanel>
                     </Grid>
@@ -287,14 +274,11 @@
                            TextAlignment="Center"
                            MaxWidth="400" />
                 <Button Command="{Binding AddVisitorCommand}"
-                        Classes="primary"
+                        Classes="primary icon-text-button"
                         HorizontalAlignment="Center"
                         Margin="{StaticResource ThicknessTopS}">
-                  <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-                    <mi:MaterialIcon Kind="Plus"
-                                     Width="18"
-                                     Height="18"
-                                     VerticalAlignment="Center" />
+                  <StackPanel>
+                    <mi:MaterialIcon Kind="Plus" />
                     <TextBlock Text="{DynamicResource Localized_CreateYourFirstVisitor}" />
                   </StackPanel>
                 </Button>

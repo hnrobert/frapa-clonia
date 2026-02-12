@@ -77,9 +77,9 @@
         <!-- Primary Action - Add Proxy -->
         <Button Grid.Column="1"
                 Command="{Binding AddProxyCommand}"
-                Classes="primary">
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-            <mi:MaterialIcon Kind="Plus" Width="18" Height="18" VerticalAlignment="Center" />
+                Classes="primary icon-text-button">
+          <StackPanel Orientation="Horizontal">
+            <mi:MaterialIcon Kind="Plus" />
             <TextBlock Text="{DynamicResource Localized_AddProxy}" />
           </StackPanel>
         </Button>
@@ -94,31 +94,34 @@
             IsVisible="{Binding Proxies.Count, Converter={x:Static ObjectConverters.IsNotNull}}">
       <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingM}" HorizontalAlignment="Right">
         <Button Command="{Binding RefreshCommand}"
-                IsEnabled="{Binding !IsLoading}">
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-            <mi:MaterialIcon Kind="Refresh" Width="16" Height="16" VerticalAlignment="Center" />
+                IsEnabled="{Binding !IsLoading}"
+                Classes="secondary icon-text-button">
+          <StackPanel Orientation="Horizontal">
+            <mi:MaterialIcon Kind="Refresh" />
             <TextBlock Text="{DynamicResource Localized_Refresh}" />
           </StackPanel>
         </Button>
 
-        <Button Command="{Binding ExportAllCommand}">
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-            <mi:MaterialIcon Kind="Export" Width="16" Height="16" VerticalAlignment="Center" />
+        <Button Command="{Binding ExportAllCommand}"
+                Classes="secondary icon-text-button">
+          <StackPanel Orientation="Horizontal">
+            <mi:MaterialIcon Kind="Export" />
             <TextBlock Text="{DynamicResource Localized_ExportAll}" />
           </StackPanel>
         </Button>
 
-        <Button Command="{Binding ImportCommand}">
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-            <mi:MaterialIcon Kind="Import" Width="16" Height="16" VerticalAlignment="Center" />
+        <Button Command="{Binding ImportCommand}"
+                Classes="secondary icon-text-button">
+          <StackPanel Orientation="Horizontal">
+            <mi:MaterialIcon Kind="Import" />
             <TextBlock Text="{DynamicResource Localized_Import}" />
           </StackPanel>
         </Button>
 
         <Button Command="{Binding ClearAllCommand}"
-                Classes="destructive">
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-            <mi:MaterialIcon Kind="DeleteVariant" Width="16" Height="16" VerticalAlignment="Center" />
+                Classes="destructive icon-text-button">
+          <StackPanel Orientation="Horizontal">
+            <mi:MaterialIcon Kind="DeleteVariant" />
             <TextBlock Text="{DynamicResource Localized_ClearAll}" />
           </StackPanel>
         </Button>
@@ -149,11 +152,11 @@
                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                        HorizontalAlignment="Center" />
             <Button Command="{Binding AddProxyCommand}"
-                    Classes="primary"
+                    Classes="primary icon-text-button"
                     HorizontalAlignment="Center"
                     Margin="{StaticResource ThicknessTopL}">
-              <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
-                <mi:MaterialIcon Kind="Plus" Width="18" Height="18" VerticalAlignment="Center" />
+              <StackPanel Orientation="Horizontal">
+                <mi:MaterialIcon Kind="Plus" />
                 <TextBlock Text="{DynamicResource Localized_CreateProxy}" />
               </StackPanel>
             </Button>
@@ -179,7 +182,7 @@
                                    VerticalAlignment="Center" />
 
                         <Border Grid.Column="1"
-                                Classes="typeBadge"
+                                Classes="type-badge"
                                 Margin="{StaticResource ThicknessLeftM}"
                                 VerticalAlignment="Center">
                           <TextBlock Text="{Binding Type}" />
@@ -268,28 +271,21 @@
                                 Spacing="{StaticResource SpacingS}"
                                 VerticalAlignment="Center">
                       <Button Click="OnEditClick"
-                              Classes="icon-button"
+                              Classes="ghost icon-button"
                               ToolTip.Tip="{DynamicResource Localized_EditProxyToolTip}">
-                        <mi:MaterialIcon Kind="Pencil"
-                                         Width="{StaticResource IconSizeM}"
-                                         Height="{StaticResource IconSizeM}" />
+                        <mi:MaterialIcon Kind="Pencil" />
                       </Button>
 
                       <Button Click="OnDuplicateClick"
-                              Classes="icon-button"
+                              Classes="ghost icon-button"
                               ToolTip.Tip="{DynamicResource Localized_DuplicateProxyToolTip}">
-                        <mi:MaterialIcon Kind="ContentCopy"
-                                         Width="{StaticResource IconSizeM}"
-                                         Height="{StaticResource IconSizeM}" />
+                        <mi:MaterialIcon Kind="ContentCopy" />
                       </Button>
 
                       <Button Click="OnDeleteClick"
-                              Classes="icon-button"
-                              ToolTip.Tip="{DynamicResource Localized_DeleteProxyToolTip}"
-                              Foreground="{DynamicResource AppErrorBrush}">
-                        <mi:MaterialIcon Kind="Delete"
-                                         Width="{StaticResource IconSizeM}"
-                                         Height="{StaticResource IconSizeM}" />
+                              Classes="destructive icon-button"
+                              ToolTip.Tip="{DynamicResource Localized_DeleteProxyToolTip}">
+                        <mi:MaterialIcon Kind="Delete" />
                       </Button>
                     </StackPanel>
                   </Grid>
