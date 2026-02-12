@@ -17,6 +17,8 @@
   </Design.DataContext>
 
   <Window.Styles>
+    <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
+
     <!-- Section Border Style -->
     <Style Selector="Border.section-border">
       <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" />
@@ -50,27 +52,6 @@
     <!-- Form Field StackPanel Style -->
     <Style Selector="StackPanel.form-field">
       <Setter Property="Spacing" Value="4" />
-    </Style>
-
-    <!-- Primary Button Style -->
-    <Style Selector="Button.primary-button">
-      <Setter Property="MinHeight" Value="36" />
-      <Setter Property="MinWidth" Value="100" />
-      <Setter Property="Padding" Value="16,8" />
-      <Setter Property="FontSize" Value="13" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
-      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundAltHighBrush}" />
-      <Setter Property="CornerRadius" Value="4" />
-    </Style>
-
-    <!-- Secondary Button Style -->
-    <Style Selector="Button.secondary-button">
-      <Setter Property="MinHeight" Value="36" />
-      <Setter Property="MinWidth" Value="100" />
-      <Setter Property="Padding" Value="16,8" />
-      <Setter Property="FontSize" Value="13" />
-      <Setter Property="CornerRadius" Value="4" />
     </Style>
 
     <!-- Error Border Style -->
@@ -308,14 +289,14 @@
                   HorizontalAlignment="Right"
                   Spacing="12">
         <Button Command="{Binding CancelCommand}"
-                Classes="secondary-button"
+                Classes="action-button"
                 Content="{DynamicResource Localized_Cancel}"
                 IsEnabled="{Binding !IsSaving}"
                 AutomationProperties.Name="Cancel button"
                 AutomationProperties.HelpText="Discard changes and close the editor" />
 
         <Button Command="{Binding SaveCommand}"
-                Classes="primary-button"
+                Classes="action-button primary"
                 IsEnabled="{Binding !IsSaving}"
                 AutomationProperties.Name="Save button"
                 AutomationProperties.HelpText="Save the visitor configuration">

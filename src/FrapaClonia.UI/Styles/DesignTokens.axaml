@@ -50,6 +50,7 @@
     <Thickness x:Key="ThicknessHorizontalL">16,0,16,0</Thickness>
 
     <!-- Spacing as Thickness -->
+    <sys:Double x:Key="IconTextSpacing">4</sys:Double>
     <Thickness x:Key="SpacingLeftM">8,0,0,0</Thickness>
     <Thickness x:Key="SpacingLeftL">12,0,0,0</Thickness>
     <Thickness x:Key="SpacingRightM">0,0,8,0</Thickness>

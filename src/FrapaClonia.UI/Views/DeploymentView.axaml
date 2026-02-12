@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -64,7 +65,7 @@
             </ComboBox>
 
             <StackPanel Orientation="Horizontal" Spacing="4" Margin="{StaticResource ThicknessTopS}">
-              <Button Classes="hint-icon">
+              <Button Classes="icon-button">
                 <ToolTip.Tip>
                   <TextBlock Text="{DynamicResource Localized_ChooseHowYouWantToDeployAndRunFrpc}" />
                 </ToolTip.Tip>
@@ -121,17 +122,29 @@
                         Spacing="{StaticResource SpacingM}"
                         Margin="{StaticResource ThicknessTopS}">
               <Button Command="{Binding GenerateDockerComposeCommand}"
-                      Content="{DynamicResource Localized_GenerateDockerComposeYml}"
                       IsEnabled="{Binding !IsBusy}"
-                      Classes="action-button" />
+                      Classes="action-button icon-text-button">
+                <StackPanel>
+                  <mi:MaterialIcon Kind="FileDocument" />
+                  <TextBlock Text="{DynamicResource Localized_GenerateDockerComposeYml}" />
+                </StackPanel>
+              </Button>
               <Button Command="{Binding StartDockerCommand}"
-                      Content="{DynamicResource Localized_StartContainer}"
                       IsEnabled="{Binding !IsBusy}"
-                      Classes="action-button" />
+                      Classes="action-button primary icon-text-button">
+                <StackPanel>
+                  <mi:MaterialIcon Kind="Play" />
+                  <TextBlock Text="{DynamicResource Localized_StartContainer}" />
+                </StackPanel>
+              </Button>
               <Button Command="{Binding StopDockerCommand}"
-                      Content="{DynamicResource Localized_StopContainer}"
                       IsEnabled="{Binding !IsBusy}"
-                      Classes="action-button" />
+                      Classes="action-button destructive icon-text-button">
+                <StackPanel>
+                  <mi:MaterialIcon Kind="Stop" />
+                  <TextBlock Text="{DynamicResource Localized_StopContainer}" />
+                </StackPanel>
+              </Button>
             </StackPanel>
           </StackPanel>
         </Border>
@@ -153,9 +166,13 @@
                   Text="{Binding IsNativeDeployed, Converter={StaticResource BoolToDeployedStringConverter}}"
                   VerticalAlignment="Center" />
                 <Button Command="{Binding CheckNativeCommand}"
-                        Content="{DynamicResource Localized_CheckDeployment}"
                         IsEnabled="{Binding !IsNativeChecking}"
-                        Classes="action-button" />
+                        Classes="action-button icon-text-button">
+                  <StackPanel>
+                    <mi:MaterialIcon Kind="Check" />
+                    <TextBlock Text="{DynamicResource Localized_CheckDeployment}" />
+                  </StackPanel>
+                </Button>
               </StackPanel>
 
               <TextBlock Grid.Row="1" Grid.Column="0"
@@ -173,13 +190,21 @@
                         Spacing="{StaticResource SpacingM}"
                         Margin="{StaticResource ThicknessTopS}">
               <Button Command="{Binding DownloadFrpcCommand}"
-                      Content="{DynamicResource Localized_DownloadFrpc}"
                       IsEnabled="{Binding !IsBusy}"
-                      Classes="action-button" />
+                      Classes="action-button icon-text-button">
+                <StackPanel>
+                  <mi:MaterialIcon Kind="Download" />
+                  <TextBlock Text="{DynamicResource Localized_DownloadFrpc}" />
+                </StackPanel>
+              </Button>
               <Button Command="{Binding DeployNativeCommand}"
-                      Content="{DynamicResource Localized_DeployNative}"
                       IsEnabled="{Binding !IsBusy}"
-                      Classes="action-button" />
+                      Classes="action-button primary icon-text-button">
+                <StackPanel>
+                  <mi:MaterialIcon Kind="RocketLaunch" />
+                  <TextBlock Text="{DynamicResource Localized_DeployNative}" />
+                </StackPanel>
+              </Button>
             </StackPanel>
           </StackPanel>
         </Border>
@@ -190,7 +215,7 @@
             <StackPanel Orientation="Horizontal" Spacing="4">
               <TextBlock Text="{DynamicResource Localized_DeploymentInformation}"
                          Classes="section-title" />
-              <Button Classes="hint-icon">
+              <Button Classes="icon-button">
                 <ToolTip.Tip>
                   <StackPanel>
                     <TextBlock Text="{DynamicResource Localized_DockerDeploymentRequiresDocker}" />

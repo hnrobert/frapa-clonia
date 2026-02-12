@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="700"
@@ -31,15 +32,6 @@
 
             <!-- Server Address -->
             <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
-              <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="4">
-                <TextBlock Text="{DynamicResource Localized_ServerAddress}"
-                           Classes="field-label" />
-                <Button Classes="hint-icon">
-                  <ToolTip.Tip>
-                    <TextBlock Text="{DynamicResource Localized_TheAddressOfTheFrpsServer}" />
-                  </ToolTip.Tip>
-                </Button>
-              </StackPanel>
               <TextBox Grid.Row="0" Grid.Column="1"
                        Text="{Binding ServerAddr}"
                        Watermark="e.g., 127.0.0.1 or your-server.com" />
@@ -324,8 +316,9 @@
 
           <Button Command="{Binding SaveCommand}"
                   IsEnabled="{Binding !IsSaving}"
-                  Classes="action-button primary">
-            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+                  Classes="action-button primary icon-text-button">
+            <StackPanel>
+              <mi:MaterialIcon Kind="ContentSave" />
               <TextBlock Text="{DynamicResource Localized_SaveConfiguration}" />
               <ProgressBar IsIndeterminate="True"
                            Width="16"

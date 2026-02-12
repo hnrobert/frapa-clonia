@@ -205,7 +205,7 @@
                   Classes="action-button primary"
                   IsEnabled="{Binding !IsSaving}"
                   AutomationProperties.Name="Save Settings">
-            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+            <StackPanel Orientation="Horizontal" Spacing="6">
               <TextBlock Text="{DynamicResource Localized_SaveSettings}" />
               <ProgressBar IsIndeterminate="True"
                            Width="16"
