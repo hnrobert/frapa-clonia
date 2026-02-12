@@ -1,0 +1,55 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- =============================================
+       STATUS INDICATOR STYLES
+       ============================================= -->
+
+  <!-- Status Indicators -->
+  <Style Selector="Border.status-indicator">
+    <Setter Property="Width" Value="8" />
+    <Setter Property="Height" Value="8" />
+    <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusFull}" />
+  </Style>
+
+  <Style Selector="Border.status-indicator.running">
+    <Setter Property="Background" Value="{DynamicResource AppSuccessBrush}" />
+  </Style>
+
+  <Style Selector="Border.status-indicator.stopped">
+    <Setter Property="Background" Value="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
+  </Style>
+
+  <Style Selector="Border.status-indicator.error">
+    <Setter Property="Background" Value="{DynamicResource AppErrorBrush}" />
+  </Style>
+
+  <!-- Status Dot -->
+  <Style Selector="Border.status-dot">
+    <Setter Property="Width" Value="8" />
+    <Setter Property="Height" Value="8" />
+    <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusFull}" />
+  </Style>
+
+  <Style Selector="Border.status-dot.active">
+    <Setter Property="Background" Value="{DynamicResource AppSuccessBrush}" />
+  </Style>
+
+  <Style Selector="Border.status-dot.inactive">
+    <Setter Property="Background" Value="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
+  </Style>
+
+  <!-- Badge Styles -->
+  <Style Selector="Border.type-badge">
+    <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}" />
+    <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusS}" />
+    <Setter Property="Padding" Value="6,3" />
+  </Style>
+
+  <Style Selector="Border.type-badge TextBlock">
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="FontSize" Value="{StaticResource FontSizeS}" />
+    <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+  </Style>
+
+</Styles>

@@ -1,0 +1,73 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- =============================================
+       INPUT CONTROL STYLES
+       ============================================= -->
+
+  <!-- Ensure all input controls are vertically centered -->
+  <Style Selector="TextBox">
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="ComboBox">
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="NumericUpDown">
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <!-- Input Control Base Style -->
+  <Style Selector="TextBox.input-control, ComboBox.input-control, NumericUpDown.input-control">
+    <Setter Property="MinHeight" Value="{StaticResource InputHeightM}" />
+    <Setter Property="Padding" Value="{StaticResource ThicknessHorizontalM}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <!-- Field Control -->
+  <Style Selector="TextBox.field-control, ComboBox.field-control, NumericUpDown.field-control">
+    <Setter Property="MinHeight" Value="{StaticResource InputHeightM}" />
+    <Setter Property="Padding" Value="{StaticResource ThicknessHorizontalM}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <!-- Search Box -->
+  <Style Selector="TextBox.search-box">
+    <Setter Property="MinWidth" Value="240" />
+    <Setter Property="Height" Value="{StaticResource ButtonHeightL}" />
+  </Style>
+
+  <!-- Filter ComboBox -->
+  <Style Selector="ComboBox.filter-box">
+    <Setter Property="MinWidth" Value="140" />
+    <Setter Property="Height" Value="{StaticResource ButtonHeightL}" />
+  </Style>
+
+  <!-- Settings Controls -->
+  <Style Selector="CheckBox.settings-checkbox">
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="ComboBox.settings-dropdown">
+    <Setter Property="MinWidth" Value="200" />
+    <Setter Property="Height" Value="{StaticResource InputHeightM}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <!-- Settings dropdown (custom override) -->
+  <Style Selector="ComboBox.settings-dropdown">
+    <Setter Property="MinWidth" Value="240" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+  </Style>
+
+  <!-- Settings checkbox (custom override) -->
+  <Style Selector="CheckBox.settings-checkbox">
+    <Setter Property="Margin" Value="{StaticResource ThicknessTopS}" />
+  </Style>
+
+  <Style Selector="CheckBox.settings-checkbox > ContentPresenter">
+    <Setter Property="Margin" Value="{StaticResource ThicknessLeftS}" />
+  </Style>
+
+</Styles>

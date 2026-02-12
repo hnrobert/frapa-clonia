@@ -1,0 +1,106 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- =============================================
+       TEXT STYLES
+       ============================================= -->
+
+  <!-- Page Titles -->
+  <Style Selector="TextBlock.page-title">
+    <Setter Property="FontSize" Value="{StaticResource FontSizeXXXL}" />
+    <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.page-subtitle">
+    <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.heading">
+    <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
+    <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+    <Setter Property="Margin" Value="{StaticResource ThicknessBottomS}" />
+  </Style>
+
+  <!-- Section Titles -->
+  <Style Selector="TextBlock.section-title">
+    <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
+    <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.section-header">
+    <Setter Property="FontSize" Value="{StaticResource FontSizeS}" />
+    <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+  </Style>
+
+  <!-- Field Labels -->
+  <Style Selector="TextBlock.field-label">
+    <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
+    <Setter Property="FontWeight" Value="{StaticResource FontWeightMedium}" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="TextBlock.label">
+    <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
+    <Setter Property="FontWeight" Value="{StaticResource FontWeightMedium}" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="TextBlock.value">
+    <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
+    <Setter Property="FontWeight" Value="{StaticResource FontWeightMedium}" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="TextBlock.hint">
+    <Setter Property="FontSize" Value="{StaticResource FontSizeS}" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+
+  <!-- Card Text -->
+  <Style Selector="TextBlock.card-title">
+    <Setter Property="FontSize" Value="{StaticResource FontSizeL}" />
+    <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.card-description">
+    <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+
+  <!-- Status Text Colors -->
+  <Style Selector="TextBlock.status-error">
+    <Setter Property="Foreground" Value="{DynamicResource AppErrorBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.status-warning">
+    <Setter Property="Foreground" Value="{DynamicResource AppWarningBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.status-success">
+    <Setter Property="Foreground" Value="{DynamicResource AppSuccessBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.status-info">
+    <Setter Property="Foreground" Value="{DynamicResource AppInfoBrush}" />
+  </Style>
+
+  <!-- Readonly Value -->
+  <Style Selector="TextBlock.readonly-value">
+    <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFontFamily}" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+
+</Styles>

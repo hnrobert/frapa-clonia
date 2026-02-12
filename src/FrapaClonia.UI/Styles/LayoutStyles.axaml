@@ -1,0 +1,49 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- =============================================
+       PAGE LAYOUT STYLES
+       ============================================= -->
+
+  <!-- Page Header -->
+  <Style Selector="Border.page-header">
+    <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" />
+    <Setter Property="Padding" Value="{StaticResource ContentPadding}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+  </Style>
+
+  <!-- Page Toolbar -->
+  <Style Selector="Border.page-toolbar">
+    <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundTransparent}" />
+    <Setter Property="Padding" Value="{StaticResource ContentPadding}" />
+  </Style>
+
+  <!-- Page Content -->
+  <Style Selector="Border.page-content">
+    <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundTransparent}" />
+    <Setter Property="Padding" Value="{StaticResource ContentPadding}" />
+  </Style>
+
+  <!-- Separators -->
+  <Style Selector="Separator.section">
+    <Setter Property="Margin" Value="{StaticResource ThicknessVerticalM}" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+  </Style>
+
+  <!-- Section Border -->
+  <Style Selector="Border.section-border">
+    <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+    <Setter Property="Margin" Value="{StaticResource ThicknessVerticalM}" />
+  </Style>
+
+  <!-- Error Border -->
+  <Style Selector="Border.error-border">
+    <Setter Property="Background" Value="{DynamicResource SystemControlErrorToastForegroundBrush}" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="16" />
+    <Setter Property="Margin" Value="0" />
+  </Style>
+
+</Styles>
