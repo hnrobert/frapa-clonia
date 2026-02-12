@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:FrapaClonia.UI.Controls"
+             xmlns:services="clr-namespace:FrapaClonia.UI.Services"
+             x:Class="FrapaClonia.UI.Controls.ToastContainer"
+             x:DataType="services:ToastService">
+
+  <UserControl.Styles>
+    <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
+  </UserControl.Styles>
+
+  <!-- Toast Container positioned in top-right corner -->
+  <Canvas IsHitTestVisible="False">
+    <ItemsControl ItemsSource="{Binding Toasts}"
+                  x:Name="ToastList"
+                  Canvas.Right="{StaticResource SpacingL}"
+                  Canvas.Top="{StaticResource SpacingL}"
+                  IsHitTestVisible="True">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <StackPanel Orientation="Vertical"
+                      Spacing="{StaticResource SpacingS}" />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+
+      <ItemsControl.ItemTemplate>
+        <DataTemplate>
+          <controls:ToastNotification x:Name="ToastControl" />
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </Canvas>
+</UserControl>

@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:models="clr-namespace:FrapaClonia.UI.Models"
+             xmlns:controls="clr-namespace:FrapaClonia.UI.Controls"
+             x:Class="FrapaClonia.UI.Controls.ToastNotification"
+             x:DataType="models:ToastItem">
+
+  <UserControl.Styles>
+    <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
+  </UserControl.Styles>
+
+  <Border x:Name="LayoutRoot"
+          Classes="toast-container"
+          RenderTransformOrigin="1,0.5">
+    <Border.RenderTransform>
+      <TranslateTransform X="0" />
+    </Border.RenderTransform>
+
+    <Grid ColumnDefinitions="Auto,*,Auto">
+      <!-- Level Indicator Icon -->
+      <Border Grid.Column="0" Classes="toast-icon-container">
+        <mi:MaterialIcon x:Name="LevelIcon" Classes="toast-icon" />
+      </Border>
+
+      <!-- Content -->
+      <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center" Margin="12,8,8,8">
+        <TextBlock Text="{Binding Title}"
+                   Classes="toast-title" />
+        <TextBlock Text="{Binding Message}"
+                   Classes="toast-message"
+                   MaxLines="3"
+                   TextTrimming="CharacterEllipsis"
+                   TextWrapping="Wrap" />
+      </StackPanel>
+
+      <!-- Close Button -->
+      <Button Grid.Column="2"
+              Classes="toast-close-button"
+              Command="{Binding $parent[controls:ToastNotification].CloseCommand}">
+        <mi:MaterialIcon Kind="Close"
+                         Width="14"
+                         Height="14" />
+      </Button>
+    </Grid>
+  </Border>
+</UserControl>

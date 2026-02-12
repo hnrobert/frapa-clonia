@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+        xmlns:controls="clr-namespace:FrapaClonia.UI.Controls;assembly=FrapaClonia.UI"
         xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -16,7 +17,9 @@
     <vm:MainWindowViewModel />
   </Design.DataContext>
 
-  <Grid ColumnDefinitions="240,4,*">
+  <Grid>
+    <!-- Main Layout -->
+    <Grid ColumnDefinitions="240,4,*">
 
     <!-- Sidebar Navigation -->
     <Border Grid.Column="0"
@@ -353,6 +356,13 @@
                         VerticalAlignment="Stretch" />
       </Grid>
     </Border>
+  </Grid>
+
+  <!-- Toast Notification Container (overlays everything) -->
+  <controls:ToastContainer DataContext="{Binding ToastService}"
+                           ZIndex="{StaticResource ZIndexToast}"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Top" />
   </Grid>
 
 </Window>

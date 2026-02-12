@@ -20,16 +20,14 @@ public partial class MainWindow : Window
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        if (Content is Grid grid)
+        // Find the main layout grid (first child of the outer grid)
+        if (Content is Grid outerGrid && outerGrid.Children.Count > 0 && outerGrid.Children[0] is Grid mainGrid)
         {
-            _sidebarColumn = grid.ColumnDefinitions[0];
-            _gridSplitter = grid.Children[1] as GridSplitter;
+            _sidebarColumn = mainGrid.ColumnDefinitions[0];
+            _gridSplitter = mainGrid.Children[1] as GridSplitter;
 
             // Initialize sidebar width to default
-            if (_sidebarColumn != null)
-            {
-                _sidebarColumn.Width = new GridLength(DefaultSidebarWidth);
-            }
+            _sidebarColumn?.Width = new GridLength(DefaultSidebarWidth);
 
             if (_gridSplitter != null)
             {
