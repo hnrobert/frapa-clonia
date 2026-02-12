@@ -730,18 +730,14 @@
     <Setter Property="ClipToBounds" Value="True" />
   </Style>
 
-  <!-- Toast Icon Container (left side) -->
-  <Style Selector="Border.toast-icon-container">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="Padding" Value="12,8,0,8" />
-    <Setter Property="VerticalAlignment" Value="Stretch" />
-  </Style>
-
-  <!-- Toast Icon -->
-  <Style Selector="mi|MaterialIcon.toast-icon">
-    <Setter Property="Width" Value="20" />
-    <Setter Property="Height" Value="20" />
+  <!-- Toast Indicator (square coloured indicator on left) -->
+  <Style Selector="Border.toast-indicator">
+    <Setter Property="Width" Value="8" />
+    <Setter Property="Height" Value="8" />
+    <Setter Property="Margin" Value="12,0,0,0" />
     <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="CornerRadius" Value="2" />
+    <Setter Property="Background" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
   </Style>
 
   <!-- Toast Title -->
@@ -783,13 +779,8 @@
     <Setter Property="BorderBrush" Value="{DynamicResource AppSuccessBrush}" />
   </Style>
 
-  <Style Selector="Border.toast-container.toast-success Border.toast-icon-container">
-    <Setter Property="Background" Value="#1A4CAF50" />
-  </Style>
-
-  <Style Selector="Border.toast-container.toast-success mi|MaterialIcon.toast-icon">
-    <Setter Property="Kind" Value="CheckCircle" />
-    <Setter Property="Foreground" Value="{DynamicResource AppSuccessBrush}" />
+  <Style Selector="Border.toast-container.toast-success Border.toast-indicator">
+    <Setter Property="Background" Value="{DynamicResource AppSuccessBrush}" />
   </Style>
 
   <!-- Toast Level: Info -->
@@ -797,13 +788,8 @@
     <Setter Property="BorderBrush" Value="{DynamicResource AppInfoBrush}" />
   </Style>
 
-  <Style Selector="Border.toast-container.toast-info Border.toast-icon-container">
-    <Setter Property="Background" Value="#1A2196F3" />
-  </Style>
-
-  <Style Selector="Border.toast-container.toast-info mi|MaterialIcon.toast-icon">
-    <Setter Property="Kind" Value="Information" />
-    <Setter Property="Foreground" Value="{DynamicResource AppInfoBrush}" />
+  <Style Selector="Border.toast-container.toast-info Border.toast-indicator">
+    <Setter Property="Background" Value="{DynamicResource AppInfoBrush}" />
   </Style>
 
   <!-- Toast Level: Warning -->
@@ -811,13 +797,8 @@
     <Setter Property="BorderBrush" Value="{DynamicResource AppWarningBrush}" />
   </Style>
 
-  <Style Selector="Border.toast-container.toast-warning Border.toast-icon-container">
-    <Setter Property="Background" Value="#1AFF9800" />
-  </Style>
-
-  <Style Selector="Border.toast-container.toast-warning mi|MaterialIcon.toast-icon">
-    <Setter Property="Kind" Value="Alert" />
-    <Setter Property="Foreground" Value="{DynamicResource AppWarningBrush}" />
+  <Style Selector="Border.toast-container.toast-warning Border.toast-indicator">
+    <Setter Property="Background" Value="{DynamicResource AppWarningBrush}" />
   </Style>
 
   <!-- Toast Level: Error -->
@@ -825,13 +806,8 @@
     <Setter Property="BorderBrush" Value="{DynamicResource AppErrorBrush}" />
   </Style>
 
-  <Style Selector="Border.toast-container.toast-error Border.toast-icon-container">
-    <Setter Property="Background" Value="#1AF44336" />
-  </Style>
-
-  <Style Selector="Border.toast-container.toast-error mi|MaterialIcon.toast-icon">
-    <Setter Property="Kind" Value="AlertCircle" />
-    <Setter Property="Foreground" Value="{DynamicResource AppErrorBrush}" />
+  <Style Selector="Border.toast-container.toast-error Border.toast-indicator">
+    <Setter Property="Background" Value="{DynamicResource AppErrorBrush}" />
   </Style>
 
 </Styles>

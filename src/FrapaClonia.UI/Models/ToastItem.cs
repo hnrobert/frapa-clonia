@@ -74,6 +74,19 @@ public partial class ToastItem : ObservableObject
     public DateTime CreatedAt { get; } = DateTime.Now;
 
     /// <summary>
+    /// Event raised when the toast should close (with animation)
+    /// </summary>
+    public event EventHandler? CloseRequested;
+
+    /// <summary>
+    /// Request the toast to close (triggers animation before removal)
+    /// </summary>
+    public void RequestClose()
+    {
+        CloseRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
     /// Creates a new toast item
     /// </summary>
     public ToastItem() { }

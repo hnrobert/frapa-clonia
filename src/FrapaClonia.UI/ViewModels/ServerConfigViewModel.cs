@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.Domain.Models;
+using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable UnusedParameterInPartialMethod
@@ -16,6 +17,7 @@ public partial class ServerConfigViewModel : ObservableObject
     private readonly IConfigurationService? _configurationService;
     private readonly IValidationService? _validationService;
     private readonly ILogger<ServerConfigViewModel>? _logger;
+    private readonly ToastService? _toastService;
 
     [ObservableProperty] private string _serverAddr = "";
 
@@ -136,18 +138,21 @@ public partial class ServerConfigViewModel : ObservableObject
 
     // Default constructor for design-time support
     public ServerConfigViewModel() : this(null!, null!,
-        Microsoft.Extensions.Logging.Abstractions.NullLogger<ServerConfigViewModel>.Instance)
+        Microsoft.Extensions.Logging.Abstractions.NullLogger<ServerConfigViewModel>.Instance,
+        null!)
     {
     }
 
     public ServerConfigViewModel(
         IConfigurationService configurationService,
         IValidationService validationService,
-        ILogger<ServerConfigViewModel> logger)
+        ILogger<ServerConfigViewModel> logger,
+        ToastService? toastService)
     {
         _configurationService = configurationService;
         _validationService = validationService;
         _logger = logger;
+        _toastService = toastService;
 
         SaveCommand = new RelayCommand(async void () =>
         {
@@ -301,6 +306,7 @@ public partial class ServerConfigViewModel : ObservableObject
         {
             _logger?.LogError(ex, "Error loading configuration");
             ValidationError = "Failed to load configuration";
+            _toastService?.Error("Load Failed", "Could not load configuration");
         }
         finally
         {
@@ -338,6 +344,7 @@ public partial class ServerConfigViewModel : ObservableObject
                 if (!validation.IsValid)
                 {
                     ValidationError = validation.Errors.FirstOrDefault() ?? "Validation failed";
+                    _toastService?.Error("Validation Failed", ValidationError);
                     return;
                 }
             }
@@ -350,11 +357,13 @@ public partial class ServerConfigViewModel : ObservableObject
             }
 
             _logger?.LogInformation("Configuration saved successfully");
+            _toastService?.Success("Saved", "Configuration saved successfully");
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error saving configuration");
             ValidationError = "Failed to save configuration: " + ex.Message;
+            _toastService?.Error("Save Failed", $"Could not save configuration: {ex.Message}");
         }
         finally
         {
