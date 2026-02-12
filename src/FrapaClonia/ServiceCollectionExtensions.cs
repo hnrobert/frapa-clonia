@@ -34,6 +34,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<NavigationService>();
         services.AddSingleton<ThemeService>();
         services.AddSingleton<LocalizedResources>();
+        services.AddSingleton<ToastService>();
 
         // ViewModels
         services.AddSingleton<MainWindowViewModel>();

@@ -23,6 +23,11 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty] private string _currentPage = "dashboard";
     [ObservableProperty] private double _sidebarWidth = MinSidebarWidth;
 
+    /// <summary>
+    /// The toast notification service
+    /// </summary>
+    public ToastService? ToastService { get; private set; }
+
     // Active state properties for navigation
     public bool IsDashboardActive => CurrentPage == "dashboard";
     public bool IsServerActive => CurrentPage == "server";
@@ -89,16 +94,19 @@ public partial class MainWindowViewModel : ObservableObject
     // Default constructor for design-time support
     public MainWindowViewModel() : this(
         Microsoft.Extensions.Logging.Abstractions.NullLogger<MainWindowViewModel>.Instance,
+        null!,
         null!)
     {
     }
 
     public MainWindowViewModel(
         ILogger<MainWindowViewModel> logger,
-        NavigationService navigation)
+        NavigationService navigation,
+        ToastService? toastService)
     {
         _logger = logger;
         _navigation = navigation;
+        ToastService = toastService;
 
         NavigateToDashboardCommand = new RelayCommand(() => Navigate("dashboard"));
         NavigateToServerConfigCommand = new RelayCommand(() => Navigate("server"));
