@@ -272,6 +272,20 @@ public class LocalizedResources : ObservableObject
         NetRuntimeInfo = Create("NETRuntimeInfo");
         CrossPlatformFrpcVisualClient = Create("CrossPlatformFrpcVisualClient");
         SaveSettings = Create("SaveSettings");
+
+        // Preset Management
+        ConfigPresets = Create("ConfigPresets");
+        PresetManagement = Create("PresetManagement");
+        PresetName = Create("PresetName");
+        RenamePreset = Create("RenamePreset");
+        DeletePreset = Create("DeletePreset");
+        DuplicatePreset = Create("DuplicatePreset");
+        ExportPreset = Create("ExportPreset");
+        ImportPreset = Create("ImportPreset");
+        PresetExported = Create("PresetExported");
+        PresetImported = Create("PresetImported");
+        ExportFailed = Create("ExportFailed");
+        ImportFailed = Create("ImportFailed");
     }
 
     // Localized string properties
@@ -527,6 +541,20 @@ public class LocalizedResources : ObservableObject
     public LocalizedString NetRuntimeInfo { get; }
     public LocalizedString CrossPlatformFrpcVisualClient { get; }
     public LocalizedString SaveSettings { get; }
+
+    // Preset Management
+    public LocalizedString ConfigPresets { get; }
+    public LocalizedString PresetManagement { get; }
+    public LocalizedString PresetName { get; }
+    public LocalizedString RenamePreset { get; }
+    public LocalizedString DeletePreset { get; }
+    public LocalizedString DuplicatePreset { get; }
+    public LocalizedString ExportPreset { get; }
+    public LocalizedString ImportPreset { get; }
+    public LocalizedString PresetExported { get; }
+    public LocalizedString PresetImported { get; }
+    public LocalizedString ExportFailed { get; }
+    public LocalizedString ImportFailed { get; }
 
     private LocalizedString Create(string key)
     {

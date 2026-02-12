@@ -24,7 +24,8 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
         }
     }
 
-    public Task<FrpClientConfig?> DeserializeFromFileAsync(string filePath, CancellationToken cancellationToken = default)
+    public Task<FrpClientConfig?> DeserializeFromFileAsync(string filePath,
+        CancellationToken cancellationToken = default)
     {
         try
         {

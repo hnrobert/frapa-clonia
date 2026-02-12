@@ -290,6 +290,20 @@ public static class ResourceInitializer
         AddResource(resources, "Localized_CrossPlatformFrpcVisualClient",
             localizedResources.CrossPlatformFrpcVisualClient);
         AddResource(resources, "Localized_SaveSettings", localizedResources.SaveSettings);
+
+        // Preset Management
+        AddResource(resources, "Localized_ConfigPresets", localizedResources.ConfigPresets);
+        AddResource(resources, "Localized_PresetManagement", localizedResources.PresetManagement);
+        AddResource(resources, "Localized_PresetName", localizedResources.PresetName);
+        AddResource(resources, "Localized_RenamePreset", localizedResources.RenamePreset);
+        AddResource(resources, "Localized_DeletePreset", localizedResources.DeletePreset);
+        AddResource(resources, "Localized_DuplicatePreset", localizedResources.DuplicatePreset);
+        AddResource(resources, "Localized_ExportPreset", localizedResources.ExportPreset);
+        AddResource(resources, "Localized_ImportPreset", localizedResources.ImportPreset);
+        AddResource(resources, "Localized_PresetExported", localizedResources.PresetExported);
+        AddResource(resources, "Localized_PresetImported", localizedResources.PresetImported);
+        AddResource(resources, "Localized_ExportFailed", localizedResources.ExportFailed);
+        AddResource(resources, "Localized_ImportFailed", localizedResources.ImportFailed);
     }
 
     private static void AddResource(IResourceDictionary resources, string key, LocalizedString localizedString)

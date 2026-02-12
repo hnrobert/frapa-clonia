@@ -22,6 +22,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IProfileService, ProfileService>();
         services.AddSingleton<IAutoStartService, AutoStartService>();
         services.AddSingleton<ILocalizationService, LocalizationService>();
+        services.AddSingleton<IPresetService, PresetService>();
 
         // Infrastructure Services
         services.AddSingleton<IFrpcDownloader, FrpcDownloader>();

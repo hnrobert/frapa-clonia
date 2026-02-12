@@ -13,7 +13,7 @@ namespace FrapaClonia.UI.ViewModels;
 public partial class VisitorEditorViewModel : ObservableObject
 {
     private readonly ILogger<VisitorEditorViewModel>? _logger;
-    private readonly IConfigurationService? _configurationService;
+    private readonly IPresetService? _presetService;
     private readonly IValidationService? _validationService;
     private readonly ToastService? _toastService;
     private readonly VisitorConfig? _originalVisitor;
@@ -66,13 +66,13 @@ public partial class VisitorEditorViewModel : ObservableObject
 
     public VisitorEditorViewModel(
         ILogger<VisitorEditorViewModel> logger,
-        IConfigurationService configurationService,
+        IPresetService presetService,
         IValidationService validationService,
         ToastService? toastService,
         VisitorConfig? visitorToEdit = null)
     {
         _logger = logger;
-        _configurationService = configurationService;
+        _presetService = presetService;
         _validationService = validationService;
         _toastService = toastService;
         _originalVisitor = visitorToEdit;
@@ -178,26 +178,26 @@ public partial class VisitorEditorViewModel : ObservableObject
                 return;
             }
 
-            var configPath = _configurationService?.GetDefaultConfigPath() ?? "";
-            var config = await _configurationService!.LoadConfigurationAsync(configPath);
-
-            if (config != null)
+            if (_presetService?.CurrentPreset == null)
             {
-                var visitor = CreateVisitorConfig();
-
-                // Remove original visitor if editing
-                if (_originalVisitor != null)
-                {
-                    config.Visitors.RemoveAll(v => v.Name == _originalVisitor.Name);
-                }
-
-                config.Visitors.Add(visitor);
-
-                await _configurationService!.SaveConfigurationAsync(configPath, config);
-
-                _logger?.LogInformation("Visitor saved: {VisitorName}", visitor.Name);
-                _toastService?.Success("Saved", $"Visitor '{visitor.Name}' saved successfully");
+                _toastService?.Error("Error", "No active preset");
+                return;
             }
+
+            var visitor = CreateVisitorConfig();
+
+            // Remove original visitor if editing
+            if (_originalVisitor != null)
+            {
+                _presetService.CurrentPreset.Configuration.Visitors.RemoveAll(v => v.Name == _originalVisitor.Name);
+            }
+
+            _presetService.CurrentPreset.Configuration.Visitors.Add(visitor);
+
+            await _presetService.SaveCurrentPresetAsync();
+
+            _logger?.LogInformation("Visitor saved: {VisitorName}", visitor.Name);
+            _toastService?.Success("Saved", $"Visitor '{visitor.Name}' saved successfully");
         }
         catch (Exception ex)
         {
