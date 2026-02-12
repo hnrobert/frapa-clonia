@@ -15,7 +15,7 @@ namespace FrapaClonia.UI.ViewModels;
 public partial class ProxyEditorViewModel : ObservableObject
 {
     private readonly ILogger<ProxyEditorViewModel>? _logger;
-    private readonly IConfigurationService? _configurationService;
+    private readonly IPresetService? _presetService;
     private readonly IValidationService? _validationService;
     private readonly ToastService? _toastService;
     private readonly ProxyConfig? _originalProxy;
@@ -134,13 +134,13 @@ public partial class ProxyEditorViewModel : ObservableObject
 
     public ProxyEditorViewModel(
         ILogger<ProxyEditorViewModel> logger,
-        IConfigurationService configurationService,
+        IPresetService presetService,
         IValidationService validationService,
         ToastService? toastService,
         ProxyConfig? proxyToEdit = null)
     {
         _logger = logger;
-        _configurationService = configurationService;
+        _presetService = presetService;
         _validationService = validationService;
         _toastService = toastService;
         _originalProxy = proxyToEdit;
@@ -353,26 +353,26 @@ public partial class ProxyEditorViewModel : ObservableObject
                 return;
             }
 
-            var configPath = _configurationService?.GetDefaultConfigPath() ?? "";
-            var config = await _configurationService!.LoadConfigurationAsync(configPath);
-
-            if (config != null)
+            if (_presetService?.CurrentPreset == null)
             {
-                var proxy = CreateProxyConfig();
-
-                // Remove original proxy if editing
-                if (_originalProxy != null)
-                {
-                    config.Proxies.RemoveAll(p => p.Name == _originalProxy.Name);
-                }
-
-                config.Proxies.Add(proxy);
-
-                await _configurationService!.SaveConfigurationAsync(configPath, config);
-
-                _logger?.LogInformation("Proxy saved: {ProxyName}", proxy.Name);
-                _toastService?.Success("Saved", $"Proxy '{proxy.Name}' saved successfully");
+                _toastService?.Error("Error", "No active preset");
+                return;
             }
+
+            var proxy = CreateProxyConfig();
+
+            // Remove original proxy if editing
+            if (_originalProxy != null)
+            {
+                _presetService.CurrentPreset.Configuration.Proxies.RemoveAll(p => p.Name == _originalProxy.Name);
+            }
+
+            _presetService.CurrentPreset.Configuration.Proxies.Add(proxy);
+
+            await _presetService.SaveCurrentPresetAsync();
+
+            _logger?.LogInformation("Proxy saved: {ProxyName}", proxy.Name);
+            _toastService?.Success("Saved", $"Proxy '{proxy.Name}' saved successfully");
         }
         catch (Exception ex)
         {

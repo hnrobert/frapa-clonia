@@ -59,6 +59,70 @@
           </StackPanel>
         </Grid>
 
+        <!-- Preset Management Section -->
+        <Border Classes="card">
+          <StackPanel Spacing="{StaticResource SpacingM}">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+              <mi:MaterialIcon Kind="FolderSettings" Width="18" Height="18" VerticalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+              <TextBlock Text="{DynamicResource Localized_PresetManagement}"
+                         Classes="card-title" />
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource SpacingM}">
+              <!-- Preset Name (Editable) -->
+              <TextBox Grid.Column="0"
+                       Text="{Binding PresetName}"
+                       Watermark="{DynamicResource Localized_PresetName}"
+                       FontSize="14" />
+
+              <!-- Action Buttons -->
+              <StackPanel Grid.Column="1"
+                          Orientation="Horizontal"
+                          Spacing="{StaticResource SpacingS}">
+                <Button Command="{Binding RenamePresetCommand}"
+                        ToolTip.Tip="{DynamicResource Localized_RenamePreset}"
+                        Classes="icon-button">
+                  <mi:MaterialIcon Kind="Pencil" Width="18" Height="18" />
+                </Button>
+                <Button Command="{Binding DuplicatePresetCommand}"
+                        ToolTip.Tip="{DynamicResource Localized_DuplicatePreset}"
+                        Classes="icon-button">
+                  <mi:MaterialIcon Kind="ContentCopy" Width="18" Height="18" />
+                </Button>
+                <Button Command="{Binding DeletePresetCommand}"
+                        ToolTip.Tip="{DynamicResource Localized_DeletePreset}"
+                        Classes="icon-button">
+                  <mi:MaterialIcon Kind="Delete" Width="18" Height="18" />
+                </Button>
+
+                <Border Width="1"
+                        Background="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                        Margin="{StaticResource ThicknessXS}" />
+
+                <!-- Export Menu -->
+                <Menu ToolTip.Tip="{DynamicResource Localized_ExportPreset}">
+                  <MenuItem Header="">
+                    <MenuItem.HeaderTemplate>
+                      <DataTemplate>
+                        <mi:MaterialIcon Kind="Export" Width="18" Height="18" />
+                      </DataTemplate>
+                    </MenuItem.HeaderTemplate>
+                    <MenuItem Header="TOML" Command="{Binding ExportTomlCommand}" />
+                    <MenuItem Header="INI" Command="{Binding ExportIniCommand}" />
+                  </MenuItem>
+                </Menu>
+
+                <Button Command="{Binding ImportCommand}"
+                        ToolTip.Tip="{DynamicResource Localized_ImportPreset}"
+                        Classes="icon-button">
+                  <mi:MaterialIcon Kind="Import" Width="18" Height="18" />
+                </Button>
+              </StackPanel>
+            </Grid>
+          </StackPanel>
+        </Border>
+
         <!-- Primary Action Bar -->
         <Border Classes="card">
           <Grid ColumnDefinitions="Auto,*,Auto">

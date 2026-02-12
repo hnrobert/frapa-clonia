@@ -14,9 +14,9 @@ namespace FrapaClonia.UI.ViewModels;
 /// </summary>
 public partial class ServerConfigViewModel : ObservableObject
 {
-    private readonly IConfigurationService? _configurationService;
     private readonly IValidationService? _validationService;
     private readonly ILogger<ServerConfigViewModel>? _logger;
+    private readonly IPresetService? _presetService;
     private readonly ToastService? _toastService;
 
     [ObservableProperty] private string _serverAddr = "";
@@ -137,21 +137,22 @@ public partial class ServerConfigViewModel : ObservableObject
     }
 
     // Default constructor for design-time support
-    public ServerConfigViewModel() : this(null!, null!,
+    public ServerConfigViewModel() : this(null!,
         Microsoft.Extensions.Logging.Abstractions.NullLogger<ServerConfigViewModel>.Instance,
+        null!,
         null!)
     {
     }
 
     public ServerConfigViewModel(
-        IConfigurationService configurationService,
         IValidationService validationService,
         ILogger<ServerConfigViewModel> logger,
+        IPresetService presetService,
         ToastService? toastService)
     {
-        _configurationService = configurationService;
         _validationService = validationService;
         _logger = logger;
+        _presetService = presetService;
         _toastService = toastService;
 
         SaveCommand = new RelayCommand(async void () =>
@@ -177,7 +178,19 @@ public partial class ServerConfigViewModel : ObservableObject
             }
         }, () => !IsSaving && !IsLoading);
 
+        // Subscribe to preset changes
+        if (_presetService != null)
+        {
+            _presetService.CurrentPresetChanged += OnCurrentPresetChanged;
+        }
+
         // Note: Loading is initiated by the View's OnLoaded event
+    }
+
+    private void OnCurrentPresetChanged(object? sender, PresetChangedEventArgs e)
+    {
+        // Reload configuration when preset changes
+        _ = LoadConfigurationAsync();
     }
 
     public void Initialize()
@@ -227,77 +240,65 @@ public partial class ServerConfigViewModel : ObservableObject
             IsLoading = true;
             _logger?.LogInformation("LoadConfigurationAsync: Starting, IsLoading={IsLoading}", IsLoading);
 
-            if (_configurationService != null)
+            if (_presetService?.CurrentPreset?.Configuration.CommonConfig != null)
             {
-                var configPath = _configurationService.GetDefaultConfigPath();
-                var config = await _configurationService.LoadConfigurationAsync(configPath);
+                var cc = _presetService.CurrentPreset.Configuration.CommonConfig;
 
-                _logger?.LogInformation("LoadConfigurationAsync: Config loaded, Config={Config}", config?.CommonConfig != null);
+                // Load server settings
+                ServerAddr = cc.ServerAddr ?? "";
+                ServerPortText = cc.ServerPort.ToString();
+                User = cc.User ?? "";
 
-                if (config?.CommonConfig != null)
+                // Load auth
+                if (cc.Auth != null)
                 {
-                    var cc = config.CommonConfig;
-
-                    // Load server settings
-                    ServerAddr = cc.ServerAddr ?? "";
-                    ServerPortText = cc.ServerPort.ToString();
-                    User = cc.User ?? "";
-
-                    // Load auth
-                    if (cc.Auth != null)
-                    {
-                        AuthMethod = cc.Auth.Method;
-                        Token = cc.Auth.Token ?? "";
-                        OidcClientId = cc.Auth.Oidc?.ClientId;
-                        OidcClientSecret = cc.Auth.Oidc?.ClientSecret;
-                        OidcAudience = cc.Auth.Oidc?.Audience;
-                        OidcScope = cc.Auth.Oidc?.Scope;
-                        OidcTokenEndpointUrl = cc.Auth.Oidc?.TokenEndpointUrl;
-                    }
-
-                    // Load transport
-                    if (cc.Transport != null)
-                    {
-                        TransportProtocol = cc.Transport.Protocol;
-                        DialServerTimeoutText = cc.Transport.DialServerTimeout.ToString();
-                        TcpMux = cc.Transport.TcpMux;
-                        HeartbeatIntervalText = cc.Transport.HeartbeatInterval.ToString();
-                        HeartbeatTimeoutText = cc.Transport.HeartbeatTimeout.ToString();
-                        TlsEnabled = cc.Transport.Tls?.Enable ?? true;
-                    }
-
-                    // Load DNS
-                    DnsServer = cc.DnsServer;
-
-                    // Load log
-                    if (cc.Log != null)
-                    {
-                        LogLevel = cc.Log.Level;
-                        LogTo = cc.Log.To;
-                        LogMaxDaysText = cc.Log.MaxDays.ToString();
-                    }
-
-                    _logger?.LogInformation("Configuration loaded successfully");
+                    AuthMethod = cc.Auth.Method;
+                    Token = cc.Auth.Token ?? "";
+                    OidcClientId = cc.Auth.Oidc?.ClientId;
+                    OidcClientSecret = cc.Auth.Oidc?.ClientSecret;
+                    OidcAudience = cc.Auth.Oidc?.Audience;
+                    OidcScope = cc.Auth.Oidc?.Scope;
+                    OidcTokenEndpointUrl = cc.Auth.Oidc?.TokenEndpointUrl;
                 }
-                else
+
+                // Load transport
+                if (cc.Transport != null)
                 {
-                    _logger?.LogInformation("Config is null or CommonConfig is null, using defaults");
-                    // Set default values
-                    ServerAddr = "";
-                    ServerPortText = "7000";
-                    User = "";
-                    AuthMethod = "token";
-                    Token = "";
-                    TransportProtocol = "tcp";
-                    DialServerTimeoutText = "10";
-                    HeartbeatIntervalText = "30";
-                    HeartbeatTimeoutText = "90";
-                    TlsEnabled = true;
+                    TransportProtocol = cc.Transport.Protocol;
+                    DialServerTimeoutText = cc.Transport.DialServerTimeout.ToString();
+                    TcpMux = cc.Transport.TcpMux;
+                    HeartbeatIntervalText = cc.Transport.HeartbeatInterval.ToString();
+                    HeartbeatTimeoutText = cc.Transport.HeartbeatTimeout.ToString();
+                    TlsEnabled = cc.Transport.Tls?.Enable ?? true;
                 }
+
+                // Load DNS
+                DnsServer = cc.DnsServer;
+
+                // Load log
+                if (cc.Log != null)
+                {
+                    LogLevel = cc.Log.Level;
+                    LogTo = cc.Log.To;
+                    LogMaxDaysText = cc.Log.MaxDays.ToString();
+                }
+
+                _logger?.LogInformation("Configuration loaded successfully");
             }
             else
             {
-                _logger?.LogWarning("ConfigurationService is null");
+                _logger?.LogInformation("No current preset or CommonConfig, using defaults");
+                // Set default values
+                ServerAddr = "";
+                ServerPortText = "7000";
+                User = "";
+                AuthMethod = "token";
+                Token = "";
+                TransportProtocol = "tcp";
+                DialServerTimeoutText = "10";
+                HeartbeatIntervalText = "30";
+                HeartbeatTimeoutText = "90";
+                TlsEnabled = true;
             }
 
             await ValidateAsync();
@@ -322,19 +323,23 @@ public partial class ServerConfigViewModel : ObservableObject
             IsSaving = true;
             ValidationError = null;
 
-            // Create configuration
-            var config = new FrpClientConfig
+            if (_presetService?.CurrentPreset == null)
             {
-                CommonConfig = new ClientCommonConfig
-                {
-                    ServerAddr = string.IsNullOrWhiteSpace(ServerAddr) ? null : ServerAddr,
-                    ServerPort = ServerPort,
-                    User = string.IsNullOrWhiteSpace(User) ? null : User,
-                    Auth = CreateAuthConfig(),
-                    Transport = CreateTransportConfig(),
-                    DnsServer = DnsServer,
-                    Log = CreateLogConfig()
-                }
+                _toastService?.Error("Save Failed", "No active preset");
+                return;
+            }
+
+            // Update configuration
+            var config = _presetService.CurrentPreset.Configuration;
+            config.CommonConfig = new ClientCommonConfig
+            {
+                ServerAddr = string.IsNullOrWhiteSpace(ServerAddr) ? null : ServerAddr,
+                ServerPort = ServerPort,
+                User = string.IsNullOrWhiteSpace(User) ? null : User,
+                Auth = CreateAuthConfig(),
+                Transport = CreateTransportConfig(),
+                DnsServer = DnsServer,
+                Log = CreateLogConfig()
             };
 
             // Validate before saving
@@ -349,12 +354,8 @@ public partial class ServerConfigViewModel : ObservableObject
                 }
             }
 
-            // Save configuration
-            if (_configurationService != null)
-            {
-                var configPath = _configurationService.GetDefaultConfigPath();
-                await _configurationService.SaveConfigurationAsync(configPath, config);
-            }
+            // Save to preset
+            await _presetService.SaveCurrentPresetAsync();
 
             _logger?.LogInformation("Configuration saved successfully");
             _toastService?.Success("Saved", "Configuration saved successfully");

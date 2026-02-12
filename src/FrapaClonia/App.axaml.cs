@@ -9,6 +9,8 @@ using FrapaClonia.Views;
 using FrapaClonia.UI.Services;
 using System.Diagnostics.CodeAnalysis;
 using System;
+using System.Threading.Tasks;
+using FrapaClonia.Core.Interfaces;
 
 namespace FrapaClonia;
 
@@ -54,6 +56,25 @@ public class App : Application
             {
                 DataContext = mainWindowViewModel
             };
+
+            // Initialize preset service asynchronously after window is created
+            var presetService = _serviceProvider.GetRequiredService<IPresetService>();
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await presetService.InitializeAsync();
+                    // Update the ViewModel on the UI thread after initialization
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    {
+                        mainWindowViewModel.InitializePresetSelector();
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"Failed to initialize preset service: {ex}");
+                }
+            });
         }
 
         base.OnFrameworkInitializationCompleted();

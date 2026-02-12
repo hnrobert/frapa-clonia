@@ -445,7 +445,21 @@ public class LocalizationService : ILocalizationService
             ["Toast_CouldNotDeployNative"] = "Could not deploy native frpc",
             ["Toast_Download"] = "Download",
             ["Toast_DownloadFrom"] = "Please download frpc from: {0}",
-            ["Toast_CouldNotOpenDownloadPage"] = "Could not open download page"
+            ["Toast_CouldNotOpenDownloadPage"] = "Could not open download page",
+
+            // Preset Management
+            ["ConfigPresets"] = "Config Presets",
+            ["PresetManagement"] = "Preset Management",
+            ["PresetName"] = "Preset Name",
+            ["RenamePreset"] = "Rename Preset",
+            ["DeletePreset"] = "Delete Preset",
+            ["DuplicatePreset"] = "Duplicate Preset",
+            ["ExportPreset"] = "Export Preset",
+            ["ImportPreset"] = "Import Preset",
+            ["PresetExported"] = "Preset exported to {0}",
+            ["PresetImported"] = "Preset imported: {0}",
+            ["ExportFailed"] = "Export failed",
+            ["ImportFailed"] = "Import failed"
         };
 
         // Chinese Simplified (zh-CN)
@@ -741,7 +755,21 @@ public class LocalizationService : ILocalizationService
             ["Toast_CouldNotDeployNative"] = "无法部署本地 frpc",
             ["Toast_Download"] = "下载",
             ["Toast_DownloadFrom"] = "请从以下地址下载 frpc: {0}",
-            ["Toast_CouldNotOpenDownloadPage"] = "无法打开下载页面"
+            ["Toast_CouldNotOpenDownloadPage"] = "无法打开下载页面",
+
+            // Preset Management
+            ["ConfigPresets"] = "配置预设",
+            ["PresetManagement"] = "预设管理",
+            ["PresetName"] = "预设名称",
+            ["RenamePreset"] = "重命名预设",
+            ["DeletePreset"] = "删除预设",
+            ["DuplicatePreset"] = "复制预设",
+            ["ExportPreset"] = "导出预设",
+            ["ImportPreset"] = "导入预设",
+            ["PresetExported"] = "预设已导出到 {0}",
+            ["PresetImported"] = "预设已导入: {0}",
+            ["ExportFailed"] = "导出失败",
+            ["ImportFailed"] = "导入失败"
         };
 
         // Chinese Traditional (zh-TW)

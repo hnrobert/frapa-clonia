@@ -27,7 +27,7 @@
             Background="{DynamicResource SystemAltMediumHighBackgroundColor}"
             BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
             BorderThickness="0,0,1,0">
-      <Grid RowDefinitions="Auto,Auto,*,138">
+      <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,138">
         <!-- App Title Section -->
         <Border Padding=" 0" Margin="16">
           <Grid ColumnDefinitions="Auto,*">
@@ -56,8 +56,32 @@
         </Border>
 
         <Separator Grid.Row="1" Margin="0" Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+
+        <!-- Config Presets Section -->
+        <StackPanel Grid.Row="2" Margin="16,8">
+          <TextBlock Text="{DynamicResource Localized_ConfigPresets}"
+                     FontSize="11"
+                     FontWeight="SemiBold"
+                     Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                     Margin="0,0,0,8" />
+          <ComboBox ItemsSource="{Binding PresetItems}"
+                    SelectedItem="{Binding SelectedPresetItem}"
+                    HorizontalAlignment="Stretch"
+                    Padding="8,6"
+                    FontSize="13">
+            <ComboBox.ItemTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Name}"
+                           TextTrimming="CharacterEllipsis"
+                           MaxWidth="180" />
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+        </StackPanel>
+
+        <Separator Grid.Row="3" Margin="0" Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
         <!-- Scrollable Content -->
-        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto">
           <StackPanel Spacing="4" Margin="16">
             <!-- Navigation Section -->
             <StackPanel Spacing="4" Margin="0,0,0,0">
@@ -272,7 +296,7 @@
         </ScrollViewer>
 
         <!-- Bottom Section: Settings and Copyright -->
-        <StackPanel Grid.Row="3" Spacing="8" Margin="16">
+        <StackPanel Grid.Row="5" Spacing="8" Margin="16">
           <!-- <Separator Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" /> -->
 
           <!-- Settings Button -->

@@ -22,10 +22,10 @@ namespace FrapaClonia.UI.ViewModels;
 public partial class ProxyListViewModel : ObservableObject
 {
     private readonly ILogger<ProxyListViewModel>? _logger;
-    private readonly IConfigurationService? _configurationService;
     private readonly IValidationService? _validationService;
     private readonly IServiceProvider? _serviceProvider;
     private readonly ToastService? _toastService;
+    private readonly IPresetService? _presetService;
 
     [ObservableProperty] private List<ProxyConfig> _proxies = [];
 
@@ -65,16 +65,16 @@ public partial class ProxyListViewModel : ObservableObject
 
     public ProxyListViewModel(
         ILogger<ProxyListViewModel> logger,
-        IConfigurationService configurationService,
         IValidationService validationService,
         IServiceProvider serviceProvider,
-        ToastService? toastService)
+        ToastService? toastService,
+        IPresetService presetService)
     {
         _logger = logger;
-        _configurationService = configurationService;
         _validationService = validationService;
         _serviceProvider = serviceProvider;
         _toastService = toastService;
+        _presetService = presetService;
 
         AddProxyCommand = new RelayCommand(AddProxy);
         EditProxyCommand = new RelayCommand(EditProxy, () => SelectedProxy != null);
@@ -135,7 +135,19 @@ public partial class ProxyListViewModel : ObservableObject
             }
         }, () => Proxies.Count > 0);
 
+        // Subscribe to preset changes
+        if (_presetService != null)
+        {
+            _presetService.CurrentPresetChanged += OnCurrentPresetChanged;
+        }
+
         // Note: Loading is initiated by the View's OnLoaded event
+    }
+
+    private void OnCurrentPresetChanged(object? sender, PresetChangedEventArgs e)
+    {
+        // Reload proxies when preset changes
+        _ = LoadProxiesAsync();
     }
 
     public void Initialize()
@@ -170,51 +182,38 @@ public partial class ProxyListViewModel : ObservableObject
         _ = LoadProxiesAsync();
     }
 
-    private async Task LoadProxiesAsync()
+    private Task LoadProxiesAsync()
     {
         try
         {
             IsLoading = true;
             _logger?.LogInformation("LoadProxiesAsync: Starting, IsLoading={IsLoading}", IsLoading);
 
-            if (_configurationService != null)
+            if (_presetService?.CurrentPreset != null)
             {
-                var configPath = _configurationService.GetDefaultConfigPath();
-                var config = await _configurationService.LoadConfigurationAsync(configPath);
+                var allProxies = _presetService.CurrentPreset.Configuration.Proxies;
+                var filtered = allProxies.AsEnumerable();
 
-                _logger?.LogInformation("LoadProxiesAsync: Config loaded, Config={Config}", config != null);
-
-                if (config != null)
+                if (!string.IsNullOrWhiteSpace(SearchQuery))
                 {
-                    var allProxies = config.Proxies;
-                    var filtered = allProxies.AsEnumerable();
-
-                    if (!string.IsNullOrWhiteSpace(SearchQuery))
-                    {
-                        var query = SearchQuery.ToLower();
-                        filtered = filtered.Where(p =>
-                            p.Name.Contains(query, StringComparison.CurrentCultureIgnoreCase) ||
-                            p.Type.Contains(query, StringComparison.CurrentCultureIgnoreCase));
-                    }
-
-                    if (FilterType != "All")
-                    {
-                        filtered = filtered.Where(p => p.Type == FilterType);
-                    }
-
-                    Proxies = filtered.ToList();
-                    _logger?.LogInformation("Loaded {Count} proxies", Proxies.Count);
+                    var query = SearchQuery.ToLower();
+                    filtered = filtered.Where(p =>
+                        p.Name.Contains(query, StringComparison.CurrentCultureIgnoreCase) ||
+                        p.Type.Contains(query, StringComparison.CurrentCultureIgnoreCase));
                 }
-                else
+
+                if (FilterType != "All")
                 {
-                    Proxies = [];
-                    _logger?.LogInformation("Config is null, setting Proxies to empty list");
+                    filtered = filtered.Where(p => p.Type == FilterType);
                 }
+
+                Proxies = filtered.ToList();
+                _logger?.LogInformation("Loaded {Count} proxies", Proxies.Count);
             }
             else
             {
                 Proxies = [];
-                _logger?.LogWarning("ConfigurationService is null");
+                _logger?.LogInformation("No current preset, setting Proxies to empty list");
             }
         }
         catch (Exception ex)
@@ -227,6 +226,8 @@ public partial class ProxyListViewModel : ObservableObject
             IsLoading = false;
             _logger?.LogInformation("LoadProxiesAsync: Completed, IsLoading={IsLoading}", IsLoading);
         }
+
+        return Task.CompletedTask;
     }
 
     private async void AddProxy()
@@ -235,16 +236,21 @@ public partial class ProxyListViewModel : ObservableObject
         {
             _logger?.LogInformation("Add proxy clicked");
 
+            if (_presetService?.CurrentPreset == null)
+            {
+                _toastService?.Error("Error", "No active preset");
+                return;
+            }
+
             // Create new proxy and show editor dialog
             var newProxy = new ProxyConfig();
             if (_serviceProvider == null) return;
 
             var editorLogger = _serviceProvider.GetRequiredService<ILogger<ProxyEditorViewModel>>();
-            if (_configurationService == null) return;
             if (_validationService == null) return;
 
             var viewModel =
-                new ProxyEditorViewModel(editorLogger, _configurationService, _validationService, _toastService, newProxy);
+                new ProxyEditorViewModel(editorLogger, _presetService, _validationService, _toastService, newProxy);
 
             var editorWindow = new ProxyEditorView
             {
@@ -275,6 +281,12 @@ public partial class ProxyListViewModel : ObservableObject
             if (SelectedProxy == null) return;
             _logger?.LogInformation("Edit proxy: {ProxyName}", SelectedProxy.Name);
 
+            if (_presetService?.CurrentPreset == null)
+            {
+                _toastService?.Error("Error", "No active preset");
+                return;
+            }
+
             // Clone the proxy to avoid modifying the original until saved
             var json = JsonSerializer.Serialize(SelectedProxy, FrpClientConfigContext.Default.ProxyConfig);
             var proxyClone = JsonSerializer.Deserialize(json, FrpClientConfigContext.Default.ProxyConfig);
@@ -283,11 +295,10 @@ public partial class ProxyListViewModel : ObservableObject
             if (_serviceProvider == null) return;
             var editorLogger = _serviceProvider.GetRequiredService<ILogger<ProxyEditorViewModel>>();
 
-            if (_configurationService == null) return;
             if (_validationService == null) return;
 
             var viewModel =
-                new ProxyEditorViewModel(editorLogger, _configurationService, _validationService, _toastService, proxyClone);
+                new ProxyEditorViewModel(editorLogger, _presetService, _validationService, _toastService, proxyClone);
 
             var editorWindow = new ProxyEditorView
             {
@@ -314,6 +325,7 @@ public partial class ProxyListViewModel : ObservableObject
     private async Task DeleteProxyAsync()
     {
         if (SelectedProxy == null) return;
+        if (_presetService?.CurrentPreset == null) return;
 
         _logger?.LogInformation("Delete proxy: {ProxyName}", SelectedProxy.Name);
 
@@ -321,22 +333,13 @@ public partial class ProxyListViewModel : ObservableObject
         {
             IsSaving = true;
 
-            if (_configurationService != null)
-            {
-                var configPath = _configurationService.GetDefaultConfigPath();
-                var config = await _configurationService.LoadConfigurationAsync(configPath);
+            _presetService.CurrentPreset.Configuration.Proxies.RemoveAll(p => p.Name == SelectedProxy.Name);
+            await _presetService.SaveCurrentPresetAsync();
 
-                if (config != null)
-                {
-                    config.Proxies.RemoveAll(p => p.Name == SelectedProxy.Name);
-                    await _configurationService.SaveConfigurationAsync(configPath, config);
+            await LoadProxiesAsync();
+            SelectedProxy = null;
 
-                    await LoadProxiesAsync();
-                    SelectedProxy = null;
-
-                    _logger?.LogInformation("Proxy deleted successfully");
-                }
-            }
+            _logger?.LogInformation("Proxy deleted successfully");
         }
         catch (Exception ex)
         {
@@ -348,30 +351,46 @@ public partial class ProxyListViewModel : ObservableObject
         }
     }
 
-    private void DuplicateProxy()
+    private async void DuplicateProxy()
     {
         if (SelectedProxy == null) return;
+        if (_presetService?.CurrentPreset == null) return;
 
         _logger?.LogInformation("Duplicate proxy: {ProxyName}", SelectedProxy.Name);
 
-        var newProxy = new ProxyConfig
+        try
         {
-            Name = $"{SelectedProxy.Name} (Copy)",
-            Type = SelectedProxy.Type,
-            LocalIP = SelectedProxy.LocalIP,
-            LocalPort = SelectedProxy.LocalPort,
-            RemotePort = SelectedProxy.RemotePort,
-            CustomDomains = SelectedProxy.CustomDomains,
-            Subdomain = SelectedProxy.Subdomain,
-            Transport = SelectedProxy.Transport,
-            HealthCheck = SelectedProxy.HealthCheck,
-            Plugin = SelectedProxy.Plugin
-            // Copy other properties as needed
-        };
+            IsSaving = true;
 
-        Proxies.Add(newProxy);
+            var newProxy = new ProxyConfig
+            {
+                Name = $"{SelectedProxy.Name} (Copy)",
+                Type = SelectedProxy.Type,
+                LocalIP = SelectedProxy.LocalIP,
+                LocalPort = SelectedProxy.LocalPort,
+                RemotePort = SelectedProxy.RemotePort,
+                CustomDomains = SelectedProxy.CustomDomains,
+                Subdomain = SelectedProxy.Subdomain,
+                Transport = SelectedProxy.Transport,
+                HealthCheck = SelectedProxy.HealthCheck,
+                Plugin = SelectedProxy.Plugin
+            };
 
-        _logger?.LogInformation("Proxy duplicated: {NewProxyName}", newProxy.Name);
+            _presetService.CurrentPreset.Configuration.Proxies.Add(newProxy);
+            await _presetService.SaveCurrentPresetAsync();
+
+            await LoadProxiesAsync();
+
+            _logger?.LogInformation("Proxy duplicated: {NewProxyName}", newProxy.Name);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error duplicating proxy");
+        }
+        finally
+        {
+            IsSaving = false;
+        }
     }
 
     private async Task ExportAllAsync()
@@ -424,6 +443,12 @@ public partial class ProxyListViewModel : ObservableObject
 
         try
         {
+            if (_presetService?.CurrentPreset == null)
+            {
+                _toastService?.Error("Error", "No active preset");
+                return;
+            }
+
             if (Avalonia.Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime
                 desktop)
                 return;
@@ -456,22 +481,14 @@ public partial class ProxyListViewModel : ObservableObject
                 var importedProxies =
                     await JsonSerializer.DeserializeAsync(stream, FrpClientConfigContext.Default.ListProxyConfig);
 
-                if (importedProxies is null || _configurationService is null)
-                {
-                    return;
-                }
+                if (importedProxies is null) return;
 
-                var configPath = _configurationService.GetDefaultConfigPath();
-                var config = await _configurationService.LoadConfigurationAsync(configPath);
+                _presetService.CurrentPreset.Configuration.Proxies.AddRange(importedProxies);
+                await _presetService.SaveCurrentPresetAsync();
 
-                if (config != null)
-                {
-                    config.Proxies.AddRange(importedProxies);
-                    await _configurationService.SaveConfigurationAsync(configPath, config);
-                    await LoadProxiesAsync();
-                    _logger?.LogInformation("Imported {Count} proxies from {FilePath}", importedProxies.Count,
-                        file.Name);
-                }
+                await LoadProxiesAsync();
+                _logger?.LogInformation("Imported {Count} proxies from {FilePath}", importedProxies.Count,
+                    file.Name);
             }
         }
         catch (Exception ex)
@@ -488,20 +505,14 @@ public partial class ProxyListViewModel : ObservableObject
         {
             IsSaving = true;
 
-            if (_configurationService != null)
+            if (_presetService?.CurrentPreset != null)
             {
-                var configPath = _configurationService.GetDefaultConfigPath();
-                var config = await _configurationService.LoadConfigurationAsync(configPath);
+                _presetService.CurrentPreset.Configuration.Proxies.Clear();
+                await _presetService.SaveCurrentPresetAsync();
 
-                if (config != null)
-                {
-                    config.Proxies.Clear();
-                    await _configurationService.SaveConfigurationAsync(configPath, config);
+                await LoadProxiesAsync();
 
-                    await LoadProxiesAsync();
-
-                    _logger?.LogInformation("All proxies cleared");
-                }
+                _logger?.LogInformation("All proxies cleared");
             }
         }
         catch (Exception ex)
