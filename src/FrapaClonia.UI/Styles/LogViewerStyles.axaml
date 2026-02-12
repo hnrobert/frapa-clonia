@@ -1,0 +1,67 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- =============================================
+       LOG VIEWER STYLES
+       ============================================= -->
+
+  <!-- Log Viewer ListBox -->
+  <Style Selector="ListBox.logViewer">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFontFamily}" />
+    <Setter Property="FontSize" Value="{StaticResource FontSizeS}" />
+    <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+    <Setter Property="Padding" Value="{StaticResource ThicknessS}" />
+  </Style>
+
+  <Style Selector="ListBox.logViewer > ListBoxItem">
+    <Setter Property="Padding" Value="4,2" />
+    <Setter Property="BorderThickness" Value="0" />
+  </Style>
+
+  <!-- Log Level Item Styles -->
+  <Style Selector="ListBoxItem.log-debug">
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+  </Style>
+
+  <Style Selector="ListBoxItem.log-info">
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+  </Style>
+
+  <Style Selector="ListBoxItem.log-warning">
+    <Setter Property="Foreground" Value="{DynamicResource AppAccentColor3Brush}" />
+  </Style>
+
+  <Style Selector="ListBoxItem.log-error">
+    <Setter Property="Foreground" Value="{DynamicResource AppErrorBrush}" />
+    <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+  </Style>
+
+  <!-- Log Text Styles -->
+  <Style Selector="TextBlock.log-timestamp">
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.log-level">
+    <Setter Property="Margin" Value="{StaticResource ThicknessHorizontalS}" />
+    <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+  </Style>
+
+  <Style Selector="TextBlock.log-level.level-debug">
+    <Setter Property="Foreground" Value="Gray" />
+  </Style>
+
+  <Style Selector="TextBlock.log-level.level-info">
+    <Setter Property="Foreground" Value="DodgerBlue" />
+  </Style>
+
+  <Style Selector="TextBlock.log-level.level-warning">
+    <Setter Property="Foreground" Value="Orange" />
+  </Style>
+
+  <Style Selector="TextBlock.log-level.level-error">
+    <Setter Property="Foreground" Value="Red" />
+  </Style>
+
+</Styles>

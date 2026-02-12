@@ -1,0 +1,100 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- =============================================
+       TOAST NOTIFICATION STYLES
+       ============================================= -->
+
+  <!-- Toast Container (individual toast) -->
+  <Style Selector="Border.toast-container">
+    <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltHighBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusM}" />
+    <Setter Property="MinWidth" Value="300" />
+    <Setter Property="MaxWidth" Value="420" />
+    <Setter Property="BoxShadow" Value="0 4 12 0 #33000000" />
+    <Setter Property="ClipToBounds" Value="True" />
+  </Style>
+
+  <!-- Toast Indicator (square coloured indicator on left) -->
+  <Style Selector="Border.toast-indicator">
+    <Setter Property="Width" Value="8" />
+    <Setter Property="Height" Value="8" />
+    <Setter Property="Margin" Value="12,0,0,0" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="CornerRadius" Value="2" />
+    <Setter Property="Background" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+  </Style>
+
+  <!-- Toast Title -->
+  <Style Selector="TextBlock.toast-title">
+    <Setter Property="FontSize" Value="{StaticResource FontSizeM}" />
+    <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+  </Style>
+
+  <!-- Toast Message -->
+  <Style Selector="TextBlock.toast-message">
+    <Setter Property="FontSize" Value="{StaticResource FontSizeS}" />
+    <Setter Property="FontWeight" Value="{StaticResource FontWeightRegular}" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+
+  <!-- Toast Close Button -->
+  <Style Selector="Button.toast-close-button">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="8" />
+    <Setter Property="Margin" Value="0,0,4,0" />
+    <Setter Property="VerticalAlignment" Value="Top" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+
+  <Style Selector="Button.toast-close-button:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+  </Style>
+
+  <Style Selector="Button.toast-close-button:pressed /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumBrush}" />
+  </Style>
+
+  <!-- Toast Level: Success -->
+  <Style Selector="Border.toast-container.toast-success">
+    <Setter Property="BorderBrush" Value="{DynamicResource AppSuccessBrush}" />
+  </Style>
+
+  <Style Selector="Border.toast-container.toast-success Border.toast-indicator">
+    <Setter Property="Background" Value="{DynamicResource AppSuccessBrush}" />
+  </Style>
+
+  <!-- Toast Level: Info -->
+  <Style Selector="Border.toast-container.toast-info">
+    <Setter Property="BorderBrush" Value="{DynamicResource AppInfoBrush}" />
+  </Style>
+
+  <Style Selector="Border.toast-container.toast-info Border.toast-indicator">
+    <Setter Property="Background" Value="{DynamicResource AppInfoBrush}" />
+  </Style>
+
+  <!-- Toast Level: Warning -->
+  <Style Selector="Border.toast-container.toast-warning">
+    <Setter Property="BorderBrush" Value="{DynamicResource AppWarningBrush}" />
+  </Style>
+
+  <Style Selector="Border.toast-container.toast-warning Border.toast-indicator">
+    <Setter Property="Background" Value="{DynamicResource AppWarningBrush}" />
+  </Style>
+
+  <!-- Toast Level: Error -->
+  <Style Selector="Border.toast-container.toast-error">
+    <Setter Property="BorderBrush" Value="{DynamicResource AppErrorBrush}" />
+  </Style>
+
+  <Style Selector="Border.toast-container.toast-error Border.toast-indicator">
+    <Setter Property="Background" Value="{DynamicResource AppErrorBrush}" />
+  </Style>
+
+</Styles>
