@@ -16,12 +16,7 @@
     <vm:MainWindowViewModel />
   </Design.DataContext>
 
-  <Grid>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="240" />
-      <ColumnDefinition Width="4" />
-      <ColumnDefinition Width="*" />
-    </Grid.ColumnDefinitions>
+  <Grid ColumnDefinitions="240,4,*">
 
     <!-- Sidebar Navigation -->
     <Border Grid.Column="0"
@@ -287,9 +282,9 @@
             <Grid>
               <!-- Active background (full button highlight) -->
               <Border IsVisible="{Binding IsSettingsActive}"
-                      Background="{DynamicResource AppPrimaryBrush}"
+                      Background="{DynamicResource SystemControlHighlightListLowBrush}"
                       CornerRadius="4"
-                      Opacity="0.15"
+                      Opacity="1"
                       HorizontalAlignment="Stretch"
                       VerticalAlignment="Stretch" />
               <!-- Content -->
