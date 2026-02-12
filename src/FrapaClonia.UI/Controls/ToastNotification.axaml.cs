@@ -12,11 +12,11 @@ namespace FrapaClonia.UI.Controls;
 public partial class ToastNotification : UserControl
 {
     private Border? _layoutRoot;
+    private Button? _closeButton;
+    private TranslateTransform? _transform;
     private bool _isClosing;
     private ToastItem? _toastItem;
     private DispatcherTimer? _animationTimer;
-    private double _animationProgress;
-    private bool _isAnimatingOut;
 
     /// <summary>
     /// Command to close this toast
@@ -34,14 +34,23 @@ public partial class ToastNotification : UserControl
     private void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         _layoutRoot = this.FindControl<Border>("LayoutRoot");
+        _closeButton = this.FindControl<Button>("CloseButton");
+
         if (_layoutRoot == null) return;
+
+        // Attach click handler directly to close button
+        if (_closeButton != null)
+        {
+            _closeButton.Click += OnCloseButtonClick;
+        }
 
         // Subscribe to close requests from the toast item
         SubscribeToToastItem(DataContext as ToastItem);
 
-        // Set initial state: invisible and positioned to the right
+        // Create and set the transform for slide animation
+        _transform = new TranslateTransform(300, 0);
+        _layoutRoot.RenderTransform = _transform;
         _layoutRoot.Opacity = 0;
-        _layoutRoot.RenderTransform = new TranslateTransform(300, 0);
 
         // Start slide-in animation
         StartAnimateIn();
@@ -49,8 +58,19 @@ public partial class ToastNotification : UserControl
 
     private void OnUnloaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
+        // Detach click handler
+        if (_closeButton != null)
+        {
+            _closeButton.Click -= OnCloseButtonClick;
+        }
+
         StopAnimationTimer();
         UnsubscribeFromToastItem();
+    }
+
+    private void OnCloseButtonClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        CloseToast();
     }
 
     private void SubscribeToToastItem(ToastItem? toastItem)
@@ -78,19 +98,15 @@ public partial class ToastNotification : UserControl
 
     private void StartAnimateIn()
     {
-        _isAnimatingOut = false;
-        _animationProgress = 0;
-        StartAnimation(250, UpdateAnimateIn);
+        StartAnimation(250, 0, 1, 300, 0);
     }
 
     private void StartAnimateOut()
     {
-        _isAnimatingOut = true;
-        _animationProgress = 0;
-        StartAnimation(200, UpdateAnimateOut);
+        StartAnimation(200, 1, 0, 0, 300);
     }
 
-    private void StartAnimation(int durationMs, Action<double> updateCallback)
+    private void StartAnimation(int durationMs, double startOpacity, double endOpacity, double startX, double endX)
     {
         StopAnimationTimer();
 
@@ -105,16 +121,24 @@ public partial class ToastNotification : UserControl
         _animationTimer.Tick += (_, _) =>
         {
             frameCount++;
-            _animationProgress = Math.Min(1.0, (double)frameCount / totalFrames);
+            var progress = Math.Min(1.0, (double)frameCount / totalFrames);
 
-            // Apply easing (cubic ease out for in, cubic ease in for out)
-            var easedProgress = _isAnimatingOut
-                ? CubicEaseIn(_animationProgress)
-                : CubicEaseOut(_animationProgress);
+            // Apply cubic easing
+            var easedProgress = CubicEaseOut(progress);
 
-            updateCallback(easedProgress);
+            if (_layoutRoot != null)
+            {
+                // Animate opacity
+                _layoutRoot.Opacity = startOpacity + (endOpacity - startOpacity) * easedProgress;
 
-            if (_animationProgress >= 1.0)
+                // Animate X position
+                if (_transform != null)
+                {
+                    _transform.X = startX + (endX - startX) * easedProgress;
+                }
+            }
+
+            if (progress >= 1.0)
             {
                 StopAnimationTimer();
                 OnAnimationComplete();
@@ -130,45 +154,12 @@ public partial class ToastNotification : UserControl
         _animationTimer = null;
     }
 
-    private void UpdateAnimateIn(double progress)
-    {
-        if (_layoutRoot == null) return;
-
-        // Opacity: 0 -> 1
-        _layoutRoot.Opacity = progress;
-
-        // X: 300 -> 0
-        if (_layoutRoot.RenderTransform is TranslateTransform transform)
-        {
-            transform.X = 300 * (1 - progress);
-        }
-    }
-
-    private void UpdateAnimateOut(double progress)
-    {
-        if (_layoutRoot == null) return;
-
-        // Opacity: 1 -> 0
-        _layoutRoot.Opacity = 1 - progress;
-
-        // X: 0 -> 300
-        if (_layoutRoot.RenderTransform is TranslateTransform transform)
-        {
-            transform.X = 300 * progress;
-        }
-    }
-
     private void OnAnimationComplete()
     {
-        if (_isAnimatingOut)
-        {
-            // Animation out complete, remove from collection
-            if (DataContext is ToastItem toast)
-            {
-                var service = FindToastService();
-                service?.RemoveToast(toast);
-            }
-        }
+        // If we just finished animating out, remove the toast
+        if (!_isClosing || DataContext is not ToastItem toast) return;
+        var service = FindToastService();
+        service?.RemoveToast(toast);
     }
 
     private static double CubicEaseOut(double t)
@@ -176,12 +167,6 @@ public partial class ToastNotification : UserControl
         return 1 - Math.Pow(1 - t, 3);
     }
 
-    private static double CubicEaseIn(double t)
-    {
-        return t * t * t;
-    }
-
-    // ReSharper disable once AsyncVoidMethod
     private void CloseToast()
     {
         if (DataContext is not ToastItem || _isClosing) return;
@@ -190,35 +175,34 @@ public partial class ToastNotification : UserControl
         // Stop any ongoing animation
         StopAnimationTimer();
 
-        // Start animate out
+        // Start animate out, then remove
         StartAnimateOut();
     }
 
     private ToastService? FindToastService()
     {
+        // Walk up the visual tree to find the MainWindow's DataContext
         var parent = Parent;
         while (parent != null)
         {
-            if (parent is TopLevel { DataContext: MainWindowViewModel { ToastService: not null } vm })
+            if (parent is TopLevel { DataContext: MainWindowViewModel vm })
             {
                 return vm.ToastService;
             }
-
             parent = parent.Parent;
         }
 
-        return null;
+        // Fallback: try to find via VisualRoot
+        return VisualRoot is TopLevel { DataContext: MainWindowViewModel visualVm } ? visualVm.ToastService : null;
     }
 
     protected override void OnDataContextChanged(EventArgs e)
     {
         base.OnDataContextChanged(e);
 
-        if (DataContext is ToastItem toast)
-        {
-            SubscribeToToastItem(toast);
-            UpdateVisualState(toast.Level);
-        }
+        if (DataContext is not ToastItem toast) return;
+        SubscribeToToastItem(toast);
+        UpdateVisualState(toast.Level);
     }
 
     private void UpdateVisualState(ToastLevel level)

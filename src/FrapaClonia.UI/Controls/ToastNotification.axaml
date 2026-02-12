@@ -2,9 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:models="clr-namespace:FrapaClonia.UI.Models"
-             xmlns:controls="clr-namespace:FrapaClonia.UI.Controls"
              x:Class="FrapaClonia.UI.Controls.ToastNotification"
-             x:DataType="models:ToastItem">
+             x:DataType="models:ToastItem"
+             x:Name="ToastControl">
 
   <UserControl.Styles>
     <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
@@ -29,9 +29,9 @@
 
       <!-- Close Button -->
       <Button Grid.Column="2"
+              x:Name="CloseButton"
               Classes="toast-close-button"
-              VerticalAlignment="Center"
-              Command="{Binding $parent[controls:ToastNotification].CloseCommand}">
+              VerticalAlignment="Center">
         <mi:MaterialIcon Kind="Close"
                          Width="14"
                          Height="14" />
