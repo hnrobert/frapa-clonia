@@ -227,18 +227,16 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
         {
             logger.LogInformation("Executing command: {FileName} {Arguments}", fileName, arguments);
 
-            using var process = new System.Diagnostics.Process
+            using var process = new System.Diagnostics.Process();
+            process.StartInfo = new System.Diagnostics.ProcessStartInfo
             {
-                StartInfo = new System.Diagnostics.ProcessStartInfo
-                {
-                    FileName = fileName,
-                    Arguments = arguments,
-                    WorkingDirectory = workingDirectory ?? string.Empty,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                }
+                FileName = fileName,
+                Arguments = arguments,
+                WorkingDirectory = workingDirectory ?? string.Empty,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
             };
 
             process.Start();

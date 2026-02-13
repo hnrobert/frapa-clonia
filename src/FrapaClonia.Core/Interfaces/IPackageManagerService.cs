@@ -67,7 +67,7 @@ public class PackageManagerInfo
     public string? FrpcInstallCommand { get; init; }
 
     /// <summary>
-    /// Platform this package manager runs on (macos, windows, linux)
+    /// Platform this package manager runs on (macOS, windows, linux)
     /// </summary>
     public required string Platform { get; init; }
 

@@ -15,8 +15,6 @@
 
   <UserControl.Resources>
     <converters:BoolToAvailableStringConverter x:Key="BoolToAvailableStringConverter" />
-    <converters:BoolToDeployedStringConverter x:Key="BoolToDeployedStringConverter" />
-    <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
     <converters:StringEqualsConverter x:Key="StringEqualsConverter" />
   </UserControl.Resources>
 

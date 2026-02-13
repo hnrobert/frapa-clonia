@@ -8,12 +8,7 @@ public interface IFrpcVersionService
     /// <summary>
     /// Gets available frpc versions from GitHub
     /// </summary>
-    Task<IReadOnlyList<FrpcVersionInfo>> GetAvailableVersionsAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Gets the latest frpc version
-    /// </summary>
-    Task<FrpcVersionInfo?> GetLatestVersionAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<FrpcVersionInfo>> GetAvailableVersionsAsync();
 
     /// <summary>
     /// Gets the version of a frpc binary
@@ -49,12 +44,12 @@ public class FrpcVersionInfo
     /// <summary>
     /// Platform-specific download URL
     /// </summary>
-    public string? DownloadUrl { get; set; }
+    public string? DownloadUrl { get; init; }
 
     /// <summary>
     /// Whether this is the latest version
     /// </summary>
-    public bool IsLatest { get; set; }
+    public bool IsLatest { get; init; }
 
     /// <summary>
     /// Display text for UI

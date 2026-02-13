@@ -5,7 +5,7 @@ namespace FrapaClonia.UI.Views;
 
 public partial class FrpcConfigurationDialog : Window
 {
-    public FrpcConfigurationDialog()
+    private FrpcConfigurationDialog()
     {
         InitializeComponent();
     }
