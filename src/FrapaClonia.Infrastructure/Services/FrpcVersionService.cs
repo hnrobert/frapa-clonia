@@ -8,25 +8,16 @@ namespace FrapaClonia.Infrastructure.Services;
 /// <summary>
 /// Service for managing frpc versions
 /// </summary>
-public class FrpcVersionService : IFrpcVersionService
+public class FrpcVersionService(ILogger<FrpcVersionService> logger) : IFrpcVersionService
 {
-    private readonly ILogger<FrpcVersionService> _logger;
-    private readonly GitHubClient _gitHubClient;
+    private readonly GitHubClient _gitHubClient = new(new ProductHeaderValue("FrapaClonia"));
 
-    public FrpcVersionService(ILogger<FrpcVersionService> logger)
-    {
-        _logger = logger;
-        _gitHubClient = new GitHubClient(new ProductHeaderValue("FrapaClonia"));
-    }
-
-    public async Task<IReadOnlyList<FrpcVersionInfo>> GetAvailableVersionsAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<FrpcVersionInfo>> GetAvailableVersionsAsync()
     {
         try
         {
-            _logger.LogInformation("Fetching available frpc versions from GitHub");
+            logger.LogInformation("Fetching available frpc versions from GitHub");
             var releases = await _gitHubClient.Repository.Release.GetAll("fatedier", "frp");
-
-            var latestVersion = releases.FirstOrDefault()?.TagName.TrimStart('v');
 
             return releases.Select((r, index) => new FrpcVersionInfo
             {
@@ -39,39 +30,18 @@ public class FrpcVersionService : IFrpcVersionService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error fetching available versions from GitHub");
+            logger.LogError(ex, "Error fetching available versions from GitHub");
             return new List<FrpcVersionInfo>();
         }
     }
 
-    public async Task<FrpcVersionInfo?> GetLatestVersionAsync(CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            _logger.LogInformation("Fetching latest frpc version from GitHub");
-            var latest = await _gitHubClient.Repository.Release.GetLatest("fatedier", "frp");
 
-            return new FrpcVersionInfo
-            {
-                TagName = latest.TagName,
-                Version = latest.TagName.TrimStart('v'),
-                PublishedAt = latest.PublishedAt ?? DateTimeOffset.MinValue,
-                DownloadUrl = GetPlatformDownloadUrl(latest),
-                IsLatest = true
-            };
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error fetching latest version from GitHub");
-            return null;
-        }
-    }
-
-    public async Task<FrpcVersionInfo?> GetBinaryVersionAsync(string binaryPath, CancellationToken cancellationToken = default)
+    public async Task<FrpcVersionInfo?> GetBinaryVersionAsync(string binaryPath,
+        CancellationToken cancellationToken = default)
     {
         if (!File.Exists(binaryPath))
         {
-            _logger.LogWarning("Binary not found at {Path}", binaryPath);
+            logger.LogWarning("Binary not found at {Path}", binaryPath);
             return null;
         }
 
@@ -90,7 +60,6 @@ public class FrpcVersionService : IFrpcVersionService
 
             process.Start();
             var output = await process.StandardOutput.ReadToEndAsync(cancellationToken);
-            var error = await process.StandardError.ReadToEndAsync(cancellationToken);
             await process.WaitForExitAsync(cancellationToken);
 
             // Parse version from output like "frpc version 0.62.1"
@@ -109,12 +78,12 @@ public class FrpcVersionService : IFrpcVersionService
                 };
             }
 
-            _logger.LogWarning("Could not parse version from output: {Output}", output);
+            logger.LogWarning("Could not parse version from output: {Output}", output);
             return null;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting binary version from {Path}", binaryPath);
+            logger.LogError(ex, "Error getting binary version from {Path}", binaryPath);
             return null;
         }
     }
@@ -131,7 +100,8 @@ public class FrpcVersionService : IFrpcVersionService
         var arch = GetArchitectureIdentifier();
         var extension = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".zip" : ".tar.gz";
 
-        return $"https://github.com/fatedier/frp/releases/download/{version.TagName}/frp_{version.Version}_{platform}_{arch}{extension}";
+        return
+            $"https://github.com/fatedier/frp/releases/download/{version.TagName}/frp_{version.Version}_{platform}_{arch}{extension}";
     }
 
     private static string? GetPlatformDownloadUrl(Release release)
@@ -140,21 +110,44 @@ public class FrpcVersionService : IFrpcVersionService
         var arch = GetArchitectureIdentifier();
         var extension = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".zip" : ".tar.gz";
 
-        // Find matching asset
+        // Expected asset name pattern: frp_{version}_{platform}_{arch}.{extension}
+        // e.g., frp_0.67.0_darwin_arm64.tar.gz
+
+        // Find matching asset - try multiple patterns
         var asset = release.Assets.FirstOrDefault(a =>
+            a.Name.Contains($"_{platform}_") &&
+            a.Name.Contains($"_{arch}.") && // Note the dot to ensure exact arch match
+            a.Name.EndsWith(extension));
+
+        // Fallback: try without the dot
+        asset ??= release.Assets.FirstOrDefault(a =>
             a.Name.Contains($"_{platform}_") &&
             a.Name.Contains($"_{arch}") &&
             a.Name.EndsWith(extension));
 
-        return asset?.BrowserDownloadUrl;
+        // Fallback: just check for platform and arch anywhere in name
+        asset ??= release.Assets.FirstOrDefault(a =>
+            a.Name.Contains(platform) &&
+            a.Name.Contains(arch) &&
+            (a.Name.EndsWith(".tar.gz") || a.Name.EndsWith(".zip")));
+
+        if (asset != null)
+        {
+            return asset.BrowserDownloadUrl;
+        }
+
+        // Construct URL as last resort
+        var version = release.TagName.TrimStart('v');
+        return
+            $"https://github.com/fatedier/frp/releases/download/{release.TagName}/frp_{version}_{platform}_{arch}{extension}";
     }
 
     private static string GetPlatformIdentifier()
     {
         return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "windows" :
-               RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "darwin" :
-               RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "linux" :
-               "unknown";
+            RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "darwin" :
+            RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "linux" :
+            "unknown";
     }
 
     private static string GetArchitectureIdentifier()

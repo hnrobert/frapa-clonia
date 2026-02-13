@@ -95,12 +95,72 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         _toastService = toastService;
         _localizationService = localizationService;
 
-        AutoDetectPathCommand = new RelayCommand(async () => await AutoDetectPathAsync());
-        BrowsePathCommand = new RelayCommand(async () => await BrowsePathAsync());
-        RefreshVersionsCommand = new RelayCommand(async () => await RefreshVersionsAsync());
-        RefreshPackageManagersCommand = new RelayCommand(async () => await RefreshPackageManagersAsync());
-        InstallViaPackageManagerCommand = new RelayCommand(async () => await InstallViaPackageManagerAsync());
-        DownloadDirectCommand = new RelayCommand(async () => await DownloadDirectAsync());
+        AutoDetectPathCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await AutoDetectPathAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error in AutoDetectPathCommand");
+            }
+        });
+        BrowsePathCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await BrowsePathAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error in BrowsePathCommand");
+            }
+        });
+        RefreshVersionsCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await RefreshVersionsAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error in RefreshVersionsCommand");
+            }
+        });
+        RefreshPackageManagersCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await RefreshPackageManagersAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error in RefreshPackageManagersCommand");
+            }
+        });
+        InstallViaPackageManagerCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await InstallViaPackageManagerAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error in InstallViaPackageManagerCommand");
+            }
+        });
+        DownloadDirectCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await DownloadDirectAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error in DownloadDirectCommand");
+            }
+        });
         OpenDownloadPageCommand = new RelayCommand(OpenDownloadPage);
         SaveCommand = new RelayCommand(Save);
         CancelCommand = new RelayCommand(Cancel);
@@ -110,27 +170,45 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         _localizationService?.GetString(key, args) ?? key;
 
     /// <summary>
-    /// Initialize with an existing path
+    /// Initialize with an existing path - runs detection asynchronously
     /// </summary>
-    public async Task InitializeAsync(string? currentPath)
+    private void Initialize(string? currentPath)
     {
         FrpcBinaryPath = currentPath ?? "";
 
-        // Load versions
-        await RefreshVersionsAsync();
+        // Set initial loading states
+        IsLoadingVersions = true;
+        IsDetecting = string.IsNullOrEmpty(FrpcBinaryPath);
+        IsCheckingPackageManagers = true;
 
-        // Auto-detect if no path set
-        if (string.IsNullOrEmpty(FrpcBinaryPath))
+        // Run all detection operations in parallel without blocking
+        _ = Task.Run(async () =>
         {
-            await AutoDetectPathAsync();
-        }
-        else
-        {
-            await ValidatePathAsync();
-        }
+            try
+            {
+                // Run all operations in parallel
+                var versionsTask = RefreshVersionsAsync();
+                var packageManagersTask = RefreshPackageManagersAsync();
 
-        // Load package managers
-        await RefreshPackageManagersAsync();
+                // Validate or detect path
+                var pathTask = string.IsNullOrEmpty(FrpcBinaryPath) ? AutoDetectPathAsync() : ValidatePathAsync();
+
+                // Wait for all tasks
+                await Task.WhenAll(versionsTask, packageManagersTask, pathTask);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Error during initialization");
+            }
+        });
+    }
+
+    /// <summary>
+    /// Initialize with an existing path (async version for compatibility)
+    /// </summary>
+    public void InitializeAsync(string? currentPath)
+    {
+        Initialize(currentPath);
     }
 
     private async Task AutoDetectPathAsync()
@@ -342,7 +420,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
 
                 // Select first installed manager that can install frpc
                 SelectedPackageManager = AvailablePackageManagers
-                    .FirstOrDefault(m => m.IsInstalled && m.CanInstallFrpc) ??
+                    .FirstOrDefault(m => m is { IsInstalled: true, CanInstallFrpc: true }) ??
                     AvailablePackageManagers.FirstOrDefault(m => m.IsInstalled);
 
                 _logger?.LogInformation("Found {Count} package managers", AvailablePackageManagers.Count);
@@ -415,27 +493,24 @@ public partial class FrpcConfigurationViewModel : ObservableObject
 
             if (_frpcDownloader != null && _nativeDeploymentService != null)
             {
-                // Create a FrpRelease for the downloader
-                var release = new FrpRelease
+                // Get the download URL - either from the version info or construct it
+                var downloadUrl = SelectedVersion.DownloadUrl;
+                if (string.IsNullOrEmpty(downloadUrl))
                 {
-                    TagName = SelectedVersion.TagName,
-                    Version = SelectedVersion.Version,
-                    PublishedAt = SelectedVersion.PublishedAt,
-                    HtmlUrl = "",
-                    Assets = string.IsNullOrEmpty(SelectedVersion.DownloadUrl)
-                        ? []
-                        : [new FrpAsset
-                        {
-                            Name = $"frp_{SelectedVersion.Version}",
-                            DownloadUrl = SelectedVersion.DownloadUrl,
-                            Size = 0,
-                            Platform = "",
-                            Architecture = []
-                        }]
-                };
+                    // Construct the URL
+                    downloadUrl = _frpcVersionService?.GetDownloadUrl(SelectedVersion);
+                }
+
+                if (string.IsNullOrEmpty(downloadUrl))
+                {
+                    _toastService?.Error(L("Toast_DownloadFailed"), L("Toast_CouldNotGetDownloadUrl"));
+                    return;
+                }
 
                 var targetDirectory = _nativeDeploymentService.GetDefaultDeploymentDirectory();
-                var archivePath = await _frpcDownloader.DownloadVersionAsync(release, targetDirectory);
+
+                // Use DownloadFromMirrorAsync since we have a direct URL
+                var archivePath = await _frpcDownloader.DownloadFromMirrorAsync(downloadUrl, targetDirectory);
 
                 _toastService?.Info(L("Toast_Deploying"), L("Toast_DeployingFrpcBinary"));
 

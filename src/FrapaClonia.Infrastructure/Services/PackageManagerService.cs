@@ -7,20 +7,13 @@ namespace FrapaClonia.Infrastructure.Services;
 /// <summary>
 /// Service for detecting and using package managers to install frpc
 /// </summary>
-public class PackageManagerService : IPackageManagerService
+public class PackageManagerService(ILogger<PackageManagerService> logger, IProcessManager processManager)
+    : IPackageManagerService
 {
-    private readonly ILogger<PackageManagerService> _logger;
-    private readonly IProcessManager _processManager;
-
-    public PackageManagerService(ILogger<PackageManagerService> logger, IProcessManager processManager)
+    public async Task<IReadOnlyList<PackageManagerInfo>> DetectAvailablePackageManagersAsync(
+        CancellationToken cancellationToken = default)
     {
-        _logger = logger;
-        _processManager = processManager;
-    }
-
-    public async Task<IReadOnlyList<PackageManagerInfo>> DetectAvailablePackageManagersAsync(CancellationToken cancellationToken = default)
-    {
-        _logger.LogInformation("Detecting available package managers");
+        logger.LogInformation("Detecting available package managers");
         var packageManagers = new List<PackageManagerInfo>();
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -36,15 +29,17 @@ public class PackageManagerService : IPackageManagerService
             packageManagers.AddRange(await DetectLinuxPackageManagersAsync(cancellationToken));
         }
 
-        _logger.LogInformation("Detected {Count} package managers", packageManagers.Count);
+        logger.LogInformation("Detected {Count} package managers", packageManagers.Count);
         return packageManagers;
     }
 
-    public async Task<bool> IsPackageManagerInstalledAsync(string packageManager, CancellationToken cancellationToken = default)
+    public async Task<bool> IsPackageManagerInstalledAsync(string packageManager,
+        CancellationToken cancellationToken = default)
     {
         try
         {
-            var result = await _processManager.ExecuteAsync("which", packageManager, cancellationToken: cancellationToken);
+            var result =
+                await processManager.ExecuteAsync("which", packageManager, cancellationToken: cancellationToken);
             return result.ExitCode == 0;
         }
         catch
@@ -55,12 +50,12 @@ public class PackageManagerService : IPackageManagerService
 
     public async Task<bool> InstallFrpcAsync(string packageManager, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Installing frpc via {PackageManager}", packageManager);
+        logger.LogInformation("Installing frpc via {PackageManager}", packageManager);
 
         var installCommand = GetInstallCommand(packageManager);
         if (installCommand == null)
         {
-            _logger.LogWarning("No install command for package manager: {PackageManager}", packageManager);
+            logger.LogWarning("No install command for package manager: {PackageManager}", packageManager);
             return false;
         }
 
@@ -70,26 +65,27 @@ public class PackageManagerService : IPackageManagerService
             var executable = parts[0];
             var args = parts.Length > 1 ? parts[1] : "";
 
-            var result = await _processManager.ExecuteAsync(executable, args, cancellationToken: cancellationToken);
+            var result = await processManager.ExecuteAsync(executable, args, cancellationToken: cancellationToken);
 
             if (result.ExitCode == 0)
             {
-                _logger.LogInformation("Successfully installed frpc via {PackageManager}", packageManager);
+                logger.LogInformation("Successfully installed frpc via {PackageManager}", packageManager);
                 return true;
             }
 
-            _logger.LogWarning("Failed to install frpc via {PackageManager}: {Error}",
+            logger.LogWarning("Failed to install frpc via {PackageManager}: {Error}",
                 packageManager, result.StandardError);
             return false;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error installing frpc via {PackageManager}", packageManager);
+            logger.LogError(ex, "Error installing frpc via {PackageManager}", packageManager);
             return false;
         }
     }
 
-    public async Task<string?> GetFrpcBinaryPathAsync(string packageManager, CancellationToken cancellationToken = default)
+    public async Task<string?> GetFrpcBinaryPathAsync(string packageManager,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -105,7 +101,7 @@ public class PackageManagerService : IPackageManagerService
 
             // Use 'which' or 'where' to find the binary
             var whichCommand = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "where" : "which";
-            var result = await _processManager.ExecuteAsync(whichCommand, "frpc", cancellationToken: cancellationToken);
+            var result = await processManager.ExecuteAsync(whichCommand, "frpc", cancellationToken: cancellationToken);
 
             if (result.ExitCode == 0 && !string.IsNullOrWhiteSpace(result.StandardOutput))
             {
@@ -116,19 +112,19 @@ public class PackageManagerService : IPackageManagerService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting frpc binary path for {PackageManager}", packageManager);
+            logger.LogError(ex, "Error getting frpc binary path for {PackageManager}", packageManager);
             return null;
         }
     }
 
     public async Task<bool> UninstallFrpcAsync(string packageManager, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Uninstalling frpc via {PackageManager}", packageManager);
+        logger.LogInformation("Uninstalling frpc via {PackageManager}", packageManager);
 
         var uninstallCommand = GetUninstallCommand(packageManager);
         if (uninstallCommand == null)
         {
-            _logger.LogWarning("No uninstall command for package manager: {PackageManager}", packageManager);
+            logger.LogWarning("No uninstall command for package manager: {PackageManager}", packageManager);
             return false;
         }
 
@@ -138,21 +134,21 @@ public class PackageManagerService : IPackageManagerService
             var executable = parts[0];
             var args = parts.Length > 1 ? parts[1] : "";
 
-            var result = await _processManager.ExecuteAsync(executable, args, cancellationToken: cancellationToken);
+            var result = await processManager.ExecuteAsync(executable, args, cancellationToken: cancellationToken);
 
             if (result.ExitCode == 0)
             {
-                _logger.LogInformation("Successfully uninstalled frpc via {PackageManager}", packageManager);
+                logger.LogInformation("Successfully uninstalled frpc via {PackageManager}", packageManager);
                 return true;
             }
 
-            _logger.LogWarning("Failed to uninstall frpc via {PackageManager}: {Error}",
+            logger.LogWarning("Failed to uninstall frpc via {PackageManager}: {Error}",
                 packageManager, result.StandardError);
             return false;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error uninstalling frpc via {PackageManager}", packageManager);
+            logger.LogError(ex, "Error uninstalling frpc via {PackageManager}", packageManager);
             return false;
         }
     }
@@ -171,7 +167,8 @@ public class PackageManagerService : IPackageManagerService
             DisplayName = "Homebrew",
             IsInstalled = brewInstalled,
             CanInstallFrpc = brewInstalled,
-            InstallCommand = "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"",
+            InstallCommand =
+                "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"",
             FrpcInstallCommand = "brew install fatedier/frp/frpc",
             Platform = "macos"
         });
@@ -208,7 +205,8 @@ public class PackageManagerService : IPackageManagerService
             DisplayName = "Chocolatey",
             IsInstalled = chocoInstalled,
             CanInstallFrpc = chocoInstalled, // Note: may need custom package
-            InstallCommand = "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))",
+            InstallCommand =
+                "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))",
             FrpcInstallCommand = "choco install frpc -y",
             Platform = "windows"
         });
@@ -305,7 +303,7 @@ public class PackageManagerService : IPackageManagerService
         try
         {
             var whichCommand = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "where" : "which";
-            var result = await _processManager.ExecuteAsync(whichCommand, command, cancellationToken: cancellationToken);
+            var result = await processManager.ExecuteAsync(whichCommand, command, cancellationToken: cancellationToken);
             return result.ExitCode == 0;
         }
         catch
@@ -314,7 +312,7 @@ public class PackageManagerService : IPackageManagerService
         }
     }
 
-    private string? GetInstallCommand(string packageManager)
+    private static string? GetInstallCommand(string packageManager)
     {
         return packageManager.ToLowerInvariant() switch
         {
@@ -327,7 +325,7 @@ public class PackageManagerService : IPackageManagerService
         };
     }
 
-    private string? GetUninstallCommand(string packageManager)
+    private static string? GetUninstallCommand(string packageManager)
     {
         return packageManager.ToLowerInvariant() switch
         {
@@ -340,25 +338,83 @@ public class PackageManagerService : IPackageManagerService
         };
     }
 
-    private static IEnumerable<string> GetCommonBinaryPaths(string packageManager)
+    private static string[] GetCommonBinaryPaths(string packageManager)
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            return new[]
+            // Return paths in order of specificity based on package manager
+            var paths = new List<string>();
+
+            switch (packageManager)
             {
-                @"C:\Program Files\frpc\frpc.exe",
-                @"C:\ProgramData\chocolatey\bin\frpc.exe",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "scoop", "apps", "frpc", "current", "frpc.exe"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "scoop", "shims", "frpc.exe")
-            };
+                // Package manager specific paths
+                case "scoop":
+                {
+                    var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                    paths.Add(Path.Combine(userProfile, "scoop", "apps", "frpc", "current", "frpc.exe"));
+                    paths.Add(Path.Combine(userProfile, "scoop", "shims", "frpc.exe"));
+                    break;
+                }
+                case "choco":
+                    paths.Add(@"C:\ProgramData\chocolatey\bin\frpc.exe");
+                    break;
+                case "winget":
+                    paths.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                        "Microsoft", "WinGet", "Links", "frpc.exe"));
+                    break;
+            }
+
+            // Generic fallback paths
+            paths.Add(@"C:\Program Files\frpc\frpc.exe");
+            paths.Add(@"C:\frpc\frpc.exe");
+
+            return paths.ToArray();
         }
 
-        return new[]
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
-            "/usr/local/bin/frpc",
-            "/usr/bin/frpc",
-            "/opt/homebrew/bin/frpc"
-        };
+            var paths = new List<string>();
+
+            // Package manager specific paths
+            if (packageManager == "brew")
+            {
+                paths.Add("/opt/homebrew/bin/frpc"); // Apple Silicon
+                paths.Add("/usr/local/bin/frpc"); // Intel Macs with Homebrew
+            }
+
+            // Generic fallback paths
+            paths.Add("/usr/local/bin/frpc");
+            paths.Add("/usr/bin/frpc");
+
+            return paths.ToArray();
+        }
+
+        // Linux
+        {
+            var paths = new List<string>();
+
+            switch (packageManager)
+            {
+                // Package manager specific paths
+                case "apt":
+                case "dnf":
+                    paths.Add("/usr/bin/frpc");
+                    paths.Add("/usr/local/bin/frpc");
+                    break;
+                case "pacman":
+                case "apk":
+                    paths.Add("/usr/bin/frpc");
+                    break;
+            }
+
+            // Generic fallback paths
+            paths.Add("/usr/local/bin/frpc");
+            paths.Add("/usr/bin/frpc");
+            paths.Add("/opt/frpc/frpc");
+            paths.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local", "bin", "frpc"));
+
+            return paths.ToArray();
+        }
     }
 
     #endregion

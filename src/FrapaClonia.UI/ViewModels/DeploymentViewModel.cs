@@ -17,9 +17,7 @@ namespace FrapaClonia.UI.ViewModels;
 public partial class DeploymentViewModel : ObservableObject
 {
     private readonly ILogger<DeploymentViewModel>? _logger;
-    private readonly IFrpcDownloader? _frpcDownloader;
     private readonly IFrpcVersionService? _frpcVersionService;
-    private readonly INativeDeploymentService? _nativeDeploymentService;
     private readonly IDockerDeploymentService? _dockerDeploymentService;
     private readonly ISystemServiceManager? _systemServiceManager;
     private readonly IProcessManager? _processManager;
@@ -56,8 +54,8 @@ public partial class DeploymentViewModel : ObservableObject
     [ObservableProperty] private bool _isServiceChecking;
     [ObservableProperty] private ServiceStatus? _serviceStatus;
 
-    private Core.Interfaces.ServiceScope GetServiceScopeEnum() =>
-        ServiceScopeValue == "system" ? Core.Interfaces.ServiceScope.System : Core.Interfaces.ServiceScope.User;
+    private ServiceScope GetServiceScopeEnum() =>
+        ServiceScopeValue == "system" ? ServiceScope.System : ServiceScope.User;
 
     #endregion
 
@@ -91,27 +89,22 @@ public partial class DeploymentViewModel : ObservableObject
     // Default constructor for design-time support
     public DeploymentViewModel() : this(
         Microsoft.Extensions.Logging.Abstractions.NullLogger<DeploymentViewModel>.Instance,
-        null!, null!, null!, null!, null!, null!, null!, null!, null!, null!)
+        null!, null!, null!, null!, null!, null!, null!)
     {
     }
 
     public DeploymentViewModel(
         ILogger<DeploymentViewModel> logger,
-        IFrpcDownloader frpcDownloader,
         IFrpcVersionService frpcVersionService,
-        INativeDeploymentService nativeDeploymentService,
         IDockerDeploymentService dockerDeploymentService,
         ISystemServiceManager systemServiceManager,
         IProcessManager processManager,
         IServiceProvider serviceProvider,
         ToastService? toastService,
-        ILocalizationService? localizationService,
-        MainWindowViewModel? mainWindowViewModel)
+        ILocalizationService? localizationService)
     {
         _logger = logger;
-        _frpcDownloader = frpcDownloader;
         _frpcVersionService = frpcVersionService;
-        _nativeDeploymentService = nativeDeploymentService;
         _dockerDeploymentService = dockerDeploymentService;
         _systemServiceManager = systemServiceManager;
         _processManager = processManager;
@@ -163,6 +156,7 @@ public partial class DeploymentViewModel : ObservableObject
     private string L(string key, params object[] args) =>
         _localizationService?.GetString(key, args) ?? key;
 
+    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnSelectedDeploymentModeChanged(string value)
     {
         OnPropertyChanged(nameof(IsNativeMode));
@@ -289,7 +283,7 @@ public partial class DeploymentViewModel : ObservableObject
                 _toastService,
                 _localizationService);
 
-            await viewModel.InitializeAsync(FrpcBinaryPath);
+            viewModel.InitializeAsync(FrpcBinaryPath);
 
             var dialog = new FrpcConfigurationDialog(viewModel);
 
@@ -365,7 +359,7 @@ public partial class DeploymentViewModel : ObservableObject
                 return;
             }
 
-            var configPath = _serviceProvider?.GetRequiredService<IConfigurationService>()?.GetDefaultConfigPath();
+            var configPath = _serviceProvider?.GetRequiredService<IConfigurationService>().GetDefaultConfigPath();
             if (string.IsNullOrEmpty(configPath))
             {
                 _toastService?.Warning(L("Toast_NoConfig"), L("Toast_CreateConfigFirst"));
