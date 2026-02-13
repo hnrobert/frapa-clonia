@@ -72,7 +72,15 @@ public partial class ConfigPreset : ObservableObject
             {
                 DeploymentMode = Deployment.DeploymentMode,
                 DockerContainerName = Deployment.DockerContainerName,
-                DockerImageName = Deployment.DockerImageName
+                DockerImageName = Deployment.DockerImageName,
+                DockerImageTag = Deployment.DockerImageTag,
+                FrpcBinaryPath = Deployment.FrpcBinaryPath,
+                FrpcVersion = Deployment.FrpcVersion,
+                InstallMethod = Deployment.InstallMethod,
+                SelectedPackageManager = Deployment.SelectedPackageManager,
+                ServiceScope = Deployment.ServiceScope,
+                AutoStartOnBoot = Deployment.AutoStartOnBoot,
+                ServiceEnabled = Deployment.ServiceEnabled
             }
         };
     }
@@ -202,6 +210,8 @@ public partial class DeploymentSettings : ObservableObject
     [ObservableProperty]
     private string _deploymentMode = "native";
 
+    #region Docker Settings
+
     /// <summary>
     /// Docker container name
     /// </summary>
@@ -213,6 +223,68 @@ public partial class DeploymentSettings : ObservableObject
     /// </summary>
     [ObservableProperty]
     private string _dockerImageName = "fatedier/frpc:latest";
+
+    /// <summary>
+    /// Docker image tag
+    /// </summary>
+    [ObservableProperty]
+    private string _dockerImageTag = "latest";
+
+    #endregion
+
+    #region Native Settings
+
+    /// <summary>
+    /// Custom frpc binary path if selected
+    /// </summary>
+    [ObservableProperty]
+    private string? _frpcBinaryPath;
+
+    /// <summary>
+    /// Selected frpc version (e.g., "0.62.1" or "latest")
+    /// </summary>
+    [ObservableProperty]
+    private string? _frpcVersion = "latest";
+
+    /// <summary>
+    /// Installation method: "auto", "github", "package_manager", "custom_path"
+    /// </summary>
+    [ObservableProperty]
+    private string _installMethod = "auto";
+
+    #endregion
+
+    #region Package Manager Settings
+
+    /// <summary>
+    /// Selected package manager (e.g., "brew", "scoop", "choco", "apt", "pacman")
+    /// </summary>
+    [ObservableProperty]
+    private string? _selectedPackageManager;
+
+    #endregion
+
+    #region Service Settings
+
+    /// <summary>
+    /// Service scope: "user" or "system"
+    /// </summary>
+    [ObservableProperty]
+    private string _serviceScope = "user";
+
+    /// <summary>
+    /// Whether to start the service on boot
+    /// </summary>
+    [ObservableProperty]
+    private bool _autoStartOnBoot = true;
+
+    /// <summary>
+    /// Whether the service is enabled
+    /// </summary>
+    [ObservableProperty]
+    private bool _serviceEnabled = true;
+
+    #endregion
 
     /// <summary>
     /// Creates a new DeploymentSettings with default values

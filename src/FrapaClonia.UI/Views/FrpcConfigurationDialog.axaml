@@ -1,0 +1,286 @@
+<Window xmlns="https://github.com/avaloniaui"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+         xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+         xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+         xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
+         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+         mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="700"
+         x:Class="FrapaClonia.UI.Views.FrpcConfigurationDialog"
+         x:DataType="vm:FrpcConfigurationViewModel"
+         Title="{DynamicResource Localized_FrpcConfiguration}"
+         Width="650" Height="720"
+         MinWidth="600" MinHeight="600"
+         WindowStartupLocation="CenterOwner"
+         CanResize="True"
+         ExtendClientAreaToDecorationsHint="False">
+
+  <Design.DataContext>
+    <vm:FrpcConfigurationViewModel />
+  </Design.DataContext>
+
+  <Window.Resources>
+    <converters:StringEqualsConverter x:Key="StringEqualsConverter" />
+  </Window.Resources>
+
+  <Window.Styles>
+    <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
+  </Window.Styles>
+
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <Panel Margin="24">
+      <StackPanel Spacing="{StaticResource SpacingL}">
+        <!-- Frpc Executable Path Section -->
+        <Border Classes="settings-card">
+          <StackPanel Spacing="{StaticResource SpacingM}">
+            <TextBlock Text="{DynamicResource Localized_FrpcExecutableLocation}"
+                       Classes="section-title" />
+
+            <TextBlock Text="{DynamicResource Localized_FrpcExecutablePathDescription}"
+                       TextWrapping="Wrap"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+
+            <!-- Path Input - Editable with Auto-detect and Browse -->
+            <Grid ColumnDefinitions="*,Auto,Auto">
+              <TextBox Grid.Column="0"
+                       Text="{Binding FrpcBinaryPath}"
+                       Watermark="{DynamicResource Localized_SelectFrpcBinary}"
+                       Margin="0,0,8,0" />
+              <Button Grid.Column="1"
+                      Command="{Binding AutoDetectPathCommand}"
+                      IsEnabled="{Binding !IsDetecting}"
+                      Classes="action-button"
+                      Margin="0,0,8,0"
+                      ToolTip.Tip="{DynamicResource Localized_AutoDetectFrpcToolTip}">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                  <mi:MaterialIcon Kind="Magnify" />
+                  <TextBlock Text="{DynamicResource Localized_AutoDetect}" />
+                </StackPanel>
+              </Button>
+              <Button Grid.Column="2"
+                      Command="{Binding BrowsePathCommand}"
+                      IsEnabled="{Binding !IsDetecting}"
+                      Classes="action-button"
+                      ToolTip.Tip="{DynamicResource Localized_BrowseToolTip}">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                  <mi:MaterialIcon Kind="FolderOpen" />
+                  <TextBlock Text="{DynamicResource Localized_Browse}" />
+                </StackPanel>
+              </Button>
+            </Grid>
+
+            <!-- Validation Status -->
+            <Grid ColumnDefinitions="Auto,*"
+                  IsVisible="{Binding !IsDetecting}">
+              <StackPanel Grid.Column="0"
+                          Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="CheckCircle"
+                                 Foreground="Green"
+                                 IsVisible="{Binding IsPathValid}"
+                                 Width="20" Height="20" />
+                <mi:MaterialIcon Kind="AlertCircle"
+                                 Foreground="Orange"
+                                 IsVisible="{Binding !IsPathValid}"
+                                 Width="20" Height="20" />
+                <TextBlock Text="{Binding DetectedVersion}"
+                           IsVisible="{Binding IsPathValid}"
+                           Foreground="Green"
+                           VerticalAlignment="Center" />
+                <TextBlock Text="{DynamicResource Localized_FrpcNotFoundOrInvalid}"
+                           IsVisible="{Binding !IsPathValid}"
+                           Foreground="Orange"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+            </Grid>
+
+            <!-- Loading indicator -->
+            <StackPanel Orientation="Horizontal" Spacing="8"
+                        IsVisible="{Binding IsDetecting}">
+              <mi:MaterialIcon Kind="Loading" Width="20" Height="20" />
+              <TextBlock Text="{DynamicResource Localized_DetectingFrpc}"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <!-- Get Frpc Section (for users without frpc) -->
+        <Border Classes="settings-card">
+          <StackPanel Spacing="{StaticResource SpacingM}">
+            <TextBlock Text="{DynamicResource Localized_GetFrpc}"
+                       Classes="section-title" />
+
+            <TextBlock Text="{DynamicResource Localized_GetFrpcDescription}"
+                       TextWrapping="Wrap"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+
+            <!-- Version Selection -->
+            <StackPanel Spacing="{StaticResource SpacingS}">
+              <TextBlock Text="{DynamicResource Localized_FrpcVersion}"
+                         Classes="field-label" />
+              <Grid ColumnDefinitions="*,Auto">
+                <ComboBox Grid.Column="0"
+                          ItemsSource="{Binding AvailableVersions}"
+                          SelectedItem="{Binding SelectedVersion}"
+                          IsEnabled="{Binding !IsLoadingVersions}"
+                          HorizontalAlignment="Stretch"
+                          Margin="0,0,8,0">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding DisplayText}" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button Grid.Column="1"
+                        Command="{Binding RefreshVersionsCommand}"
+                        IsEnabled="{Binding !IsLoadingVersions}"
+                        Classes="action-button"
+                        ToolTip.Tip="{DynamicResource Localized_CheckVersions}">
+                  <mi:MaterialIcon Kind="Refresh" />
+                </Button>
+              </Grid>
+            </StackPanel>
+
+            <!-- Install Mode Selection -->
+            <StackPanel Spacing="8" Margin="0,8,0,0">
+              <TextBlock Text="{DynamicResource Localized_InstallMethod}"
+                         Classes="field-label" />
+              <RadioButton Content="{DynamicResource Localized_UsePackageManager}"
+                           IsChecked="{Binding SelectedInstallMode, Converter={StaticResource StringEqualsConverter}, ConverterParameter=package_manager, Mode=TwoWay}"
+                           GroupName="InstallMode" />
+              <RadioButton Content="{DynamicResource Localized_DownloadFromWeb}"
+                           IsChecked="{Binding SelectedInstallMode, Converter={StaticResource StringEqualsConverter}, ConverterParameter=web_download, Mode=TwoWay}"
+                           GroupName="InstallMode" />
+            </StackPanel>
+
+            <!-- Package Manager Panel -->
+            <StackPanel Spacing="{StaticResource SpacingM}"
+                        IsVisible="{Binding IsPackageManagerMode}">
+              <TextBlock Text="{DynamicResource Localized_SelectPackageManager}"
+                         Classes="field-label" />
+
+              <Grid ColumnDefinitions="*,Auto">
+                <ComboBox Grid.Column="0"
+                          ItemsSource="{Binding AvailablePackageManagers}"
+                          SelectedItem="{Binding SelectedPackageManager}"
+                          IsEnabled="{Binding !IsCheckingPackageManagers}"
+                          HorizontalAlignment="Stretch"
+                          Margin="0,0,8,0">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                      <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="{Binding DisplayName}" />
+                        <TextBlock Text="(installed)"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   IsVisible="{Binding IsInstalled}" />
+                      </StackPanel>
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button Grid.Column="1"
+                        Command="{Binding RefreshPackageManagersCommand}"
+                        IsEnabled="{Binding !IsCheckingPackageManagers}"
+                        Classes="action-button"
+                        ToolTip.Tip="{DynamicResource Localized_RefreshPackageManagerList}">
+                  <mi:MaterialIcon Kind="Refresh" />
+                </Button>
+              </Grid>
+
+              <!-- Selected package manager info -->
+              <StackPanel Spacing="4"
+                          IsVisible="{Binding SelectedPackageManager.CanInstallFrpc}">
+                <TextBlock Text="{DynamicResource Localized_InstallCommand}"
+                           Classes="field-label" />
+                <TextBlock Text="{Binding SelectedPackageManager.FrpcInstallCommand}"
+                           FontFamily="{DynamicResource MonoFontFamily}"
+                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                           TextWrapping="Wrap" />
+              </StackPanel>
+
+              <!-- Install button -->
+              <Button Command="{Binding InstallViaPackageManagerCommand}"
+                      IsEnabled="{Binding SelectedPackageManager.CanInstallFrpc}"
+                      IsVisible="{Binding !IsInstalling}"
+                      Classes="action-button primary"
+                      HorizontalAlignment="Left">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                  <mi:MaterialIcon Kind="Package" />
+                  <TextBlock Text="{DynamicResource Localized_Install}" />
+                </StackPanel>
+              </Button>
+
+              <!-- Installing indicator -->
+              <StackPanel Orientation="Horizontal" Spacing="8"
+                          IsVisible="{Binding IsInstalling}">
+                <mi:MaterialIcon Kind="Loading" Width="20" Height="20" />
+                <TextBlock Text="{DynamicResource Localized_Installing}"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+
+              <!-- Not available message -->
+              <TextBlock Text="{DynamicResource Localized_PackageManagerNotSupportFrpc}"
+                         IsVisible="{Binding !SelectedPackageManager.CanInstallFrpc}"
+                         Foreground="Orange"
+                         TextWrapping="Wrap" />
+            </StackPanel>
+
+            <!-- Web Download Panel -->
+            <StackPanel Spacing="{StaticResource SpacingM}"
+                        IsVisible="{Binding IsWebDownloadMode}">
+              <TextBlock Text="{DynamicResource Localized_DownloadFromWebDescription}"
+                         TextWrapping="Wrap"
+                         Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+
+              <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
+                <!-- Direct Download Button -->
+                <Button Command="{Binding DownloadDirectCommand}"
+                        IsEnabled="{Binding !IsDownloading}"
+                        Classes="action-button primary"
+                        ToolTip.Tip="{DynamicResource Localized_DownloadDirectToolTip}">
+                  <StackPanel Orientation="Horizontal" Spacing="4">
+                    <mi:MaterialIcon Kind="Download" />
+                    <TextBlock Text="{DynamicResource Localized_DownloadDirect}" />
+                  </StackPanel>
+                </Button>
+
+                <!-- Open GitHub Releases Button -->
+                <Button Command="{Binding OpenDownloadPageCommand}"
+                        Classes="action-button"
+                        ToolTip.Tip="{DynamicResource Localized_OpenReleasesPageToolTip}">
+                  <StackPanel Orientation="Horizontal" Spacing="4">
+                    <mi:MaterialIcon Kind="OpenInNew" />
+                    <TextBlock Text="{DynamicResource Localized_OpenReleasesPage}" />
+                  </StackPanel>
+                </Button>
+              </StackPanel>
+
+              <!-- Downloading indicator -->
+              <StackPanel Orientation="Horizontal" Spacing="8"
+                          IsVisible="{Binding IsDownloading}">
+                <mi:MaterialIcon Kind="Loading" Width="20" Height="20" />
+                <TextBlock Text="{DynamicResource Localized_Downloading}"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <!-- Action Buttons -->
+        <StackPanel Orientation="Horizontal"
+                    Spacing="{StaticResource SpacingM}"
+                    HorizontalAlignment="Right">
+          <Button Command="{Binding CancelCommand}"
+                  Classes="action-button">
+            <TextBlock Text="{DynamicResource Localized_Cancel}" />
+          </Button>
+          <Button Command="{Binding SaveCommand}"
+                  Classes="action-button primary">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+              <mi:MaterialIcon Kind="Check" />
+              <TextBlock Text="{DynamicResource Localized_Save}" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </StackPanel>
+    </Panel>
+  </ScrollViewer>
+</Window>

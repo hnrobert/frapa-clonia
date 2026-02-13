@@ -5,7 +5,7 @@
              xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="600"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="700"
              x:Class="FrapaClonia.UI.Views.DeploymentView"
              x:DataType="vm:DeploymentViewModel">
 
@@ -16,6 +16,8 @@
   <UserControl.Resources>
     <converters:BoolToAvailableStringConverter x:Key="BoolToAvailableStringConverter" />
     <converters:BoolToDeployedStringConverter x:Key="BoolToDeployedStringConverter" />
+    <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
+    <converters:StringEqualsConverter x:Key="StringEqualsConverter" />
   </UserControl.Resources>
 
   <UserControl.Styles>
@@ -36,32 +38,191 @@
               <TextBlock Text="{DynamicResource Localized_DeploymentMode}"
                          Classes="section-title"
                          VerticalAlignment="Center" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-              <ComboBox ItemsSource="{Binding DeploymentModes}"
-                        SelectedItem="{Binding SelectedDeploymentMode}"
-                        MinWidth="200"
-                        HorizontalAlignment="Left">
-                <ComboBox.ItemTemplate>
-                  <DataTemplate>
-                    <TextBlock Text="{Binding}" />
-                  </DataTemplate>
-                </ComboBox.ItemTemplate>
-              </ComboBox>
-
-              <Button Classes="hint-icon"
-                      VerticalAlignment="Center">
+              <Button Classes="hint-icon" VerticalAlignment="Center">
                 <ToolTip.Tip>
                   <TextBlock Text="{DynamicResource Localized_ChooseHowYouWantToDeployAndRunFrpc}" />
                 </ToolTip.Tip>
               </Button>
             </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+              <RadioButton Content="Native"
+                           IsChecked="{Binding SelectedDeploymentMode, Converter={StaticResource StringEqualsConverter}, ConverterParameter=native, Mode=TwoWay}"
+                           GroupName="DeploymentMode" />
+              <RadioButton Content="Docker"
+                           IsChecked="{Binding SelectedDeploymentMode, Converter={StaticResource StringEqualsConverter}, ConverterParameter=docker, Mode=TwoWay}"
+                           GroupName="DeploymentMode" />
+            </StackPanel>
           </StackPanel>
         </Border>
 
-        <!-- Docker Deployment -->
-        <Border Classes="settings-card">
+        <!-- Native Deployment Panel -->
+        <Border Classes="settings-card" IsVisible="{Binding IsNativeMode}">
+          <StackPanel Spacing="{StaticResource SpacingL}">
+            <TextBlock Text="{DynamicResource Localized_ServiceConfiguration}"
+                       Classes="section-title" />
+
+            <!-- Frpc Executable Configuration -->
+            <StackPanel Spacing="{StaticResource SpacingM}">
+              <TextBlock Text="{DynamicResource Localized_FrpcExecutableLocation}"
+                         Classes="field-label" />
+
+              <!-- Path Input with Check and Configure Buttons -->
+              <Grid ColumnDefinitions="*,Auto,Auto">
+                <TextBox Grid.Column="0"
+                         Text="{Binding FrpcBinaryPath}"
+                         Watermark="{DynamicResource Localized_SelectFrpcBinary}"
+                         IsReadOnly="True"
+                         Margin="0,0,8,0" />
+                <Button Grid.Column="1"
+                        Command="{Binding CheckFrpcPathCommand}"
+                        IsEnabled="{Binding !IsCheckingPath}"
+                        Classes="action-button"
+                        Margin="0,0,8,0"
+                        ToolTip.Tip="{DynamicResource Localized_CheckFrpcPathToolTip}">
+                  <StackPanel Orientation="Horizontal" Spacing="4">
+                    <mi:MaterialIcon Kind="Check" />
+                    <TextBlock Text="{DynamicResource Localized_Check}" />
+                  </StackPanel>
+                </Button>
+                <Button Grid.Column="2"
+                        Command="{Binding ConfigureFrpcCommand}"
+                        Classes="action-button primary"
+                        ToolTip.Tip="{DynamicResource Localized_ConfigureFrpcToolTip}">
+                  <StackPanel Orientation="Horizontal" Spacing="4">
+                    <mi:MaterialIcon Kind="Cog" />
+                    <TextBlock Text="{DynamicResource Localized_Configure}" />
+                  </StackPanel>
+                </Button>
+              </Grid>
+
+              <!-- Validation Status -->
+              <Grid ColumnDefinitions="*,Auto">
+                <!-- Checking indicator -->
+                <StackPanel Grid.Column="0"
+                            Orientation="Horizontal" Spacing="8"
+                            IsVisible="{Binding IsCheckingPath}">
+                  <mi:MaterialIcon Kind="Loading" Width="20" Height="20" />
+                  <TextBlock Text="{DynamicResource Localized_CheckingFrpc}"
+                             VerticalAlignment="Center" />
+                </StackPanel>
+
+                <!-- Valid path status -->
+                <StackPanel Grid.Column="0"
+                            Orientation="Horizontal" Spacing="8"
+                            IsVisible="{Binding !IsCheckingPath}">
+                  <mi:MaterialIcon Kind="CheckCircle"
+                                   Foreground="Green"
+                                   IsVisible="{Binding IsPathValid}"
+                                   Width="20" Height="20" />
+                  <mi:MaterialIcon Kind="AlertCircle"
+                                   Foreground="Orange"
+                                   IsVisible="{Binding !IsPathValid}"
+                                   Width="20" Height="20" />
+                  <TextBlock Text="{Binding DetectedVersion, StringFormat='v{0}'}"
+                             IsVisible="{Binding IsPathValid}"
+                             Foreground="Green"
+                             VerticalAlignment="Center" />
+                  <TextBlock Text="{DynamicResource Localized_FrpcNotConfigured}"
+                             IsVisible="{Binding !IsPathValid}"
+                             Foreground="Orange"
+                             VerticalAlignment="Center" />
+                </StackPanel>
+              </Grid>
+            </StackPanel>
+
+            <!-- Service Configuration Section -->
+            <Border Classes="settings-card" Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+              <StackPanel Spacing="{StaticResource SpacingM}">
+                <TextBlock Text="{DynamicResource Localized_SystemServiceSettings}"
+                           Classes="section-title" />
+
+                <CheckBox Content="{DynamicResource Localized_InstallAsSystemService}"
+                          IsChecked="{Binding ServiceEnabled}" />
+
+                <StackPanel Spacing="8" IsVisible="{Binding ServiceEnabled}">
+                  <TextBlock Text="{DynamicResource Localized_ServiceScope}"
+                             Classes="field-label" />
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <RadioButton Content="{DynamicResource Localized_UserLevel}"
+                                 IsChecked="{Binding ServiceScopeValue, Converter={StaticResource StringEqualsConverter}, ConverterParameter=user}"
+                                 GroupName="ServiceScope" />
+                    <RadioButton Content="{DynamicResource Localized_SystemLevel}"
+                                 IsChecked="{Binding ServiceScopeValue, Converter={StaticResource StringEqualsConverter}, ConverterParameter=system}"
+                                 GroupName="ServiceScope" />
+                  </StackPanel>
+
+                  <CheckBox Content="{DynamicResource Localized_StartOnBoot}"
+                            IsChecked="{Binding AutoStartOnBoot}" />
+
+                  <!-- Service Status -->
+                  <Grid ColumnDefinitions="180,*" RowDefinitions="Auto"
+                        Margin="0,8,0,0">
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                               Text="{DynamicResource Localized_ServiceStatus}"
+                               Classes="field-label" />
+                    <StackPanel Grid.Row="0" Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="{StaticResource SpacingM}">
+                      <TextBlock Text="{Binding ServiceStatus.State}"
+                                 VerticalAlignment="Center"
+                                 FontFamily="{DynamicResource MonoFontFamily}" />
+                      <Button Command="{Binding RefreshServiceStatusCommand}"
+                              IsEnabled="{Binding !IsServiceChecking}"
+                              Classes="action-button">
+                        <mi:MaterialIcon Kind="Refresh" />
+                      </Button>
+                    </StackPanel>
+                  </Grid>
+
+                  <!-- Service Control Buttons -->
+                  <StackPanel Orientation="Horizontal"
+                              Spacing="{StaticResource SpacingM}"
+                              Margin="0,8,0,0">
+                    <Button Command="{Binding InstallServiceCommand}"
+                            IsVisible="{Binding !IsServiceInstalled}"
+                            IsEnabled="{Binding IsPathValid}"
+                            Classes="action-button primary icon-text-button">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="Cog" />
+                        <TextBlock Text="{DynamicResource Localized_InstallService}" />
+                      </StackPanel>
+                    </Button>
+                    <Button Command="{Binding UninstallServiceCommand}"
+                            IsVisible="{Binding IsServiceInstalled}"
+                            Classes="action-button destructive icon-text-button">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="Delete" />
+                        <TextBlock Text="{DynamicResource Localized_UninstallService}" />
+                      </StackPanel>
+                    </Button>
+                    <Button Command="{Binding StartServiceCommand}"
+                            IsVisible="{Binding IsServiceInstalled}"
+                            IsEnabled="{Binding !IsServiceRunning}"
+                            Classes="action-button icon-text-button">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="Play" />
+                        <TextBlock Text="{DynamicResource Localized_Start}" />
+                      </StackPanel>
+                    </Button>
+                    <Button Command="{Binding StopServiceCommand}"
+                            IsVisible="{Binding IsServiceInstalled}"
+                            IsEnabled="{Binding IsServiceRunning}"
+                            Classes="action-button icon-text-button">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="Stop" />
+                        <TextBlock Text="{DynamicResource Localized_Stop}" />
+                      </StackPanel>
+                    </Button>
+                  </StackPanel>
+                </StackPanel>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </Border>
+
+        <!-- Docker Deployment Panel -->
+        <Border Classes="settings-card" IsVisible="{Binding IsDockerMode}">
           <StackPanel Spacing="{StaticResource SpacingM}">
             <TextBlock Text="{DynamicResource Localized_DockerDeployment}"
                        Classes="section-title" />
@@ -74,9 +235,8 @@
               <StackPanel Grid.Row="0" Grid.Column="1"
                           Orientation="Horizontal"
                           Spacing="{StaticResource SpacingM}">
-                <TextBlock
-                  Text="{Binding IsDockerAvailable, Converter={StaticResource BoolToAvailableStringConverter}}"
-                  VerticalAlignment="Center" />
+                <TextBlock Text="{Binding IsDockerAvailable, Converter={StaticResource BoolToAvailableStringConverter}}"
+                           VerticalAlignment="Center" />
                 <Button Command="{Binding CheckDockerCommand}"
                         Content="{DynamicResource Localized_CheckDocker}"
                         IsEnabled="{Binding !IsDockerChecking}"
@@ -110,81 +270,23 @@
                         Margin="{StaticResource ThicknessTopS}">
               <Button Command="{Binding GenerateDockerComposeCommand}"
                       Classes="action-button icon-text-button">
-                <StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="4">
                   <mi:MaterialIcon Kind="FileDocument" />
                   <TextBlock Text="{DynamicResource Localized_GenerateDockerComposeYml}" />
                 </StackPanel>
               </Button>
               <Button Command="{Binding StartDockerCommand}"
                       Classes="action-button primary icon-text-button">
-                <StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="4">
                   <mi:MaterialIcon Kind="Play" />
                   <TextBlock Text="{DynamicResource Localized_StartContainer}" />
                 </StackPanel>
               </Button>
               <Button Command="{Binding StopDockerCommand}"
                       Classes="action-button destructive icon-text-button">
-                <StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="4">
                   <mi:MaterialIcon Kind="Stop" />
                   <TextBlock Text="{DynamicResource Localized_StopContainer}" />
-                </StackPanel>
-              </Button>
-            </StackPanel>
-          </StackPanel>
-        </Border>
-
-        <!-- Native Deployment -->
-        <Border Classes="settings-card">
-          <StackPanel Spacing="{StaticResource SpacingM}">
-            <TextBlock Text="{DynamicResource Localized_NativeDeployment}"
-                       Classes="section-title" />
-
-            <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto">
-              <TextBlock Grid.Row="0" Grid.Column="0"
-                         Text="{DynamicResource Localized_DeploymentStatus}"
-                         Classes="field-label" />
-              <StackPanel Grid.Row="0" Grid.Column="1"
-                          Orientation="Horizontal"
-                          Spacing="{StaticResource SpacingM}">
-                <TextBlock
-                  Text="{Binding IsNativeDeployed, Converter={StaticResource BoolToDeployedStringConverter}}"
-                  VerticalAlignment="Center" />
-                <Button Command="{Binding CheckNativeCommand}"
-                        IsEnabled="{Binding !IsNativeChecking}"
-                        Classes="action-button icon-text-button">
-                  <StackPanel>
-                    <mi:MaterialIcon Kind="Check" />
-                    <TextBlock Text="{DynamicResource Localized_CheckDeployment}" />
-                  </StackPanel>
-                </Button>
-              </StackPanel>
-
-              <TextBlock Grid.Row="1" Grid.Column="0"
-                         Text="{DynamicResource Localized_BinaryPath}"
-                         Classes="field-label" />
-              <TextBlock Grid.Row="1" Grid.Column="1"
-                         Text="{Binding DeployedBinaryPath}"
-                         FontFamily="{DynamicResource MonoFontFamily}"
-                         Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                         TextWrapping="Wrap"
-                         VerticalAlignment="Center" />
-            </Grid>
-
-            <StackPanel Orientation="Horizontal"
-                        Spacing="{StaticResource SpacingM}"
-                        Margin="{StaticResource ThicknessTopS}">
-              <Button Command="{Binding DownloadFrpcCommand}"
-                      Classes="action-button icon-text-button">
-                <StackPanel>
-                  <mi:MaterialIcon Kind="Download" />
-                  <TextBlock Text="{DynamicResource Localized_DownloadFrpc}" />
-                </StackPanel>
-              </Button>
-              <Button Command="{Binding DeployNativeCommand}"
-                      Classes="action-button primary icon-text-button">
-                <StackPanel>
-                  <mi:MaterialIcon Kind="RocketLaunch" />
-                  <TextBlock Text="{DynamicResource Localized_DeployNative}" />
                 </StackPanel>
               </Button>
             </StackPanel>
@@ -201,8 +303,7 @@
                 <ToolTip.Tip>
                   <StackPanel>
                     <TextBlock Text="{DynamicResource Localized_DockerDeploymentRequiresDocker}" />
-                    <TextBlock
-                      Text="{DynamicResource Localized_NativeDeploymentDownloadsAndExtracts}" />
+                    <TextBlock Text="{DynamicResource Localized_NativeDeploymentDownloadsAndExtracts}" />
                     <TextBlock Text="{DynamicResource Localized_BothMethodsUse}" />
                   </StackPanel>
                 </ToolTip.Tip>
@@ -214,4 +315,3 @@
     </Panel>
   </ScrollViewer>
 </UserControl>
-

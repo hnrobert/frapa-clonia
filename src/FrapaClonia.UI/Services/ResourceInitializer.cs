@@ -152,6 +152,60 @@ public static class ResourceInitializer
         AddResource(resources, "Localized_NativeDeploymentDownloadsAndExtracts",
             localizedResources.NativeDeploymentDownloadsAndExtracts);
         AddResource(resources, "Localized_BothMethodsUse", localizedResources.BothMethodsUse);
+        // Enhanced Deployment
+        AddResource(resources, "Localized_FrpcVersion", localizedResources.FrpcVersion);
+        AddResource(resources, "Localized_CheckVersions", localizedResources.CheckVersions);
+        AddResource(resources, "Localized_InstallMethod", localizedResources.InstallMethod);
+        AddResource(resources, "Localized_SelectFrpcExecutable", localizedResources.SelectFrpcExecutable);
+        AddResource(resources, "Localized_InstallViaPackageManager", localizedResources.InstallViaPackageManager);
+        AddResource(resources, "Localized_DownloadFromGitHub", localizedResources.DownloadFromGitHub);
+        AddResource(resources, "Localized_FrpcBinaryPath", localizedResources.FrpcBinaryPath);
+        AddResource(resources, "Localized_SelectFrpcBinary", localizedResources.SelectFrpcBinary);
+        AddResource(resources, "Localized_Browse", localizedResources.Browse);
+        AddResource(resources, "Localized_PackageManager", localizedResources.PackageManager);
+        AddResource(resources, "Localized_Install", localizedResources.Install);
+        AddResource(resources, "Localized_DownloadFrpcFromGitHub", localizedResources.DownloadFrpcFromGitHub);
+        AddResource(resources, "Localized_DownloadAndDeploy", localizedResources.DownloadAndDeploy);
+        AddResource(resources, "Localized_ServiceConfiguration", localizedResources.ServiceConfiguration);
+        AddResource(resources, "Localized_InstallAsSystemService", localizedResources.InstallAsSystemService);
+        AddResource(resources, "Localized_ServiceScope", localizedResources.ServiceScope);
+        AddResource(resources, "Localized_UserLevel", localizedResources.UserLevel);
+        AddResource(resources, "Localized_SystemLevel", localizedResources.SystemLevel);
+        AddResource(resources, "Localized_StartOnBoot", localizedResources.StartOnBoot);
+        AddResource(resources, "Localized_ServiceStatus", localizedResources.ServiceStatus);
+        AddResource(resources, "Localized_InstallService", localizedResources.InstallService);
+        AddResource(resources, "Localized_UninstallService", localizedResources.UninstallService);
+        AddResource(resources, "Localized_Start", localizedResources.Start);
+        AddResource(resources, "Localized_Stop", localizedResources.Stop);
+        // New dialog strings
+        AddResource(resources, "Localized_FrpcConfiguration", localizedResources.FrpcConfiguration);
+        AddResource(resources, "Localized_FrpcExecutableLocation", localizedResources.FrpcExecutableLocation);
+        AddResource(resources, "Localized_FrpcExecutablePathDescription", localizedResources.FrpcExecutablePathDescription);
+        AddResource(resources, "Localized_AutoDetect", localizedResources.AutoDetect);
+        AddResource(resources, "Localized_AutoDetectFrpcToolTip", localizedResources.AutoDetectFrpcToolTip);
+        AddResource(resources, "Localized_BrowseToolTip", localizedResources.BrowseToolTip);
+        AddResource(resources, "Localized_FrpcNotFoundOrInvalid", localizedResources.FrpcNotFoundOrInvalid);
+        AddResource(resources, "Localized_DetectingFrpc", localizedResources.DetectingFrpc);
+        AddResource(resources, "Localized_GetFrpc", localizedResources.GetFrpc);
+        AddResource(resources, "Localized_GetFrpcDescription", localizedResources.GetFrpcDescription);
+        AddResource(resources, "Localized_UsePackageManager", localizedResources.UsePackageManager);
+        AddResource(resources, "Localized_DownloadFromWeb", localizedResources.DownloadFromWeb);
+        AddResource(resources, "Localized_SelectPackageManager", localizedResources.SelectPackageManager);
+        AddResource(resources, "Localized_RefreshPackageManagerList", localizedResources.RefreshPackageManagerList);
+        AddResource(resources, "Localized_InstallCommand", localizedResources.InstallCommand);
+        AddResource(resources, "Localized_PackageManagerNotSupportFrpc", localizedResources.PackageManagerNotSupportFrpc);
+        AddResource(resources, "Localized_DownloadFromWebDescription", localizedResources.DownloadFromWebDescription);
+        AddResource(resources, "Localized_OpenReleasesPage", localizedResources.OpenReleasesPage);
+        AddResource(resources, "Localized_Check", localizedResources.Check);
+        AddResource(resources, "Localized_CheckFrpcPathToolTip", localizedResources.CheckFrpcPathToolTip);
+        AddResource(resources, "Localized_ConfigureFrpcToolTip", localizedResources.ConfigureFrpcToolTip);
+        AddResource(resources, "Localized_CheckingFrpc", localizedResources.CheckingFrpc);
+        AddResource(resources, "Localized_FrpcNotConfigured", localizedResources.FrpcNotConfigured);
+        AddResource(resources, "Localized_SystemServiceSettings", localizedResources.SystemServiceSettings);
+        AddResource(resources, "Localized_DownloadDirect", localizedResources.DownloadDirect);
+        AddResource(resources, "Localized_DownloadDirectToolTip", localizedResources.DownloadDirectToolTip);
+        AddResource(resources, "Localized_OpenReleasesPageToolTip", localizedResources.OpenReleasesPageToolTip);
+        AddResource(resources, "Localized_Downloading", localizedResources.Downloading);
 
         // Proxy List
         AddResource(resources, "Localized_ConfigureAndManageYourFrpcProxyConfigurations",
