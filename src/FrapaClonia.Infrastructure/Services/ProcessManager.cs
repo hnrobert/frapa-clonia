@@ -221,6 +221,55 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
         }
     }
 
+    public async Task<ProcessResult> ExecuteAsync(string fileName, string arguments, string? workingDirectory = null, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            logger.LogInformation("Executing command: {FileName} {Arguments}", fileName, arguments);
+
+            using var process = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = fileName,
+                    Arguments = arguments,
+                    WorkingDirectory = workingDirectory ?? string.Empty,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+
+            process.Start();
+
+            var standardOutput = await process.StandardOutput.ReadToEndAsync(cancellationToken);
+            var standardError = await process.StandardError.ReadToEndAsync(cancellationToken);
+
+            await process.WaitForExitAsync(cancellationToken);
+
+            var result = new ProcessResult
+            {
+                ExitCode = process.ExitCode,
+                StandardOutput = standardOutput,
+                StandardError = standardError
+            };
+
+            logger.LogInformation("Command completed with exit code {ExitCode}", process.ExitCode);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error executing command: {FileName} {Arguments}", fileName, arguments);
+            return new ProcessResult
+            {
+                ExitCode = -1,
+                StandardOutput = string.Empty,
+                StandardError = ex.Message
+            };
+        }
+    }
+
     /// <summary>
     /// Subject for process output that implements IObservable
     /// </summary>

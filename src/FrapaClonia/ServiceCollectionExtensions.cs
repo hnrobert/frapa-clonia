@@ -26,8 +26,11 @@ public static class ServiceCollectionExtensions
 
         // Infrastructure Services
         services.AddSingleton<IFrpcDownloader, FrpcDownloader>();
+        services.AddSingleton<IFrpcVersionService, FrpcVersionService>();
         services.AddSingleton<IDockerDeploymentService, DockerDeploymentService>();
         services.AddSingleton<INativeDeploymentService, NativeDeploymentService>();
+        services.AddSingleton<IPackageManagerService, PackageManagerService>();
+        services.AddSingleton<ISystemServiceManager, SystemServiceManager>();
         services.AddSingleton<ITomlSerializer, TomlSerializer>();
         services.AddSingleton<IProcessManager, ProcessManager>();
 

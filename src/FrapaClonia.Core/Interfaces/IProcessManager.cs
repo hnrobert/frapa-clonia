@@ -34,6 +34,37 @@ public interface IProcessManager
     /// Gets an available port in the specified range
     /// </summary>
     Task<int?> GetAvailablePortAsync(int minPort, int maxPort, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Executes a command and returns the result
+    /// </summary>
+    Task<ProcessResult> ExecuteAsync(string fileName, string arguments, string? workingDirectory = null, CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// Result of a process execution
+/// </summary>
+public class ProcessResult
+{
+    /// <summary>
+    /// Exit code of the process
+    /// </summary>
+    public int ExitCode { get; init; }
+
+    /// <summary>
+    /// Standard output content
+    /// </summary>
+    public string StandardOutput { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Standard error content
+    /// </summary>
+    public string StandardError { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Whether the process exited successfully (exit code 0)
+    /// </summary>
+    public bool Success => ExitCode == 0;
 }
 
 /// <summary>

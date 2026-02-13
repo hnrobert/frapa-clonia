@@ -143,6 +143,60 @@ public class LocalizedResources : ObservableObject
         DockerDeploymentRequiresDocker = Create("DockerDeploymentRequiresDocker");
         NativeDeploymentDownloadsAndExtracts = Create("NativeDeploymentDownloadsAndExtracts");
         BothMethodsUse = Create("BothMethodsUse");
+        // Enhanced Deployment
+        FrpcVersion = Create("FrpcVersion");
+        CheckVersions = Create("CheckVersions");
+        InstallMethod = Create("InstallMethod");
+        SelectFrpcExecutable = Create("SelectFrpcExecutable");
+        InstallViaPackageManager = Create("InstallViaPackageManager");
+        DownloadFromGitHub = Create("DownloadFromGitHub");
+        FrpcBinaryPath = Create("FrpcBinaryPath");
+        SelectFrpcBinary = Create("SelectFrpcBinary");
+        Browse = Create("Browse");
+        PackageManager = Create("PackageManager");
+        Install = Create("Install");
+        DownloadFrpcFromGitHub = Create("DownloadFrpcFromGitHub");
+        DownloadAndDeploy = Create("DownloadAndDeploy");
+        ServiceConfiguration = Create("ServiceConfiguration");
+        InstallAsSystemService = Create("InstallAsSystemService");
+        ServiceScope = Create("ServiceScope");
+        UserLevel = Create("UserLevel");
+        SystemLevel = Create("SystemLevel");
+        StartOnBoot = Create("StartOnBoot");
+        ServiceStatus = Create("ServiceStatus");
+        InstallService = Create("InstallService");
+        UninstallService = Create("UninstallService");
+        Start = Create("Start");
+        Stop = Create("Stop");
+        // New dialog strings
+        FrpcConfiguration = Create("FrpcConfiguration");
+        FrpcExecutableLocation = Create("FrpcExecutableLocation");
+        FrpcExecutablePathDescription = Create("FrpcExecutablePathDescription");
+        AutoDetect = Create("AutoDetect");
+        AutoDetectFrpcToolTip = Create("AutoDetectFrpcToolTip");
+        BrowseToolTip = Create("BrowseToolTip");
+        FrpcNotFoundOrInvalid = Create("FrpcNotFoundOrInvalid");
+        DetectingFrpc = Create("DetectingFrpc");
+        GetFrpc = Create("GetFrpc");
+        GetFrpcDescription = Create("GetFrpcDescription");
+        UsePackageManager = Create("UsePackageManager");
+        DownloadFromWeb = Create("DownloadFromWeb");
+        SelectPackageManager = Create("SelectPackageManager");
+        RefreshPackageManagerList = Create("RefreshPackageManagerList");
+        InstallCommand = Create("InstallCommand");
+        PackageManagerNotSupportFrpc = Create("PackageManagerNotSupportFrpc");
+        DownloadFromWebDescription = Create("DownloadFromWebDescription");
+        OpenReleasesPage = Create("OpenReleasesPage");
+        Check = Create("Check");
+        CheckFrpcPathToolTip = Create("CheckFrpcPathToolTip");
+        ConfigureFrpcToolTip = Create("ConfigureFrpcToolTip");
+        CheckingFrpc = Create("CheckingFrpc");
+        FrpcNotConfigured = Create("FrpcNotConfigured");
+        SystemServiceSettings = Create("SystemServiceSettings");
+        DownloadDirect = Create("DownloadDirect");
+        DownloadDirectToolTip = Create("DownloadDirectToolTip");
+        OpenReleasesPageToolTip = Create("OpenReleasesPageToolTip");
+        Downloading = Create("Downloading");
 
         // Proxy List
         ConfigureAndManageYourFrpcProxyConfigurations = Create("ConfigureAndManageYourFrpcProxyConfigurations");
@@ -412,6 +466,60 @@ public class LocalizedResources : ObservableObject
     public LocalizedString DockerDeploymentRequiresDocker { get; }
     public LocalizedString NativeDeploymentDownloadsAndExtracts { get; }
     public LocalizedString BothMethodsUse { get; }
+    // Enhanced Deployment
+    public LocalizedString FrpcVersion { get; }
+    public LocalizedString CheckVersions { get; }
+    public LocalizedString InstallMethod { get; }
+    public LocalizedString SelectFrpcExecutable { get; }
+    public LocalizedString InstallViaPackageManager { get; }
+    public LocalizedString DownloadFromGitHub { get; }
+    public LocalizedString FrpcBinaryPath { get; }
+    public LocalizedString SelectFrpcBinary { get; }
+    public LocalizedString Browse { get; }
+    public LocalizedString PackageManager { get; }
+    public LocalizedString Install { get; }
+    public LocalizedString DownloadFrpcFromGitHub { get; }
+    public LocalizedString DownloadAndDeploy { get; }
+    public LocalizedString ServiceConfiguration { get; }
+    public LocalizedString InstallAsSystemService { get; }
+    public LocalizedString ServiceScope { get; }
+    public LocalizedString UserLevel { get; }
+    public LocalizedString SystemLevel { get; }
+    public LocalizedString StartOnBoot { get; }
+    public LocalizedString ServiceStatus { get; }
+    public LocalizedString InstallService { get; }
+    public LocalizedString UninstallService { get; }
+    public LocalizedString Start { get; }
+    public LocalizedString Stop { get; }
+    // New dialog strings
+    public LocalizedString FrpcConfiguration { get; }
+    public LocalizedString FrpcExecutableLocation { get; }
+    public LocalizedString FrpcExecutablePathDescription { get; }
+    public LocalizedString AutoDetect { get; }
+    public LocalizedString AutoDetectFrpcToolTip { get; }
+    public LocalizedString BrowseToolTip { get; }
+    public LocalizedString FrpcNotFoundOrInvalid { get; }
+    public LocalizedString DetectingFrpc { get; }
+    public LocalizedString GetFrpc { get; }
+    public LocalizedString GetFrpcDescription { get; }
+    public LocalizedString UsePackageManager { get; }
+    public LocalizedString DownloadFromWeb { get; }
+    public LocalizedString SelectPackageManager { get; }
+    public LocalizedString RefreshPackageManagerList { get; }
+    public LocalizedString InstallCommand { get; }
+    public LocalizedString PackageManagerNotSupportFrpc { get; }
+    public LocalizedString DownloadFromWebDescription { get; }
+    public LocalizedString OpenReleasesPage { get; }
+    public LocalizedString Check { get; }
+    public LocalizedString CheckFrpcPathToolTip { get; }
+    public LocalizedString ConfigureFrpcToolTip { get; }
+    public LocalizedString CheckingFrpc { get; }
+    public LocalizedString FrpcNotConfigured { get; }
+    public LocalizedString SystemServiceSettings { get; }
+    public LocalizedString DownloadDirect { get; }
+    public LocalizedString DownloadDirectToolTip { get; }
+    public LocalizedString OpenReleasesPageToolTip { get; }
+    public LocalizedString Downloading { get; }
 
     // Proxy List
     public LocalizedString ConfigureAndManageYourFrpcProxyConfigurations { get; }
