@@ -1,0 +1,1182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="About" xml:space="preserve">
+    <value>О программе</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Активный</value>
+  </data>
+  <data name="ActiveProxies" xml:space="preserve">
+    <value>Активные прокси</value>
+  </data>
+  <data name="AddProxy" xml:space="preserve">
+    <value>Добавить прокси</value>
+  </data>
+  <data name="AddVisitor" xml:space="preserve">
+    <value>Добавить посетителя</value>
+  </data>
+  <data name="AllLevels" xml:space="preserve">
+    <value>Все уровни</value>
+  </data>
+  <data name="AllTypes" xml:space="preserve">
+    <value>Все типы</value>
+  </data>
+  <data name="AllowedUsers" xml:space="preserve">
+    <value>Разрешённые пользователи</value>
+  </data>
+  <data name="AppTitle" xml:space="preserve">
+    <value>FrapaClonia</value>
+  </data>
+  <data name="Appearance" xml:space="preserve">
+    <value>Внешний вид</value>
+  </data>
+  <data name="ApplicationMode" xml:space="preserve">
+    <value>Режим приложения</value>
+  </data>
+  <data name="Architecture" xml:space="preserve">
+    <value>Architecture</value>
+  </data>
+  <data name="Audience" xml:space="preserve">
+    <value>Аудитория</value>
+  </data>
+  <data name="Authentication" xml:space="preserve">
+    <value>Аутентификация</value>
+  </data>
+  <data name="AutoDetect" xml:space="preserve">
+    <value>Auto Detect</value>
+  </data>
+  <data name="AutoDetectFrpcToolTip" xml:space="preserve">
+    <value>Automatically detect frpc in system PATH</value>
+  </data>
+  <data name="AutoScroll" xml:space="preserve">
+    <value>Автопрокрутка</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>Автозапуск</value>
+  </data>
+  <data name="AutomaticallyLaunchFrapaClonia" xml:space="preserve">
+    <value>Автоматически запускать FrapaClonia при входе в систему</value>
+  </data>
+  <data name="BandwidthLimit" xml:space="preserve">
+    <value>Лимит пропускной способности</value>
+  </data>
+  <data name="BasicSettings" xml:space="preserve">
+    <value>Основные настройки</value>
+  </data>
+  <data name="BinaryPath" xml:space="preserve">
+    <value>Путь к бинарному файлу</value>
+  </data>
+  <data name="BindAddr" xml:space="preserve">
+    <value>Адрес привязки</value>
+  </data>
+  <data name="BindIPPortInfo" xml:space="preserve">
+    <value>Привязка：</value>
+  </data>
+  <data name="BindPort" xml:space="preserve">
+    <value>Порт привязки</value>
+  </data>
+  <data name="BindSettings" xml:space="preserve">
+    <value>Настройки привязки</value>
+  </data>
+  <data name="BothMethodsUse" xml:space="preserve">
+    <value>• Оба метода используют один и тот же файл конфигурации из настроек сервера</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="BrowseToolTip" xml:space="preserve">
+    <value>Browse for frpc executable file</value>
+  </data>
+  <data name="BuildInfo" xml:space="preserve">
+    <value>Сборка</value>
+  </data>
+  <data name="CRTPath" xml:space="preserve">
+    <value>Путь к CRT</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="ChangesWillTakeEffectImmediately" xml:space="preserve">
+    <value>Изменения вступят в силу немедленно</value>
+  </data>
+  <data name="Check" xml:space="preserve">
+    <value>Check</value>
+  </data>
+  <data name="CheckDeployment" xml:space="preserve">
+    <value>Проверить развертывание</value>
+  </data>
+  <data name="CheckDocker" xml:space="preserve">
+    <value>Проверить Docker</value>
+  </data>
+  <data name="CheckFrpcPathToolTip" xml:space="preserve">
+    <value>Verify frpc path and get version</value>
+  </data>
+  <data name="CheckVersions" xml:space="preserve">
+    <value>Check Versions</value>
+  </data>
+  <data name="CheckingFrpc" xml:space="preserve">
+    <value>Checking frpc...</value>
+  </data>
+  <data name="ChooseHowYouWantToDeployAndRunFrpc" xml:space="preserve">
+    <value>Выберите, как вы хотите развернуть и запустить frpc</value>
+  </data>
+  <data name="ChooseYourPreferredColorTheme" xml:space="preserve">
+    <value>Выберите предпочитаемую цветовую тему</value>
+  </data>
+  <data name="ClearAll" xml:space="preserve">
+    <value>Очистить всё</value>
+  </data>
+  <data name="ClearAllLogs" xml:space="preserve">
+    <value>Очистить все журналы</value>
+  </data>
+  <data name="ClientID" xml:space="preserve">
+    <value>ID клиента</value>
+  </data>
+  <data name="ClientSecret" xml:space="preserve">
+    <value>Секрет клиента</value>
+  </data>
+  <data name="CommaSeparatedList" xml:space="preserve">
+    <value>Разделённый запятыми список пользовательских доменов</value>
+  </data>
+  <data name="CommaSeparatedListOfAllowedUsers" xml:space="preserve">
+    <value>Разделённый запятыми список разрешённых пользователей</value>
+  </data>
+  <data name="CompressDataToReduceBandwidthUsage" xml:space="preserve">
+    <value>Сжимать данные для снижения использования пропускной способности</value>
+  </data>
+  <data name="ConfigPresets" xml:space="preserve">
+    <value>Config Presets</value>
+  </data>
+  <data name="Configuration" xml:space="preserve">
+    <value>Конфигурация</value>
+  </data>
+  <data name="ConfigurationError" xml:space="preserve">
+    <value>Ошибка конфигурации</value>
+  </data>
+  <data name="ConfigurationIsValid" xml:space="preserve">
+    <value>Конфигурация действительна</value>
+  </data>
+  <data name="ConfigurationLocation" xml:space="preserve">
+    <value>Расположение конфигурации</value>
+  </data>
+  <data name="ConfigurationStoredInAppDir" xml:space="preserve">
+    <value>Конфигурация хранится в каталоге приложения (требуется portable.txt)</value>
+  </data>
+  <data name="Configure" xml:space="preserve">
+    <value>Настроить</value>
+  </data>
+  <data name="ConfigureAVisitorToConnect" xml:space="preserve">
+    <value>Настройте посетителя для подключения к прокси STCP, XTCP или SUDP</value>
+  </data>
+  <data name="ConfigureAndManageSecureTunnelVisitors" xml:space="preserve">
+    <value>Настройте и управляйте посетителями защищённого туннеля (STCP/XTCP/SUDP)</value>
+  </data>
+  <data name="ConfigureAndManageYourFrpcProxyConfigurations" xml:space="preserve">
+    <value>Настройте и управляйте конфигурациями прокси frpc</value>
+  </data>
+  <data name="ConfigureFrpcToolTip" xml:space="preserve">
+    <value>Open frpc configuration dialog</value>
+  </data>
+  <data name="ConfigureYourProxySettingsBelow" xml:space="preserve">
+    <value>Настройте параметры прокси ниже. Обязательные поля отмечены звёздочкой.</value>
+  </data>
+  <data name="ConnectionSettings" xml:space="preserve">
+    <value>Настройки подключения</value>
+  </data>
+  <data name="ContainerName" xml:space="preserve">
+    <value>Имя контейнера</value>
+  </data>
+  <data name="CreateProxy" xml:space="preserve">
+    <value>Создать прокси</value>
+  </data>
+  <data name="CreateYourFirstProxyConfiguration" xml:space="preserve">
+    <value>Создайте свою первую конфигурацию прокси, чтобы начать</value>
+  </data>
+  <data name="CreateYourFirstVisitor" xml:space="preserve">
+    <value>Создайте своего первого посетителя</value>
+  </data>
+  <data name="CrossPlatformFrpcVisualClient" xml:space="preserve">
+    <value>Кроссплатформенный визуальный клиент frpc, созданный с помощью Avalonia UI</value>
+  </data>
+  <data name="CustomDomains" xml:space="preserve">
+    <value>Пользовательские домены</value>
+  </data>
+  <data name="Dark" xml:space="preserve">
+    <value>Тёмная</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Панель</value>
+  </data>
+  <data name="DefaultPort" xml:space="preserve">
+    <value>Порт по умолчанию</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="DeletePreset" xml:space="preserve">
+    <value>Delete Preset</value>
+  </data>
+  <data name="DeleteProxy" xml:space="preserve">
+    <value>Удалить прокси</value>
+  </data>
+  <data name="DeleteProxyToolTip" xml:space="preserve">
+    <value>Удалить прокси</value>
+  </data>
+  <data name="DeleteVisitor" xml:space="preserve">
+    <value>Удалить посетителя</value>
+  </data>
+  <data name="DeployNative" xml:space="preserve">
+    <value>Развернуть нативно</value>
+  </data>
+  <data name="Deployment" xml:space="preserve">
+    <value>Развертывание Frpc</value>
+  </data>
+  <data name="DeploymentInformation" xml:space="preserve">
+    <value>Информация о развертывании</value>
+  </data>
+  <data name="DeploymentMode" xml:space="preserve">
+    <value>Режим развертывания</value>
+  </data>
+  <data name="DeploymentStatus" xml:space="preserve">
+    <value>Статус развертывания</value>
+  </data>
+  <data name="DetectingFrpc" xml:space="preserve">
+    <value>Detecting frpc...</value>
+  </data>
+  <data name="DialTimeout" xml:space="preserve">
+    <value>Таймаут подключения</value>
+  </data>
+  <data name="DockerComposePath" xml:space="preserve">
+    <value>Путь Docker Compose</value>
+  </data>
+  <data name="DockerDeployment" xml:space="preserve">
+    <value>Развертывание Docker</value>
+  </data>
+  <data name="DockerDeploymentRequiresDocker" xml:space="preserve">
+    <value>• Развертывание Docker требует установки Docker и Docker Compose</value>
+  </data>
+  <data name="DockerImage" xml:space="preserve">
+    <value>Образ Docker</value>
+  </data>
+  <data name="DockerStatus" xml:space="preserve">
+    <value>Статус Docker</value>
+  </data>
+  <data name="DomainSettings" xml:space="preserve">
+    <value>Настройки домена</value>
+  </data>
+  <data name="DownloadAndDeploy" xml:space="preserve">
+    <value>Download &amp; Deploy</value>
+  </data>
+  <data name="DownloadDirect" xml:space="preserve">
+    <value>Download Direct</value>
+  </data>
+  <data name="DownloadDirectToolTip" xml:space="preserve">
+    <value>Download frpc directly from GitHub</value>
+  </data>
+  <data name="DownloadFromGitHub" xml:space="preserve">
+    <value>Download from GitHub</value>
+  </data>
+  <data name="DownloadFromWeb" xml:space="preserve">
+    <value>Download from web</value>
+  </data>
+  <data name="DownloadFromWebDescription" xml:space="preserve">
+    <value>Download the frpc binary directly from GitHub releases page. After downloading, extract and select the executable file.</value>
+  </data>
+  <data name="DownloadFrpc" xml:space="preserve">
+    <value>Скачать frpc</value>
+  </data>
+  <data name="DownloadFrpcFromGitHub" xml:space="preserve">
+    <value>Download Frpc from GitHub</value>
+  </data>
+  <data name="Downloading" xml:space="preserve">
+    <value>Downloading...</value>
+  </data>
+  <data name="DuplicatePreset" xml:space="preserve">
+    <value>Duplicate Preset</value>
+  </data>
+  <data name="DuplicateProxy" xml:space="preserve">
+    <value>Дублировать прокси</value>
+  </data>
+  <data name="DuplicateProxyToolTip" xml:space="preserve">
+    <value>Дублировать прокси</value>
+  </data>
+  <data name="EGConsolePathToLogfile" xml:space="preserve">
+    <value>например：console、/путь/к/файлу_журнала</value>
+  </data>
+  <data name="EGOpenidProfile" xml:space="preserve">
+    <value>например：openid、profile</value>
+  </data>
+  <data name="EG_1MB_256KB" xml:space="preserve">
+    <value>например：1MB、256KB</value>
+  </data>
+  <data name="EG_www_example_com" xml:space="preserve">
+    <value>например：www.example.com、api.example.com</value>
+  </data>
+  <data name="EditProxy" xml:space="preserve">
+    <value>Редактировать прокси</value>
+  </data>
+  <data name="EditProxyToolTip" xml:space="preserve">
+    <value>Редактировать прокси</value>
+  </data>
+  <data name="EditProxyWindowTitle" xml:space="preserve">
+    <value>Редактировать прокси</value>
+  </data>
+  <data name="EditVisitor" xml:space="preserve">
+    <value>Редактировать посетителя</value>
+  </data>
+  <data name="EditVisitorWindowTitle" xml:space="preserve">
+    <value>Редактировать посетителя</value>
+  </data>
+  <data name="EnableCompression" xml:space="preserve">
+    <value>Использовать сжатие</value>
+  </data>
+  <data name="EnableEncryption" xml:space="preserve">
+    <value>Использовать шифрование</value>
+  </data>
+  <data name="EnableHealthCheck" xml:space="preserve">
+    <value>Включить проверку работоспособности</value>
+  </data>
+  <data name="EnableTLS" xml:space="preserve">
+    <value>Включить TLS</value>
+  </data>
+  <data name="EncryptCommunicationWithTheFrpsServer" xml:space="preserve">
+    <value>Шифровать связь с сервером frps</value>
+  </data>
+  <data name="EncryptTheConnectionBetweenClientAndServer" xml:space="preserve">
+    <value>Шифровать соединение между клиентом и сервером</value>
+  </data>
+  <data name="EnterYourAuthenticationToken" xml:space="preserve">
+    <value>Введите ваш токен аутентификации</value>
+  </data>
+  <data name="Entries" xml:space="preserve">
+    <value>{0} записей</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Экспорт</value>
+  </data>
+  <data name="ExportAll" xml:space="preserve">
+    <value>Export All</value>
+  </data>
+  <data name="ExportFailed" xml:space="preserve">
+    <value>Export failed</value>
+  </data>
+  <data name="ExportLogsToFile" xml:space="preserve">
+    <value>Экспортировать журналы в файл</value>
+  </data>
+  <data name="ExportPreset" xml:space="preserve">
+    <value>Export Preset</value>
+  </data>
+  <data name="FrpcBinaryPath" xml:space="preserve">
+    <value>Frpc Binary Path</value>
+  </data>
+  <data name="FrpcConfiguration" xml:space="preserve">
+    <value>Frpc Configuration</value>
+  </data>
+  <data name="FrpcExecutableLocation" xml:space="preserve">
+    <value>Frpc Executable Location</value>
+  </data>
+  <data name="FrpcExecutablePathDescription" xml:space="preserve">
+    <value>Set the path to the frpc executable file. The application will use this binary to run frpc.</value>
+  </data>
+  <data name="FrpcNotConfigured" xml:space="preserve">
+    <value>Frpc not configured</value>
+  </data>
+  <data name="FrpcNotFoundOrInvalid" xml:space="preserve">
+    <value>Frpc not found or invalid</value>
+  </data>
+  <data name="FrpcNotRunning" xml:space="preserve">
+    <value>Frpc не работает</value>
+  </data>
+  <data name="FrpcRunning" xml:space="preserve">
+    <value>Frpc работает</value>
+  </data>
+  <data name="FrpcStatus" xml:space="preserve">
+    <value>Статус Frpc</value>
+  </data>
+  <data name="FrpcVersion" xml:space="preserve">
+    <value>Frpc Version</value>
+  </data>
+  <data name="FrpcVersions" xml:space="preserve">
+    <value>Frpc Versions</value>
+  </data>
+  <data name="GenerateDockerComposeYml" xml:space="preserve">
+    <value>Сгенерировать docker-compose.yml</value>
+  </data>
+  <data name="GetFrpc" xml:space="preserve">
+    <value>Get Frpc</value>
+  </data>
+  <data name="GetFrpcDescription" xml:space="preserve">
+    <value>If you don't have frpc installed, you can get it using one of the following methods:</value>
+  </data>
+  <data name="HTTPAuthentication" xml:space="preserve">
+    <value>HTTP-аутентификация</value>
+  </data>
+  <data name="HTTPProxyURL" xml:space="preserve">
+    <value>URL HTTP-прокси</value>
+  </data>
+  <data name="HTTPSToHTTPPluginSettings" xml:space="preserve">
+    <value>Настройки плагина HTTPS в HTTP</value>
+  </data>
+  <data name="HTTPToHTTPSPluginSettings" xml:space="preserve">
+    <value>Настройки плагина HTTP в HTTPS</value>
+  </data>
+  <data name="HeaderNameValue" xml:space="preserve">
+    <value>Имя-заголовка：значение</value>
+  </data>
+  <data name="HeadersLabel" xml:space="preserve">
+    <value>Заголовки</value>
+  </data>
+  <data name="HealthCheck" xml:space="preserve">
+    <value>Проверка работоспособности</value>
+  </data>
+  <data name="HeartbeatInterval" xml:space="preserve">
+    <value>Интервал сердцебиения</value>
+  </data>
+  <data name="HeartbeatTimeout" xml:space="preserve">
+    <value>Таймаут сердцебиения</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Импорт</value>
+  </data>
+  <data name="ImportFailed" xml:space="preserve">
+    <value>Import failed</value>
+  </data>
+  <data name="ImportPreset" xml:space="preserve">
+    <value>Import Preset</value>
+  </data>
+  <data name="InUse" xml:space="preserve">
+    <value>In Use</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="InstallAsSystemService" xml:space="preserve">
+    <value>Install as system service</value>
+  </data>
+  <data name="InstallCommand" xml:space="preserve">
+    <value>Install Command</value>
+  </data>
+  <data name="InstallMethod" xml:space="preserve">
+    <value>Install Method</value>
+  </data>
+  <data name="InstallService" xml:space="preserve">
+    <value>Install Service</value>
+  </data>
+  <data name="InstallViaPackageManager" xml:space="preserve">
+    <value>Install via package manager</value>
+  </data>
+  <data name="InterfaceLanguage" xml:space="preserve">
+    <value>Язык интерфейса</value>
+  </data>
+  <data name="IntervalSeconds" xml:space="preserve">
+    <value>Интервал (секунды)</value>
+  </data>
+  <data name="KeyPath" xml:space="preserve">
+    <value>Путь к ключу</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Язык</value>
+  </data>
+  <data name="LanguageAndRegion" xml:space="preserve">
+    <value>Язык и регион</value>
+  </data>
+  <data name="LeaveEmptyIfUsingCustomDomains" xml:space="preserve">
+    <value>Оставьте пустым, если используете пользовательские домены</value>
+  </data>
+  <data name="LeaveEmptyToAllowAllUsers" xml:space="preserve">
+    <value>Оставьте пустым, чтобы разрешить всех пользователей</value>
+  </data>
+  <data name="Light" xml:space="preserve">
+    <value>Светлая</value>
+  </data>
+  <data name="LimitBandwidthForThisProxy" xml:space="preserve">
+    <value>Ограничить пропускную способность для этого прокси</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Загрузка...</value>
+  </data>
+  <data name="LoadingVersions" xml:space="preserve">
+    <value>Loading versions...</value>
+  </data>
+  <data name="LoadingVisitors" xml:space="preserve">
+    <value>Загрузка посетителей...</value>
+  </data>
+  <data name="Local" xml:space="preserve">
+    <value>Локальный：</value>
+  </data>
+  <data name="LocalAddress" xml:space="preserve">
+    <value>Локальный адрес</value>
+  </data>
+  <data name="LocalIP" xml:space="preserve">
+    <value>Локальный IP</value>
+  </data>
+  <data name="LocalPath" xml:space="preserve">
+    <value>Локальный путь</value>
+  </data>
+  <data name="LocalPort" xml:space="preserve">
+    <value>Локальный порт</value>
+  </data>
+  <data name="LocalPortToListenOn" xml:space="preserve">
+    <value>Локальный порт для прослушивания входящих подключений (1-65535)</value>
+  </data>
+  <data name="LocalSettings" xml:space="preserve">
+    <value>Локальные настройки</value>
+  </data>
+  <data name="LogLevelLabel" xml:space="preserve">
+    <value>Уровень журнала：</value>
+  </data>
+  <data name="LogTo" xml:space="preserve">
+    <value>Логировать в</value>
+  </data>
+  <data name="LoggingSection" xml:space="preserve">
+    <value>Журналирование</value>
+  </data>
+  <data name="Logs" xml:space="preserve">
+    <value>Журналы</value>
+  </data>
+  <data name="LogsWillAppearHere" xml:space="preserve">
+    <value>Журналы появятся здесь после запуска frpc</value>
+  </data>
+  <data name="Manage" xml:space="preserve">
+    <value>Управление</value>
+  </data>
+  <data name="MaxDays" xml:space="preserve">
+    <value>Максимум дней</value>
+  </data>
+  <data name="MaxFailed" xml:space="preserve">
+    <value>Максимум неудач</value>
+  </data>
+  <data name="Method" xml:space="preserve">
+    <value>Метод</value>
+  </data>
+  <data name="MonitorTheHealthOfTheLocalService" xml:space="preserve">
+    <value>Мониторинг работоспособности локальной службы</value>
+  </data>
+  <data name="MultiplexerName" xml:space="preserve">
+    <value>Имя мультиплексора</value>
+  </data>
+  <data name="MustMatchTheProxySecretKey" xml:space="preserve">
+    <value>Обязательно. Должен совпадать с секретным ключом, настроенным на прокси</value>
+  </data>
+  <data name="MustMatchTheVisitorsSecretKey" xml:space="preserve">
+    <value>Должен совпадать с секретным ключом посетителя</value>
+  </data>
+  <data name="NETRuntimeInfo" xml:space="preserve">
+    <value>Среда выполнения .NET</value>
+  </data>
+  <data name="NameOfTheMultiplexer" xml:space="preserve">
+    <value>Имя мультиплексора</value>
+  </data>
+  <data name="NativeDeployment" xml:space="preserve">
+    <value>Нативное развертывание</value>
+  </data>
+  <data name="NativeDeploymentDownloadsAndExtracts" xml:space="preserve">
+    <value>• Нативное развертывание загружает и распаковывает бинарный файл frpc для вашей платформы</value>
+  </data>
+  <data name="NoLogsAvailable" xml:space="preserve">
+    <value>Журналы недоступны</value>
+  </data>
+  <data name="NoProxiesConfigured" xml:space="preserve">
+    <value>Прокси не настроены</value>
+  </data>
+  <data name="NoVersionsDownloaded" xml:space="preserve">
+    <value>No versions downloaded yet</value>
+  </data>
+  <data name="NoVisitorsConfigured" xml:space="preserve">
+    <value>Посетители не настроены</value>
+  </data>
+  <data name="OIDC" xml:space="preserve">
+    <value>OIDC</value>
+  </data>
+  <data name="OneHeaderPerLine" xml:space="preserve">
+    <value>Один заголовок на строку (например：Authorization: Bearer token)</value>
+  </data>
+  <data name="OpenReleasesPage" xml:space="preserve">
+    <value>Open GitHub Releases</value>
+  </data>
+  <data name="OpenReleasesPageToolTip" xml:space="preserve">
+    <value>Open GitHub releases page in browser</value>
+  </data>
+  <data name="OptionalAudience" xml:space="preserve">
+    <value>Необязательная аудитория</value>
+  </data>
+  <data name="OptionalLeaveEmptyToBindToAll" xml:space="preserve">
+    <value>Необязательно. Оставьте пустым для привязки ко всем интерфейсам</value>
+  </data>
+  <data name="OptionalUserName" xml:space="preserve">
+    <value>Необязательное имя пользователя</value>
+  </data>
+  <data name="OptionalUserNameToAvoidProxyNameConflicts" xml:space="preserve">
+    <value>Необязательное имя пользователя для предотвращения конфликтов имён прокси</value>
+  </data>
+  <data name="Overview" xml:space="preserve">
+    <value>Обзор</value>
+  </data>
+  <data name="PackageManager" xml:space="preserve">
+    <value>Package Manager</value>
+  </data>
+  <data name="PackageManagerNotSupportFrpc" xml:space="preserve">
+    <value>This package manager does not support direct frpc installation. Please use another method.</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Пароль</value>
+  </data>
+  <data name="PathLabel" xml:space="preserve">
+    <value>Путь</value>
+  </data>
+  <data name="Platform" xml:space="preserve">
+    <value>Platform</value>
+  </data>
+  <data name="Plugin" xml:space="preserve">
+    <value>Плагин</value>
+  </data>
+  <data name="PluginConfiguration" xml:space="preserve">
+    <value>Конфигурация плагина</value>
+  </data>
+  <data name="PluginTypeLabel" xml:space="preserve">
+    <value>Тип плагина</value>
+  </data>
+  <data name="PortableMode" xml:space="preserve">
+    <value>Переносимый режим</value>
+  </data>
+  <data name="PresetExported" xml:space="preserve">
+    <value>Preset exported to {0}</value>
+  </data>
+  <data name="PresetImported" xml:space="preserve">
+    <value>Preset imported: {0}</value>
+  </data>
+  <data name="PresetManagement" xml:space="preserve">
+    <value>Preset Management</value>
+  </data>
+  <data name="PresetName" xml:space="preserve">
+    <value>Preset Name</value>
+  </data>
+  <data name="ProcessId" xml:space="preserve">
+    <value>ID процесса</value>
+  </data>
+  <data name="ProxiesCount" xml:space="preserve">
+    <value>{0} прокси</value>
+  </data>
+  <data name="ProxyConfiguration" xml:space="preserve">
+    <value>Конфигурация прокси</value>
+  </data>
+  <data name="ProxyManagement" xml:space="preserve">
+    <value>Управление прокси</value>
+  </data>
+  <data name="ProxyName" xml:space="preserve">
+    <value>Имя прокси</value>
+  </data>
+  <data name="ProxyType" xml:space="preserve">
+    <value>Тип прокси</value>
+  </data>
+  <data name="QuickAccess" xml:space="preserve">
+    <value>Быстрый доступ</value>
+  </data>
+  <data name="QuickShare" xml:space="preserve">
+    <value>Быстрый обмен</value>
+  </data>
+  <data name="RecentActivity" xml:space="preserve">
+    <value>Последняя активность</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="RefreshPackageManagerList" xml:space="preserve">
+    <value>Refresh package manager list</value>
+  </data>
+  <data name="ReloadLogsFromBuffer" xml:space="preserve">
+    <value>Перезагрузить журналы из буфера</value>
+  </data>
+  <data name="RemotePort" xml:space="preserve">
+    <value>Удалённый порт</value>
+  </data>
+  <data name="RemotePortLabel" xml:space="preserve">
+    <value>Удалённый порт：</value>
+  </data>
+  <data name="RenamePreset" xml:space="preserve">
+    <value>Rename Preset</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Обязательно</value>
+  </data>
+  <data name="RequiredFieldsAreMarked" xml:space="preserve">
+    <value>Обязательные поля отмечены звёздочкой</value>
+  </data>
+  <data name="ResetToDefaults" xml:space="preserve">
+    <value>Сбросить значения по умолчанию</value>
+  </data>
+  <data name="RestartFrpc" xml:space="preserve">
+    <value>Перезапустить Frpc</value>
+  </data>
+  <data name="SOCKS5URL" xml:space="preserve">
+    <value>URL SOCKS5</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="SaveConfiguration" xml:space="preserve">
+    <value>Сохранить конфигурацию</value>
+  </data>
+  <data name="SaveSettings" xml:space="preserve">
+    <value>Сохранить настройки</value>
+  </data>
+  <data name="Scope" xml:space="preserve">
+    <value>Область</value>
+  </data>
+  <data name="SearchByName" xml:space="preserve">
+    <value>Поиск по имени...</value>
+  </data>
+  <data name="SearchVisitors" xml:space="preserve">
+    <value>Поиск посетителей...</value>
+  </data>
+  <data name="Seconds" xml:space="preserve">
+    <value>секунды</value>
+  </data>
+  <data name="SecretKey" xml:space="preserve">
+    <value>Секретный ключ</value>
+  </data>
+  <data name="SecureTunnelSettings" xml:space="preserve">
+    <value>Настройки защищённого туннеля</value>
+  </data>
+  <data name="SecuritySettings" xml:space="preserve">
+    <value>Настройки безопасности</value>
+  </data>
+  <data name="SelectFrpcBinary" xml:space="preserve">
+    <value>Select frpc binary...</value>
+  </data>
+  <data name="SelectFrpcExecutable" xml:space="preserve">
+    <value>Select frpc executable</value>
+  </data>
+  <data name="SelectPackageManager" xml:space="preserve">
+    <value>Select Package Manager</value>
+  </data>
+  <data name="ServerAddress" xml:space="preserve">
+    <value>Адрес сервера</value>
+  </data>
+  <data name="ServerBindInfo" xml:space="preserve">
+    <value>Сервер：</value>
+  </data>
+  <data name="ServerConfig" xml:space="preserve">
+    <value>Конфигурация сервера</value>
+  </data>
+  <data name="ServerName" xml:space="preserve">
+    <value>Имя сервера</value>
+  </data>
+  <data name="ServerPort" xml:space="preserve">
+    <value>Порт сервера</value>
+  </data>
+  <data name="ServiceConfiguration" xml:space="preserve">
+    <value>Service Configuration</value>
+  </data>
+  <data name="ServiceScope" xml:space="preserve">
+    <value>Service Scope</value>
+  </data>
+  <data name="ServiceStatus" xml:space="preserve">
+    <value>Service Status</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="Setup" xml:space="preserve">
+    <value>Настройка</value>
+  </data>
+  <data name="SpecificIPToBindTo" xml:space="preserve">
+    <value>Конкретный IP для привязки</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="StartContainer" xml:space="preserve">
+    <value>Запустить контейнер</value>
+  </data>
+  <data name="StartFrpc" xml:space="preserve">
+    <value>Запустить Frpc</value>
+  </data>
+  <data name="StartOnBoot" xml:space="preserve">
+    <value>Start on boot</value>
+  </data>
+  <data name="StartOnSystemBoot" xml:space="preserve">
+    <value>Запуск при загрузке системы</value>
+  </data>
+  <data name="StaticFilePluginSettings" xml:space="preserve">
+    <value>Настройки плагина статических файлов</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="StatusSection" xml:space="preserve">
+    <value>Статус</value>
+  </data>
+  <data name="Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="StopContainer" xml:space="preserve">
+    <value>Остановить контейнер</value>
+  </data>
+  <data name="StopFrpc" xml:space="preserve">
+    <value>Остановить Frpc</value>
+  </data>
+  <data name="Subdomain" xml:space="preserve">
+    <value>Поддомен</value>
+  </data>
+  <data name="SystemDefault" xml:space="preserve">
+    <value>Системная по умолчанию</value>
+  </data>
+  <data name="SystemIntegration" xml:space="preserve">
+    <value>Системная интеграция</value>
+  </data>
+  <data name="SystemLevel" xml:space="preserve">
+    <value>System level</value>
+  </data>
+  <data name="SystemServiceSettings" xml:space="preserve">
+    <value>System Service Settings</value>
+  </data>
+  <data name="TCPMultiplexerSettings" xml:space="preserve">
+    <value>Настройки TCP-мультиплексора</value>
+  </data>
+  <data name="TCPMux" xml:space="preserve">
+    <value>TCP мультиплексор</value>
+  </data>
+  <data name="TheAddressOfTheFrpsServer" xml:space="preserve">
+    <value>Адрес сервера frps</value>
+  </data>
+  <data name="TheIPOfTheLocalService" xml:space="preserve">
+    <value>IP-адрес локальной службы для перенаправления</value>
+  </data>
+  <data name="TheMultiplexerMustBeConfiguredOnTheServer" xml:space="preserve">
+    <value>Мультиплексор должен быть настроен на сервере</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Тема</value>
+  </data>
+  <data name="TimeoutSeconds" xml:space="preserve">
+    <value>Таймаут (секунды)</value>
+  </data>
+  <data name="Toast_BinaryLocated" xml:space="preserve">
+    <value>Binary located at: {0}</value>
+  </data>
+  <data name="Toast_CannotDeleteUsedVersion" xml:space="preserve">
+    <value>Cannot delete a version that is currently in use by a configuration</value>
+  </data>
+  <data name="Toast_CheckFailed" xml:space="preserve">
+    <value>Check Failed</value>
+  </data>
+  <data name="Toast_ConfigureFrpcFirst" xml:space="preserve">
+    <value>Please configure frpc first</value>
+  </data>
+  <data name="Toast_ContainerStarted" xml:space="preserve">
+    <value>Container Started</value>
+  </data>
+  <data name="Toast_ContainerStopped" xml:space="preserve">
+    <value>Container Stopped</value>
+  </data>
+  <data name="Toast_CouldNotCheckDocker" xml:space="preserve">
+    <value>Could not check Docker availability</value>
+  </data>
+  <data name="Toast_CouldNotCheckNative" xml:space="preserve">
+    <value>Could not check native deployment</value>
+  </data>
+  <data name="Toast_CouldNotDeleteVersion" xml:space="preserve">
+    <value>Could not delete the selected version</value>
+  </data>
+  <data name="Toast_CouldNotDeployNative" xml:space="preserve">
+    <value>Could not deploy native frpc</value>
+  </data>
+  <data name="Toast_CouldNotDetectFrpc" xml:space="preserve">
+    <value>Could not detect frpc automatically</value>
+  </data>
+  <data name="Toast_CouldNotDetermineDirectory" xml:space="preserve">
+    <value>Could not determine docker-compose directory</value>
+  </data>
+  <data name="Toast_CouldNotDownloadFrpc" xml:space="preserve">
+    <value>Could not download frpc: {0}</value>
+  </data>
+  <data name="Toast_CouldNotGenerateDockerCompose" xml:space="preserve">
+    <value>Could not generate docker-compose.yml</value>
+  </data>
+  <data name="Toast_CouldNotGetDownloadUrl" xml:space="preserve">
+    <value>Could not get download URL for the selected version</value>
+  </data>
+  <data name="Toast_CouldNotGetVersion" xml:space="preserve">
+    <value>Could not get frpc version from the specified path</value>
+  </data>
+  <data name="Toast_CouldNotInstallFrpc" xml:space="preserve">
+    <value>Could not install frpc</value>
+  </data>
+  <data name="Toast_CouldNotLoadVersions" xml:space="preserve">
+    <value>Could not load downloaded versions</value>
+  </data>
+  <data name="Toast_CouldNotOpenConfiguration" xml:space="preserve">
+    <value>Could not open configuration dialog</value>
+  </data>
+  <data name="Toast_CouldNotOpenDownloadPage" xml:space="preserve">
+    <value>Could not open download page</value>
+  </data>
+  <data name="Toast_CouldNotOpenUrl" xml:space="preserve">
+    <value>Could not open URL</value>
+  </data>
+  <data name="Toast_CouldNotSelectFile" xml:space="preserve">
+    <value>Could not select file</value>
+  </data>
+  <data name="Toast_CouldNotStartContainer" xml:space="preserve">
+    <value>Could not start Docker container</value>
+  </data>
+  <data name="Toast_CouldNotStopContainer" xml:space="preserve">
+    <value>Could not stop Docker container</value>
+  </data>
+  <data name="Toast_CreateConfigFirst" xml:space="preserve">
+    <value>Please create a configuration file first</value>
+  </data>
+  <data name="Toast_DeleteFailed" xml:space="preserve">
+    <value>Delete Failed</value>
+  </data>
+  <data name="Toast_DeleteFailedWithError" xml:space="preserve">
+    <value>Delete failed: {0}</value>
+  </data>
+  <data name="Toast_Deleted" xml:space="preserve">
+    <value>Deleted</value>
+  </data>
+  <data name="Toast_Deploying" xml:space="preserve">
+    <value>Deploying...</value>
+  </data>
+  <data name="Toast_DeployingFrpcBinary" xml:space="preserve">
+    <value>Deploying frpc binary...</value>
+  </data>
+  <data name="Toast_DeploymentFailed" xml:space="preserve">
+    <value>Deployment Failed</value>
+  </data>
+  <data name="Toast_DockerAvailable" xml:space="preserve">
+    <value>Docker Available</value>
+  </data>
+  <data name="Toast_DockerComposeSaved" xml:space="preserve">
+    <value>docker-compose.yml saved to {0}</value>
+  </data>
+  <data name="Toast_DockerContainerRunning" xml:space="preserve">
+    <value>Docker container is now running</value>
+  </data>
+  <data name="Toast_DockerContainerStopped" xml:space="preserve">
+    <value>Docker container has been stopped</value>
+  </data>
+  <data name="Toast_DockerNotAvailable" xml:space="preserve">
+    <value>Docker Not Available</value>
+  </data>
+  <data name="Toast_DockerNotInstalled" xml:space="preserve">
+    <value>Docker is not installed or not running</value>
+  </data>
+  <data name="Toast_DockerReady" xml:space="preserve">
+    <value>Docker is ready to use</value>
+  </data>
+  <data name="Toast_Download" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="Toast_DownloadAndDeploy" xml:space="preserve">
+    <value>Please download and deploy frpc binary</value>
+  </data>
+  <data name="Toast_DownloadFailed" xml:space="preserve">
+    <value>Download Failed</value>
+  </data>
+  <data name="Toast_DownloadFrom" xml:space="preserve">
+    <value>Please download frpc from: {0}</value>
+  </data>
+  <data name="Toast_Downloaded" xml:space="preserve">
+    <value>Downloaded</value>
+  </data>
+  <data name="Toast_Downloading" xml:space="preserve">
+    <value>Downloading...</value>
+  </data>
+  <data name="Toast_DownloadingFrpc" xml:space="preserve">
+    <value>Downloading frpc {0}...</value>
+  </data>
+  <data name="Toast_Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Toast_FailedToStartContainer" xml:space="preserve">
+    <value>Failed to start container: {0}</value>
+  </data>
+  <data name="Toast_FailedToStopContainer" xml:space="preserve">
+    <value>Failed to stop container: {0}</value>
+  </data>
+  <data name="Toast_FilePickerNotAvailable" xml:space="preserve">
+    <value>File picker not available</value>
+  </data>
+  <data name="Toast_FrpcDetected" xml:space="preserve">
+    <value>Frpc Detected</value>
+  </data>
+  <data name="Toast_FrpcDownloaded" xml:space="preserve">
+    <value>Frpc downloaded to: {0}</value>
+  </data>
+  <data name="Toast_FrpcFound" xml:space="preserve">
+    <value>Frpc Found</value>
+  </data>
+  <data name="Toast_FrpcFoundAt" xml:space="preserve">
+    <value>Frpc found at: {0}</value>
+  </data>
+  <data name="Toast_FrpcNotFound" xml:space="preserve">
+    <value>Frpc Not Found</value>
+  </data>
+  <data name="Toast_FrpcNotInPath" xml:space="preserve">
+    <value>Frpc was not found in PATH or common locations</value>
+  </data>
+  <data name="Toast_GenerateDockerComposeFirst" xml:space="preserve">
+    <value>Please generate docker-compose.yml first</value>
+  </data>
+  <data name="Toast_Generated" xml:space="preserve">
+    <value>Generated</value>
+  </data>
+  <data name="Toast_GenerationFailed" xml:space="preserve">
+    <value>Generation Failed</value>
+  </data>
+  <data name="Toast_InstallFailed" xml:space="preserve">
+    <value>Install Failed</value>
+  </data>
+  <data name="Toast_InstallFailedWithError" xml:space="preserve">
+    <value>Install failed: {0}</value>
+  </data>
+  <data name="Toast_Installing" xml:space="preserve">
+    <value>Installing...</value>
+  </data>
+  <data name="Toast_InstallingFrpcVia" xml:space="preserve">
+    <value>Installing frpc via {0}...</value>
+  </data>
+  <data name="Toast_InvalidBinary" xml:space="preserve">
+    <value>Invalid Binary</value>
+  </data>
+  <data name="Toast_InvalidPath" xml:space="preserve">
+    <value>Invalid Path</value>
+  </data>
+  <data name="Toast_NativeDeploymentNotImplemented" xml:space="preserve">
+    <value>Native deployment is not yet implemented</value>
+  </data>
+  <data name="Toast_NoConfiguration" xml:space="preserve">
+    <value>No Configuration</value>
+  </data>
+  <data name="Toast_NoDockerComposeFound" xml:space="preserve">
+    <value>No docker-compose.yml found</value>
+  </data>
+  <data name="Toast_NoPath" xml:space="preserve">
+    <value>No Path</value>
+  </data>
+  <data name="Toast_NoSelection" xml:space="preserve">
+    <value>No Selection</value>
+  </data>
+  <data name="Toast_NoVersion" xml:space="preserve">
+    <value>No Version Selected</value>
+  </data>
+  <data name="Toast_NotImplemented" xml:space="preserve">
+    <value>Not Implemented</value>
+  </data>
+  <data name="Toast_OpeningUrl" xml:space="preserve">
+    <value>Opening: {0}</value>
+  </data>
+  <data name="Toast_PackageManagerNotAvailable" xml:space="preserve">
+    <value>Package manager not available for frpc installation</value>
+  </data>
+  <data name="Toast_SelectFrpcPath" xml:space="preserve">
+    <value>Please select a frpc executable path</value>
+  </data>
+  <data name="Toast_SelectVersionFirst" xml:space="preserve">
+    <value>Please select a frpc version first</value>
+  </data>
+  <data name="Toast_SelectVersionToDelete" xml:space="preserve">
+    <value>Please select a version to delete</value>
+  </data>
+  <data name="Toast_ServiceManagerNotAvailable" xml:space="preserve">
+    <value>Service manager not available</value>
+  </data>
+  <data name="Toast_StartFailed" xml:space="preserve">
+    <value>Start Failed</value>
+  </data>
+  <data name="Toast_StopFailed" xml:space="preserve">
+    <value>Stop Failed</value>
+  </data>
+  <data name="Toast_VersionDeleted" xml:space="preserve">
+    <value>Version {0} has been deleted</value>
+  </data>
+  <data name="Toast_VersionInUse" xml:space="preserve">
+    <value>Version In Use</value>
+  </data>
+  <data name="Token" xml:space="preserve">
+    <value>Токен</value>
+  </data>
+  <data name="TokenEndpoint" xml:space="preserve">
+    <value>Конечная точка токена</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Всего</value>
+  </data>
+  <data name="TransportEnabled" xml:space="preserve">
+    <value>Транспорт включён</value>
+  </data>
+  <data name="TransportOptions" xml:space="preserve">
+    <value>Параметры транспорта</value>
+  </data>
+  <data name="TransportProtocol" xml:space="preserve">
+    <value>Протокол</value>
+  </data>
+  <data name="TransportSettings" xml:space="preserve">
+    <value>Настройки транспорта</value>
+  </data>
+  <data name="TypeLabel" xml:space="preserve">
+    <value>Тип</value>
+  </data>
+  <data name="URLPrefix" xml:space="preserve">
+    <value>Префикс URL</value>
+  </data>
+  <data name="UninstallService" xml:space="preserve">
+    <value>Uninstall Service</value>
+  </data>
+  <data name="UsePackageManager" xml:space="preserve">
+    <value>Use package manager</value>
+  </data>
+  <data name="UserLevel" xml:space="preserve">
+    <value>User level</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Имя пользователя</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="VersionInfo" xml:space="preserve">
+    <value>Версия</value>
+  </data>
+  <data name="VersionManagementHint" xml:space="preserve">
+    <value>Manage downloaded frpc versions. Versions in use by configurations cannot be deleted.</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>Просмотр</value>
+  </data>
+  <data name="ViewRealtimeLogsFromFrpc" xml:space="preserve">
+    <value>Просмотр журналов в реальном времени от процесса frpc</value>
+  </data>
+  <data name="VisitorConfiguration" xml:space="preserve">
+    <value>Конфигурация посетителя</value>
+  </data>
+  <data name="VisitorManagement" xml:space="preserve">
+    <value>Управление посетителями</value>
+  </data>
+  <data name="VisitorName" xml:space="preserve">
+    <value>Имя посетителя</value>
+  </data>
+  <data name="VisitorType" xml:space="preserve">
+    <value>Тип посетителя</value>
+  </data>
+  <data name="Visitors" xml:space="preserve">
+    <value>Посетители</value>
+  </data>
+  <data name="VisitorsAllowYouToConnect" xml:space="preserve">
+    <value>Посетители позволяют вам подключаться к прокси защищённого туннеля (STCP/XTCP/SUDP)</value>
+  </data>
+</root>

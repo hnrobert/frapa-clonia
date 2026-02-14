@@ -1,0 +1,1182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="About" xml:space="preserve">
+    <value>关于</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>活跃</value>
+  </data>
+  <data name="ActiveProxies" xml:space="preserve">
+    <value>活跃代理</value>
+  </data>
+  <data name="AddProxy" xml:space="preserve">
+    <value>添加代理</value>
+  </data>
+  <data name="AddVisitor" xml:space="preserve">
+    <value>添加访问者</value>
+  </data>
+  <data name="AllLevels" xml:space="preserve">
+    <value>所有级别</value>
+  </data>
+  <data name="AllTypes" xml:space="preserve">
+    <value>所有类型</value>
+  </data>
+  <data name="AllowedUsers" xml:space="preserve">
+    <value>允许的用户</value>
+  </data>
+  <data name="AppTitle" xml:space="preserve">
+    <value>FrapaClonia</value>
+  </data>
+  <data name="Appearance" xml:space="preserve">
+    <value>外观</value>
+  </data>
+  <data name="ApplicationMode" xml:space="preserve">
+    <value>应用程序模式</value>
+  </data>
+  <data name="Architecture" xml:space="preserve">
+    <value>Architecture</value>
+  </data>
+  <data name="Audience" xml:space="preserve">
+    <value>受众</value>
+  </data>
+  <data name="Authentication" xml:space="preserve">
+    <value>身份验证</value>
+  </data>
+  <data name="AutoDetect" xml:space="preserve">
+    <value>Auto Detect</value>
+  </data>
+  <data name="AutoDetectFrpcToolTip" xml:space="preserve">
+    <value>Automatically detect frpc in system PATH</value>
+  </data>
+  <data name="AutoScroll" xml:space="preserve">
+    <value>自动滚动</value>
+  </data>
+  <data name="AutoStart" xml:space="preserve">
+    <value>开机启动</value>
+  </data>
+  <data name="AutomaticallyLaunchFrapaClonia" xml:space="preserve">
+    <value>登录时自动启动 FrapaClonia</value>
+  </data>
+  <data name="BandwidthLimit" xml:space="preserve">
+    <value>带宽限制</value>
+  </data>
+  <data name="BasicSettings" xml:space="preserve">
+    <value>基本设置</value>
+  </data>
+  <data name="BinaryPath" xml:space="preserve">
+    <value>二进制路径</value>
+  </data>
+  <data name="BindAddr" xml:space="preserve">
+    <value>绑定地址</value>
+  </data>
+  <data name="BindIPPortInfo" xml:space="preserve">
+    <value>绑定：</value>
+  </data>
+  <data name="BindPort" xml:space="preserve">
+    <value>绑定端口</value>
+  </data>
+  <data name="BindSettings" xml:space="preserve">
+    <value>绑定设置</value>
+  </data>
+  <data name="BothMethodsUse" xml:space="preserve">
+    <value>• 两种方法都使用来自服务器设置的相同配置文件</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="BrowseToolTip" xml:space="preserve">
+    <value>Browse for frpc executable file</value>
+  </data>
+  <data name="BuildInfo" xml:space="preserve">
+    <value>构建</value>
+  </data>
+  <data name="CRTPath" xml:space="preserve">
+    <value>CRT 路径</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="ChangesWillTakeEffectImmediately" xml:space="preserve">
+    <value>更改将立即生效</value>
+  </data>
+  <data name="Check" xml:space="preserve">
+    <value>Check</value>
+  </data>
+  <data name="CheckDeployment" xml:space="preserve">
+    <value>检查部署</value>
+  </data>
+  <data name="CheckDocker" xml:space="preserve">
+    <value>检查 Docker</value>
+  </data>
+  <data name="CheckFrpcPathToolTip" xml:space="preserve">
+    <value>Verify frpc path and get version</value>
+  </data>
+  <data name="CheckVersions" xml:space="preserve">
+    <value>Check Versions</value>
+  </data>
+  <data name="CheckingFrpc" xml:space="preserve">
+    <value>Checking frpc...</value>
+  </data>
+  <data name="ChooseHowYouWantToDeployAndRunFrpc" xml:space="preserve">
+    <value>选择您想要如何部署和运行 frpc</value>
+  </data>
+  <data name="ChooseYourPreferredColorTheme" xml:space="preserve">
+    <value>选择您喜欢的颜色主题</value>
+  </data>
+  <data name="ClearAll" xml:space="preserve">
+    <value>清空全部</value>
+  </data>
+  <data name="ClearAllLogs" xml:space="preserve">
+    <value>清除所有日志</value>
+  </data>
+  <data name="ClientID" xml:space="preserve">
+    <value>客户端 ID</value>
+  </data>
+  <data name="ClientSecret" xml:space="preserve">
+    <value>客户端密钥</value>
+  </data>
+  <data name="CommaSeparatedList" xml:space="preserve">
+    <value>逗号分隔的自定义域名列表</value>
+  </data>
+  <data name="CommaSeparatedListOfAllowedUsers" xml:space="preserve">
+    <value>逗号分隔的允许用户列表</value>
+  </data>
+  <data name="CompressDataToReduceBandwidthUsage" xml:space="preserve">
+    <value>压缩数据以减少带宽使用</value>
+  </data>
+  <data name="ConfigPresets" xml:space="preserve">
+    <value>配置预设</value>
+  </data>
+  <data name="Configuration" xml:space="preserve">
+    <value>配置</value>
+  </data>
+  <data name="ConfigurationError" xml:space="preserve">
+    <value>配置错误</value>
+  </data>
+  <data name="ConfigurationIsValid" xml:space="preserve">
+    <value>配置有效</value>
+  </data>
+  <data name="ConfigurationLocation" xml:space="preserve">
+    <value>配置位置</value>
+  </data>
+  <data name="ConfigurationStoredInAppDir" xml:space="preserve">
+    <value>配置存储在应用程序目录中（需要 portable.txt）</value>
+  </data>
+  <data name="Configure" xml:space="preserve">
+    <value>配置</value>
+  </data>
+  <data name="ConfigureAVisitorToConnect" xml:space="preserve">
+    <value>配置访问者以连接到 STCP、XTCP 或 SUDP 代理</value>
+  </data>
+  <data name="ConfigureAndManageSecureTunnelVisitors" xml:space="preserve">
+    <value>配置和管理安全隧道访问者（STCP/XTCP/SUDP）</value>
+  </data>
+  <data name="ConfigureAndManageYourFrpcProxyConfigurations" xml:space="preserve">
+    <value>配置和管理您的 frpc 代理配置</value>
+  </data>
+  <data name="ConfigureFrpcToolTip" xml:space="preserve">
+    <value>Open frpc configuration dialog</value>
+  </data>
+  <data name="ConfigureYourProxySettingsBelow" xml:space="preserve">
+    <value>在下方配置您的代理设置。必填字段标有星号。</value>
+  </data>
+  <data name="ConnectionSettings" xml:space="preserve">
+    <value>连接设置</value>
+  </data>
+  <data name="ContainerName" xml:space="preserve">
+    <value>容器名称</value>
+  </data>
+  <data name="CreateProxy" xml:space="preserve">
+    <value>创建代理</value>
+  </data>
+  <data name="CreateYourFirstProxyConfiguration" xml:space="preserve">
+    <value>创建您的第一个代理配置以开始使用</value>
+  </data>
+  <data name="CreateYourFirstVisitor" xml:space="preserve">
+    <value>创建您的第一个访问者</value>
+  </data>
+  <data name="CrossPlatformFrpcVisualClient" xml:space="preserve">
+    <value>使用 Avalonia UI 构建的跨平台 frpc 可视化客户端</value>
+  </data>
+  <data name="CustomDomains" xml:space="preserve">
+    <value>自定义域名</value>
+  </data>
+  <data name="Dark" xml:space="preserve">
+    <value>深色</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>仪表板</value>
+  </data>
+  <data name="DefaultPort" xml:space="preserve">
+    <value>默认端口</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="DeletePreset" xml:space="preserve">
+    <value>删除预设</value>
+  </data>
+  <data name="DeleteProxy" xml:space="preserve">
+    <value>删除代理</value>
+  </data>
+  <data name="DeleteProxyToolTip" xml:space="preserve">
+    <value>删除代理</value>
+  </data>
+  <data name="DeleteVisitor" xml:space="preserve">
+    <value>删除访问者</value>
+  </data>
+  <data name="DeployNative" xml:space="preserve">
+    <value>本地部署</value>
+  </data>
+  <data name="Deployment" xml:space="preserve">
+    <value>Frpc 部署</value>
+  </data>
+  <data name="DeploymentInformation" xml:space="preserve">
+    <value>部署信息</value>
+  </data>
+  <data name="DeploymentMode" xml:space="preserve">
+    <value>部署模式</value>
+  </data>
+  <data name="DeploymentStatus" xml:space="preserve">
+    <value>部署状态</value>
+  </data>
+  <data name="DetectingFrpc" xml:space="preserve">
+    <value>Detecting frpc...</value>
+  </data>
+  <data name="DialTimeout" xml:space="preserve">
+    <value>拨号超时</value>
+  </data>
+  <data name="DockerComposePath" xml:space="preserve">
+    <value>Docker Compose 路径</value>
+  </data>
+  <data name="DockerDeployment" xml:space="preserve">
+    <value>Docker 部署</value>
+  </data>
+  <data name="DockerDeploymentRequiresDocker" xml:space="preserve">
+    <value>• Docker 部署需要安装 Docker 和 Docker Compose</value>
+  </data>
+  <data name="DockerImage" xml:space="preserve">
+    <value>Docker 镜像</value>
+  </data>
+  <data name="DockerStatus" xml:space="preserve">
+    <value>Docker 状态</value>
+  </data>
+  <data name="DomainSettings" xml:space="preserve">
+    <value>域名设置</value>
+  </data>
+  <data name="DownloadAndDeploy" xml:space="preserve">
+    <value>Download &amp; Deploy</value>
+  </data>
+  <data name="DownloadDirect" xml:space="preserve">
+    <value>Download Direct</value>
+  </data>
+  <data name="DownloadDirectToolTip" xml:space="preserve">
+    <value>Download frpc directly from GitHub</value>
+  </data>
+  <data name="DownloadFromGitHub" xml:space="preserve">
+    <value>Download from GitHub</value>
+  </data>
+  <data name="DownloadFromWeb" xml:space="preserve">
+    <value>Download from web</value>
+  </data>
+  <data name="DownloadFromWebDescription" xml:space="preserve">
+    <value>Download the frpc binary directly from GitHub releases page. After downloading, extract and select the executable file.</value>
+  </data>
+  <data name="DownloadFrpc" xml:space="preserve">
+    <value>下载 frpc</value>
+  </data>
+  <data name="DownloadFrpcFromGitHub" xml:space="preserve">
+    <value>Download Frpc from GitHub</value>
+  </data>
+  <data name="Downloading" xml:space="preserve">
+    <value>Downloading...</value>
+  </data>
+  <data name="DuplicatePreset" xml:space="preserve">
+    <value>复制预设</value>
+  </data>
+  <data name="DuplicateProxy" xml:space="preserve">
+    <value>复制代理</value>
+  </data>
+  <data name="DuplicateProxyToolTip" xml:space="preserve">
+    <value>复制代理</value>
+  </data>
+  <data name="EGConsolePathToLogfile" xml:space="preserve">
+    <value>例如：console、/path/to/logfile</value>
+  </data>
+  <data name="EGOpenidProfile" xml:space="preserve">
+    <value>例如：openid、profile</value>
+  </data>
+  <data name="EG_1MB_256KB" xml:space="preserve">
+    <value>例如：1MB、256KB</value>
+  </data>
+  <data name="EG_www_example_com" xml:space="preserve">
+    <value>例如：www.example.com、api.example.com</value>
+  </data>
+  <data name="EditProxy" xml:space="preserve">
+    <value>编辑代理</value>
+  </data>
+  <data name="EditProxyToolTip" xml:space="preserve">
+    <value>编辑代理</value>
+  </data>
+  <data name="EditProxyWindowTitle" xml:space="preserve">
+    <value>编辑代理</value>
+  </data>
+  <data name="EditVisitor" xml:space="preserve">
+    <value>编辑访问者</value>
+  </data>
+  <data name="EditVisitorWindowTitle" xml:space="preserve">
+    <value>编辑访问者</value>
+  </data>
+  <data name="EnableCompression" xml:space="preserve">
+    <value>使用压缩</value>
+  </data>
+  <data name="EnableEncryption" xml:space="preserve">
+    <value>使用加密</value>
+  </data>
+  <data name="EnableHealthCheck" xml:space="preserve">
+    <value>启用健康检查</value>
+  </data>
+  <data name="EnableTLS" xml:space="preserve">
+    <value>启用 TLS</value>
+  </data>
+  <data name="EncryptCommunicationWithTheFrpsServer" xml:space="preserve">
+    <value>加密与 frps 服务器的通信</value>
+  </data>
+  <data name="EncryptTheConnectionBetweenClientAndServer" xml:space="preserve">
+    <value>加密客户端和服务器之间的连接</value>
+  </data>
+  <data name="EnterYourAuthenticationToken" xml:space="preserve">
+    <value>输入您的身份验证令牌</value>
+  </data>
+  <data name="Entries" xml:space="preserve">
+    <value>{0} 条记录</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>导出</value>
+  </data>
+  <data name="ExportAll" xml:space="preserve">
+    <value>Export All</value>
+  </data>
+  <data name="ExportFailed" xml:space="preserve">
+    <value>导出失败</value>
+  </data>
+  <data name="ExportLogsToFile" xml:space="preserve">
+    <value>将日志导出到文件</value>
+  </data>
+  <data name="ExportPreset" xml:space="preserve">
+    <value>导出预设</value>
+  </data>
+  <data name="FrpcBinaryPath" xml:space="preserve">
+    <value>Frpc Binary Path</value>
+  </data>
+  <data name="FrpcConfiguration" xml:space="preserve">
+    <value>Frpc Configuration</value>
+  </data>
+  <data name="FrpcExecutableLocation" xml:space="preserve">
+    <value>Frpc Executable Location</value>
+  </data>
+  <data name="FrpcExecutablePathDescription" xml:space="preserve">
+    <value>Set the path to the frpc executable file. The application will use this binary to run frpc.</value>
+  </data>
+  <data name="FrpcNotConfigured" xml:space="preserve">
+    <value>Frpc not configured</value>
+  </data>
+  <data name="FrpcNotFoundOrInvalid" xml:space="preserve">
+    <value>Frpc not found or invalid</value>
+  </data>
+  <data name="FrpcNotRunning" xml:space="preserve">
+    <value>Frpc 未运行</value>
+  </data>
+  <data name="FrpcRunning" xml:space="preserve">
+    <value>Frpc 正在运行</value>
+  </data>
+  <data name="FrpcStatus" xml:space="preserve">
+    <value>Frpc 状态</value>
+  </data>
+  <data name="FrpcVersion" xml:space="preserve">
+    <value>Frpc Version</value>
+  </data>
+  <data name="FrpcVersions" xml:space="preserve">
+    <value>Frpc 版本</value>
+  </data>
+  <data name="GenerateDockerComposeYml" xml:space="preserve">
+    <value>生成 docker-compose.yml</value>
+  </data>
+  <data name="GetFrpc" xml:space="preserve">
+    <value>Get Frpc</value>
+  </data>
+  <data name="GetFrpcDescription" xml:space="preserve">
+    <value>If you don't have frpc installed, you can get it using one of the following methods:</value>
+  </data>
+  <data name="HTTPAuthentication" xml:space="preserve">
+    <value>HTTP 身份验证</value>
+  </data>
+  <data name="HTTPProxyURL" xml:space="preserve">
+    <value>HTTP 代理 URL</value>
+  </data>
+  <data name="HTTPSToHTTPPluginSettings" xml:space="preserve">
+    <value>HTTPS 转 HTTP 插件设置</value>
+  </data>
+  <data name="HTTPToHTTPSPluginSettings" xml:space="preserve">
+    <value>HTTP 转 HTTPS 插件设置</value>
+  </data>
+  <data name="HeaderNameValue" xml:space="preserve">
+    <value>标头名称：值</value>
+  </data>
+  <data name="HeadersLabel" xml:space="preserve">
+    <value>标头</value>
+  </data>
+  <data name="HealthCheck" xml:space="preserve">
+    <value>健康检查</value>
+  </data>
+  <data name="HeartbeatInterval" xml:space="preserve">
+    <value>心跳间隔</value>
+  </data>
+  <data name="HeartbeatTimeout" xml:space="preserve">
+    <value>心跳超时</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>导入</value>
+  </data>
+  <data name="ImportFailed" xml:space="preserve">
+    <value>导入失败</value>
+  </data>
+  <data name="ImportPreset" xml:space="preserve">
+    <value>导入预设</value>
+  </data>
+  <data name="InUse" xml:space="preserve">
+    <value>使用中</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="InstallAsSystemService" xml:space="preserve">
+    <value>Install as system service</value>
+  </data>
+  <data name="InstallCommand" xml:space="preserve">
+    <value>Install Command</value>
+  </data>
+  <data name="InstallMethod" xml:space="preserve">
+    <value>Install Method</value>
+  </data>
+  <data name="InstallService" xml:space="preserve">
+    <value>Install Service</value>
+  </data>
+  <data name="InstallViaPackageManager" xml:space="preserve">
+    <value>Install via package manager</value>
+  </data>
+  <data name="InterfaceLanguage" xml:space="preserve">
+    <value>界面语言</value>
+  </data>
+  <data name="IntervalSeconds" xml:space="preserve">
+    <value>间隔（秒）</value>
+  </data>
+  <data name="KeyPath" xml:space="preserve">
+    <value>密钥路径</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="LanguageAndRegion" xml:space="preserve">
+    <value>语言和地区</value>
+  </data>
+  <data name="LeaveEmptyIfUsingCustomDomains" xml:space="preserve">
+    <value>如果使用自定义域名则留空</value>
+  </data>
+  <data name="LeaveEmptyToAllowAllUsers" xml:space="preserve">
+    <value>留空以允许所有用户</value>
+  </data>
+  <data name="Light" xml:space="preserve">
+    <value>浅色</value>
+  </data>
+  <data name="LimitBandwidthForThisProxy" xml:space="preserve">
+    <value>限制此代理的带宽</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>加载中...</value>
+  </data>
+  <data name="LoadingVersions" xml:space="preserve">
+    <value>加载版本中...</value>
+  </data>
+  <data name="LoadingVisitors" xml:space="preserve">
+    <value>加载访问者中...</value>
+  </data>
+  <data name="Local" xml:space="preserve">
+    <value>本地：</value>
+  </data>
+  <data name="LocalAddress" xml:space="preserve">
+    <value>本地地址</value>
+  </data>
+  <data name="LocalIP" xml:space="preserve">
+    <value>本地 IP</value>
+  </data>
+  <data name="LocalPath" xml:space="preserve">
+    <value>本地路径</value>
+  </data>
+  <data name="LocalPort" xml:space="preserve">
+    <value>本地端口</value>
+  </data>
+  <data name="LocalPortToListenOn" xml:space="preserve">
+    <value>用于监听传入连接的本地端口（1-65535）</value>
+  </data>
+  <data name="LocalSettings" xml:space="preserve">
+    <value>本地设置</value>
+  </data>
+  <data name="LogLevelLabel" xml:space="preserve">
+    <value>日志级别：</value>
+  </data>
+  <data name="LogTo" xml:space="preserve">
+    <value>日志输出到</value>
+  </data>
+  <data name="LoggingSection" xml:space="preserve">
+    <value>日志</value>
+  </data>
+  <data name="Logs" xml:space="preserve">
+    <value>日志</value>
+  </data>
+  <data name="LogsWillAppearHere" xml:space="preserve">
+    <value>一旦启动 frpc，日志将显示在这里</value>
+  </data>
+  <data name="Manage" xml:space="preserve">
+    <value>管理</value>
+  </data>
+  <data name="MaxDays" xml:space="preserve">
+    <value>最大天数</value>
+  </data>
+  <data name="MaxFailed" xml:space="preserve">
+    <value>最大失败次数</value>
+  </data>
+  <data name="Method" xml:space="preserve">
+    <value>方法</value>
+  </data>
+  <data name="MonitorTheHealthOfTheLocalService" xml:space="preserve">
+    <value>监控本地服务的健康状况</value>
+  </data>
+  <data name="MultiplexerName" xml:space="preserve">
+    <value>多路复用器名称</value>
+  </data>
+  <data name="MustMatchTheProxySecretKey" xml:space="preserve">
+    <value>必填。必须与代理上配置的密钥匹配</value>
+  </data>
+  <data name="MustMatchTheVisitorsSecretKey" xml:space="preserve">
+    <value>必须与访问者的密钥匹配</value>
+  </data>
+  <data name="NETRuntimeInfo" xml:space="preserve">
+    <value>.NET 运行时</value>
+  </data>
+  <data name="NameOfTheMultiplexer" xml:space="preserve">
+    <value>多路复用器的名称</value>
+  </data>
+  <data name="NativeDeployment" xml:space="preserve">
+    <value>本地部署</value>
+  </data>
+  <data name="NativeDeploymentDownloadsAndExtracts" xml:space="preserve">
+    <value>• 本地部署会下载并解压适用于您平台的 frpc 二进制文件</value>
+  </data>
+  <data name="NoLogsAvailable" xml:space="preserve">
+    <value>没有可用日志</value>
+  </data>
+  <data name="NoProxiesConfigured" xml:space="preserve">
+    <value>未配置代理</value>
+  </data>
+  <data name="NoVersionsDownloaded" xml:space="preserve">
+    <value>尚未下载任何版本</value>
+  </data>
+  <data name="NoVisitorsConfigured" xml:space="preserve">
+    <value>未配置访问者</value>
+  </data>
+  <data name="OIDC" xml:space="preserve">
+    <value>OIDC</value>
+  </data>
+  <data name="OneHeaderPerLine" xml:space="preserve">
+    <value>每行一个标头（例如：Authorization: Bearer token）</value>
+  </data>
+  <data name="OpenReleasesPage" xml:space="preserve">
+    <value>Open GitHub Releases</value>
+  </data>
+  <data name="OpenReleasesPageToolTip" xml:space="preserve">
+    <value>Open GitHub releases page in browser</value>
+  </data>
+  <data name="OptionalAudience" xml:space="preserve">
+    <value>可选受众</value>
+  </data>
+  <data name="OptionalLeaveEmptyToBindToAll" xml:space="preserve">
+    <value>可选。留空以绑定到所有接口</value>
+  </data>
+  <data name="OptionalUserName" xml:space="preserve">
+    <value>可选用户名</value>
+  </data>
+  <data name="OptionalUserNameToAvoidProxyNameConflicts" xml:space="preserve">
+    <value>可选用户名，避免代理名称冲突</value>
+  </data>
+  <data name="Overview" xml:space="preserve">
+    <value>概览</value>
+  </data>
+  <data name="PackageManager" xml:space="preserve">
+    <value>Package Manager</value>
+  </data>
+  <data name="PackageManagerNotSupportFrpc" xml:space="preserve">
+    <value>This package manager does not support direct frpc installation. Please use another method.</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>密码</value>
+  </data>
+  <data name="PathLabel" xml:space="preserve">
+    <value>路径</value>
+  </data>
+  <data name="Platform" xml:space="preserve">
+    <value>Platform</value>
+  </data>
+  <data name="Plugin" xml:space="preserve">
+    <value>插件</value>
+  </data>
+  <data name="PluginConfiguration" xml:space="preserve">
+    <value>插件配置</value>
+  </data>
+  <data name="PluginTypeLabel" xml:space="preserve">
+    <value>插件类型</value>
+  </data>
+  <data name="PortableMode" xml:space="preserve">
+    <value>便携模式</value>
+  </data>
+  <data name="PresetExported" xml:space="preserve">
+    <value>预设已导出到 {0}</value>
+  </data>
+  <data name="PresetImported" xml:space="preserve">
+    <value>预设已导入: {0}</value>
+  </data>
+  <data name="PresetManagement" xml:space="preserve">
+    <value>预设管理</value>
+  </data>
+  <data name="PresetName" xml:space="preserve">
+    <value>预设名称</value>
+  </data>
+  <data name="ProcessId" xml:space="preserve">
+    <value>进程 ID</value>
+  </data>
+  <data name="ProxiesCount" xml:space="preserve">
+    <value>{0} 个代理</value>
+  </data>
+  <data name="ProxyConfiguration" xml:space="preserve">
+    <value>代理配置</value>
+  </data>
+  <data name="ProxyManagement" xml:space="preserve">
+    <value>代理管理</value>
+  </data>
+  <data name="ProxyName" xml:space="preserve">
+    <value>代理名称</value>
+  </data>
+  <data name="ProxyType" xml:space="preserve">
+    <value>代理类型</value>
+  </data>
+  <data name="QuickAccess" xml:space="preserve">
+    <value>快速访问</value>
+  </data>
+  <data name="QuickShare" xml:space="preserve">
+    <value>快速分享</value>
+  </data>
+  <data name="RecentActivity" xml:space="preserve">
+    <value>最近活动</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="RefreshPackageManagerList" xml:space="preserve">
+    <value>Refresh package manager list</value>
+  </data>
+  <data name="ReloadLogsFromBuffer" xml:space="preserve">
+    <value>从缓冲区重新加载日志</value>
+  </data>
+  <data name="RemotePort" xml:space="preserve">
+    <value>远程端口</value>
+  </data>
+  <data name="RemotePortLabel" xml:space="preserve">
+    <value>远程端口：</value>
+  </data>
+  <data name="RenamePreset" xml:space="preserve">
+    <value>重命名预设</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>必填</value>
+  </data>
+  <data name="RequiredFieldsAreMarked" xml:space="preserve">
+    <value>必填字段标有星号</value>
+  </data>
+  <data name="ResetToDefaults" xml:space="preserve">
+    <value>重置为默认值</value>
+  </data>
+  <data name="RestartFrpc" xml:space="preserve">
+    <value>重启 Frpc</value>
+  </data>
+  <data name="SOCKS5URL" xml:space="preserve">
+    <value>SOCKS5 URL</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="SaveConfiguration" xml:space="preserve">
+    <value>保存配置</value>
+  </data>
+  <data name="SaveSettings" xml:space="preserve">
+    <value>保存设置</value>
+  </data>
+  <data name="Scope" xml:space="preserve">
+    <value>范围</value>
+  </data>
+  <data name="SearchByName" xml:space="preserve">
+    <value>按名称搜索...</value>
+  </data>
+  <data name="SearchVisitors" xml:space="preserve">
+    <value>搜索访问者...</value>
+  </data>
+  <data name="Seconds" xml:space="preserve">
+    <value>秒</value>
+  </data>
+  <data name="SecretKey" xml:space="preserve">
+    <value>密钥</value>
+  </data>
+  <data name="SecureTunnelSettings" xml:space="preserve">
+    <value>安全隧道设置</value>
+  </data>
+  <data name="SecuritySettings" xml:space="preserve">
+    <value>安全设置</value>
+  </data>
+  <data name="SelectFrpcBinary" xml:space="preserve">
+    <value>Select frpc binary...</value>
+  </data>
+  <data name="SelectFrpcExecutable" xml:space="preserve">
+    <value>Select frpc executable</value>
+  </data>
+  <data name="SelectPackageManager" xml:space="preserve">
+    <value>Select Package Manager</value>
+  </data>
+  <data name="ServerAddress" xml:space="preserve">
+    <value>服务器地址</value>
+  </data>
+  <data name="ServerBindInfo" xml:space="preserve">
+    <value>服务器：</value>
+  </data>
+  <data name="ServerConfig" xml:space="preserve">
+    <value>服务器配置</value>
+  </data>
+  <data name="ServerName" xml:space="preserve">
+    <value>服务器名称</value>
+  </data>
+  <data name="ServerPort" xml:space="preserve">
+    <value>服务器端口</value>
+  </data>
+  <data name="ServiceConfiguration" xml:space="preserve">
+    <value>Service Configuration</value>
+  </data>
+  <data name="ServiceScope" xml:space="preserve">
+    <value>Service Scope</value>
+  </data>
+  <data name="ServiceStatus" xml:space="preserve">
+    <value>Service Status</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="Setup" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="SpecificIPToBindTo" xml:space="preserve">
+    <value>要绑定的特定 IP</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="StartContainer" xml:space="preserve">
+    <value>启动容器</value>
+  </data>
+  <data name="StartFrpc" xml:space="preserve">
+    <value>启动 Frpc</value>
+  </data>
+  <data name="StartOnBoot" xml:space="preserve">
+    <value>Start on boot</value>
+  </data>
+  <data name="StartOnSystemBoot" xml:space="preserve">
+    <value>系统启动时启动</value>
+  </data>
+  <data name="StaticFilePluginSettings" xml:space="preserve">
+    <value>静态文件插件设置</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>状态</value>
+  </data>
+  <data name="StatusSection" xml:space="preserve">
+    <value>状态</value>
+  </data>
+  <data name="Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="StopContainer" xml:space="preserve">
+    <value>停止容器</value>
+  </data>
+  <data name="StopFrpc" xml:space="preserve">
+    <value>停止 Frpc</value>
+  </data>
+  <data name="Subdomain" xml:space="preserve">
+    <value>子域名</value>
+  </data>
+  <data name="SystemDefault" xml:space="preserve">
+    <value>系统默认</value>
+  </data>
+  <data name="SystemIntegration" xml:space="preserve">
+    <value>系统集成</value>
+  </data>
+  <data name="SystemLevel" xml:space="preserve">
+    <value>System level</value>
+  </data>
+  <data name="SystemServiceSettings" xml:space="preserve">
+    <value>System Service Settings</value>
+  </data>
+  <data name="TCPMultiplexerSettings" xml:space="preserve">
+    <value>TCP 多路复用器设置</value>
+  </data>
+  <data name="TCPMux" xml:space="preserve">
+    <value>TCP 多路复用</value>
+  </data>
+  <data name="TheAddressOfTheFrpsServer" xml:space="preserve">
+    <value>frps 服务器的地址</value>
+  </data>
+  <data name="TheIPOfTheLocalService" xml:space="preserve">
+    <value>要转发到的本地服务的 IP 地址</value>
+  </data>
+  <data name="TheMultiplexerMustBeConfiguredOnTheServer" xml:space="preserve">
+    <value>多路复用器必须在服务器上配置</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>主题</value>
+  </data>
+  <data name="TimeoutSeconds" xml:space="preserve">
+    <value>超时（秒）</value>
+  </data>
+  <data name="Toast_BinaryLocated" xml:space="preserve">
+    <value>二进制文件位于: {0}</value>
+  </data>
+  <data name="Toast_CannotDeleteUsedVersion" xml:space="preserve">
+    <value>Cannot delete a version that is currently in use by a configuration</value>
+  </data>
+  <data name="Toast_CheckFailed" xml:space="preserve">
+    <value>检查失败</value>
+  </data>
+  <data name="Toast_ConfigureFrpcFirst" xml:space="preserve">
+    <value>Please configure frpc first</value>
+  </data>
+  <data name="Toast_ContainerStarted" xml:space="preserve">
+    <value>容器已启动</value>
+  </data>
+  <data name="Toast_ContainerStopped" xml:space="preserve">
+    <value>容器已停止</value>
+  </data>
+  <data name="Toast_CouldNotCheckDocker" xml:space="preserve">
+    <value>无法检查 Docker 可用性</value>
+  </data>
+  <data name="Toast_CouldNotCheckNative" xml:space="preserve">
+    <value>无法检查本地部署</value>
+  </data>
+  <data name="Toast_CouldNotDeleteVersion" xml:space="preserve">
+    <value>Could not delete the selected version</value>
+  </data>
+  <data name="Toast_CouldNotDeployNative" xml:space="preserve">
+    <value>无法部署本地 frpc</value>
+  </data>
+  <data name="Toast_CouldNotDetectFrpc" xml:space="preserve">
+    <value>Could not detect frpc automatically</value>
+  </data>
+  <data name="Toast_CouldNotDetermineDirectory" xml:space="preserve">
+    <value>无法确定 docker-compose 目录</value>
+  </data>
+  <data name="Toast_CouldNotDownloadFrpc" xml:space="preserve">
+    <value>Could not download frpc: {0}</value>
+  </data>
+  <data name="Toast_CouldNotGenerateDockerCompose" xml:space="preserve">
+    <value>无法生成 docker-compose.yml</value>
+  </data>
+  <data name="Toast_CouldNotGetDownloadUrl" xml:space="preserve">
+    <value>Could not get download URL for the selected version</value>
+  </data>
+  <data name="Toast_CouldNotGetVersion" xml:space="preserve">
+    <value>Could not get frpc version from the specified path</value>
+  </data>
+  <data name="Toast_CouldNotInstallFrpc" xml:space="preserve">
+    <value>Could not install frpc</value>
+  </data>
+  <data name="Toast_CouldNotLoadVersions" xml:space="preserve">
+    <value>Could not load downloaded versions</value>
+  </data>
+  <data name="Toast_CouldNotOpenConfiguration" xml:space="preserve">
+    <value>Could not open configuration dialog</value>
+  </data>
+  <data name="Toast_CouldNotOpenDownloadPage" xml:space="preserve">
+    <value>无法打开下载页面</value>
+  </data>
+  <data name="Toast_CouldNotOpenUrl" xml:space="preserve">
+    <value>Could not open URL</value>
+  </data>
+  <data name="Toast_CouldNotSelectFile" xml:space="preserve">
+    <value>Could not select file</value>
+  </data>
+  <data name="Toast_CouldNotStartContainer" xml:space="preserve">
+    <value>无法启动 Docker 容器</value>
+  </data>
+  <data name="Toast_CouldNotStopContainer" xml:space="preserve">
+    <value>无法停止 Docker 容器</value>
+  </data>
+  <data name="Toast_CreateConfigFirst" xml:space="preserve">
+    <value>Please create a configuration file first</value>
+  </data>
+  <data name="Toast_DeleteFailed" xml:space="preserve">
+    <value>Delete Failed</value>
+  </data>
+  <data name="Toast_DeleteFailedWithError" xml:space="preserve">
+    <value>Delete failed: {0}</value>
+  </data>
+  <data name="Toast_Deleted" xml:space="preserve">
+    <value>Deleted</value>
+  </data>
+  <data name="Toast_Deploying" xml:space="preserve">
+    <value>Deploying...</value>
+  </data>
+  <data name="Toast_DeployingFrpcBinary" xml:space="preserve">
+    <value>Deploying frpc binary...</value>
+  </data>
+  <data name="Toast_DeploymentFailed" xml:space="preserve">
+    <value>部署失败</value>
+  </data>
+  <data name="Toast_DockerAvailable" xml:space="preserve">
+    <value>Docker 可用</value>
+  </data>
+  <data name="Toast_DockerComposeSaved" xml:space="preserve">
+    <value>docker-compose.yml 已保存到 {0}</value>
+  </data>
+  <data name="Toast_DockerContainerRunning" xml:space="preserve">
+    <value>Docker 容器正在运行</value>
+  </data>
+  <data name="Toast_DockerContainerStopped" xml:space="preserve">
+    <value>Docker 容器已停止</value>
+  </data>
+  <data name="Toast_DockerNotAvailable" xml:space="preserve">
+    <value>Docker 不可用</value>
+  </data>
+  <data name="Toast_DockerNotInstalled" xml:space="preserve">
+    <value>Docker 未安装或未运行</value>
+  </data>
+  <data name="Toast_DockerReady" xml:space="preserve">
+    <value>Docker 已准备就绪</value>
+  </data>
+  <data name="Toast_Download" xml:space="preserve">
+    <value>下载</value>
+  </data>
+  <data name="Toast_DownloadAndDeploy" xml:space="preserve">
+    <value>请下载并部署 frpc 二进制文件</value>
+  </data>
+  <data name="Toast_DownloadFailed" xml:space="preserve">
+    <value>Download Failed</value>
+  </data>
+  <data name="Toast_DownloadFrom" xml:space="preserve">
+    <value>请从以下地址下载 frpc: {0}</value>
+  </data>
+  <data name="Toast_Downloaded" xml:space="preserve">
+    <value>Downloaded</value>
+  </data>
+  <data name="Toast_Downloading" xml:space="preserve">
+    <value>Downloading...</value>
+  </data>
+  <data name="Toast_DownloadingFrpc" xml:space="preserve">
+    <value>Downloading frpc {0}...</value>
+  </data>
+  <data name="Toast_Error" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="Toast_FailedToStartContainer" xml:space="preserve">
+    <value>启动容器失败: {0}</value>
+  </data>
+  <data name="Toast_FailedToStopContainer" xml:space="preserve">
+    <value>停止容器失败: {0}</value>
+  </data>
+  <data name="Toast_FilePickerNotAvailable" xml:space="preserve">
+    <value>File picker not available</value>
+  </data>
+  <data name="Toast_FrpcDetected" xml:space="preserve">
+    <value>Frpc Detected</value>
+  </data>
+  <data name="Toast_FrpcDownloaded" xml:space="preserve">
+    <value>Frpc downloaded to: {0}</value>
+  </data>
+  <data name="Toast_FrpcFound" xml:space="preserve">
+    <value>已找到 Frpc</value>
+  </data>
+  <data name="Toast_FrpcFoundAt" xml:space="preserve">
+    <value>Frpc found at: {0}</value>
+  </data>
+  <data name="Toast_FrpcNotFound" xml:space="preserve">
+    <value>未找到 Frpc</value>
+  </data>
+  <data name="Toast_FrpcNotInPath" xml:space="preserve">
+    <value>Frpc was not found in PATH or common locations</value>
+  </data>
+  <data name="Toast_GenerateDockerComposeFirst" xml:space="preserve">
+    <value>请先生成 docker-compose.yml</value>
+  </data>
+  <data name="Toast_Generated" xml:space="preserve">
+    <value>已生成</value>
+  </data>
+  <data name="Toast_GenerationFailed" xml:space="preserve">
+    <value>生成失败</value>
+  </data>
+  <data name="Toast_InstallFailed" xml:space="preserve">
+    <value>Install Failed</value>
+  </data>
+  <data name="Toast_InstallFailedWithError" xml:space="preserve">
+    <value>Install failed: {0}</value>
+  </data>
+  <data name="Toast_Installing" xml:space="preserve">
+    <value>Installing...</value>
+  </data>
+  <data name="Toast_InstallingFrpcVia" xml:space="preserve">
+    <value>Installing frpc via {0}...</value>
+  </data>
+  <data name="Toast_InvalidBinary" xml:space="preserve">
+    <value>Invalid Binary</value>
+  </data>
+  <data name="Toast_InvalidPath" xml:space="preserve">
+    <value>路径无效</value>
+  </data>
+  <data name="Toast_NativeDeploymentNotImplemented" xml:space="preserve">
+    <value>本地部署功能尚未实现</value>
+  </data>
+  <data name="Toast_NoConfiguration" xml:space="preserve">
+    <value>无配置</value>
+  </data>
+  <data name="Toast_NoDockerComposeFound" xml:space="preserve">
+    <value>未找到 docker-compose.yml</value>
+  </data>
+  <data name="Toast_NoPath" xml:space="preserve">
+    <value>No Path</value>
+  </data>
+  <data name="Toast_NoSelection" xml:space="preserve">
+    <value>No Selection</value>
+  </data>
+  <data name="Toast_NoVersion" xml:space="preserve">
+    <value>No Version Selected</value>
+  </data>
+  <data name="Toast_NotImplemented" xml:space="preserve">
+    <value>未实现</value>
+  </data>
+  <data name="Toast_OpeningUrl" xml:space="preserve">
+    <value>Opening: {0}</value>
+  </data>
+  <data name="Toast_PackageManagerNotAvailable" xml:space="preserve">
+    <value>Package manager not available for frpc installation</value>
+  </data>
+  <data name="Toast_SelectFrpcPath" xml:space="preserve">
+    <value>Please select a frpc executable path</value>
+  </data>
+  <data name="Toast_SelectVersionFirst" xml:space="preserve">
+    <value>Please select a frpc version first</value>
+  </data>
+  <data name="Toast_SelectVersionToDelete" xml:space="preserve">
+    <value>Please select a version to delete</value>
+  </data>
+  <data name="Toast_ServiceManagerNotAvailable" xml:space="preserve">
+    <value>Service manager not available</value>
+  </data>
+  <data name="Toast_StartFailed" xml:space="preserve">
+    <value>启动失败</value>
+  </data>
+  <data name="Toast_StopFailed" xml:space="preserve">
+    <value>停止失败</value>
+  </data>
+  <data name="Toast_VersionDeleted" xml:space="preserve">
+    <value>Version {0} has been deleted</value>
+  </data>
+  <data name="Toast_VersionInUse" xml:space="preserve">
+    <value>Version In Use</value>
+  </data>
+  <data name="Token" xml:space="preserve">
+    <value>令牌</value>
+  </data>
+  <data name="TokenEndpoint" xml:space="preserve">
+    <value>令牌端点</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>总计</value>
+  </data>
+  <data name="TransportEnabled" xml:space="preserve">
+    <value>已启用传输</value>
+  </data>
+  <data name="TransportOptions" xml:space="preserve">
+    <value>传输选项</value>
+  </data>
+  <data name="TransportProtocol" xml:space="preserve">
+    <value>协议</value>
+  </data>
+  <data name="TransportSettings" xml:space="preserve">
+    <value>传输设置</value>
+  </data>
+  <data name="TypeLabel" xml:space="preserve">
+    <value>类型</value>
+  </data>
+  <data name="URLPrefix" xml:space="preserve">
+    <value>URL 前缀</value>
+  </data>
+  <data name="UninstallService" xml:space="preserve">
+    <value>Uninstall Service</value>
+  </data>
+  <data name="UsePackageManager" xml:space="preserve">
+    <value>Use package manager</value>
+  </data>
+  <data name="UserLevel" xml:space="preserve">
+    <value>User level</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>用户名</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>版本</value>
+  </data>
+  <data name="VersionInfo" xml:space="preserve">
+    <value>版本</value>
+  </data>
+  <data name="VersionManagementHint" xml:space="preserve">
+    <value>管理已下载的 frpc 版本。正在被配置使用的版本无法删除。</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>查看</value>
+  </data>
+  <data name="ViewRealtimeLogsFromFrpc" xml:space="preserve">
+    <value>查看来自 frpc 进程的实时日志</value>
+  </data>
+  <data name="VisitorConfiguration" xml:space="preserve">
+    <value>访问者配置</value>
+  </data>
+  <data name="VisitorManagement" xml:space="preserve">
+    <value>访问者管理</value>
+  </data>
+  <data name="VisitorName" xml:space="preserve">
+    <value>访问者名称</value>
+  </data>
+  <data name="VisitorType" xml:space="preserve">
+    <value>访问者类型</value>
+  </data>
+  <data name="Visitors" xml:space="preserve">
+    <value>访问者</value>
+  </data>
+  <data name="VisitorsAllowYouToConnect" xml:space="preserve">
+    <value>访问者允许您连接到安全隧道代理（STCP/XTCP/SUDP）</value>
+  </data>
+</root>
