@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+             xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="600"
@@ -10,6 +11,11 @@
   <Design.DataContext>
     <vm:SettingsViewModel />
   </Design.DataContext>
+
+  <UserControl.Resources>
+    <converters:CountToEmptyVisibilityConverter x:Key="CountToEmptyVisibilityConverter" />
+    <converters:BoolToInUseStringConverter x:Key="BoolToInUseStringConverter" />
+  </UserControl.Resources>
 
   <UserControl.Styles>
     <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
@@ -151,6 +157,140 @@
             </Border>
           </StackPanel>
         </Border>
+
+        <!-- Frpc Version Management -->
+        <Border Classes="settings-card">
+          <StackPanel Spacing="0">
+            <Grid ColumnDefinitions="*,Auto" Margin="{StaticResource ThicknessBottomM}">
+              <TextBlock Grid.Column="0"
+                         Text="{DynamicResource Localized_FrpcVersions}"
+                         Classes="section-title"
+                         VerticalAlignment="Center" />
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                <Button Command="{Binding RefreshVersionsCommand}"
+                        Classes="action-button"
+                        IsEnabled="{Binding !IsLoadingVersions}">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <TextBlock Text="{DynamicResource Localized_Refresh}" />
+                  </StackPanel>
+                </Button>
+                <Button Command="{Binding DeleteVersionCommand}"
+                        Classes="action-button">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <TextBlock Text="{DynamicResource Localized_Delete}" />
+                  </StackPanel>
+                </Button>
+              </StackPanel>
+            </Grid>
+
+            <!-- Version list -->
+            <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                    CornerRadius="6"
+                    Padding="0"
+                    MinHeight="120">
+              <Grid RowDefinitions="Auto,*">
+                <!-- Header -->
+                <Border Grid.Row="0"
+                        Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                        CornerRadius="6,6,0,0"
+                        Padding="12,8">
+                  <Grid ColumnDefinitions="*,120,100,80">
+                    <TextBlock Grid.Column="0" Text="{DynamicResource Localized_Version}"
+                               FontWeight="{StaticResource FontWeightSemiBold}"
+                               FontSize="{StaticResource FontSizeS}" />
+                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Platform}"
+                               FontWeight="{StaticResource FontWeightSemiBold}"
+                               FontSize="{StaticResource FontSizeS}" />
+                    <TextBlock Grid.Column="2" Text="{DynamicResource Localized_Architecture}"
+                               FontWeight="{StaticResource FontWeightSemiBold}"
+                               FontSize="{StaticResource FontSizeS}" />
+                    <TextBlock Grid.Column="3" Text="{DynamicResource Localized_Status}"
+                               FontWeight="{StaticResource FontWeightSemiBold}"
+                               FontSize="{StaticResource FontSizeS}"
+                               TextAlignment="Center" />
+                  </Grid>
+                </Border>
+
+                <!-- Loading indicator -->
+                <StackPanel Grid.Row="1"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Spacing="8"
+                            IsVisible="{Binding IsLoadingVersions}">
+                  <ProgressBar IsIndeterminate="True" Width="100" />
+                  <TextBlock Text="{DynamicResource Localized_LoadingVersions}"
+                             FontSize="{StaticResource FontSizeS}"
+                             Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                </StackPanel>
+
+                <!-- Empty state -->
+                <StackPanel Grid.Row="1"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Spacing="8">
+                  <StackPanel.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                      <Binding Path="!IsLoadingVersions" />
+                      <Binding Path="DownloadedVersions.Count" Converter="{StaticResource CountToEmptyVisibilityConverter}" />
+                    </MultiBinding>
+                  </StackPanel.IsVisible>
+                  <TextBlock Text="{DynamicResource Localized_NoVersionsDownloaded}"
+                             FontSize="{StaticResource FontSizeS}"
+                             Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                </StackPanel>
+
+                <!-- Version list -->
+                <ScrollViewer Grid.Row="1"
+                              MaxHeight="200"
+                              IsVisible="{Binding !IsLoadingVersions}">
+                  <ItemsControl ItemsSource="{Binding DownloadedVersions}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <Border Background="Transparent"
+                                Padding="12,8"
+                                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                BorderThickness="0,0,0,1">
+                          <Border.Styles>
+                            <Style Selector="Border:pointerover /template/ ContentPresenter">
+                              <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListLowBrush}" />
+                            </Style>
+                          </Border.Styles>
+                          <Grid ColumnDefinitions="*,120,100,80">
+                            <TextBlock Grid.Column="0"
+                                       Text="{Binding Version}"
+                                       VerticalAlignment="Center"
+                                       FontSize="{StaticResource FontSizeS}" />
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding Platform}"
+                                       VerticalAlignment="Center"
+                                       FontSize="{StaticResource FontSizeS}" />
+                            <TextBlock Grid.Column="2"
+                                       Text="{Binding Architecture}"
+                                       VerticalAlignment="Center"
+                                       FontSize="{StaticResource FontSizeS}" />
+                            <TextBlock Grid.Column="3"
+                                       Text="{Binding IsInUse, Converter={StaticResource BoolToInUseStringConverter}}"
+                                       VerticalAlignment="Center"
+                                       FontSize="{StaticResource FontSizeS}"
+                                       TextAlignment="Center" />
+                          </Grid>
+                        </Border>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </ScrollViewer>
+              </Grid>
+            </Border>
+
+            <!-- Info text -->
+            <TextBlock Text="{DynamicResource Localized_VersionManagementHint}"
+                       FontSize="{StaticResource FontSizeS}"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       TextWrapping="Wrap"
+                       Margin="{StaticResource ThicknessTopS}" />
+          </StackPanel>
+        </Border>
+
         <!-- About Information -->
         <!-- 
         <Border Classes="settings-card">

@@ -113,3 +113,43 @@ public class BoolNegationConverter : IValueConverter
         return false;
     }
 }
+
+/// <summary>
+/// Converts boolean to "In Use" or empty string
+/// </summary>
+public class BoolToInUseStringConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is bool boolValue)
+        {
+            return boolValue ? "In Use" : "";
+        }
+        return "";
+    }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+/// <summary>
+/// Converts count to visibility (true if count == 0)
+/// </summary>
+public class CountToEmptyVisibilityConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is int count)
+        {
+            return count == 0;
+        }
+        return true;
+    }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
