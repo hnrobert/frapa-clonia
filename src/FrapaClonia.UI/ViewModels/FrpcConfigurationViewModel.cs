@@ -507,20 +507,30 @@ public partial class FrpcConfigurationViewModel : ObservableObject
                     return;
                 }
 
-                var targetDirectory = _nativeDeploymentService.GetDefaultDeploymentDirectory();
-
-                // Use DownloadFromMirrorAsync since we have a direct URL
-                var archivePath = await _frpcDownloader.DownloadFromMirrorAsync(downloadUrl, targetDirectory);
+                // Download to temp directory first
+                var tempDir = Path.GetTempPath();
+                var archivePath = await _frpcDownloader.DownloadFromMirrorAsync(downloadUrl, tempDir);
 
                 _toastService?.Info(L("Toast_Deploying"), L("Toast_DeployingFrpcBinary"));
 
-                var binaryPath = await _nativeDeploymentService.DeployFromArchiveAsync(archivePath, targetDirectory);
-
-                // Set executable permissions on Unix
-                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                // Get platform and architecture
+                var platform = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "windows" :
+                    RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "darwin" : "linux";
+                var architecture = RuntimeInformation.OSArchitecture switch
                 {
-                    await _nativeDeploymentService.SetExecutablePermissionsAsync(binaryPath);
-                }
+                    Architecture.X64 => "amd64",
+                    Architecture.Arm64 => "arm64",
+                    Architecture.X86 => "386",
+                    Architecture.Arm => "arm",
+                    _ => "amd64"
+                };
+
+                // Deploy with versioned folder
+                var binaryPath = await _nativeDeploymentService.DeployFromArchiveAsync(
+                    archivePath,
+                    SelectedVersion.Version,
+                    platform,
+                    architecture);
 
                 FrpcBinaryPath = binaryPath;
                 _toastService?.Success(L("Toast_Downloaded"), L("Toast_FrpcDownloaded", binaryPath));

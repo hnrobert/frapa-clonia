@@ -18,6 +18,8 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IAutoStartService? _autoStartService;
     private readonly ThemeService? _themeService;
     private readonly ToastService? _toastService;
+    private readonly INativeDeploymentService? _nativeDeploymentService;
+    private readonly IPresetService? _presetService;
 
     private readonly string _settingsFile = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -36,8 +38,15 @@ public partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty] private int _themeIndex;
 
+    // Frpc Version Management
+    [ObservableProperty] private List<DownloadedFrpcVersion> _downloadedVersions = [];
+    [ObservableProperty] private bool _isLoadingVersions;
+    [ObservableProperty] private DownloadedFrpcVersion? _selectedVersion;
+
     public IRelayCommand SaveCommand { get; }
     public IRelayCommand ResetCommand { get; }
+    public IRelayCommand RefreshVersionsCommand { get; }
+    public IRelayCommand DeleteVersionCommand { get; }
 
     public List<LanguageOption> AvailableLanguages { get; }
 
@@ -46,6 +55,8 @@ public partial class SettingsViewModel : ObservableObject
     // Default constructor for design-time support
     public SettingsViewModel() : this(
         Microsoft.Extensions.Logging.Abstractions.NullLogger<SettingsViewModel>.Instance,
+        null!,
+        null!,
         null!,
         null!,
         null!,
@@ -58,13 +69,17 @@ public partial class SettingsViewModel : ObservableObject
         ILocalizationService localizationService,
         IAutoStartService autoStartService,
         ThemeService themeService,
-        ToastService? toastService)
+        ToastService? toastService,
+        INativeDeploymentService? nativeDeploymentService,
+        IPresetService? presetService)
     {
         _logger = logger;
         _localizationService = localizationService;
         _autoStartService = autoStartService;
         _themeService = themeService;
         _toastService = toastService;
+        _nativeDeploymentService = nativeDeploymentService;
+        _presetService = presetService;
 
         AvailableLanguages =
         [
@@ -101,6 +116,28 @@ public partial class SettingsViewModel : ObservableObject
                 _logger?.LogError(e, "Error loading settings");
             }
         });
+        RefreshVersionsCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await RefreshDownloadedVersionsAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error refreshing downloaded versions");
+            }
+        });
+        DeleteVersionCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await DeleteSelectedVersionAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error deleting version");
+            }
+        });
 
         // Initialize theme from ThemeService
         ThemeIndex = _themeService.CurrentTheme.ToString() switch
@@ -126,8 +163,15 @@ public partial class SettingsViewModel : ObservableObject
         ];
 
         // Load saved settings on initialization
-        _ = Task.Run(async () => await LoadSettingsAsync());
+        _ = Task.Run(async () =>
+        {
+            await LoadSettingsAsync();
+            await RefreshDownloadedVersionsAsync();
+        });
     }
+
+    private string L(string key, params object[] args) =>
+        _localizationService?.GetString(key, args) ?? key;
 
     partial void OnThemeIndexChanged(int value)
     {
@@ -276,6 +320,111 @@ public partial class SettingsViewModel : ObservableObject
         var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         return Path.Combine(appData, "FrapaClonia");
     }
+
+    #region Frpc Version Management
+
+    private async Task RefreshDownloadedVersionsAsync()
+    {
+        if (_nativeDeploymentService == null) return;
+
+        try
+        {
+            IsLoadingVersions = true;
+            _logger?.LogInformation("Refreshing downloaded frpc versions");
+
+            var versions = await _nativeDeploymentService.GetDownloadedVersionsAsync();
+
+            // Check which versions are in use by presets
+            var usedPaths = await GetUsedBinaryPathsAsync();
+            foreach (var version in versions)
+            {
+                version.IsInUse = usedPaths.Contains(version.BinaryPath);
+            }
+
+            DownloadedVersions = versions.ToList();
+            _logger?.LogInformation("Found {Count} downloaded frpc versions", DownloadedVersions.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error refreshing downloaded versions");
+            _toastService?.Error(L("Toast_Error"), L("Toast_CouldNotLoadVersions"));
+        }
+        finally
+        {
+            IsLoadingVersions = false;
+        }
+    }
+
+    private async Task<HashSet<string>> GetUsedBinaryPathsAsync()
+    {
+        var usedPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        try
+        {
+            if (_presetService != null)
+            {
+                // Access the Presets collection directly
+                foreach (var preset in _presetService.Presets)
+                {
+                    if (!string.IsNullOrEmpty(preset.Deployment.FrpcBinaryPath))
+                    {
+                        usedPaths.Add(preset.Deployment.FrpcBinaryPath);
+                    }
+                }
+            }
+            await Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Error getting used binary paths");
+        }
+
+        return usedPaths;
+    }
+
+    private async Task DeleteSelectedVersionAsync()
+    {
+        if (SelectedVersion == null)
+        {
+            _toastService?.Warning(L("Toast_NoSelection"), L("Toast_SelectVersionToDelete"));
+            return;
+        }
+
+        if (SelectedVersion.IsInUse)
+        {
+            _toastService?.Warning(L("Toast_VersionInUse"), L("Toast_CannotDeleteUsedVersion"));
+            return;
+        }
+
+        if (_nativeDeploymentService == null) return;
+
+        try
+        {
+            var success = await _nativeDeploymentService.DeleteVersionAsync(SelectedVersion.FolderPath);
+            if (success)
+            {
+                _toastService?.Success(L("Toast_Deleted"), L("Toast_VersionDeleted", SelectedVersion.Version));
+                await RefreshDownloadedVersionsAsync();
+                SelectedVersion = null;
+            }
+            else
+            {
+                _toastService?.Error(L("Toast_DeleteFailed"), L("Toast_CouldNotDeleteVersion"));
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error deleting version");
+            _toastService?.Error(L("Toast_Error"), L("Toast_DeleteFailedWithError", ex.Message));
+        }
+    }
+
+    public void Initialize()
+    {
+        _ = RefreshDownloadedVersionsAsync();
+    }
+
+    #endregion
 }
 
 /// <summary>
