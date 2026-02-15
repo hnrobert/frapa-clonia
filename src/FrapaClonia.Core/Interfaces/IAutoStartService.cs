@@ -20,8 +20,8 @@ public interface IAutoStartService
     /// </summary>
     Task DisableAutoStartAsync(CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Gets whether auto-start is supported on the current platform
-    /// </summary>
-    bool IsAutoStartSupported { get; }
+    // /// <summary>
+    // /// Gets whether auto-start is supported on the current platform
+    // /// </summary>
+    // bool IsAutoStartSupported { get; }
 }

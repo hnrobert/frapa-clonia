@@ -65,14 +65,11 @@ public class App : Application
                 {
                     await presetService.InitializeAsync();
                     // Update the ViewModel on the UI thread after initialization
-                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-                    {
-                        mainWindowViewModel.InitializePresetSelector();
-                    });
+                    Avalonia.Threading.Dispatcher.UIThread.Post(mainWindowViewModel.InitializePresetSelector);
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine($"Failed to initialize preset service: {ex}");
+                    await Console.Error.WriteLineAsync($"Failed to initialize preset service: {ex}");
                 }
             });
         }
