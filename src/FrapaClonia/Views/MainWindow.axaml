@@ -6,12 +6,13 @@
         xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="820"
         x:Class="FrapaClonia.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="FrapaClonia"
         Icon="/Assets/favicon.ico"
-        MinWidth="900" MinHeight="600"
+        Width="1000" Height="685"
+        MinWidth="950" MinHeight="500"
         x:Name="AppWindow">
 
   <Design.DataContext>
@@ -22,388 +23,390 @@
     <!-- Main Layout -->
     <Grid ColumnDefinitions="240,4,*">
 
-    <!-- Sidebar Navigation -->
-    <Border Grid.Column="0"
-            Background="{DynamicResource SystemAltMediumHighBackgroundColor}"
-            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-            BorderThickness="0,0,1,0">
-      <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,138">
-        <!-- App Title Section -->
-        <Border Padding=" 0" Margin="16">
-          <Grid ColumnDefinitions="Auto,*">
-            <!-- App Icon -->
-            <Border Grid.Column="0"
-                    Width="45" Height="45"
-                    Margin="0,0,12,0">
-              <Image Source="/Assets/favicon.ico"
-                     Width="45"
-                     Height="45"
-                     HorizontalAlignment="Center"
-                     VerticalAlignment="Center" />
-            </Border>
+      <!-- Sidebar Navigation -->
+      <Border Grid.Column="0"
+              Background="{DynamicResource SystemAltMediumHighBackgroundColor}"
+              BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+              BorderThickness="0,0,1,0">
+        <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+          <!-- App Title Section -->
+          <Border Padding=" 0" Margin="16">
+            <Grid ColumnDefinitions="Auto,*">
+              <!-- App Icon -->
+              <Border Grid.Column="0"
+                      Width="45" Height="45"
+                      Margin="0,0,12,0">
+                <Image Source="/Assets/favicon.ico"
+                       Width="45"
+                       Height="45"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+              </Border>
 
-            <!-- App Title -->
-            <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
-              <TextBlock Text="FrapaClonia"
-                         FontSize="16"
-                         FontWeight="SemiBold"
-                         Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}" />
-              <TextBlock Text="Frp Client Manager"
-                         FontSize="10"
-                         Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}" />
-            </StackPanel>
-          </Grid>
-        </Border>
+              <!-- App Title -->
+              <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="FrapaClonia"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}" />
+                <TextBlock Text="Frp Client Manager"
+                           FontSize="10"
+                           Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}" />
+              </StackPanel>
+            </Grid>
+          </Border>
 
-        <Separator Grid.Row="1" Margin="0" Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+          <Separator Grid.Row="1" Margin="0" Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
 
-        <!-- Config Presets Section -->
-        <StackPanel Grid.Row="2" Margin="16,8">
-          <TextBlock Text="{DynamicResource Localized_ConfigPresets}"
-                     FontSize="11"
-                     FontWeight="SemiBold"
-                     Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                     Margin="0,0,0,8" />
-          <ComboBox ItemsSource="{Binding PresetItems}"
-                    SelectedItem="{Binding SelectedPresetItem}"
-                    HorizontalAlignment="Stretch"
-                    Padding="8,6"
-                    FontSize="13">
-            <ComboBox.ItemTemplate>
-              <DataTemplate>
-                <TextBlock Text="{Binding Name}"
-                           TextTrimming="CharacterEllipsis"
-                           MaxWidth="180" />
-              </DataTemplate>
-            </ComboBox.ItemTemplate>
-          </ComboBox>
-        </StackPanel>
+          <!-- Config Presets Section -->
+          <StackPanel Grid.Row="2" Margin="16,8">
+            <TextBlock Text="{DynamicResource Localized_ConfigPresets}"
+                       FontSize="11"
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       Margin="0,0,0,8" />
+            <ComboBox ItemsSource="{Binding PresetItems}"
+                      SelectedItem="{Binding SelectedPresetItem}"
+                      HorizontalAlignment="Stretch"
+                      Padding="8,6"
+                      FontSize="13">
+              <ComboBox.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Name}"
+                             TextTrimming="CharacterEllipsis"
+                             MaxWidth="180" />
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+          </StackPanel>
 
-        <Separator Grid.Row="3" Margin="0" Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-        <!-- Scrollable Content -->
-        <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto">
-          <StackPanel Spacing="4" Margin="16">
-            <!-- Navigation Section -->
-            <StackPanel Spacing="4" Margin="0,0,0,0">
-              <!-- <TextBlock Text="Navigation"
+          <Separator Grid.Row="3" Margin="0" Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+          <!-- Scrollable Content -->
+          <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="4" Margin="16">
+              <!-- Navigation Section -->
+              <StackPanel Spacing="4" Margin="0,0,0,0">
+                <!-- <TextBlock Text="Navigation"
                                    FontSize="11"
                                    FontWeight="SemiBold"
                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                    Margin="0,0,0,8" /> -->
 
-              <!-- Dashboard -->
-              <Button Command="{Binding NavigateToDashboardCommand}"
-                      HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Stretch"
-                      Padding="0"
-                      BorderThickness="0"
-                      CornerRadius="4"
-                      FontSize="14"
-                      MinHeight="40"
-                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
-                      Classes="nav-button">
-                <Grid>
-                  <!-- Active background (full button highlight) -->
-                  <Border IsVisible="{Binding IsDashboardActive}"
-                          Background="{DynamicResource SystemControlHighlightListLowBrush}"
-                          CornerRadius="4"
-                          Opacity="1"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch" />
-                  <!-- Content -->
-                  <Grid ColumnDefinitions="Auto,*" Margin="16">
-                    <mi:MaterialIcon Grid.Column="0"
-                                     Kind="ViewDashboard"
-                                     Width="18"
-                                     Height="18"
-                                     VerticalAlignment="Center"
-                                     Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                     Margin="0,0,12,0" />
-                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Dashboard}" VerticalAlignment="Center" />
+                <!-- Dashboard -->
+                <Button Command="{Binding NavigateToDashboardCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        Padding="0"
+                        BorderThickness="0"
+                        CornerRadius="4"
+                        FontSize="14"
+                        MinHeight="40"
+                        Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
+                        Classes="nav-button">
+                  <Grid>
+                    <!-- Active background (full button highlight) -->
+                    <Border IsVisible="{Binding IsDashboardActive}"
+                            Background="{DynamicResource SystemControlHighlightListLowBrush}"
+                            CornerRadius="4"
+                            Opacity="1"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch" />
+                    <!-- Content -->
+                    <Grid ColumnDefinitions="Auto,*" Margin="16">
+                      <mi:MaterialIcon Grid.Column="0"
+                                       Kind="ViewDashboard"
+                                       Width="18"
+                                       Height="18"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                       Margin="0,0,12,0" />
+                      <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Dashboard}"
+                                 VerticalAlignment="Center" />
+                    </Grid>
                   </Grid>
-                </Grid>
-              </Button>
+                </Button>
 
-              <!-- Deployment -->
-              <Button Command="{Binding NavigateToDeploymentCommand}"
-                      HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Stretch"
-                      Padding="0"
-                      BorderThickness="0"
-                      CornerRadius="4"
-                      FontSize="14"
-                      MinHeight="40"
-                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
-                      Classes="nav-button">
-                <Grid>
-                  <!-- Active background (full button highlight) -->
-                  <Border IsVisible="{Binding IsDeploymentActive}"
-                          Background="{DynamicResource SystemControlHighlightListLowBrush}"
-                          CornerRadius="4"
-                          Opacity="1"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch" />
-                  <!-- Content -->
-                  <Grid ColumnDefinitions="Auto,*" Margin="16">
-                    <mi:MaterialIcon Grid.Column="0"
-                                     Kind="CloudDownload"
-                                     Width="18"
-                                     Height="18"
-                                     VerticalAlignment="Center"
-                                     Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                     Margin="0,0,12,0" />
-                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Deployment}" VerticalAlignment="Center" />
+                <!-- Deployment -->
+                <Button Command="{Binding NavigateToDeploymentCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        Padding="0"
+                        BorderThickness="0"
+                        CornerRadius="4"
+                        FontSize="14"
+                        MinHeight="40"
+                        Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
+                        Classes="nav-button">
+                  <Grid>
+                    <!-- Active background (full button highlight) -->
+                    <Border IsVisible="{Binding IsDeploymentActive}"
+                            Background="{DynamicResource SystemControlHighlightListLowBrush}"
+                            CornerRadius="4"
+                            Opacity="1"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch" />
+                    <!-- Content -->
+                    <Grid ColumnDefinitions="Auto,*" Margin="16">
+                      <mi:MaterialIcon Grid.Column="0"
+                                       Kind="CloudDownload"
+                                       Width="18"
+                                       Height="18"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                       Margin="0,0,12,0" />
+                      <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Deployment}"
+                                 VerticalAlignment="Center" />
+                    </Grid>
                   </Grid>
-                </Grid>
-              </Button>
+                </Button>
 
-              <!-- Server Config -->
-              <Button Command="{Binding NavigateToServerConfigCommand}"
-                      HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Stretch"
-                      Padding="0"
-                      BorderThickness="0"
-                      CornerRadius="4"
-                      FontSize="14"
-                      MinHeight="40"
-                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
-                      Classes="nav-button">
-                <Grid>
-                  <!-- Active background (full button highlight) -->
-                  <Border IsVisible="{Binding IsServerActive}"
-                          Background="{DynamicResource SystemControlHighlightListLowBrush}"
-                          CornerRadius="4"
-                          Opacity="1"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch" />
-                  <!-- Content -->
-                  <Grid ColumnDefinitions="Auto,*" Margin="16">
-                    <mi:MaterialIcon Grid.Column="0"
-                                     Kind="Server"
-                                     Width="18"
-                                     Height="18"
-                                     VerticalAlignment="Center"
-                                     Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                     Margin="0,0,12,0" />
-                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ServerConfig}"
-                               VerticalAlignment="Center" />
+                <!-- Server Config -->
+                <Button Command="{Binding NavigateToServerConfigCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        Padding="0"
+                        BorderThickness="0"
+                        CornerRadius="4"
+                        FontSize="14"
+                        MinHeight="40"
+                        Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
+                        Classes="nav-button">
+                  <Grid>
+                    <!-- Active background (full button highlight) -->
+                    <Border IsVisible="{Binding IsServerActive}"
+                            Background="{DynamicResource SystemControlHighlightListLowBrush}"
+                            CornerRadius="4"
+                            Opacity="1"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch" />
+                    <!-- Content -->
+                    <Grid ColumnDefinitions="Auto,*" Margin="16">
+                      <mi:MaterialIcon Grid.Column="0"
+                                       Kind="Server"
+                                       Width="18"
+                                       Height="18"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                       Margin="0,0,12,0" />
+                      <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ServerConfig}"
+                                 VerticalAlignment="Center" />
+                    </Grid>
                   </Grid>
-                </Grid>
-              </Button>
+                </Button>
 
-              <!-- Proxies -->
-              <Button Command="{Binding NavigateToProxiesCommand}"
-                      HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Stretch"
-                      Padding="0"
-                      BorderThickness="0"
-                      CornerRadius="4"
-                      FontSize="14"
-                      MinHeight="40"
-                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
-                      Classes="nav-button">
-                <Grid>
-                  <!-- Active background (full button highlight) -->
-                  <Border IsVisible="{Binding IsProxiesActive}"
-                          Background="{DynamicResource SystemControlHighlightListLowBrush}"
-                          CornerRadius="4"
-                          Opacity="1"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch" />
-                  <!-- Content -->
-                  <Grid ColumnDefinitions="Auto,*" Margin="16">
-                    <mi:MaterialIcon Grid.Column="0"
-                                     Kind="Proxy"
-                                     Width="18"
-                                     Height="18"
-                                     VerticalAlignment="Center"
-                                     Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                     Margin="0,0,12,0" />
-                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ProxyManagement}"
-                               VerticalAlignment="Center" />
+                <!-- Proxies -->
+                <Button Command="{Binding NavigateToProxiesCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        Padding="0"
+                        BorderThickness="0"
+                        CornerRadius="4"
+                        FontSize="14"
+                        MinHeight="40"
+                        Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
+                        Classes="nav-button">
+                  <Grid>
+                    <!-- Active background (full button highlight) -->
+                    <Border IsVisible="{Binding IsProxiesActive}"
+                            Background="{DynamicResource SystemControlHighlightListLowBrush}"
+                            CornerRadius="4"
+                            Opacity="1"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch" />
+                    <!-- Content -->
+                    <Grid ColumnDefinitions="Auto,*" Margin="16">
+                      <mi:MaterialIcon Grid.Column="0"
+                                       Kind="Proxy"
+                                       Width="18"
+                                       Height="18"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                       Margin="0,0,12,0" />
+                      <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ProxyManagement}"
+                                 VerticalAlignment="Center" />
+                    </Grid>
                   </Grid>
-                </Grid>
-              </Button>
+                </Button>
 
-              <!-- Visitors -->
-              <Button Command="{Binding NavigateToVisitorsCommand}"
-                      HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Stretch"
-                      Padding="0"
-                      BorderThickness="0"
-                      CornerRadius="4"
-                      FontSize="14"
-                      MinHeight="40"
-                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
-                      Classes="nav-button">
-                <Grid>
-                  <!-- Active background (full button highlight) -->
-                  <Border IsVisible="{Binding IsVisitorsActive}"
-                          Background="{DynamicResource SystemControlHighlightListLowBrush}"
-                          CornerRadius="4"
-                          Opacity="1"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch" />
-                  <!-- Content -->
-                  <Grid ColumnDefinitions="Auto,*" Margin="16">
-                    <mi:MaterialIcon Grid.Column="0"
-                                     Kind="AccountMultiple"
-                                     Width="18"
-                                     Height="18"
-                                     VerticalAlignment="Center"
-                                     Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                     Margin="0,0,12,0" />
-                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Visitors}" VerticalAlignment="Center" />
+                <!-- Visitors -->
+                <Button Command="{Binding NavigateToVisitorsCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        Padding="0"
+                        BorderThickness="0"
+                        CornerRadius="4"
+                        FontSize="14"
+                        MinHeight="40"
+                        Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
+                        Classes="nav-button">
+                  <Grid>
+                    <!-- Active background (full button highlight) -->
+                    <Border IsVisible="{Binding IsVisitorsActive}"
+                            Background="{DynamicResource SystemControlHighlightListLowBrush}"
+                            CornerRadius="4"
+                            Opacity="1"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch" />
+                    <!-- Content -->
+                    <Grid ColumnDefinitions="Auto,*" Margin="16">
+                      <mi:MaterialIcon Grid.Column="0"
+                                       Kind="AccountMultiple"
+                                       Width="18"
+                                       Height="18"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                       Margin="0,0,12,0" />
+                      <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Visitors}" VerticalAlignment="Center" />
+                    </Grid>
                   </Grid>
-                </Grid>
-              </Button>
+                </Button>
 
 
-              <!-- Logs -->
-              <Button Command="{Binding NavigateToLogsCommand}"
-                      HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Stretch"
-                      Padding="0"
-                      BorderThickness="0"
-                      CornerRadius="4"
-                      FontSize="14"
-                      MinHeight="40"
-                      Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
-                      Classes="nav-button">
-                <Grid>
-                  <!-- Active background (full button highlight) -->
-                  <Border IsVisible="{Binding IsLogsActive}"
-                          Background="{DynamicResource SystemControlHighlightListLowBrush}"
-                          CornerRadius="4"
-                          Opacity="1"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch" />
-                  <!-- Content -->
-                  <Grid ColumnDefinitions="Auto,*" Margin="16">
-                    <mi:MaterialIcon Grid.Column="0"
-                                     Kind="FileDocument"
-                                     Width="18"
-                                     Height="18"
-                                     VerticalAlignment="Center"
-                                     Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                     Margin="0,0,12,0" />
-                    <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Logs}" VerticalAlignment="Center" />
+                <!-- Logs -->
+                <Button Command="{Binding NavigateToLogsCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        Padding="0"
+                        BorderThickness="0"
+                        CornerRadius="4"
+                        FontSize="14"
+                        MinHeight="40"
+                        Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
+                        Classes="nav-button">
+                  <Grid>
+                    <!-- Active background (full button highlight) -->
+                    <Border IsVisible="{Binding IsLogsActive}"
+                            Background="{DynamicResource SystemControlHighlightListLowBrush}"
+                            CornerRadius="4"
+                            Opacity="1"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch" />
+                    <!-- Content -->
+                    <Grid ColumnDefinitions="Auto,*" Margin="16">
+                      <mi:MaterialIcon Grid.Column="0"
+                                       Kind="FileDocument"
+                                       Width="18"
+                                       Height="18"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                       Margin="0,0,12,0" />
+                      <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Logs}" VerticalAlignment="Center" />
+                    </Grid>
                   </Grid>
-                </Grid>
-              </Button>
+                </Button>
+              </StackPanel>
             </StackPanel>
-          </StackPanel>
-        </ScrollViewer>
+          </ScrollViewer>
 
-        <!-- Bottom Section: Settings and Copyright -->
-        <StackPanel Grid.Row="5" Spacing="8" Margin="16">
-          <!-- <Separator Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" /> -->
+          <!-- Bottom Section: Settings and Copyright -->
+          <StackPanel Grid.Row="5" Spacing="8" Margin="16">
+            <!-- <Separator Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" /> -->
 
-          <!-- Settings Button -->
-          <Button Command="{Binding NavigateToSettingsCommand}"
-                  HorizontalAlignment="Stretch"
-                  HorizontalContentAlignment="Stretch"
-                  Padding="0"
-                  BorderThickness="0"
-                  CornerRadius="4"
-                  FontSize="14"
-                  MinHeight="40"
-                  Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
-                  Classes="nav-button">
-            <Grid>
-              <!-- Active background (full button highlight) -->
-              <Border IsVisible="{Binding IsSettingsActive}"
-                      Background="{DynamicResource SystemControlHighlightListLowBrush}"
-                      CornerRadius="4"
-                      Opacity="1"
-                      HorizontalAlignment="Stretch"
-                      VerticalAlignment="Stretch" />
-              <!-- Content -->
-              <Grid ColumnDefinitions="Auto,*" Margin="16">
-                <mi:MaterialIcon Grid.Column="0"
-                                 Kind="Cog"
-                                 Width="18"
-                                 Height="18"
-                                 VerticalAlignment="Center"
-                                 Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
-                                 Margin="0,0,12,0" />
-                <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Settings}" VerticalAlignment="Center" />
-              </Grid>
-            </Grid>
-          </Button>
-
-          <!-- Copyright Info -->
-          <Border Padding="12"
-                  CornerRadius="4"
-                  Background="{DynamicResource SystemControlChromeLowBrush}">
-            <StackPanel Spacing="4">
-              <TextBlock Text="{Binding Copyright}"
-                         FontSize="10"
-                         FontWeight="Bold"
-                         Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}" />
-              <TextBlock FontSize="10"
-                         TextWrapping="Wrap"
-                         Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}">
-                <Run Text="Licensed under" />
-                <Run Text="Apache License 2.0"
-                     FontWeight="Bold" />
-              </TextBlock>
-              <TextBlock FontSize="12"
-                         Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}">
-                <Run Text="{DynamicResource Localized_VersionInfo}" />
-                <Run Text=" " />
-                <Run Text="{Binding Version}" />
-              </TextBlock>
-            </StackPanel>
-          </Border>
-        </StackPanel>
-      </Grid>
-    </Border>
-
-    <!-- GridSplitter for resizing -->
-    <GridSplitter Grid.Column="1"
-                  Background="Transparent"
-                  ResizeDirection="Columns" />
-
-    <!-- Main Content Area -->
-    <Border Grid.Column="2"
-            Background="{DynamicResource SystemPageBackgroundBrush}">
-      <Grid RowDefinitions="Auto,*">
-        <!-- Top Bar (optional for future use) -->
-        <Border Grid.Row="0"
-                Height="1"
-                Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-
-        <!-- Dynamic Content -->
-        <ContentControl Grid.Row="1"
-                        Content="{Binding CurrentView}"
+            <!-- Settings Button -->
+            <Button Command="{Binding NavigateToSettingsCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    Padding="0"
+                    BorderThickness="0"
+                    CornerRadius="4"
+                    FontSize="14"
+                    MinHeight="40"
+                    Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
+                    Classes="nav-button">
+              <Grid>
+                <!-- Active background (full button highlight) -->
+                <Border IsVisible="{Binding IsSettingsActive}"
+                        Background="{DynamicResource SystemControlHighlightListLowBrush}"
+                        CornerRadius="4"
+                        Opacity="1"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch" />
-      </Grid>
-    </Border>
-  </Grid>
+                <!-- Content -->
+                <Grid ColumnDefinitions="Auto,*" Margin="16">
+                  <mi:MaterialIcon Grid.Column="0"
+                                   Kind="Cog"
+                                   Width="18"
+                                   Height="18"
+                                   VerticalAlignment="Center"
+                                   Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
+                                   Margin="0,0,12,0" />
+                  <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Settings}" VerticalAlignment="Center" />
+                </Grid>
+              </Grid>
+            </Button>
 
-  <!-- Toast Notification Container (overlays everything) -->
-  <Panel>
-    <ItemsControl ItemsSource="{Binding Toasts}"
-                  Margin="20"
-                  HorizontalAlignment="Right"
-                  VerticalAlignment="Top"
-                  IsHitTestVisible="True">
-      <ItemsControl.ItemsPanel>
-        <ItemsPanelTemplate>
-          <StackPanel Orientation="Vertical"
-                      Spacing="8" />
-        </ItemsPanelTemplate>
-      </ItemsControl.ItemsPanel>
+            <!-- Copyright Info -->
+            <Border Padding="12"
+                    CornerRadius="4"
+                    Background="{DynamicResource SystemControlChromeLowBrush}">
+              <StackPanel Spacing="4">
+                <TextBlock Text="{Binding Copyright}"
+                           FontSize="10"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}" />
+                <TextBlock FontSize="10"
+                           TextWrapping="Wrap"
+                           Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}">
+                  <Run Text="Licensed under" />
+                  <Run Text="Apache License 2.0"
+                       FontWeight="Bold" />
+                </TextBlock>
+                <TextBlock FontSize="12"
+                           Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}">
+                  <Run Text="{DynamicResource Localized_VersionInfo}" />
+                  <Run Text=" " />
+                  <Run Text="{Binding Version}" />
+                </TextBlock>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </Grid>
+      </Border>
 
-      <ItemsControl.ItemTemplate>
-        <DataTemplate x:DataType="models:ToastItem">
-          <controls:ToastNotification />
-        </DataTemplate>
-      </ItemsControl.ItemTemplate>
-    </ItemsControl>
-  </Panel>
+      <!-- GridSplitter for resizing -->
+      <GridSplitter Grid.Column="1"
+                    Background="Transparent"
+                    ResizeDirection="Columns" />
+
+      <!-- Main Content Area -->
+      <Border Grid.Column="2"
+              Background="{DynamicResource SystemPageBackgroundBrush}">
+        <Grid RowDefinitions="Auto,*">
+          <!-- Top Bar (optional for future use) -->
+          <Border Grid.Row="0"
+                  Height="1"
+                  Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+
+          <!-- Dynamic Content -->
+          <ContentControl Grid.Row="1"
+                          Content="{Binding CurrentView}"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch" />
+        </Grid>
+      </Border>
+    </Grid>
+
+    <!-- Toast Notification Container (overlays everything) -->
+    <Panel>
+      <ItemsControl ItemsSource="{Binding Toasts}"
+                    Margin="20"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    IsHitTestVisible="True">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Orientation="Vertical"
+                        Spacing="8" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="models:ToastItem">
+            <controls:ToastNotification />
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </Panel>
   </Grid>
 
 </Window>

@@ -14,7 +14,7 @@
 
   <UserControl.Resources>
     <converters:CountToEmptyVisibilityConverter x:Key="CountToEmptyVisibilityConverter" />
-    <converters:BoolToInUseStringConverter x:Key="BoolToInUseStringConverter" />
+    <converters:BoolToOpacityConverter x:Key="BoolToOpacityConverter" />
   </UserControl.Resources>
 
   <UserControl.Styles>
@@ -165,22 +165,13 @@
               <TextBlock Grid.Column="0"
                          Text="{DynamicResource Localized_FrpcVersions}"
                          Classes="section-title"
-                         VerticalAlignment="Center" />
-              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                <Button Command="{Binding RefreshVersionsCommand}"
-                        Classes="action-button"
-                        IsEnabled="{Binding !IsLoadingVersions}">
-                  <StackPanel Orientation="Horizontal" Spacing="6">
-                    <TextBlock Text="{DynamicResource Localized_Refresh}" />
-                  </StackPanel>
-                </Button>
-                <Button Command="{Binding DeleteVersionCommand}"
-                        Classes="action-button">
-                  <StackPanel Orientation="Horizontal" Spacing="6">
-                    <TextBlock Text="{DynamicResource Localized_Delete}" />
-                  </StackPanel>
-                </Button>
-              </StackPanel>
+                         VerticalAlignment="Top" />
+              <Button Grid.Column="1"
+                      Command="{Binding RefreshVersionsCommand}"
+                      Classes="action-button"
+                      IsEnabled="{Binding !IsLoadingVersions}">
+                <TextBlock Text="{DynamicResource Localized_Refresh}" />
+              </Button>
             </Grid>
 
             <!-- Version list -->
@@ -194,7 +185,7 @@
                         Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
                         CornerRadius="6,6,0,0"
                         Padding="12,8">
-                  <Grid ColumnDefinitions="*,120,100,80">
+                  <Grid ColumnDefinitions="*,120,100,80,60">
                     <TextBlock Grid.Column="0" Text="{DynamicResource Localized_Version}"
                                FontWeight="{StaticResource FontWeightSemiBold}"
                                FontSize="{StaticResource FontSizeS}" />
@@ -208,6 +199,9 @@
                                FontWeight="{StaticResource FontWeightSemiBold}"
                                FontSize="{StaticResource FontSizeS}"
                                TextAlignment="Center" />
+                    <TextBlock Grid.Column="4" Text=""
+                               FontWeight="{StaticResource FontWeightSemiBold}"
+                               FontSize="{StaticResource FontSizeS}" />
                   </Grid>
                 </Border>
 
@@ -255,24 +249,68 @@
                               <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListLowBrush}" />
                             </Style>
                           </Border.Styles>
-                          <Grid ColumnDefinitions="*,120,100,80">
-                            <TextBlock Grid.Column="0"
-                                       Text="{Binding Version}"
+                          <Grid ColumnDefinitions="*,120,100,80,60">
+                            <!-- Content with opacity binding -->
+                            <Panel Grid.ColumnSpan="5"
+                                   Opacity="{Binding IsPendingDeletion, Converter={StaticResource BoolToOpacityConverter}}">
+                              <Grid ColumnDefinitions="*,120,100,80,60">
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding Version}"
+                                           VerticalAlignment="Center"
+                                           FontSize="{StaticResource FontSizeS}" />
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Platform}"
+                                           VerticalAlignment="Center"
+                                           FontSize="{StaticResource FontSizeS}" />
+                                <TextBlock Grid.Column="2"
+                                           Text="{Binding Architecture}"
+                                           VerticalAlignment="Center"
+                                           FontSize="{StaticResource FontSizeS}" />
+                                <Panel Grid.Column="3"
                                        VerticalAlignment="Center"
-                                       FontSize="{StaticResource FontSizeS}" />
-                            <TextBlock Grid.Column="1"
-                                       Text="{Binding Platform}"
-                                       VerticalAlignment="Center"
-                                       FontSize="{StaticResource FontSizeS}" />
-                            <TextBlock Grid.Column="2"
-                                       Text="{Binding Architecture}"
-                                       VerticalAlignment="Center"
-                                       FontSize="{StaticResource FontSizeS}" />
-                            <TextBlock Grid.Column="3"
-                                       Text="{Binding IsInUse, Converter={StaticResource BoolToInUseStringConverter}}"
-                                       VerticalAlignment="Center"
-                                       FontSize="{StaticResource FontSizeS}"
-                                       TextAlignment="Center" />
+                                       HorizontalAlignment="Center">
+                                  <TextBlock Text="{DynamicResource Localized_InUse}"
+                                             IsVisible="{Binding IsInUse}"
+                                             FontSize="{StaticResource FontSizeS}"
+                                             Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                                  <TextBlock Text="{DynamicResource Localized_NotUsed}"
+                                             IsVisible="{Binding !IsInUse}"
+                                             FontSize="{StaticResource FontSizeS}"
+                                             Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                                </Panel>
+                              </Grid>
+                            </Panel>
+                            <!-- Delete/Undo Button (no opacity) -->
+                            <Button Grid.Column="4"
+                                    Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).DeleteVersionCommand}"
+                                    CommandParameter="{Binding}"
+                                    Classes="icon-button"
+                                    Width="32"
+                                    Height="24"
+                                    Padding="0"
+                                    IsEnabled="{Binding !IsInUse}"
+                                    HorizontalAlignment="Center">
+                              <ToolTip.Tip>
+                                <Panel>
+                                  <TextBlock Text="{DynamicResource Localized_Delete}" IsVisible="{Binding !IsPendingDeletion}" />
+                                  <TextBlock Text="{DynamicResource Localized_Undo}" IsVisible="{Binding IsPendingDeletion}" />
+                                </Panel>
+                              </ToolTip.Tip>
+                              <Panel>
+                                <!-- Delete Icon -->
+                                <PathIcon IsVisible="{Binding !IsPendingDeletion}"
+                                          Data="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"
+                                          Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                          Width="14"
+                                          Height="14" />
+                                <!-- Undo Icon -->
+                                <PathIcon IsVisible="{Binding IsPendingDeletion}"
+                                          Data="M12.5,8C9.85,8 7.45,9.16 5.75,11L2,7.25V16H10.75L7.04,12.29C8.27,10.91 10.28,10 12.5,10C16.31,10 19.5,13.03 19.5,16.85C19.5,18.19 19.08,19.44 18.35,20.47L19.91,22C20.92,20.62 21.5,18.83 21.5,16.85C21.5,11.96 17.54,8 12.5,8Z"
+                                          Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                          Width="14"
+                                          Height="14" />
+                              </Panel>
+                            </Button>
                           </Grid>
                         </Border>
                       </DataTemplate>

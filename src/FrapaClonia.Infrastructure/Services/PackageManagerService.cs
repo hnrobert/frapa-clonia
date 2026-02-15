@@ -169,7 +169,7 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
             CanInstallFrpc = brewInstalled,
             InstallCommand =
                 "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"",
-            FrpcInstallCommand = "brew install fatedier/frp/frpc",
+            FrpcInstallCommand = "brew install frpc",
             Platform = "macos"
         });
 
@@ -316,7 +316,7 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
     {
         return packageManager.ToLowerInvariant() switch
         {
-            "brew" => "brew install fatedier/frp/frpc",
+            "brew" => "brew install frpc",
             "scoop" => "scoop install frpc",
             "choco" => "choco install frpc -y",
             "winget" => "winget install frpc",
@@ -329,7 +329,7 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
     {
         return packageManager.ToLowerInvariant() switch
         {
-            "brew" => "brew uninstall fatedier/frp/frpc",
+            "brew" => "brew uninstall frpc",
             "scoop" => "scoop uninstall frpc",
             "choco" => "choco uninstall frpc -y",
             "winget" => "winget uninstall frpc",

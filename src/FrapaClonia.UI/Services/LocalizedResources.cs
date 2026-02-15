@@ -327,6 +327,21 @@ public class LocalizedResources : ObservableObject
         CrossPlatformFrpcVisualClient = Create("CrossPlatformFrpcVisualClient");
         SaveSettings = Create("SaveSettings");
 
+        // Frpc Version Management
+        FrpcVersions = Create("FrpcVersions");
+        Delete = Create("Delete");
+        Undo = Create("Undo");
+        Version = Create("Version");
+        Platform = Create("Platform");
+        Architecture = Create("Architecture");
+        Status = Create("Status");
+        LoadingVersions = Create("LoadingVersions");
+        NoVersionsDownloaded = Create("NoVersionsDownloaded");
+        VersionManagementHint = Create("VersionManagementHint");
+        InUse = Create("InUse");
+        NotUsed = Create("NotUsed");
+        WillBeRemovedAfterSaving = Create("WillBeRemovedAfterSaving");
+
         // Preset Management
         ConfigPresets = Create("ConfigPresets");
         PresetManagement = Create("PresetManagement");
@@ -649,6 +664,21 @@ public class LocalizedResources : ObservableObject
     public LocalizedString NetRuntimeInfo { get; }
     public LocalizedString CrossPlatformFrpcVisualClient { get; }
     public LocalizedString SaveSettings { get; }
+
+    // Frpc Version Management
+    public LocalizedString FrpcVersions { get; }
+    public LocalizedString Delete { get; }
+    public LocalizedString Undo { get; }
+    public LocalizedString Version { get; }
+    public LocalizedString Platform { get; }
+    public LocalizedString Architecture { get; }
+    public LocalizedString Status { get; }
+    public LocalizedString LoadingVersions { get; }
+    public LocalizedString NoVersionsDownloaded { get; }
+    public LocalizedString VersionManagementHint { get; }
+    public LocalizedString InUse { get; }
+    public LocalizedString NotUsed { get; }
+    public LocalizedString WillBeRemovedAfterSaving { get; }
 
     // Preset Management
     public LocalizedString ConfigPresets { get; }

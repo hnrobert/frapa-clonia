@@ -32,6 +32,15 @@
 
             <!-- Server Address -->
             <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+              <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="4">
+                <TextBlock Text="{DynamicResource Localized_ServerAddress}"
+                           Classes="field-label" />
+                <Button Classes="hint-icon">
+                  <ToolTip.Tip>
+                    <TextBlock Text="{DynamicResource Localized_TheAddressOfTheFrpsServer}" />
+                  </ToolTip.Tip>
+                </Button>
+              </StackPanel>
               <TextBox Grid.Row="0" Grid.Column="1"
                        Text="{Binding ServerAddr}"
                        Watermark="e.g., 127.0.0.1 or your-server.com" />

@@ -591,6 +591,9 @@
   <data name="NoProxiesConfigured" xml:space="preserve">
     <value>구성된 프록시가 없습니다</value>
   </data>
+  <data name="NotUsed" xml:space="preserve">
+    <value>사용 안 함</value>
+  </data>
   <data name="NoVersionsDownloaded" xml:space="preserve">
     <value>No versions downloaded yet</value>
   </data>
@@ -1137,6 +1140,9 @@
   <data name="UninstallService" xml:space="preserve">
     <value>Uninstall Service</value>
   </data>
+  <data name="Undo" xml:space="preserve">
+    <value>실행 취소</value>
+  </data>
   <data name="UsePackageManager" xml:space="preserve">
     <value>Use package manager</value>
   </data>
@@ -1154,6 +1160,9 @@
   </data>
   <data name="VersionManagementHint" xml:space="preserve">
     <value>Manage downloaded frpc versions. Versions in use by configurations cannot be deleted.</value>
+  </data>
+  <data name="WillBeRemovedAfterSaving" xml:space="preserve">
+    <value>설정을 저장한 후 버전이 제거됩니다</value>
   </data>
   <data name="View" xml:space="preserve">
     <value>보기</value>

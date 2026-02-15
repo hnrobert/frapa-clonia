@@ -591,6 +591,9 @@
   <data name="NoProxiesConfigured" xml:space="preserve">
     <value>Прокси не настроены</value>
   </data>
+  <data name="NotUsed" xml:space="preserve">
+    <value>Не используется</value>
+  </data>
   <data name="NoVersionsDownloaded" xml:space="preserve">
     <value>No versions downloaded yet</value>
   </data>
@@ -1137,6 +1140,9 @@
   <data name="UninstallService" xml:space="preserve">
     <value>Uninstall Service</value>
   </data>
+  <data name="Undo" xml:space="preserve">
+    <value>Отменить</value>
+  </data>
   <data name="UsePackageManager" xml:space="preserve">
     <value>Use package manager</value>
   </data>
@@ -1154,6 +1160,9 @@
   </data>
   <data name="VersionManagementHint" xml:space="preserve">
     <value>Manage downloaded frpc versions. Versions in use by configurations cannot be deleted.</value>
+  </data>
+  <data name="WillBeRemovedAfterSaving" xml:space="preserve">
+    <value>Версия будет удалена после сохранения настроек</value>
   </data>
   <data name="View" xml:space="preserve">
     <value>Просмотр</value>
