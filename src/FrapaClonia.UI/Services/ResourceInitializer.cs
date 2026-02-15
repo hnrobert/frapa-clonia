@@ -345,6 +345,21 @@ public static class ResourceInitializer
             localizedResources.CrossPlatformFrpcVisualClient);
         AddResource(resources, "Localized_SaveSettings", localizedResources.SaveSettings);
 
+        // Frpc Version Management
+        AddResource(resources, "Localized_FrpcVersions", localizedResources.FrpcVersions);
+        AddResource(resources, "Localized_Delete", localizedResources.Delete);
+        AddResource(resources, "Localized_Undo", localizedResources.Undo);
+        AddResource(resources, "Localized_Version", localizedResources.Version);
+        AddResource(resources, "Localized_Platform", localizedResources.Platform);
+        AddResource(resources, "Localized_Architecture", localizedResources.Architecture);
+        AddResource(resources, "Localized_Status", localizedResources.Status);
+        AddResource(resources, "Localized_LoadingVersions", localizedResources.LoadingVersions);
+        AddResource(resources, "Localized_NoVersionsDownloaded", localizedResources.NoVersionsDownloaded);
+        AddResource(resources, "Localized_VersionManagementHint", localizedResources.VersionManagementHint);
+        AddResource(resources, "Localized_InUse", localizedResources.InUse);
+        AddResource(resources, "Localized_NotUsed", localizedResources.NotUsed);
+        AddResource(resources, "Localized_WillBeRemovedAfterSaving", localizedResources.WillBeRemovedAfterSaving);
+
         // Preset Management
         AddResource(resources, "Localized_ConfigPresets", localizedResources.ConfigPresets);
         AddResource(resources, "Localized_PresetManagement", localizedResources.PresetManagement);

@@ -26,8 +26,7 @@ public class LocalizationService : ILocalizationService
         SupportedCultures =
         [
             new CultureInfo("en"), // English (default)
-            new CultureInfo("zh-CN"), // Chinese Simplified
-            new CultureInfo("zh-TW"), // Chinese Traditional
+            new CultureInfo("zh"), // Chinese Simplified
             new CultureInfo("ja"), // Japanese
             new CultureInfo("ko"), // Korean
             new CultureInfo("es"), // Spanish

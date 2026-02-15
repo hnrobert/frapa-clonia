@@ -1,18 +1,21 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace FrapaClonia.Core.Interfaces;
 
 /// <summary>
 /// Information about a downloaded frpc version
 /// </summary>
-public class DownloadedFrpcVersion
+public partial class DownloadedFrpcVersion : ObservableObject
 {
-    public string Version { get; set; } = "";
-    public string Platform { get; set; } = "";
-    public string Architecture { get; set; } = "";
-    public string FolderPath { get; set; } = "";
-    public string BinaryPath { get; set; } = "";
-    public long SizeBytes { get; set; }
-    public DateTimeOffset DownloadedAt { get; set; }
-    public bool IsInUse { get; set; }
+    [ObservableProperty] private string _version = "";
+    [ObservableProperty] private string _platform = "";
+    [ObservableProperty] private string _architecture = "";
+    [ObservableProperty] private string _folderPath = "";
+    [ObservableProperty] private string _binaryPath = "";
+    [ObservableProperty] private long _sizeBytes;
+    [ObservableProperty] private DateTimeOffset _downloadedAt;
+    [ObservableProperty] private bool _isInUse;
+    [ObservableProperty] private bool _isPendingDeletion;
 }
 
 /// <summary>

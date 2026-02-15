@@ -84,8 +84,7 @@ public partial class SettingsViewModel : ObservableObject
         AvailableLanguages =
         [
             new LanguageOption("en", "English"),
-            new LanguageOption("zh-CN", "简体中文"),
-            new LanguageOption("zh-TW", "繁體中文"),
+            new LanguageOption("zh", "简体中文"),
             new LanguageOption("ja", "日本語"),
             new LanguageOption("ko", "한국어"),
             new LanguageOption("es", "Español"),
@@ -127,15 +126,11 @@ public partial class SettingsViewModel : ObservableObject
                 _logger?.LogError(e, "Error refreshing downloaded versions");
             }
         });
-        DeleteVersionCommand = new RelayCommand(async void () =>
+        DeleteVersionCommand = new RelayCommand<DownloadedFrpcVersion?>(version =>
         {
-            try
+            if (version != null)
             {
-                await DeleteSelectedVersionAsync();
-            }
-            catch (Exception e)
-            {
-                _logger?.LogError(e, "Error deleting version");
+                TogglePendingDeletion(version);
             }
         });
 
@@ -263,6 +258,9 @@ public partial class SettingsViewModel : ObservableObject
                 if (_autoStartService != null) await _autoStartService.DisableAutoStartAsync();
             }
 
+            // Apply pending version deletions
+            await ApplyPendingDeletionsAsync();
+
             // Save settings to file
             var settings = new AppSettings
             {
@@ -286,6 +284,9 @@ public partial class SettingsViewModel : ObservableObject
 
             var json = JsonSerializer.Serialize(settings, AppSettingsContext.Default.AppSettings);
             await File.WriteAllTextAsync(_settingsFile, json);
+
+            // Refresh version list after deletions
+            await RefreshDownloadedVersionsAsync();
 
             _logger?.LogInformation("Settings saved to: {SettingsFile}", _settingsFile);
             _toastService?.Success("Saved", "Settings saved successfully");
@@ -382,40 +383,48 @@ public partial class SettingsViewModel : ObservableObject
         return usedPaths;
     }
 
-    private async Task DeleteSelectedVersionAsync()
+    private void TogglePendingDeletion(DownloadedFrpcVersion version)
     {
-        if (SelectedVersion == null)
-        {
-            _toastService?.Warning(L("Toast_NoSelection"), L("Toast_SelectVersionToDelete"));
-            return;
-        }
-
-        if (SelectedVersion.IsInUse)
+        if (version.IsInUse)
         {
             _toastService?.Warning(L("Toast_VersionInUse"), L("Toast_CannotDeleteUsedVersion"));
             return;
         }
 
+        version.IsPendingDeletion = !version.IsPendingDeletion;
+    }
+
+    private async Task ApplyPendingDeletionsAsync()
+    {
         if (_nativeDeploymentService == null) return;
 
-        try
+        var versionsToDelete = DownloadedVersions.Where(v => v.IsPendingDeletion).ToList();
+        if (versionsToDelete.Count == 0) return;
+
+        var deletedCount = 0;
+        foreach (var version in versionsToDelete)
         {
-            var success = await _nativeDeploymentService.DeleteVersionAsync(SelectedVersion.FolderPath);
-            if (success)
+            try
             {
-                _toastService?.Success(L("Toast_Deleted"), L("Toast_VersionDeleted", SelectedVersion.Version));
-                await RefreshDownloadedVersionsAsync();
-                SelectedVersion = null;
+                var success = await _nativeDeploymentService.DeleteVersionAsync(version.FolderPath);
+                if (success)
+                {
+                    deletedCount++;
+                }
+                else
+                {
+                    _logger?.LogWarning("Failed to delete version {Version}", version.Version);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                _toastService?.Error(L("Toast_DeleteFailed"), L("Toast_CouldNotDeleteVersion"));
+                _logger?.LogError(ex, "Error deleting version {Version}", version.Version);
             }
         }
-        catch (Exception ex)
+
+        if (deletedCount > 0)
         {
-            _logger?.LogError(ex, "Error deleting version");
-            _toastService?.Error(L("Toast_Error"), L("Toast_DeleteFailedWithError", ex.Message));
+            _logger?.LogInformation("Deleted {Count} frpc versions", deletedCount);
         }
     }
 
