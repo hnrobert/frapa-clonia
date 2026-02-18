@@ -1,6 +1,5 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <!-- =============================================
        FORM STYLES
@@ -52,23 +51,19 @@
   <Style Selector="Button.hint-icon">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />
-    <Setter Property="Padding" Value="0" />
-    <Setter Property="Margin" Value="4,0,0,0" />
+    <Setter Property="Padding" Value="4" />
+    <Setter Property="Margin" Value="0" />
     <Setter Property="VerticalAlignment" Value="Center" />
-    <Setter Property="Template">
-      <ControlTemplate>
-        <mi:MaterialIcon Kind="Information"
-                         Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
-      </ControlTemplate>
-    </Setter>
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
   </Style>
 
   <Style Selector="Button.hint-icon:pointerover">
     <Setter Property="Cursor" Value="Hand" />
   </Style>
 
-  <Style Selector="Button.hint-icon:pointerover /template/ mi|MaterialIcon">
-    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+  <Style Selector="Button.hint-icon /template/ ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
   </Style>
 
   <!-- Label with hint icon container -->

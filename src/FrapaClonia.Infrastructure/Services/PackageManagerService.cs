@@ -48,11 +48,13 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
         }
     }
 
-    public async Task<bool> InstallFrpcAsync(string packageManager, CancellationToken cancellationToken = default)
+    public async Task<bool> InstallFrpcAsync(string packageManager, string? version = null,
+        CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Installing frpc via {PackageManager}", packageManager);
+        logger.LogInformation("Installing frpc via {PackageManager}, version: {Version}", packageManager,
+            version ?? "latest");
 
-        var installCommand = GetInstallCommand(packageManager);
+        var installCommand = GetInstallCommand(packageManager, version);
         if (installCommand == null)
         {
             logger.LogWarning("No install command for package manager: {PackageManager}", packageManager);
@@ -82,6 +84,16 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
             logger.LogError(ex, "Error installing frpc via {PackageManager}", packageManager);
             return false;
         }
+    }
+
+    public Task<IReadOnlyList<FrpcVersionInfo>?> GetAvailableVersionsAsync(string packageManager,
+        CancellationToken cancellationToken = default)
+    {
+        // Most package managers only support installing the latest version.
+        // Return null to indicate only "latest" is available.
+        // In the future, package managers that support version selection can be handled here.
+        logger.LogDebug("Getting available versions for {PackageManager}", packageManager);
+        return Task.FromResult<IReadOnlyList<FrpcVersionInfo>?>(null);
     }
 
     public async Task<string?> GetFrpcBinaryPathAsync(string packageManager,
@@ -159,7 +171,7 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
     {
         var managers = new List<PackageManagerInfo>();
 
-        // Homebrew
+        // Homebrew - only supports latest version
         var brewInstalled = await CheckCommandExistsAsync("brew", cancellationToken);
         managers.Add(new PackageManagerInfo
         {
@@ -167,6 +179,7 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
             DisplayName = "Homebrew",
             IsInstalled = brewInstalled,
             CanInstallFrpc = brewInstalled,
+            SupportsVersionSelection = false, // Homebrew only supports latest
             InstallCommand =
                 "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"",
             FrpcInstallCommand = "brew install frpc",
@@ -184,7 +197,7 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
     {
         var managers = new List<PackageManagerInfo>();
 
-        // Scoop
+        // Scoop - only supports latest version
         var scoopInstalled = await CheckCommandExistsAsync("scoop", cancellationToken);
         managers.Add(new PackageManagerInfo
         {
@@ -192,12 +205,13 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
             DisplayName = "Scoop",
             IsInstalled = scoopInstalled,
             CanInstallFrpc = scoopInstalled, // Note: may need custom manifest
+            SupportsVersionSelection = false, // Scoop only supports latest
             InstallCommand = "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser; irm get.scoop.sh | iex",
             FrpcInstallCommand = "scoop install frpc",
             Platform = "windows"
         });
 
-        // Chocolatey
+        // Chocolatey - supports version selection via --version
         var chocoInstalled = await CheckCommandExistsAsync("choco", cancellationToken);
         managers.Add(new PackageManagerInfo
         {
@@ -205,13 +219,14 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
             DisplayName = "Chocolatey",
             IsInstalled = chocoInstalled,
             CanInstallFrpc = chocoInstalled, // Note: may need custom package
+            SupportsVersionSelection = true, // Supports --version parameter
             InstallCommand =
                 "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))",
             FrpcInstallCommand = "choco install frpc -y",
             Platform = "windows"
         });
 
-        // Winget
+        // Winget - supports version selection via --version
         var wingetInstalled = await CheckCommandExistsAsync("winget", cancellationToken);
         managers.Add(new PackageManagerInfo
         {
@@ -219,6 +234,7 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
             DisplayName = "Windows Package Manager (winget)",
             IsInstalled = wingetInstalled,
             CanInstallFrpc = wingetInstalled,
+            SupportsVersionSelection = true, // Supports --version parameter
             InstallCommand = "winget is included with Windows 11 and modern Windows 10 versions",
             FrpcInstallCommand = "winget install frpc",
             Platform = "windows"
@@ -243,6 +259,7 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
             DisplayName = "APT (Debian/Ubuntu)",
             IsInstalled = aptInstalled,
             CanInstallFrpc = false, // frpc not in default repos
+            SupportsVersionSelection = false,
             InstallCommand = "sudo apt update && sudo apt install -y apt-transport-https",
             FrpcInstallCommand = null, // Not available, use GitHub download
             Platform = "linux",
@@ -257,6 +274,7 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
             DisplayName = "Pacman (Arch Linux)",
             IsInstalled = pacmanInstalled,
             CanInstallFrpc = pacmanInstalled, // Available via AUR
+            SupportsVersionSelection = false, // AUR typically only has latest
             InstallCommand = "pacman is pre-installed on Arch Linux",
             FrpcInstallCommand = "yay -S frpc", // Note: requires AUR helper
             Platform = "linux",
@@ -271,6 +289,7 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
             DisplayName = "APK (Alpine Linux)",
             IsInstalled = apkInstalled,
             CanInstallFrpc = false, // frpc not in default repos
+            SupportsVersionSelection = false,
             InstallCommand = "apk is pre-installed on Alpine Linux",
             FrpcInstallCommand = null, // Not available, use GitHub download
             Platform = "linux",
@@ -285,6 +304,7 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
             DisplayName = "DNF (Fedora/RHEL)",
             IsInstalled = dnfInstalled,
             CanInstallFrpc = false, // frpc not in default repos
+            SupportsVersionSelection = false,
             InstallCommand = "dnf is pre-installed on Fedora/RHEL",
             FrpcInstallCommand = null, // Not available, use GitHub download
             Platform = "linux",
@@ -312,17 +332,57 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
         }
     }
 
-    private static string? GetInstallCommand(string packageManager)
+    private static string? GetInstallCommand(string packageManager, string? version = null)
     {
-        return packageManager.ToLowerInvariant() switch
+        // Some package managers support installing specific versions
+        // - Chocolatey: --version=<version>
+        // - Winget: --version <version>
+        // - Homebrew: Only supports versioned formulas if they exist (e.g., frpc@0.62)
+        // - Scoop: Limited version support, would need custom manifest
+        // - Pacman/AUR: Complex, would need specific PKGBUILD
+
+        var pm = packageManager.ToLowerInvariant();
+
+        return pm switch
         {
-            "brew" => "brew install frpc",
-            "scoop" => "scoop install frpc",
-            "choco" => "choco install frpc -y",
-            "winget" => "winget install frpc",
-            "pacman" => "yay -S frpc --noconfirm",
+            "brew" => GetBrewInstallCommand(version),
+            "scoop" => "scoop install frpc", // Scoop doesn't easily support version pinning
+            "choco" => GetChocoInstallCommand(version),
+            "winget" => GetWingetInstallCommand(version),
+            "pacman" => "yay -S frpc --noconfirm", // AUR typically only has latest
             _ => null
         };
+    }
+
+    private static string GetBrewInstallCommand(string? version)
+    {
+        // Homebrew supports versioned formulas like frpc@0.62 if they exist
+        // However, most formulas don't have versioned variants
+        // For frpc specifically, versioned formulas may not be available
+
+        if (string.IsNullOrEmpty(version)) return "brew install frpc";
+        // Try versioned formula first (e.g., frpc@0.62.1 or frpc@0.62)
+        // Extract major.minor for the versioned formula
+        var versionParts = version.Split('.');
+        if (versionParts.Length < 2) return "brew install frpc";
+        var majorMinor = $"{versionParts[0]}.{versionParts[1]}";
+
+        // Note: This may fail if the versioned formula doesn't exist
+        // Falls back to regular install in practice
+        return $"brew install frpc@{majorMinor} || brew install frpc";
+    }
+
+    private static string GetChocoInstallCommand(string? version)
+    {
+        // Chocolatey supports --version parameter
+        return !string.IsNullOrEmpty(version) ? $"choco install frpc --version={version} -y" : "choco install frpc -y";
+    }
+
+    private static string GetWingetInstallCommand(string? version)
+    {
+        // Winget supports --version parameter
+        // Note: The package must have the specific version published
+        return !string.IsNullOrEmpty(version) ? $"winget install frpc --version {version}" : "winget install frpc";
     }
 
     private static string? GetUninstallCommand(string packageManager)
@@ -411,7 +471,8 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
             paths.Add("/usr/local/bin/frpc");
             paths.Add("/usr/bin/frpc");
             paths.Add("/opt/frpc/frpc");
-            paths.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local", "bin", "frpc"));
+            paths.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local", "bin",
+                "frpc"));
 
             return paths.ToArray();
         }

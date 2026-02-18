@@ -265,7 +265,8 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
                             BinaryPath = binaryPath,
                             SizeBytes = fileInfo.Length,
                             DownloadedAt = dirInfo.CreationTimeUtc,
-                            IsInUse = false // Will be set by caller if needed
+                            IsInUse = false, // Will be set by caller if needed
+                            Source = FrpcSource.AppDownload
                         });
                     }
                 }
@@ -466,6 +467,140 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
 
         var hash = await sha256.ComputeHashAsync(stream, cancellationToken);
         return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+    }
+
+    public async Task<IReadOnlyList<DownloadedFrpcVersion>> GetAllDetectedFrpcAsync(
+        IPackageManagerService? packageManagerService = null,
+        IProcessManager? processManager = null,
+        CancellationToken cancellationToken = default)
+    {
+        var allVersions = new List<DownloadedFrpcVersion>();
+        var seenPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        // 1. Get app-downloaded versions
+        var appVersions = await GetDownloadedVersionsAsync(cancellationToken);
+        foreach (var version in appVersions)
+        {
+            version.Source = FrpcSource.AppDownload;
+            allVersions.Add(version);
+            if (!string.IsNullOrEmpty(version.BinaryPath))
+                seenPaths.Add(version.BinaryPath);
+        }
+
+        // 2. Get package manager installed versions
+        if (packageManagerService != null)
+        {
+            try
+            {
+                var packageManagers = await packageManagerService.DetectAvailablePackageManagersAsync(cancellationToken);
+                foreach (var pm in packageManagers.Where(p => p is { IsInstalled: true, CanInstallFrpc: true }))
+                {
+                    try
+                    {
+                        var binaryPath = await packageManagerService.GetFrpcBinaryPathAsync(pm.Name, cancellationToken);
+                        if (!string.IsNullOrEmpty(binaryPath) && File.Exists(binaryPath) && !seenPaths.Contains(binaryPath))
+                        {
+                            var version = await GetVersionFromBinaryAsync(binaryPath, processManager, cancellationToken);
+                            allVersions.Add(new DownloadedFrpcVersion
+                            {
+                                Version = version,
+                                Platform = CurrentPlatform,
+                                Architecture = CurrentArchitecture,
+                                FolderPath = "", // No folder for package manager installs
+                                BinaryPath = binaryPath,
+                                Source = FrpcSource.PackageManager,
+                                PackageManagerName = pm.Name,
+                                DownloadedAt = DateTimeOffset.MinValue // Unknown
+                            });
+                            seenPaths.Add(binaryPath);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning(ex, "Error getting frpc from package manager {PackageManager}", pm.Name);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Error detecting package manager frpc installations");
+            }
+        }
+
+        // 3. Get frpc from system PATH
+        if (processManager != null)
+        {
+            try
+            {
+                // On Windows, 'where' returns all matches; on Unix, 'which -a' returns all matches
+                var whichCmd = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "where" : "which";
+                var whichArgs = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "frpc" : "-a frpc";
+                var result = await processManager.ExecuteAsync(whichCmd, whichArgs, cancellationToken: cancellationToken);
+
+                if (result.Success)
+                {
+                    var paths = result.StandardOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(p => p.Trim())
+                        .Where(p => !string.IsNullOrEmpty(p) && File.Exists(p));
+
+                    foreach (var path in paths)
+                    {
+                        if (!seenPaths.Contains(path))
+                        {
+                            var version = await GetVersionFromBinaryAsync(path, processManager, cancellationToken);
+                            allVersions.Add(new DownloadedFrpcVersion
+                            {
+                                Version = version,
+                                Platform = CurrentPlatform,
+                                Architecture = CurrentArchitecture,
+                                FolderPath = "",
+                                BinaryPath = path,
+                                Source = FrpcSource.SystemPath,
+                                DownloadedAt = DateTimeOffset.MinValue
+                            });
+                            seenPaths.Add(path);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Error detecting frpc in system PATH");
+            }
+        }
+
+        // Sort by source priority (App > PackageManager > SystemPath > Manual), then by version
+        return allVersions
+            .OrderBy(v => v.Source)
+            .ThenByDescending(v => v.Version, new VersionComparer())
+            .ToList();
+    }
+
+    private async Task<string> GetVersionFromBinaryAsync(string binaryPath, IProcessManager? processManager, CancellationToken cancellationToken)
+    {
+        if (processManager == null || !File.Exists(binaryPath))
+            return "unknown";
+
+        try
+        {
+            var result = await processManager.ExecuteAsync(binaryPath, "-v", cancellationToken: cancellationToken);
+            if (result.Success && !string.IsNullOrEmpty(result.StandardOutput))
+            {
+                // Parse version from output like "0.62.1" or "frpc version 0.62.1"
+                var output = result.StandardOutput.Trim();
+                var versionPart = output.Split(' ').LastOrDefault() ?? output;
+                if (Version.TryParse(versionPart.TrimStart('v'), out _))
+                {
+                    return versionPart.TrimStart('v');
+                }
+            }
+        }
+        catch
+        {
+            // Ignore errors
+        }
+
+        return "unknown";
     }
 
     /// <summary>

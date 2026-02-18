@@ -1110,6 +1110,111 @@
   <data name="Toast_VersionInUse" xml:space="preserve">
     <value>Version In Use</value>
   </data>
+  <data name="Toast_CannotDelete" xml:space="preserve">
+    <value>Cannot Delete</value>
+  </data>
+  <data name="Toast_NotManagedByApp" xml:space="preserve">
+    <value>This frpc is not managed by this application and cannot be uninstalled here</value>
+  </data>
+  <data name="Toast_NotAvailable" xml:space="preserve">
+    <value>Not Available</value>
+  </data>
+  <data name="Toast_NoBinary" xml:space="preserve">
+    <value>No Binary</value>
+  </data>
+  <data name="Toast_NoConfig" xml:space="preserve">
+    <value>No Configuration</value>
+  </data>
+  <data name="Toast_ServiceInstalled" xml:space="preserve">
+    <value>Service Installed</value>
+  </data>
+  <data name="Toast_FrpcServiceInstalled" xml:space="preserve">
+    <value>Frpc service has been installed successfully</value>
+  </data>
+  <data name="Toast_CouldNotInstallService" xml:space="preserve">
+    <value>Could not install the service</value>
+  </data>
+  <data name="Toast_ServiceInstallFailed" xml:space="preserve">
+    <value>Service installation failed: {0}</value>
+  </data>
+  <data name="Toast_ServiceUninstalled" xml:space="preserve">
+    <value>Service Uninstalled</value>
+  </data>
+  <data name="Toast_FrpcServiceUninstalled" xml:space="preserve">
+    <value>Frpc service has been uninstalled</value>
+  </data>
+  <data name="Toast_UninstallFailed" xml:space="preserve">
+    <value>Uninstall Failed</value>
+  </data>
+  <data name="Toast_CouldNotUninstallService" xml:space="preserve">
+    <value>Could not uninstall the service</value>
+  </data>
+  <data name="Toast_ServiceUninstallFailed" xml:space="preserve">
+    <value>Service uninstallation failed: {0}</value>
+  </data>
+  <data name="Toast_ServiceStarted" xml:space="preserve">
+    <value>Service Started</value>
+  </data>
+  <data name="Toast_FrpcServiceStarted" xml:space="preserve">
+    <value>Frpc service has been started</value>
+  </data>
+  <data name="Toast_CouldNotStartService" xml:space="preserve">
+    <value>Could not start the service</value>
+  </data>
+  <data name="Toast_ServiceStartFailed" xml:space="preserve">
+    <value>Service start failed: {0}</value>
+  </data>
+  <data name="Toast_ServiceStopped" xml:space="preserve">
+    <value>Service Stopped</value>
+  </data>
+  <data name="Toast_FrpcServiceStopped" xml:space="preserve">
+    <value>Frpc service has been stopped</value>
+  </data>
+  <data name="Toast_CouldNotStopService" xml:space="preserve">
+    <value>Could not stop the service</value>
+  </data>
+  <data name="Toast_ServiceStopFailed" xml:space="preserve">
+    <value>Service stop failed: {0}</value>
+  </data>
+  <data name="Toast_CouldNotFetchVersions" xml:space="preserve">
+    <value>Could not fetch version list from GitHub</value>
+  </data>
+  <data name="Toast_Installed" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+  <data name="Toast_FrpcInstalledVia" xml:space="preserve">
+    <value>Frpc has been installed via {0}</value>
+  </data>
+  <data name="Toast_BinaryNotFound" xml:space="preserve">
+    <value>Binary not found at the specified path</value>
+  </data>
+  <data name="Toast_VersionSelected" xml:space="preserve">
+    <value>Version Selected</value>
+  </data>
+  <data name="Toast_WillUseVersion" xml:space="preserve">
+    <value>Will use version {0}</value>
+  </data>
+  <data name="Toast_AdminRequired" xml:space="preserve">
+    <value>Administrator Privileges Required</value>
+  </data>
+  <data name="Toast_AdminRequiredMessage" xml:space="preserve">
+    <value>Please enter your password in the system dialog to continue</value>
+  </data>
+  <data name="Toast_AdminCancelled" xml:space="preserve">
+    <value>Operation Cancelled</value>
+  </data>
+  <data name="Toast_AdminCancelledMessage" xml:space="preserve">
+    <value>The operation was cancelled or authentication failed</value>
+  </data>
+  <data name="CannotDeleteNotManaged" xml:space="preserve">
+    <value>Cannot delete: not managed by this application</value>
+  </data>
+  <data name="DetectedFrpcInstallations" xml:space="preserve">
+    <value>Detected Frpc Installations</value>
+  </data>
+  <data name="Source" xml:space="preserve">
+    <value>Source</value>
+  </data>
   <data name="Token" xml:space="preserve">
     <value>トークン</value>
   </data>

@@ -30,7 +30,12 @@ public partial class FrpcConfigurationViewModel : ObservableObject
     [ObservableProperty] private string? _detectedVersion;
     [ObservableProperty] private bool _isDetecting;
 
-    // Version management
+    // Version management - GitHub release versions (for web download)
+    [ObservableProperty] private List<FrpcVersionInfo> _gitHubVersions = [];
+    [ObservableProperty] private FrpcVersionInfo? _selectedGitHubVersion;
+    [ObservableProperty] private bool _isLoadingGitHubVersions;
+
+    // Combined version list for display (depends on install mode)
     [ObservableProperty] private List<FrpcVersionInfo> _availableVersions = [];
     [ObservableProperty] private FrpcVersionInfo? _selectedVersion;
     [ObservableProperty] private bool _isLoadingVersions;
@@ -39,23 +44,49 @@ public partial class FrpcConfigurationViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsPackageManagerMode))]
     [NotifyPropertyChangedFor(nameof(IsWebDownloadMode))]
+    [NotifyPropertyChangedFor(nameof(ShowVersionSelection))]
     private string _selectedInstallMode = "package_manager"; // "package_manager" or "web_download"
 
     public bool IsPackageManagerMode => SelectedInstallMode == "package_manager";
     public bool IsWebDownloadMode => SelectedInstallMode == "web_download";
 
+    // Show version selection for web download mode OR package managers that support it
+    public bool ShowVersionSelection => IsWebDownloadMode ||
+        (IsPackageManagerMode && SelectedPackageManager?.SupportsVersionSelection == true);
+
     // Package Manager
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowPackageManagerVersionInfo))]
+    [NotifyPropertyChangedFor(nameof(ShowVersionSelection))]
+    private PackageManagerInfo? _selectedPackageManager;
+
+    // Show info that package manager only installs latest (when it doesn't support version selection)
+    public bool ShowPackageManagerVersionInfo => IsPackageManagerMode &&
+        SelectedPackageManager is { CanInstallFrpc: true, SupportsVersionSelection: false };
+
     [ObservableProperty] private List<PackageManagerInfo> _availablePackageManagers = [];
-    [ObservableProperty] private PackageManagerInfo? _selectedPackageManager;
     [ObservableProperty] private bool _isCheckingPackageManagers;
     [ObservableProperty] private bool _isInstalling;
 
     // Download
     [ObservableProperty] private bool _isDownloading;
 
+    // Downloaded versions management
+    [ObservableProperty] private List<DownloadedFrpcVersion> _downloadedVersions = [];
+    [ObservableProperty] private bool _isLoadingDownloadedVersions;
+
     // Dialog result
     public bool DialogResult { get; private set; }
     public event EventHandler? CloseRequested;
+
+    // "Latest" version placeholder for package managers that don't support version selection
+    private static readonly FrpcVersionInfo LatestVersionPlaceholder = new()
+    {
+        Version = "latest",
+        TagName = "latest",
+        PublishedAt = DateTimeOffset.Now,
+        IsLatest = true
+    };
 
     public IRelayCommand AutoDetectPathCommand { get; }
     public IRelayCommand BrowsePathCommand { get; }
@@ -66,6 +97,9 @@ public partial class FrpcConfigurationViewModel : ObservableObject
     public IRelayCommand OpenDownloadPageCommand { get; }
     public IRelayCommand SaveCommand { get; }
     public IRelayCommand CancelCommand { get; }
+    public IRelayCommand UseVersionCommand { get; }
+    public IRelayCommand DeleteVersionCommand { get; }
+    public IRelayCommand RefreshDownloadedVersionsCommand { get; }
 
     // Default constructor for design-time
     public FrpcConfigurationViewModel() : this(
@@ -83,7 +117,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         IProcessManager processManager,
         IServiceProvider serviceProvider,
         ToastService? toastService,
-        ILocalizationService? localizationService)
+        ILocalizationService localizationService)
     {
         _logger = logger;
         _frpcVersionService = frpcVersionService;
@@ -164,6 +198,31 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         OpenDownloadPageCommand = new RelayCommand(OpenDownloadPage);
         SaveCommand = new RelayCommand(Save);
         CancelCommand = new RelayCommand(Cancel);
+        UseVersionCommand = new RelayCommand<DownloadedFrpcVersion?>(version =>
+        {
+            if (version != null)
+            {
+                UseVersion(version);
+            }
+        });
+        DeleteVersionCommand = new RelayCommand<DownloadedFrpcVersion?>(version =>
+        {
+            if (version != null)
+            {
+                TogglePendingDeletion(version);
+            }
+        });
+        RefreshDownloadedVersionsCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await RefreshDownloadedVersionsAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error in RefreshDownloadedVersionsCommand");
+            }
+        });
     }
 
     private string L(string key, params object[] args) =>
@@ -178,6 +237,8 @@ public partial class FrpcConfigurationViewModel : ObservableObject
 
         // Set initial loading states
         IsLoadingVersions = true;
+        IsLoadingGitHubVersions = true;
+        IsLoadingDownloadedVersions = true;
         IsDetecting = string.IsNullOrEmpty(FrpcBinaryPath);
         IsCheckingPackageManagers = true;
 
@@ -187,14 +248,18 @@ public partial class FrpcConfigurationViewModel : ObservableObject
             try
             {
                 // Run all operations in parallel
-                var versionsTask = RefreshVersionsAsync();
+                var versionsTask = RefreshGitHubVersionsAsync();
                 var packageManagersTask = RefreshPackageManagersAsync();
+                var downloadedTask = RefreshDownloadedVersionsAsync();
 
                 // Validate or detect path
                 var pathTask = string.IsNullOrEmpty(FrpcBinaryPath) ? AutoDetectPathAsync() : ValidatePathAsync();
 
                 // Wait for all tasks
-                await Task.WhenAll(versionsTask, packageManagersTask, pathTask);
+                await Task.WhenAll(versionsTask, packageManagersTask, downloadedTask, pathTask);
+
+                // Update available versions based on initial mode
+                UpdateAvailableVersionsForMode();
             }
             catch (Exception ex)
             {
@@ -377,33 +442,92 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         }
     }
 
-    private async Task RefreshVersionsAsync()
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnSelectedInstallModeChanged(string value)
+    {
+        // Update available versions when mode changes
+        UpdateAvailableVersionsForMode();
+        OnPropertyChanged(nameof(ShowPackageManagerVersionInfo));
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnSelectedPackageManagerChanged(PackageManagerInfo? value)
+    {
+        OnPropertyChanged(nameof(ShowPackageManagerVersionInfo));
+        OnPropertyChanged(nameof(ShowVersionSelection));
+        // Update available versions when package manager changes
+        if (IsPackageManagerMode)
+        {
+            UpdateAvailableVersionsForMode();
+        }
+    }
+
+    private void UpdateAvailableVersionsForMode()
+    {
+        if (IsWebDownloadMode)
+        {
+            // Web download mode - use GitHub versions
+            AvailableVersions = GitHubVersions;
+            SelectedVersion = SelectedGitHubVersion ?? AvailableVersions.FirstOrDefault();
+            IsLoadingVersions = IsLoadingGitHubVersions;
+        }
+        else if (SelectedPackageManager?.SupportsVersionSelection == true)
+        {
+            // Package manager mode with version selection support - use GitHub versions
+            AvailableVersions = GitHubVersions;
+            SelectedVersion = SelectedGitHubVersion ?? AvailableVersions.FirstOrDefault();
+            IsLoadingVersions = IsLoadingGitHubVersions;
+        }
+        else
+        {
+            // Package manager mode without version selection - only "latest"
+            AvailableVersions = [LatestVersionPlaceholder];
+            SelectedVersion = LatestVersionPlaceholder;
+            IsLoadingVersions = false;
+        }
+    }
+
+    private async Task RefreshGitHubVersionsAsync()
     {
         try
         {
-            IsLoadingVersions = true;
-            _logger?.LogInformation("Refreshing available frpc versions");
+            IsLoadingGitHubVersions = true;
+            _logger?.LogInformation("Refreshing available frpc versions from GitHub");
 
             if (_frpcVersionService != null)
             {
                 var versions = await _frpcVersionService.GetAvailableVersionsAsync();
-                AvailableVersions = versions.ToList();
+                GitHubVersions = versions.ToList();
 
                 // Select latest by default
-                SelectedVersion = AvailableVersions.FirstOrDefault();
+                SelectedGitHubVersion = GitHubVersions.FirstOrDefault();
 
-                _logger?.LogInformation("Found {Count} frpc versions", AvailableVersions.Count);
+                _logger?.LogInformation("Found {Count} frpc versions from GitHub", GitHubVersions.Count);
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error refreshing versions");
+            _logger?.LogError(ex, "Error refreshing GitHub versions");
             _toastService?.Error(L("Toast_Error"), L("Toast_CouldNotFetchVersions"));
         }
         finally
         {
-            IsLoadingVersions = false;
+            IsLoadingGitHubVersions = false;
+            // Update the displayed versions if we're in web download mode
+            if (IsWebDownloadMode)
+            {
+                UpdateAvailableVersionsForMode();
+            }
         }
+    }
+
+    private async Task RefreshVersionsAsync()
+    {
+        if (IsWebDownloadMode)
+        {
+            await RefreshGitHubVersionsAsync();
+        }
+        // For package manager mode, no need to refresh - always "latest"
     }
 
     private async Task RefreshPackageManagersAsync()
@@ -447,11 +571,21 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         try
         {
             IsInstalling = true;
-            _toastService?.Info(L("Toast_Installing"), L("Toast_InstallingFrpcVia", SelectedPackageManager.DisplayName));
+
+            // Determine version to install
+            string? versionToInstall = null;
+            if (SelectedPackageManager.SupportsVersionSelection && SelectedVersion != null &&
+                SelectedVersion.Version != "latest")
+            {
+                versionToInstall = SelectedVersion.Version;
+            }
+
+            var versionText = versionToInstall ?? "latest";
+            _toastService?.Info(L("Toast_Installing"), L("Toast_InstallingFrpcVia", $"{SelectedPackageManager.DisplayName} ({versionText})"));
 
             if (_packageManagerService != null)
             {
-                var success = await _packageManagerService.InstallFrpcAsync(SelectedPackageManager.Name);
+                var success = await _packageManagerService.InstallFrpcAsync(SelectedPackageManager.Name, versionToInstall);
                 if (success)
                 {
                     var path = await _packageManagerService.GetFrpcBinaryPathAsync(SelectedPackageManager.Name);
@@ -480,7 +614,9 @@ public partial class FrpcConfigurationViewModel : ObservableObject
 
     private async Task DownloadDirectAsync()
     {
-        if (SelectedVersion == null)
+        // For web download mode, use the selected GitHub version
+        var versionToDownload = SelectedGitHubVersion ?? SelectedVersion;
+        if (versionToDownload == null)
         {
             _toastService?.Warning(L("Toast_NoVersion"), L("Toast_SelectVersionFirst"));
             return;
@@ -489,16 +625,16 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         try
         {
             IsDownloading = true;
-            _toastService?.Info(L("Toast_Downloading"), L("Toast_DownloadingFrpc", SelectedVersion.Version));
+            _toastService?.Info(L("Toast_Downloading"), L("Toast_DownloadingFrpc", versionToDownload.Version));
 
             if (_frpcDownloader != null && _nativeDeploymentService != null)
             {
                 // Get the download URL - either from the version info or construct it
-                var downloadUrl = SelectedVersion.DownloadUrl;
+                var downloadUrl = versionToDownload.DownloadUrl;
                 if (string.IsNullOrEmpty(downloadUrl))
                 {
                     // Construct the URL
-                    downloadUrl = _frpcVersionService?.GetDownloadUrl(SelectedVersion);
+                    downloadUrl = _frpcVersionService?.GetDownloadUrl(versionToDownload);
                 }
 
                 if (string.IsNullOrEmpty(downloadUrl))
@@ -528,7 +664,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
                 // Deploy with versioned folder
                 var binaryPath = await _nativeDeploymentService.DeployFromArchiveAsync(
                     archivePath,
-                    SelectedVersion.Version,
+                    versionToDownload.Version,
                     platform,
                     architecture);
 
@@ -575,6 +711,12 @@ public partial class FrpcConfigurationViewModel : ObservableObject
             return;
         }
 
+        // Apply pending deletions and close
+        _ = Task.Run(async () =>
+        {
+            await ApplyPendingDeletionsAsync();
+        });
+
         DialogResult = true;
         CloseRequested?.Invoke(this, EventArgs.Empty);
     }
@@ -616,4 +758,143 @@ public partial class FrpcConfigurationViewModel : ObservableObject
             "/opt/frpc/frpc"
         ];
     }
+
+    #region Downloaded Versions Management
+
+    private async Task RefreshDownloadedVersionsAsync()
+    {
+        if (_nativeDeploymentService == null) return;
+
+        try
+        {
+            IsLoadingDownloadedVersions = true;
+            _logger?.LogInformation("Refreshing all detected frpc installations");
+
+            // Get all detected frpc installations (app downloads, package managers, PATH)
+            var versions = await _nativeDeploymentService.GetAllDetectedFrpcAsync(
+                _packageManagerService,
+                _processManager);
+
+            // Mark versions in use (matching current path)
+            foreach (var version in versions)
+            {
+                version.IsInUse = !string.IsNullOrEmpty(FrpcBinaryPath) &&
+                    string.Equals(version.BinaryPath, FrpcBinaryPath, StringComparison.OrdinalIgnoreCase);
+            }
+
+            DownloadedVersions = versions.ToList();
+            _logger?.LogInformation("Found {Count} frpc installations", DownloadedVersions.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error refreshing detected frpc installations");
+            _toastService?.Error(L("Toast_Error"), L("Toast_CouldNotLoadVersions"));
+        }
+        finally
+        {
+            IsLoadingDownloadedVersions = false;
+        }
+    }
+
+    private void UseVersion(DownloadedFrpcVersion version)
+    {
+        if (string.IsNullOrEmpty(version.BinaryPath) || !File.Exists(version.BinaryPath))
+        {
+            _toastService?.Warning(L("Toast_NotAvailable"), L("Toast_BinaryNotFound"));
+            return;
+        }
+
+        // Set the path to this version's binary
+        FrpcBinaryPath = version.BinaryPath;
+        _toastService?.Success(L("Toast_VersionSelected"), L("Toast_WillUseVersion", version.Version));
+
+        // Validate the new path
+        _ = ValidatePathAsync();
+
+        // Refresh to update "in use" status
+        _ = RefreshDownloadedVersionsAsync();
+    }
+
+    private void TogglePendingDeletion(DownloadedFrpcVersion version)
+    {
+        // Cannot delete versions not managed by this app or package manager
+        if (!version.CanDelete)
+        {
+            _toastService?.Warning(L("Toast_CannotDelete"), L("Toast_NotManagedByApp"));
+            return;
+        }
+
+        if (version.IsInUse)
+        {
+            _toastService?.Warning(L("Toast_VersionInUse"), L("Toast_CannotDeleteUsedVersion"));
+            return;
+        }
+
+        version.IsPendingDeletion = !version.IsPendingDeletion;
+    }
+
+    private async Task ApplyPendingDeletionsAsync()
+    {
+        var versionsToDelete = DownloadedVersions.Where(v => v.IsPendingDeletion).ToList();
+        if (versionsToDelete.Count == 0) return;
+
+        var deletedCount = 0;
+        foreach (var version in versionsToDelete)
+        {
+            try
+            {
+                bool success;
+
+                if (version.Source == FrpcSource.PackageManager && !string.IsNullOrEmpty(version.PackageManagerName))
+                {
+                    // Uninstall via package manager
+                    if (_packageManagerService != null)
+                    {
+                        success = await _packageManagerService.UninstallFrpcAsync(version.PackageManagerName);
+                        if (success)
+                        {
+                            _logger?.LogInformation("Uninstalled frpc via package manager {PackageManager}",
+                                version.PackageManagerName);
+                        }
+                    }
+                    else
+                    {
+                        success = false;
+                    }
+                }
+                else if (version.Source == FrpcSource.AppDownload && _nativeDeploymentService != null)
+                {
+                    // Delete app-downloaded version
+                    success = await _nativeDeploymentService.DeleteVersionAsync(version.FolderPath);
+                }
+                else
+                {
+                    // Cannot delete other sources
+                    _logger?.LogWarning("Cannot delete version {Version} from source {Source}",
+                        version.Version, version.Source);
+                    success = false;
+                }
+
+                if (success)
+                {
+                    deletedCount++;
+                }
+                else
+                {
+                    _logger?.LogWarning("Failed to delete version {Version}", version.Version);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Error deleting version {Version}", version.Version);
+            }
+        }
+
+        if (deletedCount > 0)
+        {
+            _logger?.LogInformation("Deleted {Count} frpc versions", deletedCount);
+        }
+    }
+
+    #endregion
 }

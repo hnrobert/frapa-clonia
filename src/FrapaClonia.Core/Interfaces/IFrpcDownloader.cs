@@ -46,6 +46,6 @@ public class FrpAsset
     public required string Name { get; init; }
     public required string DownloadUrl { get; init; }
     public required long Size { get; init; }
-    public required string Platform { get; init; }  // windows, linux, darwin
+    public required string Platform { get; init; }  // windows, linux, darwin1231234123412341234
     public required List<string> Architecture { get; init; }  // amd64, arm64, etc.
 }

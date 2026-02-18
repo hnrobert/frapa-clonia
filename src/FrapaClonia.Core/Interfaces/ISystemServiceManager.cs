@@ -132,4 +132,9 @@ public class ServiceStatus
     /// Status message or error
     /// </summary>
     public string? Message { get; set; }
+
+    /// <summary>
+    /// The scope of the installed service (User or System)
+    /// </summary>
+    public ServiceScope Scope { get; set; } = ServiceScope.User;
 }

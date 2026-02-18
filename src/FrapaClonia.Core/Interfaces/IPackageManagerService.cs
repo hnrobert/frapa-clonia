@@ -18,7 +18,11 @@ public interface IPackageManagerService
     /// <summary>
     /// Installs frpc using the specified package manager
     /// </summary>
-    Task<bool> InstallFrpcAsync(string packageManager, CancellationToken cancellationToken = default);
+    /// <param name="packageManager">The package manager to use</param>
+    /// <param name="version">Optional version to install (only supported by some package managers)</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>True if installation succeeded</returns>
+    Task<bool> InstallFrpcAsync(string packageManager, string? version = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the frpc binary path if installed via package manager
@@ -29,6 +33,12 @@ public interface IPackageManagerService
     /// Uninstalls frpc using the specified package manager
     /// </summary>
     Task<bool> UninstallFrpcAsync(string packageManager, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the available frpc versions for a specific package manager.
+    /// Returns null or empty list if the package manager only supports "latest".
+    /// </summary>
+    Task<IReadOnlyList<FrpcVersionInfo>?> GetAvailableVersionsAsync(string packageManager, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -55,6 +65,12 @@ public class PackageManagerInfo
     /// Whether frpc can be installed via this package manager
     /// </summary>
     public bool CanInstallFrpc { get; set; }
+
+    /// <summary>
+    /// Whether this package manager supports installing specific versions of frpc.
+    /// If false, only "latest" version is available.
+    /// </summary>
+    public bool SupportsVersionSelection { get; init; }
 
     /// <summary>
     /// Command to install the package manager (for guidance if not installed)

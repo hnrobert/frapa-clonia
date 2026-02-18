@@ -120,7 +120,8 @@ public partial class DeploymentViewModel : ObservableObject
         StartServiceCommand = CreateAsyncCommand(StartServiceAsync, "Error starting service");
         StopServiceCommand = CreateAsyncCommand(StopServiceAsync, "Error stopping service");
         CheckDockerCommand = CreateAsyncCommand(CheckDockerAsync, "Error checking Docker availability");
-        GenerateDockerComposeCommand = CreateAsyncCommand(GenerateDockerComposeAsync, "Error generating docker compose");
+        GenerateDockerComposeCommand =
+            CreateAsyncCommand(GenerateDockerComposeAsync, "Error generating docker compose");
         StartDockerCommand = CreateAsyncCommand(StartDockerAsync, "Error starting docker");
         StopDockerCommand = CreateAsyncCommand(StopDockerAsync, "Error stopping docker");
     }
@@ -272,36 +273,39 @@ public partial class DeploymentViewModel : ObservableObject
 
         try
         {
-            var viewModel = new FrpcConfigurationViewModel(
-                _serviceProvider.GetRequiredService<ILogger<FrpcConfigurationViewModel>>(),
-                _serviceProvider.GetRequiredService<IFrpcVersionService>(),
-                _serviceProvider.GetRequiredService<IFrpcDownloader>(),
-                _serviceProvider.GetRequiredService<INativeDeploymentService>(),
-                _serviceProvider.GetRequiredService<IPackageManagerService>(),
-                _serviceProvider.GetRequiredService<IProcessManager>(),
-                _serviceProvider,
-                _toastService,
-                _localizationService);
-
-            viewModel.InitializeAsync(FrpcBinaryPath);
-
-            var dialog = new FrpcConfigurationDialog(viewModel);
-
-            // Get the main window
-            var mainWindow = _serviceProvider.GetService<Window>();
-            if (mainWindow != null)
+            if (_localizationService != null)
             {
-                await dialog.ShowDialog(mainWindow);
-            }
-            else
-            {
-                dialog.Show();
-            }
+                var viewModel = new FrpcConfigurationViewModel(
+                    _serviceProvider.GetRequiredService<ILogger<FrpcConfigurationViewModel>>(),
+                    _serviceProvider.GetRequiredService<IFrpcVersionService>(),
+                    _serviceProvider.GetRequiredService<IFrpcDownloader>(),
+                    _serviceProvider.GetRequiredService<INativeDeploymentService>(),
+                    _serviceProvider.GetRequiredService<IPackageManagerService>(),
+                    _serviceProvider.GetRequiredService<IProcessManager>(),
+                    _serviceProvider,
+                    _toastService,
+                    _localizationService);
 
-            if (viewModel.DialogResult && !string.IsNullOrEmpty(viewModel.FrpcBinaryPath))
-            {
-                FrpcBinaryPath = viewModel.FrpcBinaryPath;
-                await ValidateFrpcPathAsync(FrpcBinaryPath);
+                viewModel.InitializeAsync(FrpcBinaryPath);
+
+                var dialog = new FrpcConfigurationDialog(viewModel);
+
+                // Get the main window
+                var mainWindow = _serviceProvider.GetService<Window>();
+                if (mainWindow != null)
+                {
+                    await dialog.ShowDialog(mainWindow);
+                }
+                else
+                {
+                    dialog.Show();
+                }
+
+                if (viewModel.DialogResult && !string.IsNullOrEmpty(viewModel.FrpcBinaryPath))
+                {
+                    FrpcBinaryPath = viewModel.FrpcBinaryPath;
+                    await ValidateFrpcPathAsync(FrpcBinaryPath);
+                }
             }
         }
         catch (Exception ex)
@@ -375,6 +379,12 @@ public partial class DeploymentViewModel : ObservableObject
                 Scope = GetServiceScopeEnum(),
                 AutoStart = AutoStartOnBoot
             };
+
+            // Notify user that admin privileges may be required for system-level services
+            if (config.Scope == ServiceScope.System)
+            {
+                _toastService?.Info(L("Toast_AdminRequired"), L("Toast_AdminRequiredMessage"));
+            }
 
             var success = await _systemServiceManager.InstallServiceAsync(config);
             if (success)
@@ -528,7 +538,8 @@ public partial class DeploymentViewModel : ObservableObject
                     AutoRestart = true
                 };
 
-                var downloadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+                var downloadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    "Downloads");
                 var outputPath = Path.Combine(downloadsPath, "frapa-clonia-docker");
                 Directory.CreateDirectory(outputPath);
 
@@ -668,8 +679,10 @@ public partial class DeploymentViewModel : ObservableObject
             [
                 @"C:\Program Files\frpc\frpc.exe",
                 @"C:\ProgramData\chocolatey\bin\frpc.exe",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "scoop", "shims", "frpc.exe"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Microsoft", "WinGet", "Links", "frpc.exe")
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "scoop", "shims",
+                    "frpc.exe"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Microsoft",
+                    "WinGet", "Links", "frpc.exe")
             ];
         }
 

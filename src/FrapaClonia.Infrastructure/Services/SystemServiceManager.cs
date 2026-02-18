@@ -118,8 +118,10 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
 {
     public Task<bool> IsServiceInstalledAsync(string serviceName, CancellationToken cancellationToken = default)
     {
-        var plistPath = GetPlistPath(serviceName, ServiceScope.User);
-        return Task.FromResult(File.Exists(plistPath));
+        // Check both user and system scope
+        var userPlist = GetPlistPath(serviceName, ServiceScope.User);
+        var systemPlist = GetPlistPath(serviceName, ServiceScope.System);
+        return Task.FromResult(File.Exists(userPlist) || File.Exists(systemPlist));
     }
 
     public async Task<bool> InstallServiceAsync(ServiceConfig config, CancellationToken cancellationToken = default)
@@ -128,17 +130,68 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
         {
             var plistPath = GetPlistPath(config.ServiceName, config.Scope);
             var plistContent = GenerateLaunchdPlist(config);
+            var plistDir = Path.GetDirectoryName(plistPath)!;
 
-            Directory.CreateDirectory(Path.GetDirectoryName(plistPath)!);
-            await File.WriteAllTextAsync(plistPath, plistContent, cancellationToken);
+            if (config.Scope == ServiceScope.System)
+            {
+                // System scope requires admin privileges
+                // Use osascript to prompt for credentials and run with elevated privileges
+                return await InstallSystemServiceAsync(plistPath, plistContent, cancellationToken);
+            }
+            else
+            {
+                // User scope doesn't require elevation
+                Directory.CreateDirectory(plistDir);
+                await File.WriteAllTextAsync(plistPath, plistContent, cancellationToken);
 
-            // Load the service
-            var result = await processManager.ExecuteAsync("launchctl", $"load \"{plistPath}\"", cancellationToken: cancellationToken);
-            return result.ExitCode == 0;
+                // Load the service
+                var result = await processManager.ExecuteAsync("launchctl", $"load \"{plistPath}\"", cancellationToken: cancellationToken);
+                return result.ExitCode == 0;
+            }
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to install macOS service");
+            return false;
+        }
+    }
+
+    private async Task<bool> InstallSystemServiceAsync(string plistPath, string plistContent, CancellationToken cancellationToken)
+    {
+        try
+        {
+            // Create a temporary file for the plist content
+            var tempPlistPath = Path.Combine(Path.GetTempPath(), $"frapaclonia_service_{Guid.NewGuid():N}.plist");
+            await File.WriteAllTextAsync(tempPlistPath, plistContent, cancellationToken);
+
+            try
+            {
+                var plistDir = Path.GetDirectoryName(plistPath);
+
+                // Combine all commands into a single command so user only authenticates once
+                var combinedCommand = $"mkdir -p '{plistDir}' && cp '{tempPlistPath}' '{plistPath}' && chmod 644 '{plistPath}' && launchctl load '{plistPath}'";
+
+                var result = await ExecuteWithAdminPrivilegesAsync(combinedCommand, cancellationToken);
+                if (!result)
+                {
+                    logger.LogWarning("Install service command failed");
+                    return false;
+                }
+
+                return true;
+            }
+            finally
+            {
+                // Clean up temp file
+                if (File.Exists(tempPlistPath))
+                {
+                    File.Delete(tempPlistPath);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to install system service with elevated privileges");
             return false;
         }
     }
@@ -159,8 +212,9 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
 
             if (File.Exists(systemPlist))
             {
-                await processManager.ExecuteAsync("sudo", $"launchctl unload \"{systemPlist}\"", cancellationToken: cancellationToken);
-                File.Delete(systemPlist);
+                // System scope requires admin privileges - combine commands to auth only once
+                var combinedCommand = $"launchctl unload '{systemPlist}' && rm '{systemPlist}'";
+                await ExecuteWithAdminPrivilegesAsync(combinedCommand, cancellationToken);
             }
 
             return true;
@@ -195,11 +249,16 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
         var isInstalled = await IsServiceInstalledAsync(serviceName, cancellationToken);
         var isRunning = isInstalled && await IsServiceRunningAsync(serviceName, scope, cancellationToken);
 
+        // Determine the actual scope of the installed service
+        var userPlist = GetPlistPath(serviceName, ServiceScope.User);
+        var actualScope = File.Exists(userPlist) ? ServiceScope.User : ServiceScope.System;
+
         return new ServiceStatus
         {
             IsInstalled = isInstalled,
             IsRunning = isRunning,
-            State = isRunning ? "running" : (isInstalled ? "stopped" : "not_installed")
+            State = isRunning ? "running" : (isInstalled ? "stopped" : "not_installed"),
+            Scope = actualScope
         };
     }
 
@@ -208,6 +267,49 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
         // launchd handles auto-start via RunAtLoad and KeepAlive in the plist
         // Would need to regenerate the plist to change this
         return await Task.FromResult(true);
+    }
+
+    /// <summary>
+    /// Executes a command with admin privileges using osascript.
+    /// This will show a system authentication dialog to the user.
+    /// </summary>
+    private async Task<bool> ExecuteWithAdminPrivilegesAsync(string command, CancellationToken cancellationToken)
+    {
+        // Write the AppleScript to a temporary file to avoid complex escaping issues
+        var tempScriptPath = Path.Combine(Path.GetTempPath(), $"admin_script_{Guid.NewGuid():N}.scpt");
+
+        try
+        {
+            // Escape backslashes and double quotes for AppleScript string
+            var escapedCommand = command
+                .Replace("\\", "\\\\")
+                .Replace("\"", "\\\"");
+
+            // Create the AppleScript content
+            var scriptContent = $"do shell script \"{escapedCommand}\" with administrator privileges";
+
+            // Write the script to a temp file
+            await File.WriteAllTextAsync(tempScriptPath, scriptContent, cancellationToken);
+
+            // Execute the script file
+            var result = await processManager.ExecuteAsync("osascript", $"\"{tempScriptPath}\"", cancellationToken: cancellationToken);
+
+            if (result.ExitCode != 0)
+            {
+                logger.LogWarning("Admin command failed with exit code {ExitCode}: {Error}",
+                    result.ExitCode, result.StandardError);
+            }
+
+            return result.ExitCode == 0;
+        }
+        finally
+        {
+            // Clean up temp file
+            if (File.Exists(tempScriptPath))
+            {
+                try { File.Delete(tempScriptPath); } catch { /* ignore */ }
+            }
+        }
     }
 
     private static string GetPlistPath(string serviceName, ServiceScope scope)

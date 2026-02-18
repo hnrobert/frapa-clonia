@@ -3,6 +3,32 @@ using CommunityToolkit.Mvvm.ComponentModel;
 namespace FrapaClonia.Core.Interfaces;
 
 /// <summary>
+/// Source of frpc installation
+/// </summary>
+public enum FrpcSource
+{
+    /// <summary>
+    /// Downloaded by this application
+    /// </summary>
+    AppDownload,
+
+    /// <summary>
+    /// Installed via package manager (brew, scoop, choco, winget, etc.)
+    /// </summary>
+    PackageManager,
+
+    /// <summary>
+    /// Found in system PATH
+    /// </summary>
+    SystemPath,
+
+    /// <summary>
+    /// Manually specified by user
+    /// </summary>
+    Manual
+}
+
+/// <summary>
 /// Information about a downloaded frpc version
 /// </summary>
 public partial class DownloadedFrpcVersion : ObservableObject
@@ -16,6 +42,33 @@ public partial class DownloadedFrpcVersion : ObservableObject
     [ObservableProperty] private DateTimeOffset _downloadedAt;
     [ObservableProperty] private bool _isInUse;
     [ObservableProperty] private bool _isPendingDeletion;
+
+    /// <summary>
+    /// Source of this frpc installation
+    /// </summary>
+    [ObservableProperty] private FrpcSource _source;
+
+    /// <summary>
+    /// Package manager name (e.g., "brew", "scoop", "choco", "winget") if Source is PackageManager
+    /// </summary>
+    [ObservableProperty] private string? _packageManagerName;
+
+    /// <summary>
+    /// Whether this version can be deleted/uninstalled
+    /// </summary>
+    public bool CanDelete => Source == FrpcSource.AppDownload || Source == FrpcSource.PackageManager;
+
+    /// <summary>
+    /// Display text for the source
+    /// </summary>
+    public string SourceDisplayText => Source switch
+    {
+        FrpcSource.AppDownload => "App",
+        FrpcSource.PackageManager => PackageManagerName ?? "Package Manager",
+        FrpcSource.SystemPath => "PATH",
+        FrpcSource.Manual => "Manual",
+        _ => "Unknown"
+    };
 }
 
 /// <summary>
@@ -78,4 +131,16 @@ public interface INativeDeploymentService
     /// Gets the binary path for a specific version
     /// </summary>
     string GetBinaryPathForVersion(string version, string platform, string architecture);
+
+    /// <summary>
+    /// Gets all detected frpc installations including downloaded, package manager, and system PATH
+    /// </summary>
+    /// <param name="packageManagerService">Package manager service to check for PM installations</param>
+    /// <param name="processManager">Process manager to run detection commands</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>List of all detected frpc installations</returns>
+    Task<IReadOnlyList<DownloadedFrpcVersion>> GetAllDetectedFrpcAsync(
+        IPackageManagerService? packageManagerService = null,
+        IProcessManager? processManager = null,
+        CancellationToken cancellationToken = default);
 }

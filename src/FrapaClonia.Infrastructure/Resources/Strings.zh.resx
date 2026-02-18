@@ -237,6 +237,9 @@
   <data name="DeleteVisitor" xml:space="preserve">
     <value>删除访问者</value>
   </data>
+  <data name="DetectedFrpcInstallations" xml:space="preserve">
+    <value>检测到的 Frpc 安装</value>
+  </data>
   <data name="DeployNative" xml:space="preserve">
     <value>本地部署</value>
   </data>
@@ -633,6 +636,9 @@
   <data name="PackageManagerNotSupportFrpc" xml:space="preserve">
     <value>This package manager does not support direct frpc installation. Please use another method.</value>
   </data>
+  <data name="PackageManagerOnlyInstallsLatest" xml:space="preserve">
+    <value>包管理器仅安装最新版本。如需指定版本，请使用"从网络下载"。</value>
+  </data>
   <data name="Password" xml:space="preserve">
     <value>密码</value>
   </data>
@@ -725,6 +731,9 @@
   </data>
   <data name="SOCKS5URL" xml:space="preserve">
     <value>SOCKS5 URL</value>
+  </data>
+  <data name="Source" xml:space="preserve">
+    <value>来源</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>保存</value>
@@ -1110,6 +1119,105 @@
   <data name="Toast_VersionInUse" xml:space="preserve">
     <value>Version In Use</value>
   </data>
+  <data name="Toast_CannotDelete" xml:space="preserve">
+    <value>无法删除</value>
+  </data>
+  <data name="Toast_NotManagedByApp" xml:space="preserve">
+    <value>此 frpc 不由本程序管理，无法在此卸载</value>
+  </data>
+  <data name="Toast_NotAvailable" xml:space="preserve">
+    <value>不可用</value>
+  </data>
+  <data name="Toast_NoBinary" xml:space="preserve">
+    <value>无二进制文件</value>
+  </data>
+  <data name="Toast_NoConfig" xml:space="preserve">
+    <value>无配置文件</value>
+  </data>
+  <data name="Toast_ServiceInstalled" xml:space="preserve">
+    <value>服务已安装</value>
+  </data>
+  <data name="Toast_FrpcServiceInstalled" xml:space="preserve">
+    <value>Frpc 服务已成功安装</value>
+  </data>
+  <data name="Toast_CouldNotInstallService" xml:space="preserve">
+    <value>无法安装服务</value>
+  </data>
+  <data name="Toast_ServiceInstallFailed" xml:space="preserve">
+    <value>服务安装失败：{0}</value>
+  </data>
+  <data name="Toast_ServiceUninstalled" xml:space="preserve">
+    <value>服务已卸载</value>
+  </data>
+  <data name="Toast_FrpcServiceUninstalled" xml:space="preserve">
+    <value>Frpc 服务已卸载</value>
+  </data>
+  <data name="Toast_UninstallFailed" xml:space="preserve">
+    <value>卸载失败</value>
+  </data>
+  <data name="Toast_CouldNotUninstallService" xml:space="preserve">
+    <value>无法卸载服务</value>
+  </data>
+  <data name="Toast_ServiceUninstallFailed" xml:space="preserve">
+    <value>服务卸载失败：{0}</value>
+  </data>
+  <data name="Toast_ServiceStarted" xml:space="preserve">
+    <value>服务已启动</value>
+  </data>
+  <data name="Toast_FrpcServiceStarted" xml:space="preserve">
+    <value>Frpc 服务已启动</value>
+  </data>
+  <data name="Toast_CouldNotStartService" xml:space="preserve">
+    <value>无法启动服务</value>
+  </data>
+  <data name="Toast_ServiceStartFailed" xml:space="preserve">
+    <value>服务启动失败：{0}</value>
+  </data>
+  <data name="Toast_ServiceStopped" xml:space="preserve">
+    <value>服务已停止</value>
+  </data>
+  <data name="Toast_FrpcServiceStopped" xml:space="preserve">
+    <value>Frpc 服务已停止</value>
+  </data>
+  <data name="Toast_CouldNotStopService" xml:space="preserve">
+    <value>无法停止服务</value>
+  </data>
+  <data name="Toast_ServiceStopFailed" xml:space="preserve">
+    <value>服务停止失败：{0}</value>
+  </data>
+  <data name="Toast_CouldNotFetchVersions" xml:space="preserve">
+    <value>无法从 GitHub 获取版本列表</value>
+  </data>
+  <data name="Toast_Installed" xml:space="preserve">
+    <value>已安装</value>
+  </data>
+  <data name="Toast_FrpcInstalledVia" xml:space="preserve">
+    <value>Frpc 已通过 {0} 安装</value>
+  </data>
+  <data name="Toast_BinaryNotFound" xml:space="preserve">
+    <value>在指定路径未找到二进制文件</value>
+  </data>
+  <data name="Toast_VersionSelected" xml:space="preserve">
+    <value>已选择版本</value>
+  </data>
+  <data name="Toast_WillUseVersion" xml:space="preserve">
+    <value>将使用版本 {0}</value>
+  </data>
+  <data name="Toast_AdminRequired" xml:space="preserve">
+    <value>需要管理员权限</value>
+  </data>
+  <data name="Toast_AdminRequiredMessage" xml:space="preserve">
+    <value>请在系统对话框中输入密码以继续</value>
+  </data>
+  <data name="Toast_AdminCancelled" xml:space="preserve">
+    <value>操作已取消</value>
+  </data>
+  <data name="Toast_AdminCancelledMessage" xml:space="preserve">
+    <value>操作已取消或身份验证失败</value>
+  </data>
+  <data name="CannotDeleteNotManaged" xml:space="preserve">
+    <value>无法删除：不由本程序管理</value>
+  </data>
   <data name="Token" xml:space="preserve">
     <value>令牌</value>
   </data>
@@ -1152,6 +1260,9 @@
   <data name="Username" xml:space="preserve">
     <value>用户名</value>
   </data>
+  <data name="Use" xml:space="preserve">
+    <value>使用</value>
+  </data>
   <data name="Version" xml:space="preserve">
     <value>版本</value>
   </data>
@@ -1159,7 +1270,7 @@
     <value>版本</value>
   </data>
   <data name="VersionManagementHint" xml:space="preserve">
-    <value>管理已下载的 frpc 版本。正在被配置使用的版本无法删除。</value>
+    <value>检测到来自不同来源的 frpc 安装。只有本程序下载的和包管理器安装的版本可以卸载。</value>
   </data>
   <data name="WillBeRemovedAfterSaving" xml:space="preserve">
     <value>版本将在保存设置后移除</value>
