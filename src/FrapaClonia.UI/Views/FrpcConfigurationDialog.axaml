@@ -1,19 +1,19 @@
 <Window xmlns="https://github.com/avaloniaui"
-         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-         xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
-         xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-         xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
-         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-         mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="700"
-         x:Class="FrapaClonia.UI.Views.FrpcConfigurationDialog"
-         x:DataType="vm:FrpcConfigurationViewModel"
-         Title="{DynamicResource Localized_FrpcConfiguration}"
-         Width="650" Height="720"
-         MinWidth="600" MinHeight="600"
-         WindowStartupLocation="CenterOwner"
-         CanResize="True"
-         ExtendClientAreaToDecorationsHint="False">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+        xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="700"
+        x:Class="FrapaClonia.UI.Views.FrpcConfigurationDialog"
+        x:DataType="vm:FrpcConfigurationViewModel"
+        Title="{DynamicResource Localized_FrpcConfiguration}"
+        Width="650" Height="720"
+        MinWidth="600" MinHeight="600"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        ExtendClientAreaToDecorationsHint="False">
 
   <Design.DataContext>
     <vm:FrpcConfigurationViewModel />
@@ -334,7 +334,7 @@
                         Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
                         CornerRadius="6,6,0,0"
                         Padding="12,8">
-                  <Grid ColumnDefinitions="70,55,55,*,50,50">
+                  <Grid ColumnDefinitions="70,70,100,*,50,50">
                     <TextBlock Grid.Column="0" Text="{DynamicResource Localized_Version}"
                                FontWeight="{StaticResource FontWeightSemiBold}"
                                FontSize="{StaticResource FontSizeS}" />
@@ -378,7 +378,8 @@
                   <StackPanel.IsVisible>
                     <MultiBinding Converter="{x:Static BoolConverters.And}">
                       <Binding Path="!IsLoadingDownloadedVersions" />
-                      <Binding Path="DownloadedVersions.Count" Converter="{StaticResource CountToEmptyVisibilityConverter}" />
+                      <Binding Path="DownloadedVersions.Count"
+                               Converter="{StaticResource CountToEmptyVisibilityConverter}" />
                     </MultiBinding>
                   </StackPanel.IsVisible>
                   <TextBlock Text="{DynamicResource Localized_NoVersionsDownloaded}"
@@ -401,11 +402,11 @@
                             <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListLowBrush}" />
                           </Style>
                         </Border.Styles>
-                        <Grid ColumnDefinitions="70,55,55,*,50,50">
+                        <Grid ColumnDefinitions="70,70,100,*,50,50">
                           <!-- Content with opacity binding -->
                           <Panel Grid.ColumnSpan="6"
                                  Opacity="{Binding IsPendingDeletion, Converter={StaticResource BoolToOpacityConverter}}">
-                            <Grid ColumnDefinitions="70,55,55,*,50,50">
+                            <Grid ColumnDefinitions="70,70,100,*,50,50">
                               <TextBlock Grid.Column="0"
                                          Text="{Binding Version}"
                                          VerticalAlignment="Center"
@@ -449,11 +450,12 @@
                                   HorizontalAlignment="Center">
                             <ToolTip.Tip>
                               <Panel>
-                                <TextBlock Text="{DynamicResource Localized_CannotDeleteNotManaged}" IsVisible="{Binding !CanDelete}" />
+                                <TextBlock Text="{DynamicResource Localized_CannotDeleteNotManaged}"
+                                           IsVisible="{Binding !CanDelete}" />
                                 <TextBlock Text="{DynamicResource Localized_Delete}" IsVisible="{Binding CanDelete}" />
                               </Panel>
                             </ToolTip.Tip>
-                            <Panel Opacity="{Binding CanDelete, Converter={StaticResource BoolToOpacityConverter}}">
+                            <Panel Opacity="{Binding CanDelete, Converter={StaticResource BoolToOpacityConverter}, ConverterParameter=Invert}">
                               <!-- Delete Icon -->
                               <mi:MaterialIcon Kind="Delete"
                                                IsVisible="{Binding !IsPendingDeletion}"
@@ -503,3 +505,4 @@
     </Panel>
   </ScrollViewer>
 </Window>
+

@@ -179,16 +179,20 @@ public class BoolToStringConverter : IValueConverter
 
 /// <summary>
 /// Converts boolean to opacity (0.4 if true, 1 if false)
+/// Pass "Invert" as parameter to reverse the logic (1 if true, 0.4 if false)
 /// </summary>
 public class BoolToOpacityConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is bool boolValue && boolValue)
+        var boolValue = value is bool b && b;
+        var invert = parameter?.ToString() == "Invert";
+
+        if (invert)
         {
-            return 0.4;
+            return boolValue ? 1.0 : 0.4;
         }
-        return 1.0;
+        return boolValue ? 0.4 : 1.0;
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

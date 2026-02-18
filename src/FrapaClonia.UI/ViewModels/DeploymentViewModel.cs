@@ -24,6 +24,7 @@ public partial class DeploymentViewModel : ObservableObject
     private readonly IServiceProvider? _serviceProvider;
     private readonly ToastService? _toastService;
     private readonly ILocalizationService? _localizationService;
+    private readonly IPresetService? _presetService;
 
     #region Mode Selection
 
@@ -89,7 +90,7 @@ public partial class DeploymentViewModel : ObservableObject
     // Default constructor for design-time support
     public DeploymentViewModel() : this(
         Microsoft.Extensions.Logging.Abstractions.NullLogger<DeploymentViewModel>.Instance,
-        null!, null!, null!, null!, null!, null!, null!)
+        null!, null!, null!, null!, null!, null!, null!, null!)
     {
     }
 
@@ -101,7 +102,8 @@ public partial class DeploymentViewModel : ObservableObject
         IProcessManager processManager,
         IServiceProvider serviceProvider,
         ToastService? toastService,
-        ILocalizationService? localizationService)
+        ILocalizationService? localizationService,
+        IPresetService? presetService)
     {
         _logger = logger;
         _frpcVersionService = frpcVersionService;
@@ -111,6 +113,7 @@ public partial class DeploymentViewModel : ObservableObject
         _serviceProvider = serviceProvider;
         _toastService = toastService;
         _localizationService = localizationService;
+        _presetService = presetService;
 
         CheckFrpcPathCommand = CreateAsyncCommand(CheckFrpcPathAsync, "Error checking frpc path");
         ConfigureFrpcCommand = CreateAsyncCommand(ConfigureFrpcAsync, "Error opening configuration");
@@ -148,8 +151,24 @@ public partial class DeploymentViewModel : ObservableObject
 
     private async Task InitializeAsync()
     {
-        // Auto-detect frpc path
-        await AutoDetectFrpcPathAsync();
+        // Load saved settings from current preset first
+        if (_presetService?.CurrentPreset != null)
+        {
+            LoadFromPreset(_presetService.CurrentPreset);
+            _logger?.LogInformation("Loaded deployment settings from preset: {FrpcBinaryPath}", FrpcBinaryPath);
+        }
+
+        // Only auto-detect if no saved path exists or the saved path is invalid
+        if (string.IsNullOrEmpty(FrpcBinaryPath) || !File.Exists(FrpcBinaryPath))
+        {
+            await AutoDetectFrpcPathAsync();
+        }
+        else
+        {
+            // Validate the saved path
+            await ValidateFrpcPathAsync(FrpcBinaryPath);
+        }
+
         // Refresh service status
         await RefreshServiceStatusAsync();
     }
@@ -282,7 +301,6 @@ public partial class DeploymentViewModel : ObservableObject
                     _serviceProvider.GetRequiredService<INativeDeploymentService>(),
                     _serviceProvider.GetRequiredService<IPackageManagerService>(),
                     _serviceProvider.GetRequiredService<IProcessManager>(),
-                    _serviceProvider,
                     _toastService,
                     _localizationService);
 
@@ -292,19 +310,34 @@ public partial class DeploymentViewModel : ObservableObject
 
                 // Get the main window
                 var mainWindow = _serviceProvider.GetService<Window>();
+                bool? dialogResult;
+
                 if (mainWindow != null)
                 {
-                    await dialog.ShowDialog<bool?>(mainWindow);
+                    dialogResult = await dialog.ShowDialog<bool?>(mainWindow);
                 }
                 else
                 {
                     dialog.Show();
+                    // For non-modal dialog, we need to wait for close
+                    var tcs = new TaskCompletionSource<bool>();
+                    dialog.Closed += (_, _) => tcs.TrySetResult(viewModel.DialogResult);
+                    await tcs.Task;
+                    dialogResult = viewModel.DialogResult;
                 }
 
-                if (viewModel.DialogResult && !string.IsNullOrEmpty(viewModel.FrpcBinaryPath))
+                if (dialogResult == true && !string.IsNullOrEmpty(viewModel.FrpcBinaryPath))
                 {
                     FrpcBinaryPath = viewModel.FrpcBinaryPath;
                     await ValidateFrpcPathAsync(FrpcBinaryPath);
+
+                    // Save to preset and persist to file
+                    if (_presetService?.CurrentPreset != null)
+                    {
+                        SaveToPreset(_presetService.CurrentPreset);
+                        await _presetService.SaveCurrentPresetAsync();
+                        _logger?.LogInformation("Saved frpc binary path to preset: {Path}", FrpcBinaryPath);
+                    }
                 }
             }
         }

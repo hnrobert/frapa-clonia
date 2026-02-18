@@ -57,3 +57,4 @@ nunit-*.xml
 Thumbs.db
 
 .idea/
+.claude/settings.local.json

@@ -1,10 +1,10 @@
 using System.Runtime.InteropServices;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.UI.Services;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace FrapaClonia.UI.ViewModels;
@@ -20,7 +20,6 @@ public partial class FrpcConfigurationViewModel : ObservableObject
     private readonly INativeDeploymentService? _nativeDeploymentService;
     private readonly IPackageManagerService? _packageManagerService;
     private readonly IProcessManager? _processManager;
-    private readonly IServiceProvider? _serviceProvider;
     private readonly ToastService? _toastService;
     private readonly ILocalizationService? _localizationService;
 
@@ -104,7 +103,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
     // Default constructor for design-time
     public FrpcConfigurationViewModel() : this(
         Microsoft.Extensions.Logging.Abstractions.NullLogger<FrpcConfigurationViewModel>.Instance,
-        null!, null!, null!, null!, null!, null!, null!, null!)
+        null!, null!, null!, null!, null!, null!, null!)
     {
     }
 
@@ -115,7 +114,6 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         INativeDeploymentService nativeDeploymentService,
         IPackageManagerService packageManagerService,
         IProcessManager processManager,
-        IServiceProvider serviceProvider,
         ToastService? toastService,
         ILocalizationService localizationService)
     {
@@ -125,7 +123,6 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         _nativeDeploymentService = nativeDeploymentService;
         _packageManagerService = packageManagerService;
         _processManager = processManager;
-        _serviceProvider = serviceProvider;
         _toastService = toastService;
         _localizationService = localizationService;
 
@@ -390,9 +387,13 @@ public partial class FrpcConfigurationViewModel : ObservableObject
     {
         try
         {
-            if (_serviceProvider == null) return;
+            if (Avalonia.Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                _toastService?.Warning(L("Toast_NotAvailable"), L("Toast_FilePickerNotAvailable"));
+                return;
+            }
 
-            var storageProvider = _serviceProvider.GetService<IStorageProvider>();
+            var storageProvider = desktop.MainWindow?.StorageProvider;
             if (storageProvider == null)
             {
                 _toastService?.Warning(L("Toast_NotAvailable"), L("Toast_FilePickerNotAvailable"));

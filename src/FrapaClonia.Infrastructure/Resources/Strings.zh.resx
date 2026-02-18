@@ -1272,6 +1272,51 @@
   <data name="VersionManagementHint" xml:space="preserve">
     <value>检测到来自不同来源的 frpc 安装。只有本程序下载的和包管理器安装的版本可以卸载。</value>
   </data>
+  <data name="ClientId" xml:space="preserve">
+    <value>客户端 ID</value>
+  </data>
+  <data name="CrtPath" xml:space="preserve">
+    <value>CRT 路径</value>
+  </data>
+  <data name="Eg" xml:space="preserve">
+    <value>例如</value>
+  </data>
+  <data name="EgConsolePathToLogfile" xml:space="preserve">
+    <value>例如：console、/path/to/logfile</value>
+  </data>
+  <data name="EgOpenidProfile" xml:space="preserve">
+    <value>例如：openid profile</value>
+  </data>
+  <data name="EgWwwExampleCom" xml:space="preserve">
+    <value>例如：www.example.com</value>
+  </data>
+  <data name="HTTPProxyUrl" xml:space="preserve">
+    <value>HTTP 代理 URL</value>
+  </data>
+  <data name="HTTPToHttpsPluginSettings" xml:space="preserve">
+    <value>HTTP 转 HTTPS 插件设置</value>
+  </data>
+  <data name="HttpsToHTTPPluginSettings" xml:space="preserve">
+    <value>HTTPS 转 HTTP 插件设置</value>
+  </data>
+  <data name="Installing" xml:space="preserve">
+    <value>正在安装...</value>
+  </data>
+  <data name="Keypath" xml:space="preserve">
+    <value>密钥路径</value>
+  </data>
+  <data name="Socks" xml:space="preserve">
+    <value>SOCKS</value>
+  </data>
+  <data name="TcpMultiplexerSettings" xml:space="preserve">
+    <value>TCP 多路复用器设置</value>
+  </data>
+  <data name="TcpMux" xml:space="preserve">
+    <value>TCP 多路复用</value>
+  </data>
+  <data name="UrlPrefix" xml:space="preserve">
+    <value>URL 前缀</value>
+  </data>
   <data name="WillBeRemovedAfterSaving" xml:space="preserve">
     <value>版本将在保存设置后移除</value>
   </data>

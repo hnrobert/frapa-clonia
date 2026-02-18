@@ -352,6 +352,8 @@ public static class ResourceInitializer
         AddResource(resources, "Localized_Version", localizedResources.Version);
         AddResource(resources, "Localized_Platform", localizedResources.Platform);
         AddResource(resources, "Localized_Architecture", localizedResources.Architecture);
+        AddResource(resources, "Localized_Source", localizedResources.Source);
+        AddResource(resources, "Localized_Use", localizedResources.Use);
         AddResource(resources, "Localized_Status", localizedResources.Status);
         AddResource(resources, "Localized_LoadingVersions", localizedResources.LoadingVersions);
         AddResource(resources, "Localized_NoVersionsDownloaded", localizedResources.NoVersionsDownloaded);

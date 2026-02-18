@@ -334,6 +334,8 @@ public class LocalizedResources : ObservableObject
         Version = Create("Version");
         Platform = Create("Platform");
         Architecture = Create("Architecture");
+        Source = Create("Source");
+        Use = Create("Use");
         Status = Create("Status");
         LoadingVersions = Create("LoadingVersions");
         NoVersionsDownloaded = Create("NoVersionsDownloaded");
@@ -672,6 +674,8 @@ public class LocalizedResources : ObservableObject
     public LocalizedString Version { get; }
     public LocalizedString Platform { get; }
     public LocalizedString Architecture { get; }
+    public LocalizedString Source { get; }
+    public LocalizedString Use { get; }
     public LocalizedString Status { get; }
     public LocalizedString LoadingVersions { get; }
     public LocalizedString NoVersionsDownloaded { get; }
