@@ -3,6 +3,7 @@
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
              xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
              xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:local="clr-namespace:FrapaClonia.UI.MarkupExtensions;assembly=FrapaClonia.UI"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
@@ -27,9 +28,9 @@
     <Border Grid.Row="0" Classes="page-header">
       <Grid ColumnDefinitions="*,Auto">
         <StackPanel Grid.Column="0" Spacing="{StaticResource SpacingS}">
-          <TextBlock Text="{DynamicResource Localized_Logs}"
+          <TextBlock Text="{local:Localize Logs}"
                      Classes="page-title" />
-          <TextBlock Text="{DynamicResource Localized_ViewRealtimeLogsFromFrpc}"
+          <TextBlock Text="{local:Localize ViewRealtimeLogsFromFrpc}"
                      Classes="page-subtitle" />
         </StackPanel>
 
@@ -41,7 +42,7 @@
           <TextBlock>
             <Run Text="{Binding LogEntries.Count}" />
             <Run Text=" " />
-            <Run Text="{DynamicResource Localized_Entries}" />
+            <Run Text="{local:Localize Entries}" />
           </TextBlock>
         </StackPanel>
       </Grid>
@@ -53,15 +54,15 @@
         <!-- Left: Filters -->
         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
           <TextBlock Classes="field-label">
-            <Run Text="{DynamicResource Localized_LogLevelLabel}" /><Run Text=":" />
+            <Run Text="{local:Localize LogLevelLabel}" /><Run Text=":" />
           </TextBlock>
           <ComboBox ItemsSource="{Binding LogLevels}"
                     SelectedItem="{Binding SelectedLogLevel}"
-                    PlaceholderText="{DynamicResource Localized_AllLevels}"
+                    PlaceholderText="{local:Localize AllLevels}"
                     Classes="filter-box" />
 
           <CheckBox IsChecked="{Binding IsFollowEnabled}"
-                    Content="{DynamicResource Localized_AutoScroll}"
+                    Content="{local:Localize AutoScroll}"
                     Margin="{StaticResource ThicknessLeftL}"
                     VerticalAlignment="Center" />
         </StackPanel>
@@ -72,28 +73,28 @@
                     Spacing="{StaticResource SpacingS}">
           <Button Command="{Binding RefreshCommand}"
                   Classes="secondary icon-text-button"
-                  ToolTip.Tip="{DynamicResource Localized_ReloadLogsFromBuffer}"
+                  ToolTip.Tip="{local:Localize ReloadLogsFromBuffer}"
                   IsEnabled="{Binding !IsClearing}">
             <StackPanel>
               <mi:MaterialIcon Kind="Refresh" />
-              <TextBlock Text="{DynamicResource Localized_Refresh}" />
+              <TextBlock Text="{local:Localize Refresh}" />
             </StackPanel>
           </Button>
           <Button Command="{Binding ClearLogsCommand}"
                   Classes="destructive icon-text-button"
-                  ToolTip.Tip="{DynamicResource Localized_ClearAllLogs}"
+                  ToolTip.Tip="{local:Localize ClearAllLogs}"
                   IsEnabled="{Binding !IsClearing}">
             <StackPanel>
               <mi:MaterialIcon Kind="DeleteVariant" />
-              <TextBlock Text="{DynamicResource Localized_ClearAll}" />
+              <TextBlock Text="{local:Localize ClearAll}" />
             </StackPanel>
           </Button>
           <Button Command="{Binding ExportLogsCommand}"
                   Classes="secondary icon-text-button"
-                  ToolTip.Tip="{DynamicResource Localized_ExportLogsToFile}">
+                  ToolTip.Tip="{local:Localize ExportLogsToFile}">
             <StackPanel>
               <mi:MaterialIcon Kind="Export" />
-              <TextBlock Text="{DynamicResource Localized_Export}" />
+              <TextBlock Text="{local:Localize Export}" />
             </StackPanel>
           </Button>
         </StackPanel>
@@ -114,12 +115,12 @@
                              Height="48"
                              Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
                              HorizontalAlignment="Center" />
-            <TextBlock Text="{DynamicResource Localized_NoLogsAvailable}"
+            <TextBlock Text="{local:Localize NoLogsAvailable}"
                        FontSize="{StaticResource FontSizeXL}"
                        FontWeight="{StaticResource FontWeightSemiBold}"
                        Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
                        HorizontalAlignment="Center" />
-            <TextBlock Text="{DynamicResource Localized_LogsWillAppearHere}"
+            <TextBlock Text="{local:Localize LogsWillAppearHere}"
                        FontSize="{StaticResource FontSizeM}"
                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                        HorizontalAlignment="Center" />

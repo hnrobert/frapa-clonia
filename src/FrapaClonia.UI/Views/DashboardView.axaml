@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
              xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:local="clr-namespace:FrapaClonia.UI.MarkupExtensions;assembly=FrapaClonia.UI"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
@@ -23,7 +24,7 @@
         <!-- Page Header -->
         <Grid ColumnDefinitions="Auto,*">
           <TextBlock Grid.Column="0"
-                     Text="{DynamicResource Localized_Dashboard}"
+                     Text="{local:Localize Dashboard}"
                      Classes="page-title" />
 
           <StackPanel Grid.Column="1"
@@ -65,7 +66,7 @@
             <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
               <mi:MaterialIcon Kind="FolderSettings" Width="18" Height="18" VerticalAlignment="Center"
                                Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-              <TextBlock Text="{DynamicResource Localized_PresetManagement}"
+              <TextBlock Text="{local:Localize PresetManagement}"
                          Classes="card-title" />
             </StackPanel>
 
@@ -73,7 +74,7 @@
               <!-- Preset Name (Editable) -->
               <TextBox Grid.Column="0"
                        Text="{Binding PresetName}"
-                       Watermark="{DynamicResource Localized_PresetName}"
+                       Watermark="{local:Localize PresetName}"
                        FontSize="14" />
 
               <!-- Action Buttons -->
@@ -81,17 +82,17 @@
                           Orientation="Horizontal"
                           Spacing="{StaticResource SpacingS}">
                 <Button Command="{Binding RenamePresetCommand}"
-                        ToolTip.Tip="{DynamicResource Localized_RenamePreset}"
+                        ToolTip.Tip="{local:Localize RenamePreset}"
                         Classes="icon-button">
                   <mi:MaterialIcon Kind="Pencil" Width="18" Height="18" />
                 </Button>
                 <Button Command="{Binding DuplicatePresetCommand}"
-                        ToolTip.Tip="{DynamicResource Localized_DuplicatePreset}"
+                        ToolTip.Tip="{local:Localize DuplicatePreset}"
                         Classes="icon-button">
                   <mi:MaterialIcon Kind="ContentCopy" Width="18" Height="18" />
                 </Button>
                 <Button Command="{Binding DeletePresetCommand}"
-                        ToolTip.Tip="{DynamicResource Localized_DeletePreset}"
+                        ToolTip.Tip="{local:Localize DeletePreset}"
                         Classes="icon-button">
                   <mi:MaterialIcon Kind="Delete" Width="18" Height="18" />
                 </Button>
@@ -101,7 +102,7 @@
                         Margin="{StaticResource ThicknessXS}" />
 
                 <!-- Export Menu -->
-                <Menu ToolTip.Tip="{DynamicResource Localized_ExportPreset}">
+                <Menu ToolTip.Tip="{local:Localize ExportPreset}">
                   <MenuItem Header="">
                     <MenuItem.HeaderTemplate>
                       <DataTemplate>
@@ -114,7 +115,7 @@
                 </Menu>
 
                 <Button Command="{Binding ImportCommand}"
-                        ToolTip.Tip="{DynamicResource Localized_ImportPreset}"
+                        ToolTip.Tip="{local:Localize ImportPreset}"
                         Classes="icon-button">
                   <mi:MaterialIcon Kind="Import" Width="18" Height="18" />
                 </Button>
@@ -135,7 +136,7 @@
                       Classes="primary icon-text-button">
                 <StackPanel>
                   <mi:MaterialIcon Kind="Play" />
-                  <TextBlock Text="{DynamicResource Localized_StartFrpc}" />
+                  <TextBlock Text="{local:Localize StartFrpc}" />
                 </StackPanel>
               </Button>
 
@@ -143,7 +144,7 @@
                       Classes="destructive icon-text-button">
                 <StackPanel>
                   <mi:MaterialIcon Kind="Stop" />
-                  <TextBlock Text="{DynamicResource Localized_StopFrpc}" />
+                  <TextBlock Text="{local:Localize StopFrpc}" />
                 </StackPanel>
               </Button>
 
@@ -151,7 +152,7 @@
                       Classes="secondary icon-text-button">
                 <StackPanel>
                   <mi:MaterialIcon Kind="Refresh" />
-                  <TextBlock Text="{DynamicResource Localized_RestartFrpc}" />
+                  <TextBlock Text="{local:Localize RestartFrpc}" />
                 </StackPanel>
               </Button>
             </StackPanel>
@@ -164,7 +165,7 @@
                     HorizontalAlignment="Right">
               <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
                 <TextBlock Grid.Row="0" Grid.Column="0"
-                           Text="{DynamicResource Localized_ProcessId}"
+                           Text="{local:Localize ProcessId}"
                            Classes="label" />
                 <TextBlock Grid.Row="0" Grid.Column="1"
                            Text="{Binding FrpcProcessId, TargetNullValue='N/A'}"
@@ -174,7 +175,7 @@
                 <TextBlock Grid.Row="1" Grid.Column="0"
                            Classes="label"
                            Margin="{StaticResource ThicknessTopS}">
-                  <Run Text="{DynamicResource Localized_ServerName}" /><Run Text=":" />
+                  <Run Text="{local:Localize ServerName}" /><Run Text=":" />
                 </TextBlock>
                 <TextBlock Grid.Row="1" Grid.Column="1"
                            Text="{Binding ServerAddress}"
@@ -186,7 +187,7 @@
         </Border>
 
         <!-- Section Header -->
-        <TextBlock Text="{DynamicResource Localized_QuickAccess}"
+        <TextBlock Text="{local:Localize QuickAccess}"
                    Classes="section-title"
                    Margin="{StaticResource ThicknessTopS}" />
 
@@ -200,18 +201,18 @@
               <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
                 <mi:MaterialIcon Kind="Proxy" Width="18" Height="18" VerticalAlignment="Center"
                                  Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-                <TextBlock Text="{DynamicResource Localized_ProxyManagement}"
+                <TextBlock Text="{local:Localize ProxyManagement}"
                            Classes="card-title" />
               </StackPanel>
               <TextBlock Grid.Row="1"
                          Classes="card-description"
                          TextWrapping="Wrap"
                          VerticalAlignment="Center">
-                <Run Text="{DynamicResource Localized_Manage}" /><Run Text=" " />
-                <Run Text="{DynamicResource Localized_Configuration}" />
+                <Run Text="{local:Localize Manage}" /><Run Text=" " />
+                <Run Text="{local:Localize Configuration}" />
               </TextBlock>
               <Button Grid.Row="2"
-                      Content="{DynamicResource Localized_Manage}"
+                      Content="{local:Localize Manage}"
                       Command="{Binding NavigateToProxyListCommand}"
                       HorizontalAlignment="Left"
                       Classes="secondary" />
@@ -224,18 +225,18 @@
               <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
                 <mi:MaterialIcon Kind="CloudDownload" Width="18" Height="18" VerticalAlignment="Center"
                                  Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-                <TextBlock Text="{DynamicResource Localized_Deployment}"
+                <TextBlock Text="{local:Localize Deployment}"
                            Classes="card-title" />
               </StackPanel>
               <TextBlock Grid.Row="1"
                          Classes="card-description"
                          TextWrapping="Wrap"
                          VerticalAlignment="Center">
-                <Run Text="{DynamicResource Localized_Setup}" /><Run Text=" " />
-                <Run Text="{DynamicResource Localized_FrpcStatus}" />
+                <Run Text="{local:Localize Setup}" /><Run Text=" " />
+                <Run Text="{local:Localize FrpcStatus}" />
               </TextBlock>
               <Button Grid.Row="2"
-                      Content="{DynamicResource Localized_Setup}"
+                      Content="{local:Localize Setup}"
                       Command="{Binding NavigateToDeploymentCommand}"
                       HorizontalAlignment="Left"
                       Classes="secondary" />
@@ -248,18 +249,18 @@
               <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
                 <mi:MaterialIcon Kind="FileDocument" Width="18" Height="18" VerticalAlignment="Center"
                                  Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-                <TextBlock Text="{DynamicResource Localized_Logs}"
+                <TextBlock Text="{local:Localize Logs}"
                            Classes="card-title" />
               </StackPanel>
               <TextBlock Grid.Row="1"
                          Classes="card-description"
                          TextWrapping="Wrap"
                          VerticalAlignment="Center">
-                <Run Text="{DynamicResource Localized_View}" /><Run Text=" " />
-                <Run Text="{DynamicResource Localized_FrpcStatus}" />
+                <Run Text="{local:Localize View}" /><Run Text=" " />
+                <Run Text="{local:Localize FrpcStatus}" />
               </TextBlock>
               <Button Grid.Row="2"
-                      Content="{DynamicResource Localized_View}"
+                      Content="{local:Localize View}"
                       Command="{Binding NavigateToLogsCommand}"
                       HorizontalAlignment="Left"
                       Classes="secondary" />
@@ -268,7 +269,7 @@
         </Grid>
 
         <!-- Section Header -->
-        <TextBlock Text="{DynamicResource Localized_Overview}"
+        <TextBlock Text="{local:Localize Overview}"
                    Classes="section-title"
                    Margin="{StaticResource ThicknessTopS}" />
 
@@ -296,7 +297,7 @@
                            FontSize="24"
                            FontWeight="{StaticResource FontWeightSemiBold}"
                            Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-                <TextBlock Text="{DynamicResource Localized_ActiveProxies}"
+                <TextBlock Text="{local:Localize ActiveProxies}"
                            FontSize="{StaticResource FontSizeM}"
                            FontWeight="{StaticResource FontWeightMedium}"
                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
@@ -322,11 +323,11 @@
                                  VerticalAlignment="Center" />
               </Border>
               <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                <TextBlock Text="{DynamicResource Localized_FrpcNotRunning}"
+                <TextBlock Text="{local:Localize FrpcNotRunning}"
                            FontSize="{StaticResource FontSizeL}"
                            FontWeight="{StaticResource FontWeightSemiBold}"
                            Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-                <TextBlock Text="{DynamicResource Localized_Configuration}"
+                <TextBlock Text="{local:Localize Configuration}"
                            FontSize="{StaticResource FontSizeM}"
                            FontWeight="{StaticResource FontWeightMedium}"
                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
@@ -339,7 +340,7 @@
           <Border Grid.Column="2" Classes="card">
             <Grid RowDefinitions="Auto,*">
               <TextBlock Grid.Row="0"
-                         Text="{DynamicResource Localized_RecentActivity}"
+                         Text="{local:Localize RecentActivity}"
                          Classes="card-title" />
               <Border Grid.Row="1"
                       Background="{DynamicResource SystemControlPageBackgroundTransparent}"

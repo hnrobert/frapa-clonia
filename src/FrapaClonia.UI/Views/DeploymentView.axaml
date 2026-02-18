@@ -3,6 +3,7 @@
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
              xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
+             xmlns:local="clr-namespace:FrapaClonia.UI.MarkupExtensions;assembly=FrapaClonia.UI"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="700"
@@ -26,19 +27,19 @@
     <Panel Margin="{StaticResource ContentPadding}">
       <StackPanel Spacing="{StaticResource SpacingL}">
         <!-- Header -->
-        <TextBlock Text="{DynamicResource Localized_Deployment}"
+        <TextBlock Text="{local:Localize Deployment}"
                    Classes="page-title" />
 
         <!-- Deployment Mode Selection -->
         <Border Classes="settings-card">
           <StackPanel Spacing="{StaticResource SpacingM}">
             <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-              <TextBlock Text="{DynamicResource Localized_DeploymentMode}"
+              <TextBlock Text="{local:Localize DeploymentMode}"
                          Classes="section-title"
                          VerticalAlignment="Center" />
               <Button Classes="hint-icon"
                       VerticalAlignment="Center"
-                      ToolTip.Tip="{DynamicResource Localized_ChooseHowYouWantToDeployAndRunFrpc}" />
+                      ToolTip.Tip="{local:Localize ChooseHowYouWantToDeployAndRunFrpc}" />
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
@@ -55,19 +56,19 @@
         <!-- Native Deployment Panel -->
         <Border Classes="settings-card" IsVisible="{Binding IsNativeMode}">
           <StackPanel Spacing="{StaticResource SpacingL}">
-            <TextBlock Text="{DynamicResource Localized_ServiceConfiguration}"
+            <TextBlock Text="{local:Localize ServiceConfiguration}"
                        Classes="section-title" />
 
             <!-- Frpc Executable Configuration -->
             <StackPanel Spacing="{StaticResource SpacingM}">
-              <TextBlock Text="{DynamicResource Localized_FrpcExecutableLocation}"
+              <TextBlock Text="{local:Localize FrpcExecutableLocation}"
                          Classes="field-label" />
 
               <!-- Path Input with Check and Configure Buttons -->
               <Grid ColumnDefinitions="*,Auto,Auto">
                 <TextBox Grid.Column="0"
                          Text="{Binding FrpcBinaryPath}"
-                         Watermark="{DynamicResource Localized_SelectFrpcBinary}"
+                         Watermark="{local:Localize SelectFrpcBinary}"
                          IsReadOnly="True"
                          Margin="0,0,8,0" />
                 <Button Grid.Column="1"
@@ -75,19 +76,19 @@
                         IsEnabled="{Binding !IsCheckingPath}"
                         Classes="action-button"
                         Margin="0,0,8,0"
-                        ToolTip.Tip="{DynamicResource Localized_CheckFrpcPathToolTip}">
+                        ToolTip.Tip="{local:Localize CheckFrpcPathToolTip}">
                   <StackPanel Orientation="Horizontal" Spacing="4">
                     <mi:MaterialIcon Kind="Check" />
-                    <TextBlock Text="{DynamicResource Localized_Check}" />
+                    <TextBlock Text="{local:Localize Check}" />
                   </StackPanel>
                 </Button>
                 <Button Grid.Column="2"
                         Command="{Binding ConfigureFrpcCommand}"
                         Classes="action-button primary"
-                        ToolTip.Tip="{DynamicResource Localized_ConfigureFrpcToolTip}">
+                        ToolTip.Tip="{local:Localize ConfigureFrpcToolTip}">
                   <StackPanel Orientation="Horizontal" Spacing="4">
                     <mi:MaterialIcon Kind="Cog" />
-                    <TextBlock Text="{DynamicResource Localized_Configure}" />
+                    <TextBlock Text="{local:Localize Configure}" />
                   </StackPanel>
                 </Button>
               </Grid>
@@ -99,7 +100,7 @@
                             Orientation="Horizontal" Spacing="8"
                             IsVisible="{Binding IsCheckingPath}">
                   <mi:MaterialIcon Kind="Loading" Width="20" Height="20" />
-                  <TextBlock Text="{DynamicResource Localized_CheckingFrpc}"
+                  <TextBlock Text="{local:Localize CheckingFrpc}"
                              VerticalAlignment="Center" />
                 </StackPanel>
 
@@ -119,7 +120,7 @@
                              IsVisible="{Binding IsPathValid}"
                              Foreground="Green"
                              VerticalAlignment="Center" />
-                  <TextBlock Text="{DynamicResource Localized_FrpcNotConfigured}"
+                  <TextBlock Text="{local:Localize FrpcNotConfigured}"
                              IsVisible="{Binding !IsPathValid}"
                              Foreground="Orange"
                              VerticalAlignment="Center" />
@@ -130,32 +131,32 @@
             <!-- Service Configuration Section -->
             <Border Classes="settings-card" Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
               <StackPanel Spacing="{StaticResource SpacingM}">
-                <TextBlock Text="{DynamicResource Localized_SystemServiceSettings}"
+                <TextBlock Text="{local:Localize SystemServiceSettings}"
                            Classes="section-title" />
 
-                <CheckBox Content="{DynamicResource Localized_InstallAsSystemService}"
+                <CheckBox Content="{local:Localize InstallAsSystemService}"
                           IsChecked="{Binding ServiceEnabled}" />
 
                 <StackPanel Spacing="8" IsVisible="{Binding ServiceEnabled}">
-                  <TextBlock Text="{DynamicResource Localized_ServiceScope}"
+                  <TextBlock Text="{local:Localize ServiceScope}"
                              Classes="field-label" />
                   <StackPanel Orientation="Horizontal" Spacing="8">
-                    <RadioButton Content="{DynamicResource Localized_UserLevel}"
+                    <RadioButton Content="{local:Localize UserLevel}"
                                  IsChecked="{Binding ServiceScopeValue, Converter={StaticResource StringEqualsConverter}, ConverterParameter=user}"
                                  GroupName="ServiceScope" />
-                    <RadioButton Content="{DynamicResource Localized_SystemLevel}"
+                    <RadioButton Content="{local:Localize SystemLevel}"
                                  IsChecked="{Binding ServiceScopeValue, Converter={StaticResource StringEqualsConverter}, ConverterParameter=system}"
                                  GroupName="ServiceScope" />
                   </StackPanel>
 
-                  <CheckBox Content="{DynamicResource Localized_StartOnBoot}"
+                  <CheckBox Content="{local:Localize StartOnBoot}"
                             IsChecked="{Binding AutoStartOnBoot}" />
 
                   <!-- Service Status -->
                   <Grid ColumnDefinitions="180,*" RowDefinitions="Auto"
                         Margin="0,8,0,0">
                     <TextBlock Grid.Row="0" Grid.Column="0"
-                               Text="{DynamicResource Localized_ServiceStatus}"
+                               Text="{local:Localize ServiceStatus}"
                                Classes="field-label" />
                     <StackPanel Grid.Row="0" Grid.Column="1"
                                 Orientation="Horizontal"
@@ -181,7 +182,7 @@
                             Classes="action-button primary icon-text-button">
                       <StackPanel Orientation="Horizontal" Spacing="4">
                         <mi:MaterialIcon Kind="Cog" />
-                        <TextBlock Text="{DynamicResource Localized_InstallService}" />
+                        <TextBlock Text="{local:Localize InstallService}" />
                       </StackPanel>
                     </Button>
                     <Button Command="{Binding UninstallServiceCommand}"
@@ -189,7 +190,7 @@
                             Classes="action-button destructive icon-text-button">
                       <StackPanel Orientation="Horizontal" Spacing="4">
                         <mi:MaterialIcon Kind="Delete" />
-                        <TextBlock Text="{DynamicResource Localized_UninstallService}" />
+                        <TextBlock Text="{local:Localize UninstallService}" />
                       </StackPanel>
                     </Button>
                     <Button Command="{Binding StartServiceCommand}"
@@ -198,7 +199,7 @@
                             Classes="action-button icon-text-button">
                       <StackPanel Orientation="Horizontal" Spacing="4">
                         <mi:MaterialIcon Kind="Play" />
-                        <TextBlock Text="{DynamicResource Localized_Start}" />
+                        <TextBlock Text="{local:Localize Start}" />
                       </StackPanel>
                     </Button>
                     <Button Command="{Binding StopServiceCommand}"
@@ -207,7 +208,7 @@
                             Classes="action-button icon-text-button">
                       <StackPanel Orientation="Horizontal" Spacing="4">
                         <mi:MaterialIcon Kind="Stop" />
-                        <TextBlock Text="{DynamicResource Localized_Stop}" />
+                        <TextBlock Text="{local:Localize Stop}" />
                       </StackPanel>
                     </Button>
                   </StackPanel>
@@ -220,13 +221,13 @@
         <!-- Docker Deployment Panel -->
         <Border Classes="settings-card" IsVisible="{Binding IsDockerMode}">
           <StackPanel Spacing="{StaticResource SpacingM}">
-            <TextBlock Text="{DynamicResource Localized_DockerDeployment}"
+            <TextBlock Text="{local:Localize DockerDeployment}"
                        Classes="section-title" />
 
             <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto"
                   RowSpacing="{StaticResource SpacingS}">
               <TextBlock Grid.Row="0" Grid.Column="0"
-                         Text="{DynamicResource Localized_DockerStatus}"
+                         Text="{local:Localize DockerStatus}"
                          Classes="field-label" />
               <StackPanel Grid.Row="0" Grid.Column="1"
                           Orientation="Horizontal"
@@ -234,13 +235,13 @@
                 <TextBlock Text="{Binding IsDockerAvailable, Converter={StaticResource BoolToAvailableStringConverter}}"
                            VerticalAlignment="Center" />
                 <Button Command="{Binding CheckDockerCommand}"
-                        Content="{DynamicResource Localized_CheckDocker}"
+                        Content="{local:Localize CheckDocker}"
                         IsEnabled="{Binding !IsDockerChecking}"
                         Classes="action-button" />
               </StackPanel>
 
               <TextBlock Grid.Row="1" Grid.Column="0"
-                         Text="{DynamicResource Localized_ContainerName}"
+                         Text="{local:Localize ContainerName}"
                          Classes="field-label" />
               <TextBox Grid.Row="1" Grid.Column="1"
                        Text="{Binding DockerContainerName}"
@@ -248,13 +249,13 @@
                        MinWidth="200" />
             </Grid>
 
-            <TextBlock Text="{DynamicResource Localized_DockerImage}"
+            <TextBlock Text="{local:Localize DockerImage}"
                        Classes="field-label"
                        Margin="{StaticResource ThicknessTopS}" />
             <TextBox Text="{Binding DockerImageName}"
                      Watermark="fatedier/frpc:latest" />
 
-            <TextBlock Text="{DynamicResource Localized_DockerComposePath}"
+            <TextBlock Text="{local:Localize DockerComposePath}"
                        Classes="field-label"
                        Margin="{StaticResource ThicknessTopS}" />
             <TextBox Text="{Binding DockerComposePath}"
@@ -268,21 +269,21 @@
                       Classes="action-button icon-text-button">
                 <StackPanel Orientation="Horizontal" Spacing="4">
                   <mi:MaterialIcon Kind="FileDocument" />
-                  <TextBlock Text="{DynamicResource Localized_GenerateDockerComposeYml}" />
+                  <TextBlock Text="{local:Localize GenerateDockerComposeYml}" />
                 </StackPanel>
               </Button>
               <Button Command="{Binding StartDockerCommand}"
                       Classes="action-button primary icon-text-button">
                 <StackPanel Orientation="Horizontal" Spacing="4">
                   <mi:MaterialIcon Kind="Play" />
-                  <TextBlock Text="{DynamicResource Localized_StartContainer}" />
+                  <TextBlock Text="{local:Localize StartContainer}" />
                 </StackPanel>
               </Button>
               <Button Command="{Binding StopDockerCommand}"
                       Classes="action-button destructive icon-text-button">
                 <StackPanel Orientation="Horizontal" Spacing="4">
                   <mi:MaterialIcon Kind="Stop" />
-                  <TextBlock Text="{DynamicResource Localized_StopContainer}" />
+                  <TextBlock Text="{local:Localize StopContainer}" />
                 </StackPanel>
               </Button>
             </StackPanel>
@@ -293,14 +294,14 @@
         <Border Classes="settings-card">
           <StackPanel Spacing="{StaticResource SpacingS}">
             <StackPanel Orientation="Horizontal" Spacing="4">
-              <TextBlock Text="{DynamicResource Localized_DeploymentInformation}"
+              <TextBlock Text="{local:Localize DeploymentInformation}"
                          Classes="section-title" />
               <Button Classes="icon-button">
                 <ToolTip.Tip>
                   <StackPanel>
-                    <TextBlock Text="{DynamicResource Localized_DockerDeploymentRequiresDocker}" />
-                    <TextBlock Text="{DynamicResource Localized_NativeDeploymentDownloadsAndExtracts}" />
-                    <TextBlock Text="{DynamicResource Localized_BothMethodsUse}" />
+                    <TextBlock Text="{local:Localize DockerDeploymentRequiresDocker}" />
+                    <TextBlock Text="{local:Localize NativeDeploymentDownloadsAndExtracts}" />
+                    <TextBlock Text="{local:Localize BothMethodsUse}" />
                   </StackPanel>
                 </ToolTip.Tip>
               </Button>

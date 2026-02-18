@@ -102,9 +102,6 @@
   <data name="BuildInfo" xml:space="preserve">
     <value>Build</value>
   </data>
-  <data name="CRTPath" xml:space="preserve">
-    <value>CRT Path</value>
-  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
@@ -140,9 +137,6 @@
   </data>
   <data name="ClearAllLogs" xml:space="preserve">
     <value>Clear all logs</value>
-  </data>
-  <data name="ClientID" xml:space="preserve">
-    <value>Client ID</value>
   </data>
   <data name="ClientSecret" xml:space="preserve">
     <value>Client Secret</value>
@@ -315,12 +309,6 @@
   <data name="DuplicateProxyToolTip" xml:space="preserve">
     <value>Duplicate Proxy</value>
   </data>
-  <data name="EGConsolePathToLogfile" xml:space="preserve">
-    <value>e.g., console, /path/to/logfile</value>
-  </data>
-  <data name="EGOpenidProfile" xml:space="preserve">
-    <value>e.g., openid, profile</value>
-  </data>
   <data name="EG_1MB_256KB" xml:space="preserve">
     <value>e.g., 1MB, 256KB</value>
   </data>
@@ -426,15 +414,6 @@
   <data name="HTTPAuthentication" xml:space="preserve">
     <value>HTTP Authentication</value>
   </data>
-  <data name="HTTPProxyURL" xml:space="preserve">
-    <value>HTTP Proxy URL</value>
-  </data>
-  <data name="HTTPSToHTTPPluginSettings" xml:space="preserve">
-    <value>HTTPS to HTTP Plugin Settings</value>
-  </data>
-  <data name="HTTPToHTTPSPluginSettings" xml:space="preserve">
-    <value>HTTP to HTTPS Plugin Settings</value>
-  </data>
   <data name="HeaderNameValue" xml:space="preserve">
     <value>Header-Name: value</value>
   </data>
@@ -485,9 +464,6 @@
   </data>
   <data name="IntervalSeconds" xml:space="preserve">
     <value>Interval (seconds)</value>
-  </data>
-  <data name="KeyPath" xml:space="preserve">
-    <value>Key Path</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>Language</value>
@@ -854,12 +830,6 @@
   </data>
   <data name="SystemServiceSettings" xml:space="preserve">
     <value>System Service Settings</value>
-  </data>
-  <data name="TCPMultiplexerSettings" xml:space="preserve">
-    <value>TCP Multiplexer Settings</value>
-  </data>
-  <data name="TCPMux" xml:space="preserve">
-    <value>TCP Mux</value>
   </data>
   <data name="TheAddressOfTheFrpsServer" xml:space="preserve">
     <value>The address of the frps server</value>
@@ -1241,9 +1211,6 @@
   </data>
   <data name="TypeLabel" xml:space="preserve">
     <value>Type</value>
-  </data>
-  <data name="URLPrefix" xml:space="preserve">
-    <value>URL Prefix</value>
   </data>
   <data name="UninstallService" xml:space="preserve">
     <value>Uninstall Service</value>

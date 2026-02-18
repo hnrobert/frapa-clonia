@@ -4,6 +4,7 @@
         xmlns:controls="clr-namespace:FrapaClonia.UI.Controls;assembly=FrapaClonia.UI"
         xmlns:models="clr-namespace:FrapaClonia.UI.Models;assembly=FrapaClonia.UI"
         xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:local="clr-namespace:FrapaClonia.UI.MarkupExtensions;assembly=FrapaClonia.UI"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="820"
@@ -60,7 +61,7 @@
 
           <!-- Config Presets Section -->
           <StackPanel Grid.Row="2" Margin="16,8">
-            <TextBlock Text="{DynamicResource Localized_ConfigPresets}"
+            <TextBlock Text="{local:Localize ConfigPresets}"
                        FontSize="11"
                        FontWeight="SemiBold"
                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
@@ -120,7 +121,7 @@
                                        VerticalAlignment="Center"
                                        Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
                                        Margin="0,0,12,0" />
-                      <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Dashboard}"
+                      <TextBlock Grid.Column="1" Text="{local:Localize Dashboard}"
                                  VerticalAlignment="Center" />
                     </Grid>
                   </Grid>
@@ -154,7 +155,7 @@
                                        VerticalAlignment="Center"
                                        Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
                                        Margin="0,0,12,0" />
-                      <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Deployment}"
+                      <TextBlock Grid.Column="1" Text="{local:Localize Deployment}"
                                  VerticalAlignment="Center" />
                     </Grid>
                   </Grid>
@@ -188,7 +189,7 @@
                                        VerticalAlignment="Center"
                                        Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
                                        Margin="0,0,12,0" />
-                      <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ServerConfig}"
+                      <TextBlock Grid.Column="1" Text="{local:Localize ServerConfig}"
                                  VerticalAlignment="Center" />
                     </Grid>
                   </Grid>
@@ -222,7 +223,7 @@
                                        VerticalAlignment="Center"
                                        Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
                                        Margin="0,0,12,0" />
-                      <TextBlock Grid.Column="1" Text="{DynamicResource Localized_ProxyManagement}"
+                      <TextBlock Grid.Column="1" Text="{local:Localize ProxyManagement}"
                                  VerticalAlignment="Center" />
                     </Grid>
                   </Grid>
@@ -256,7 +257,7 @@
                                        VerticalAlignment="Center"
                                        Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
                                        Margin="0,0,12,0" />
-                      <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Visitors}" VerticalAlignment="Center" />
+                      <TextBlock Grid.Column="1" Text="{local:Localize Visitors}" VerticalAlignment="Center" />
                     </Grid>
                   </Grid>
                 </Button>
@@ -290,7 +291,7 @@
                                        VerticalAlignment="Center"
                                        Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
                                        Margin="0,0,12,0" />
-                      <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Logs}" VerticalAlignment="Center" />
+                      <TextBlock Grid.Column="1" Text="{local:Localize Logs}" VerticalAlignment="Center" />
                     </Grid>
                   </Grid>
                 </Button>
@@ -330,7 +331,7 @@
                                    VerticalAlignment="Center"
                                    Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}"
                                    Margin="0,0,12,0" />
-                  <TextBlock Grid.Column="1" Text="{DynamicResource Localized_Settings}" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="1" Text="{local:Localize Settings}" VerticalAlignment="Center" />
                 </Grid>
               </Grid>
             </Button>
@@ -353,7 +354,7 @@
                 </TextBlock>
                 <TextBlock FontSize="12"
                            Foreground="{DynamicResource SystemControlPageTextBaseMediumBrush}">
-                  <Run Text="{DynamicResource Localized_VersionInfo}" />
+                  <Run Text="{local:Localize VersionInfo}" />
                   <Run Text=" " />
                   <Run Text="{Binding Version}" />
                 </TextBlock>

@@ -3,6 +3,7 @@
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
              xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
              xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:local="clr-namespace:FrapaClonia.UI.MarkupExtensions;assembly=FrapaClonia.UI"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="650"
@@ -29,9 +30,9 @@
     <Border Grid.Row="0" Classes="page-header">
       <Grid ColumnDefinitions="*,Auto">
         <StackPanel Grid.Column="0" Spacing="{StaticResource SpacingS}">
-          <TextBlock Text="{DynamicResource Localized_VisitorManagement}"
+          <TextBlock Text="{local:Localize VisitorManagement}"
                      Classes="page-title" />
-          <TextBlock Text="{DynamicResource Localized_ConfigureAndManageSecureTunnelVisitors}"
+          <TextBlock Text="{local:Localize ConfigureAndManageSecureTunnelVisitors}"
                      Classes="page-subtitle" />
         </StackPanel>
 
@@ -42,7 +43,7 @@
                   ToolTip.Tip="Refresh visitor list">
             <StackPanel>
               <mi:MaterialIcon Kind="Refresh" />
-              <TextBlock Text="{DynamicResource Localized_Refresh}" />
+              <TextBlock Text="{local:Localize Refresh}" />
             </StackPanel>
           </Button>
           <Button Command="{Binding AddVisitorCommand}"
@@ -50,7 +51,7 @@
                   ToolTip.Tip="Add a new visitor configuration">
             <StackPanel>
               <mi:MaterialIcon Kind="Plus" />
-              <TextBlock Text="{DynamicResource Localized_AddVisitor}" />
+              <TextBlock Text="{local:Localize AddVisitor}" />
             </StackPanel>
           </Button>
         </StackPanel>
@@ -65,13 +66,13 @@
       <Grid ColumnDefinitions="*,Auto">
         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
           <TextBox Text="{Binding SearchQuery}"
-                   Watermark="{DynamicResource Localized_SearchVisitors}"
+                   Watermark="{local:Localize SearchVisitors}"
                    Classes="search-box" />
 
           <ComboBox SelectedIndex="{Binding SelectedTypeFilter}"
-                    PlaceholderText="{DynamicResource Localized_AllTypes}"
+                    PlaceholderText="{local:Localize AllTypes}"
                     Classes="filter-box">
-            <ComboBoxItem Content="{DynamicResource Localized_AllTypes}" />
+            <ComboBoxItem Content="{local:Localize AllTypes}" />
             <ComboBoxItem Content="STCP" />
             <ComboBoxItem Content="XTCP" />
             <ComboBoxItem Content="SUDP" />
@@ -86,7 +87,7 @@
                        FontSize="{StaticResource FontSizeM}"
                        FontWeight="{StaticResource FontWeightSemiBold}"
                        VerticalAlignment="Center" />
-            <TextBlock Text="{DynamicResource Localized_Active}"
+            <TextBlock Text="{local:Localize Active}"
                        FontSize="{StaticResource FontSizeM}"
                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                        VerticalAlignment="Center" />
@@ -97,7 +98,7 @@
                        FontSize="{StaticResource FontSizeM}"
                        FontWeight="{StaticResource FontWeightSemiBold}"
                        VerticalAlignment="Center" />
-            <TextBlock Text="{DynamicResource Localized_Total}"
+            <TextBlock Text="{local:Localize Total}"
                        FontSize="{StaticResource FontSizeM}"
                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                        VerticalAlignment="Center" />
@@ -118,7 +119,7 @@
           <StackPanel Spacing="{StaticResource SpacingM}" HorizontalAlignment="Center"
                       VerticalAlignment="Center">
             <ProgressBar IsIndeterminate="True" Width="60" Height="60" />
-            <TextBlock Text="{DynamicResource Localized_LoadingVisitors}"
+            <TextBlock Text="{local:Localize LoadingVisitors}"
                        FontSize="{StaticResource FontSizeL}"
                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
           </StackPanel>
@@ -232,7 +233,7 @@
                                   VerticalAlignment="Center">
                         <Button Click="OnEditClick"
                                 Classes="ghost icon-button"
-                                ToolTip.Tip="{DynamicResource Localized_EditVisitor}">
+                                ToolTip.Tip="{local:Localize EditVisitor}">
                           <mi:MaterialIcon Kind="Pencil" />
                         </Button>
                         <Button Click="OnDuplicateClick"
@@ -242,7 +243,7 @@
                         </Button>
                         <Button Click="OnDeleteClick"
                                 Classes="destructive icon-button"
-                                ToolTip.Tip="{DynamicResource Localized_DeleteVisitor}">
+                                ToolTip.Tip="{local:Localize DeleteVisitor}">
                           <mi:MaterialIcon Kind="Delete" />
                         </Button>
                       </StackPanel>
@@ -262,12 +263,12 @@
                                  Height="48"
                                  Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
                                  HorizontalAlignment="Center" />
-                <TextBlock Text="{DynamicResource Localized_NoVisitorsConfigured}"
+                <TextBlock Text="{local:Localize NoVisitorsConfigured}"
                            FontSize="{StaticResource FontSizeXL}"
                            FontWeight="{StaticResource FontWeightSemiBold}"
                            Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
                            HorizontalAlignment="Center" />
-                <TextBlock Text="{DynamicResource Localized_VisitorsAllowYouToConnect}"
+                <TextBlock Text="{local:Localize VisitorsAllowYouToConnect}"
                            FontSize="{StaticResource FontSizeM}"
                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                            TextWrapping="Wrap"
@@ -279,7 +280,7 @@
                         Margin="{StaticResource ThicknessTopS}">
                   <StackPanel>
                     <mi:MaterialIcon Kind="Plus" />
-                    <TextBlock Text="{DynamicResource Localized_CreateYourFirstVisitor}" />
+                    <TextBlock Text="{local:Localize CreateYourFirstVisitor}" />
                   </StackPanel>
                 </Button>
               </StackPanel>

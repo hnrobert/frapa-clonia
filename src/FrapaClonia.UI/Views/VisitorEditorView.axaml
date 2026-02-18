@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+        xmlns:local="clr-namespace:FrapaClonia.UI.MarkupExtensions;assembly=FrapaClonia.UI"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="650" d:DesignHeight="580"
@@ -71,11 +72,11 @@
             BorderThickness="0,0,0,1"
             Padding="24,16">
       <StackPanel Spacing="4">
-        <TextBlock Text="{DynamicResource Localized_VisitorConfiguration}"
+        <TextBlock Text="{local:Localize VisitorConfiguration}"
                    FontSize="20"
                    FontWeight="SemiBold"
                    Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-        <TextBlock Text="{DynamicResource Localized_ConfigureAVisitorToConnect}"
+        <TextBlock Text="{local:Localize ConfigureAVisitorToConnect}"
                    FontSize="13"
                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
       </StackPanel>
@@ -97,12 +98,12 @@
             <!-- Section Header -->
             <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
                        Classes="section-header"
-                       Text="{DynamicResource Localized_BasicSettings}" />
+                       Text="{local:Localize BasicSettings}" />
 
             <!-- Visitor Name -->
             <TextBlock Grid.Row="1" Grid.Column="0"
                        Classes="form-label"
-                       Text="{DynamicResource Localized_VisitorName}"
+                       Text="{local:Localize VisitorName}"
                        VerticalAlignment="Top" />
             <StackPanel Grid.Row="1" Grid.Column="1"
                         Classes="form-field">
@@ -114,13 +115,13 @@
                        AutomationProperties.Name="Visitor Name input field"
                        AutomationProperties.HelpText="Enter a unique name for this visitor configuration" />
               <TextBlock Classes="form-hint"
-                         Text="{DynamicResource Localized_Required}" />
+                         Text="{local:Localize Required}" />
             </StackPanel>
 
             <!-- Visitor Type -->
             <TextBlock Grid.Row="2" Grid.Column="0"
                        Classes="form-label"
-                       Text="{DynamicResource Localized_VisitorType}"
+                       Text="{local:Localize VisitorType}"
                        VerticalAlignment="Top" />
             <StackPanel Grid.Row="2" Grid.Column="1"
                         Classes="form-field">
@@ -133,13 +134,13 @@
                         AutomationProperties.Name="Visitor Type selector"
                         AutomationProperties.HelpText="Select the type of visitor: STCP, XTCP, or SUDP" />
               <TextBlock Classes="form-hint"
-                         Text="{DynamicResource Localized_Required}" />
+                         Text="{local:Localize Required}" />
             </StackPanel>
 
             <!-- Server Name -->
             <TextBlock Grid.Row="3" Grid.Column="0"
                        Classes="form-label"
-                       Text="{DynamicResource Localized_ServerName}"
+                       Text="{local:Localize ServerName}"
                        VerticalAlignment="Top" />
             <StackPanel Grid.Row="3" Grid.Column="1"
                         Classes="form-field">
@@ -166,12 +167,12 @@
             <!-- Section Header -->
             <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
                        Classes="section-header"
-                       Text="{DynamicResource Localized_SecuritySettings}" />
+                       Text="{local:Localize SecuritySettings}" />
 
             <!-- Secret Key -->
             <TextBlock Grid.Row="1" Grid.Column="0"
                        Classes="form-label"
-                       Text="{DynamicResource Localized_SecretKey}"
+                       Text="{local:Localize SecretKey}"
                        VerticalAlignment="Top" />
             <StackPanel Grid.Row="1" Grid.Column="1"
                         Classes="form-field">
@@ -184,7 +185,7 @@
                        AutomationProperties.Name="Secret Key input field"
                        AutomationProperties.HelpText="Enter the shared secret key that matches the proxy configuration" />
               <TextBlock Classes="form-hint"
-                         Text="{DynamicResource Localized_MustMatchTheProxySecretKey}" />
+                         Text="{local:Localize MustMatchTheProxySecretKey}" />
             </StackPanel>
           </Grid>
         </Border>
@@ -199,12 +200,12 @@
             <!-- Section Header -->
             <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
                        Classes="section-header"
-                       Text="{DynamicResource Localized_BindSettings}" />
+                       Text="{local:Localize BindSettings}" />
 
             <!-- Bind Address -->
             <TextBlock Grid.Row="1" Grid.Column="0"
                        Classes="form-label"
-                       Text="{DynamicResource Localized_BindAddr}"
+                       Text="{local:Localize BindAddr}"
                        VerticalAlignment="Top" />
             <StackPanel Grid.Row="1" Grid.Column="1"
                         Classes="form-field">
@@ -220,7 +221,7 @@
             <!-- Bind Port -->
             <TextBlock Grid.Row="2" Grid.Column="0"
                        Classes="form-label"
-                       Text="{DynamicResource Localized_BindPort}"
+                       Text="{local:Localize BindPort}"
                        VerticalAlignment="Top" />
             <StackPanel Grid.Row="2" Grid.Column="1"
                         Classes="form-field">
@@ -236,7 +237,7 @@
                              AutomationProperties.Name="Bind Port input field"
                              AutomationProperties.HelpText="Enter the local port to listen on for incoming connections" />
               <TextBlock Classes="form-hint"
-                         Text="{DynamicResource Localized_LocalPortToListenOn}" />
+                         Text="{local:Localize LocalPortToListenOn}" />
             </StackPanel>
 
             <!-- Bind IP (Optional) -->
@@ -250,11 +251,11 @@
                        MinHeight="32"
                        Padding="8,6"
                        FontSize="13"
-                       Watermark="{DynamicResource Localized_SpecificIPToBindTo}"
+                       Watermark="{local:Localize SpecificIPToBindTo}"
                        AutomationProperties.Name="Bind IP input field"
                        AutomationProperties.HelpText="Optional: Enter a specific IP address to bind to" />
               <TextBlock Classes="form-hint"
-                         Text="{DynamicResource Localized_OptionalLeaveEmptyToBindToAll}" />
+                         Text="{local:Localize OptionalLeaveEmptyToBindToAll}" />
             </StackPanel>
           </Grid>
         </Border>
@@ -266,7 +267,7 @@
             <TextBlock FontSize="13"
                        FontWeight="SemiBold"
                        Foreground="White">
-              <Run Text="{DynamicResource Localized_ConfigurationError}" />
+              <Run Text="{local:Localize ConfigurationError}" />
             </TextBlock>
             <TextBlock Text="{Binding ValidationError}"
                        FontSize="11"
@@ -290,7 +291,7 @@
                   Spacing="12">
         <Button Command="{Binding CancelCommand}"
                 Classes="action-button"
-                Content="{DynamicResource Localized_Cancel}"
+                Content="{local:Localize Cancel}"
                 IsEnabled="{Binding !IsSaving}"
                 AutomationProperties.Name="Cancel button"
                 AutomationProperties.HelpText="Discard changes and close the editor" />
@@ -301,7 +302,7 @@
                 AutomationProperties.Name="Save button"
                 AutomationProperties.HelpText="Save the visitor configuration">
           <StackPanel Orientation="Horizontal" Spacing="8">
-            <TextBlock Text="{DynamicResource Localized_Save}" />
+            <TextBlock Text="{local:Localize Save}" />
             <ProgressBar IsIndeterminate="True"
                          Width="16" Height="16"
                          IsVisible="{Binding IsSaving}" />

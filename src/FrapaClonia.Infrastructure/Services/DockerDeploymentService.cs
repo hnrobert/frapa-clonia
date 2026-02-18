@@ -107,7 +107,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             }
             else
             {
-                logger.LogError("docker-compose start failed: {Error}", process.StandardError.ReadToEnd());
+                logger.LogError("docker-compose start failed: {Error}", await process.StandardError.ReadToEndAsync(cancellationToken));
             }
 
             return success;
@@ -156,7 +156,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             }
             else
             {
-                logger.LogWarning("docker-compose stop failed: {Error}", process.StandardError.ReadToEnd());
+                logger.LogWarning("docker-compose stop failed: {Error}", await process.StandardError.ReadToEndAsync(cancellationToken));
             }
 
             return success;
@@ -189,7 +189,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             process.Start();
             await process.WaitForExitAsync(cancellationToken);
 
-            var output = process.StandardOutput.ReadToEnd().Trim();
+            var output = (await process.StandardOutput.ReadToEndAsync(cancellationToken)).Trim();
             var isRunning = !string.IsNullOrEmpty(output);
 
             logger.LogInformation("Container {ContainerName} is {Status}",

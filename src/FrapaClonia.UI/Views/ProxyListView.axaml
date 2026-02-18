@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
              xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:local="clr-namespace:FrapaClonia.UI.MarkupExtensions;assembly=FrapaClonia.UI"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
@@ -22,9 +23,9 @@
     <Border Grid.Row="0" Classes="page-header">
       <Grid ColumnDefinitions="*,Auto">
         <StackPanel Grid.Column="0" Spacing="{StaticResource SpacingS}">
-          <TextBlock Text="{DynamicResource Localized_ProxyManagement}"
+          <TextBlock Text="{local:Localize ProxyManagement}"
                      Classes="page-title" />
-          <TextBlock Text="{DynamicResource Localized_ConfigureAndManageYourFrpcProxyConfigurations}"
+          <TextBlock Text="{local:Localize ConfigureAndManageYourFrpcProxyConfigurations}"
                      Classes="page-subtitle" />
         </StackPanel>
 
@@ -37,7 +38,7 @@
                        Width="16" Height="16"
                        IsVisible="{Binding IsLoading}"
                        VerticalAlignment="Center" />
-          <TextBlock Text="{DynamicResource Localized_Loading}"
+          <TextBlock Text="{local:Localize Loading}"
                      FontSize="{StaticResource FontSizeS}"
                      Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                      IsVisible="{Binding IsLoading}"
@@ -47,7 +48,7 @@
           <TextBlock>
             <Run Text="{Binding Proxies.Count}" />
             <Run Text=" " />
-            <Run Text="{DynamicResource Localized_ProxiesCount}" />
+            <Run Text="{local:Localize ProxiesCount}" />
           </TextBlock>
         </StackPanel>
       </Grid>
@@ -59,12 +60,12 @@
         <!-- Search and Filter -->
         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
           <TextBox Text="{Binding SearchQuery}"
-                   Watermark="{DynamicResource Localized_SearchByName}"
+                   Watermark="{local:Localize SearchByName}"
                    Classes="search-box" />
 
           <ComboBox ItemsSource="{Binding ProxyTypes}"
                     SelectedItem="{Binding FilterType}"
-                    PlaceholderText="{DynamicResource Localized_AllTypes}"
+                    PlaceholderText="{local:Localize AllTypes}"
                     Classes="filter-box" />
         </StackPanel>
 
@@ -74,7 +75,7 @@
                 Classes="primary icon-text-button">
           <StackPanel Orientation="Horizontal">
             <mi:MaterialIcon Kind="Plus" />
-            <TextBlock Text="{DynamicResource Localized_AddProxy}" />
+            <TextBlock Text="{local:Localize AddProxy}" />
           </StackPanel>
         </Button>
       </Grid>
@@ -92,7 +93,7 @@
                 Classes="secondary icon-text-button">
           <StackPanel Orientation="Horizontal">
             <mi:MaterialIcon Kind="Refresh" />
-            <TextBlock Text="{DynamicResource Localized_Refresh}" />
+            <TextBlock Text="{local:Localize Refresh}" />
           </StackPanel>
         </Button>
 
@@ -100,7 +101,7 @@
                 Classes="secondary icon-text-button">
           <StackPanel Orientation="Horizontal">
             <mi:MaterialIcon Kind="Export" />
-            <TextBlock Text="{DynamicResource Localized_ExportAll}" />
+            <TextBlock Text="{local:Localize ExportAll}" />
           </StackPanel>
         </Button>
 
@@ -108,7 +109,7 @@
                 Classes="secondary icon-text-button">
           <StackPanel Orientation="Horizontal">
             <mi:MaterialIcon Kind="Import" />
-            <TextBlock Text="{DynamicResource Localized_Import}" />
+            <TextBlock Text="{local:Localize Import}" />
           </StackPanel>
         </Button>
 
@@ -116,7 +117,7 @@
                 Classes="destructive icon-text-button">
           <StackPanel Orientation="Horizontal">
             <mi:MaterialIcon Kind="DeleteVariant" />
-            <TextBlock Text="{DynamicResource Localized_ClearAll}" />
+            <TextBlock Text="{local:Localize ClearAll}" />
           </StackPanel>
         </Button>
       </StackPanel>
@@ -136,12 +137,12 @@
                              Height="48"
                              Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
                              HorizontalAlignment="Center" />
-            <TextBlock Text="{DynamicResource Localized_NoProxiesConfigured}"
+            <TextBlock Text="{local:Localize NoProxiesConfigured}"
                        FontSize="{StaticResource FontSizeXL}"
                        FontWeight="{StaticResource FontWeightSemiBold}"
                        Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
                        HorizontalAlignment="Center" />
-            <TextBlock Text="{DynamicResource Localized_CreateYourFirstProxyConfiguration}"
+            <TextBlock Text="{local:Localize CreateYourFirstProxyConfiguration}"
                        FontSize="{StaticResource FontSizeM}"
                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                        HorizontalAlignment="Center" />
@@ -151,7 +152,7 @@
                     Margin="{StaticResource ThicknessTopL}">
               <StackPanel Orientation="Horizontal">
                 <mi:MaterialIcon Kind="Plus" />
-                <TextBlock Text="{DynamicResource Localized_CreateProxy}" />
+                <TextBlock Text="{local:Localize CreateProxy}" />
               </StackPanel>
             </Button>
           </StackPanel>
@@ -192,7 +193,7 @@
                                      FontSize="{StaticResource FontSizeS}"
                                      Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                      VerticalAlignment="Center">
-                            <Run Text="{DynamicResource Localized_Local}" />
+                            <Run Text="{local:Localize Local}" />
                             <Run Text=":" />
                           </TextBlock>
                           <TextBlock Grid.Column="1"
@@ -216,7 +217,7 @@
                                      FontSize="{StaticResource FontSizeS}"
                                      Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                      VerticalAlignment="Center">
-                            <Run Text="{DynamicResource Localized_RemotePortLabel}" />
+                            <Run Text="{local:Localize RemotePortLabel}" />
                             <Run Text=":" />
                           </TextBlock>
                           <TextBlock Grid.Column="1"
@@ -266,19 +267,19 @@
                                 VerticalAlignment="Center">
                       <Button Click="OnEditClick"
                               Classes="ghost icon-button"
-                              ToolTip.Tip="{DynamicResource Localized_EditProxyToolTip}">
+                              ToolTip.Tip="{local:Localize EditProxyToolTip}">
                         <mi:MaterialIcon Kind="Pencil" />
                       </Button>
 
                       <Button Click="OnDuplicateClick"
                               Classes="ghost icon-button"
-                              ToolTip.Tip="{DynamicResource Localized_DuplicateProxyToolTip}">
+                              ToolTip.Tip="{local:Localize DuplicateProxyToolTip}">
                         <mi:MaterialIcon Kind="ContentCopy" />
                       </Button>
 
                       <Button Click="OnDeleteClick"
                               Classes="destructive icon-button"
-                              ToolTip.Tip="{DynamicResource Localized_DeleteProxyToolTip}">
+                              ToolTip.Tip="{local:Localize DeleteProxyToolTip}">
                         <mi:MaterialIcon Kind="Delete" />
                       </Button>
                     </StackPanel>

@@ -6,25 +6,20 @@ using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using FrapaClonia.UI.ViewModels;
 using FrapaClonia.Views;
-using FrapaClonia.UI.Services;
 using System.Diagnostics.CodeAnalysis;
 using System;
 using System.Threading.Tasks;
 using FrapaClonia.Core.Interfaces;
+using FrapaClonia.UI.MarkupExtensions;
 
 namespace FrapaClonia;
 
 public class App : Application
 {
     private ServiceProvider? _serviceProvider;
-    private static LocalizedResources? _localizedResources;
 
     // ReSharper disable once UnusedMember.Global
     public static IServiceProvider Services => ((App)Current!)._serviceProvider!;
-
-    // Provides access to localized resources from XAML
-    // ReSharper disable once UnusedMember.Global
-    public static LocalizedResources LocalizedStrings => _localizedResources ?? throw new InvalidOperationException("LocalizedResources not initialized");
 
     public override void Initialize()
     {
@@ -45,10 +40,9 @@ public class App : Application
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
 
-            // Initialize localized resources
-            var localizedResources = _serviceProvider.GetRequiredService<LocalizedResources>();
-            _localizedResources = localizedResources;
-            ResourceInitializer.AddLocalizedResources(Resources, localizedResources);
+            // Initialize LocalizeExtension with the localization service
+            var localizationService = _serviceProvider.GetRequiredService<ILocalizationService>();
+            LocalizeExtension.LocalizationService = localizationService;
 
             // Resolve MainWindow and its ViewModel from DI container
             var mainWindowViewModel = _serviceProvider.GetRequiredService<MainWindowViewModel>();
