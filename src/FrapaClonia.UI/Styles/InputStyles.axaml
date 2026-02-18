@@ -5,6 +5,11 @@
        INPUT CONTROL STYLES
        ============================================= -->
 
+  <!-- Fix text clipping at right edge in Fluent theme -->
+  <Style Selector="TextBox /template/ ScrollViewer#PART_ScrollViewer">
+    <Setter Property="Padding" Value="0,0,-5,0" />
+  </Style>
+
   <!-- Ensure all input controls are vertically centered -->
   <Style Selector="TextBox">
     <Setter Property="VerticalAlignment" Value="Center" />
