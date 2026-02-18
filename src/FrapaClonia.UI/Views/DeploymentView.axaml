@@ -36,11 +36,9 @@
               <TextBlock Text="{DynamicResource Localized_DeploymentMode}"
                          Classes="section-title"
                          VerticalAlignment="Center" />
-              <Button Classes="hint-icon" VerticalAlignment="Center">
-                <ToolTip.Tip>
-                  <TextBlock Text="{DynamicResource Localized_ChooseHowYouWantToDeployAndRunFrpc}" />
-                </ToolTip.Tip>
-              </Button>
+              <Button Classes="hint-icon"
+                      VerticalAlignment="Center"
+                      ToolTip.Tip="{DynamicResource Localized_ChooseHowYouWantToDeployAndRunFrpc}" />
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">

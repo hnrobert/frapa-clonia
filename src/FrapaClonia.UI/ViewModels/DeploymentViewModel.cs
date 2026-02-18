@@ -294,7 +294,7 @@ public partial class DeploymentViewModel : ObservableObject
                 var mainWindow = _serviceProvider.GetService<Window>();
                 if (mainWindow != null)
                 {
-                    await dialog.ShowDialog(mainWindow);
+                    await dialog.ShowDialog<bool?>(mainWindow);
                 }
                 else
                 {

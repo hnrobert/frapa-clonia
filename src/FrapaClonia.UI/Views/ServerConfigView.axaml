@@ -35,11 +35,8 @@
               <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="4">
                 <TextBlock Text="{DynamicResource Localized_ServerAddress}"
                            Classes="field-label" />
-                <Button Classes="hint-icon">
-                  <ToolTip.Tip>
-                    <TextBlock Text="{DynamicResource Localized_TheAddressOfTheFrpsServer}" />
-                  </ToolTip.Tip>
-                </Button>
+                <Button Classes="hint-icon"
+                        ToolTip.Tip="{DynamicResource Localized_TheAddressOfTheFrpsServer}" />
               </StackPanel>
               <TextBox Grid.Row="0" Grid.Column="1"
                        Text="{Binding ServerAddr}"
@@ -65,11 +62,8 @@
               <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="4">
                 <TextBlock Text="{DynamicResource Localized_OptionalUserName}"
                            Classes="field-label" />
-                <Button Classes="hint-icon">
-                  <ToolTip.Tip>
-                    <TextBlock Text="{DynamicResource Localized_OptionalUserNameToAvoidProxyNameConflicts}" />
-                  </ToolTip.Tip>
-                </Button>
+                <Button Classes="hint-icon"
+                        ToolTip.Tip="{DynamicResource Localized_OptionalUserNameToAvoidProxyNameConflicts}" />
               </StackPanel>
               <TextBox Grid.Row="0" Grid.Column="1"
                        Text="{Binding User}"
@@ -237,11 +231,8 @@
               <StackPanel Orientation="Horizontal" Spacing="4">
                 <TextBlock Text="{DynamicResource Localized_EnableTLS}"
                            Classes="field-label" />
-                <Button Classes="hint-icon">
-                  <ToolTip.Tip>
-                    <TextBlock Text="{DynamicResource Localized_EncryptCommunicationWithTheFrpsServer}" />
-                  </ToolTip.Tip>
-                </Button>
+                <Button Classes="hint-icon"
+                        ToolTip.Tip="{DynamicResource Localized_EncryptCommunicationWithTheFrpsServer}" />
               </StackPanel>
               <CheckBox Grid.Row="0" Grid.Column="1"
                         IsChecked="{Binding TlsEnabled}"

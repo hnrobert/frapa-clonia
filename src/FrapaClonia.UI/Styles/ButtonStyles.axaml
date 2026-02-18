@@ -151,6 +151,10 @@
     <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumBrush}" />
   </Style>
 
+  <Style Selector="Button.icon-button:disabled /template/ ContentPresenter">
+    <Setter Property="Opacity" Value="0.4" />
+  </Style>
+
   <!-- Action Button (for toolbars, with consistent sizing) -->
   <Style Selector="Button.action-button">
     <Setter Property="Height" Value="{StaticResource ButtonHeightL}" />

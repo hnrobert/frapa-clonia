@@ -1,7 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
-             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="600"
@@ -40,11 +39,7 @@
                 <TextBlock Text="{DynamicResource Localized_InterfaceLanguage}"
                            Classes="field-label" />
                 <Button Classes="hint-icon"
-                        ToolTip.Tip="{DynamicResource Localized_ChangesWillTakeEffectImmediately}">
-                  <mi:MaterialIcon Kind="Information"
-                                   Width="14" Height="14"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
-                </Button>
+                        ToolTip.Tip="{DynamicResource Localized_ChangesWillTakeEffectImmediately}" />
               </StackPanel>
               <ComboBox Grid.Row="0" Grid.Column="1"
                         ItemsSource="{Binding AvailableLanguages}"
@@ -77,11 +72,7 @@
                            FontWeight="{StaticResource FontWeightMedium}"
                            VerticalAlignment="Center" />
                 <Button Classes="hint-icon"
-                        ToolTip.Tip="{DynamicResource Localized_AutomaticallyLaunchFrapaClonia}">
-                  <mi:MaterialIcon Kind="Information"
-                                   Width="14" Height="14"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
-                </Button>
+                        ToolTip.Tip="{DynamicResource Localized_AutomaticallyLaunchFrapaClonia}" />
               </StackPanel>
             </CheckBox>
           </StackPanel>
@@ -99,11 +90,7 @@
                 <TextBlock Text="{DynamicResource Localized_Theme}"
                            Classes="field-label" />
                 <Button Classes="hint-icon"
-                        ToolTip.Tip="{DynamicResource Localized_ChooseYourPreferredColorTheme}">
-                  <mi:MaterialIcon Kind="Information"
-                                   Width="14" Height="14"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
-                </Button>
+                        ToolTip.Tip="{DynamicResource Localized_ChooseYourPreferredColorTheme}" />
               </StackPanel>
               <ComboBox Grid.Row="0" Grid.Column="1"
                         ItemsSource="{Binding AvailableThemes}"
@@ -137,11 +124,7 @@
                            FontWeight="{StaticResource FontWeightMedium}"
                            VerticalAlignment="Center" />
                 <Button Classes="hint-icon"
-                        ToolTip.Tip="{DynamicResource Localized_ConfigurationStoredInAppDir}">
-                  <mi:MaterialIcon Kind="Information"
-                                   Width="14" Height="14"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
-                </Button>
+                        ToolTip.Tip="{DynamicResource Localized_ConfigurationStoredInAppDir}" />
               </StackPanel>
             </CheckBox>
 
@@ -159,45 +142,6 @@
             </Border>
           </StackPanel>
         </Border>
-
-        <!-- About Information -->
-        <!-- 
-        <Border Classes="settings-card">
-          <StackPanel Spacing="0">
-            <TextBlock Text="{DynamicResource Localized_About}"
-                       Classes="section-title"
-                       Margin="{StaticResource ThicknessBottomM}" />
-
-            <Grid ColumnDefinitions="120,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
-              <TextBlock Grid.Row="0" Grid.Column="0"
-                         Text="{DynamicResource Localized_VersionInfo}"
-                         Classes="field-label" />
-              <TextBlock Grid.Row="0" Grid.Column="1"
-                         Text="0.1.0"
-                         VerticalAlignment="Center" />
-
-              <TextBlock Grid.Row="1" Grid.Column="0"
-                         Text="{DynamicResource Localized_BuildInfo}"
-                         Classes="field-label" />
-              <TextBlock Grid.Row="1" Grid.Column="1"
-                         Text="Development"
-                         VerticalAlignment="Center" />
-
-              <TextBlock Grid.Row="2" Grid.Column="0"
-                         Text="{DynamicResource Localized_NetRuntimeInfo}"
-                         Classes="field-label" />
-              <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="4">
-                <TextBlock Text="10.0"
-                           VerticalAlignment="Center" />
-                <Button Classes="hint-icon">
-                  <ToolTip.Tip>
-                    <TextBlock Text="{DynamicResource Localized_CrossPlatformFrpcVisualClient}" />
-                  </ToolTip.Tip>
-                </Button>
-              </StackPanel>
-            </Grid>
-          </StackPanel>
-        </Border> -->
 
         <!-- Action Buttons -->
         <StackPanel Orientation="Horizontal"
