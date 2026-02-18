@@ -102,9 +102,6 @@
   <data name="BuildInfo" xml:space="preserve">
     <value>ビルド</value>
   </data>
-  <data name="CRTPath" xml:space="preserve">
-    <value>CRTパス</value>
-  </data>
   <data name="Cancel" xml:space="preserve">
     <value>キャンセル</value>
   </data>
@@ -140,9 +137,6 @@
   </data>
   <data name="ClearAllLogs" xml:space="preserve">
     <value>すべてのログをクリア</value>
-  </data>
-  <data name="ClientID" xml:space="preserve">
-    <value>クライアントID</value>
   </data>
   <data name="ClientSecret" xml:space="preserve">
     <value>クライアントシークレット</value>
@@ -312,12 +306,6 @@
   <data name="DuplicateProxyToolTip" xml:space="preserve">
     <value>プロキシを複製</value>
   </data>
-  <data name="EGConsolePathToLogfile" xml:space="preserve">
-    <value>例：console、/path/to/logfile</value>
-  </data>
-  <data name="EGOpenidProfile" xml:space="preserve">
-    <value>例：openid、profile</value>
-  </data>
   <data name="EG_1MB_256KB" xml:space="preserve">
     <value>例：1MB、256KB</value>
   </data>
@@ -423,15 +411,6 @@
   <data name="HTTPAuthentication" xml:space="preserve">
     <value>HTTP認証</value>
   </data>
-  <data name="HTTPProxyURL" xml:space="preserve">
-    <value>HTTPプロキシURL</value>
-  </data>
-  <data name="HTTPSToHTTPPluginSettings" xml:space="preserve">
-    <value>HTTPSからHTTPへのプラグイン設定</value>
-  </data>
-  <data name="HTTPToHTTPSPluginSettings" xml:space="preserve">
-    <value>HTTPからHTTPSへのプラグイン設定</value>
-  </data>
   <data name="HeaderNameValue" xml:space="preserve">
     <value>ヘッダー名：値</value>
   </data>
@@ -482,9 +461,6 @@
   </data>
   <data name="IntervalSeconds" xml:space="preserve">
     <value>間隔（秒）</value>
-  </data>
-  <data name="KeyPath" xml:space="preserve">
-    <value>キーパス</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>言語</value>
@@ -845,12 +821,6 @@
   </data>
   <data name="SystemServiceSettings" xml:space="preserve">
     <value>System Service Settings</value>
-  </data>
-  <data name="TCPMultiplexerSettings" xml:space="preserve">
-    <value>TCPマルチプレクサ設定</value>
-  </data>
-  <data name="TCPMux" xml:space="preserve">
-    <value>TCPマルチプレクサ</value>
   </data>
   <data name="TheAddressOfTheFrpsServer" xml:space="preserve">
     <value>frpsサーバーのアドレス</value>
@@ -1238,9 +1208,6 @@
   </data>
   <data name="TypeLabel" xml:space="preserve">
     <value>タイプ</value>
-  </data>
-  <data name="URLPrefix" xml:space="preserve">
-    <value>URLプレフィックス</value>
   </data>
   <data name="UninstallService" xml:space="preserve">
     <value>Uninstall Service</value>

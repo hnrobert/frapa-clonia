@@ -102,9 +102,6 @@
   <data name="BuildInfo" xml:space="preserve">
     <value>构建</value>
   </data>
-  <data name="CRTPath" xml:space="preserve">
-    <value>CRT 路径</value>
-  </data>
   <data name="Cancel" xml:space="preserve">
     <value>取消</value>
   </data>
@@ -140,9 +137,6 @@
   </data>
   <data name="ClearAllLogs" xml:space="preserve">
     <value>清除所有日志</value>
-  </data>
-  <data name="ClientID" xml:space="preserve">
-    <value>客户端 ID</value>
   </data>
   <data name="ClientSecret" xml:space="preserve">
     <value>客户端密钥</value>
@@ -315,12 +309,6 @@
   <data name="DuplicateProxyToolTip" xml:space="preserve">
     <value>复制代理</value>
   </data>
-  <data name="EGConsolePathToLogfile" xml:space="preserve">
-    <value>例如：console、/path/to/logfile</value>
-  </data>
-  <data name="EGOpenidProfile" xml:space="preserve">
-    <value>例如：openid、profile</value>
-  </data>
   <data name="EG_1MB_256KB" xml:space="preserve">
     <value>例如：1MB、256KB</value>
   </data>
@@ -426,15 +414,6 @@
   <data name="HTTPAuthentication" xml:space="preserve">
     <value>HTTP 身份验证</value>
   </data>
-  <data name="HTTPProxyURL" xml:space="preserve">
-    <value>HTTP 代理 URL</value>
-  </data>
-  <data name="HTTPSToHTTPPluginSettings" xml:space="preserve">
-    <value>HTTPS 转 HTTP 插件设置</value>
-  </data>
-  <data name="HTTPToHTTPSPluginSettings" xml:space="preserve">
-    <value>HTTP 转 HTTPS 插件设置</value>
-  </data>
   <data name="HeaderNameValue" xml:space="preserve">
     <value>标头名称：值</value>
   </data>
@@ -485,9 +464,6 @@
   </data>
   <data name="IntervalSeconds" xml:space="preserve">
     <value>间隔（秒）</value>
-  </data>
-  <data name="KeyPath" xml:space="preserve">
-    <value>密钥路径</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>语言</value>
@@ -854,12 +830,6 @@
   </data>
   <data name="SystemServiceSettings" xml:space="preserve">
     <value>System Service Settings</value>
-  </data>
-  <data name="TCPMultiplexerSettings" xml:space="preserve">
-    <value>TCP 多路复用器设置</value>
-  </data>
-  <data name="TCPMux" xml:space="preserve">
-    <value>TCP 多路复用</value>
   </data>
   <data name="TheAddressOfTheFrpsServer" xml:space="preserve">
     <value>frps 服务器的地址</value>
@@ -1241,9 +1211,6 @@
   </data>
   <data name="TypeLabel" xml:space="preserve">
     <value>类型</value>
-  </data>
-  <data name="URLPrefix" xml:space="preserve">
-    <value>URL 前缀</value>
   </data>
   <data name="UninstallService" xml:space="preserve">
     <value>Uninstall Service</value>
