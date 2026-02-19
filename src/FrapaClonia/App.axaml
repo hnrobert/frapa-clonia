@@ -4,7 +4,17 @@
              xmlns:local="using:FrapaClonia"
              xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
              xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             Name="FrapaClonia"
              RequestedThemeVariant="Default">
+
+  <!-- Native Menu for macOS - items go directly into the app menu -->
+  <NativeMenu.Menu>
+    <NativeMenu>
+      <NativeMenuItem Header="About FrapaClonia" />
+      <NativeMenuItemSeparator />
+      <NativeMenuItem Header="Settings..." />
+    </NativeMenu>
+  </NativeMenu.Menu>
 
   <Application.DataTemplates>
     <local:ViewLocator />
@@ -39,4 +49,3 @@
   </Application.Styles>
 
 </Application>
-

@@ -28,9 +28,42 @@ public class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
+
+        // Wire up native menu events for macOS
+        if (OperatingSystem.IsMacOS())
+        {
+            SetupNativeMenuEvents();
+        }
     }
 
-    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "<Pending>")]
+    private void SetupNativeMenuEvents()
+    {
+        // Get the native menu from the Application
+        var menu = NativeMenu.GetMenu(this);
+        if (menu == null || menu.Items.Count == 0) return;
+
+        // Items are directly in the menu (not nested)
+        foreach (var item in menu.Items)
+        {
+            if (item is not NativeMenuItem menuItem) continue;
+
+            // Use Header to identify menu items
+            if (menuItem.Header == null) continue;
+
+            if (menuItem.Header?.Contains("About") == true)
+            {
+                menuItem.Click += (_, _) => ShowAboutDialog();
+            }
+            else if (menuItem.Header?.Contains("Settings") == true)
+            {
+                menuItem.Click += (_, _) => NavigateToSettings();
+            }
+        }
+    }
+
+    [UnconditionalSuppressMessage("Trimming",
+        "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code",
+        Justification = "<Pending>")]
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -91,7 +124,7 @@ public class App : Application
             // Cmd+, - Settings
             (Key.OemComma, KeyModifiers.Meta, "OpenSettings"),
             // Cmd+Shift+A - About
-            (Key.A, KeyModifiers.Meta | KeyModifiers.Shift, "OpenAbout"),
+            (Key.A, KeyModifiers.Meta | KeyModifiers.Shift, "OpenAbout")
         };
 
         foreach (var (key, modifiers, commandName) in keyBindings)

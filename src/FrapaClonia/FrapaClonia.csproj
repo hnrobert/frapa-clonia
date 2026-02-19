@@ -1,14 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <!-- Version Information -->
   <PropertyGroup>
-    <!-- macOS bundle settings (controls app name in menu bar) -->
-    <CFBundleName>FrapaClonia</CFBundleName>
-    <CFBundleDisplayName>FrapaClonia</CFBundleDisplayName>
-    <CFBundleIdentifier>com.frapaclonia.app</CFBundleIdentifier>
-    <CFBundleVersion>0.0.1</CFBundleVersion>
-    <CFBundleShortVersionString>0.0.1</CFBundleShortVersionString>
-    <NSHighResolutionCapable>true</NSHighResolutionCapable>
-    
     <Version>0.0.1</Version>
     <!-- <AssemblyVersion>x.x.x</AssemblyVersion> -->
     <!-- <FileVersion>x.x.x</FileVersion> -->
