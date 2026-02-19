@@ -243,6 +243,9 @@
   <data name="Deployment" xml:space="preserve">
     <value>Frpc 部署</value>
   </data>
+  <data name="DeploymentDescription" xml:space="preserve">
+    <value>配置 frpc 在系统上的运行方式</value>
+  </data>
   <data name="DeploymentMode" xml:space="preserve">
     <value>部署模式</value>
   </data>
@@ -755,6 +758,9 @@
   </data>
   <data name="ServerConfig" xml:space="preserve">
     <value>服务器配置</value>
+  </data>
+  <data name="ServerConfigDescription" xml:space="preserve">
+    <value>配置服务器连接和身份验证设置</value>
   </data>
   <data name="ServerName" xml:space="preserve">
     <value>服务器名称</value>

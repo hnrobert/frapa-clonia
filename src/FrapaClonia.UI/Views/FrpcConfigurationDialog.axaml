@@ -388,7 +388,7 @@
                              Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                 </StackPanel>
 
-                <!-- Version list (no internal scrollviewer, full height) -->
+                <!-- Version list (no internal scroll viewer, full height) -->
                 <ItemsControl Grid.Row="1"
                               ItemsSource="{Binding DownloadedVersions}"
                               IsVisible="{Binding !IsLoadingDownloadedVersions}">
@@ -456,7 +456,8 @@
                                 <TextBlock Text="{local:Localize Delete}" IsVisible="{Binding CanDelete}" />
                               </Panel>
                             </ToolTip.Tip>
-                            <Panel Opacity="{Binding CanDelete, Converter={StaticResource BoolToOpacityConverter}, ConverterParameter=Invert}">
+                            <Panel
+                              Opacity="{Binding CanDelete, Converter={StaticResource BoolToOpacityConverter}, ConverterParameter=Invert}">
                               <!-- Delete Icon -->
                               <mi:MaterialIcon Kind="Delete"
                                                IsVisible="{Binding !IsPendingDeletion}"
@@ -506,4 +507,3 @@
     </Panel>
   </ScrollViewer>
 </Window>
-

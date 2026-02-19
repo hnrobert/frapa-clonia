@@ -243,6 +243,9 @@
   <data name="Deployment" xml:space="preserve">
     <value>Frpc Deployment</value>
   </data>
+  <data name="DeploymentDescription" xml:space="preserve">
+    <value>Configure how frpc runs on your system</value>
+  </data>
   <data name="DeploymentMode" xml:space="preserve">
     <value>Deployment Mode</value>
   </data>
@@ -755,6 +758,9 @@
   </data>
   <data name="ServerConfig" xml:space="preserve">
     <value>Server Configuration</value>
+  </data>
+  <data name="ServerConfigDescription" xml:space="preserve">
+    <value>Configure server connection and authentication settings</value>
   </data>
   <data name="ServerName" xml:space="preserve">
     <value>Server Name</value>

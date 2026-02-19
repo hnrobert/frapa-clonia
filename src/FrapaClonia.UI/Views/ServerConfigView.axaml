@@ -17,319 +17,333 @@
     <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
   </UserControl.Styles>
 
-  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-    <Panel Margin="{StaticResource ContentPadding}">
-      <StackPanel Spacing="{StaticResource SpacingL}">
+  <Grid RowDefinitions="Auto,*">
+    <!-- Page Header -->
+    <Border Grid.Row="0" Classes="page-header">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Grid.Column="0" Spacing="{StaticResource SpacingS}">
+          <TextBlock Text="{local:Localize ServerConfig}"
+                     Classes="page-title" />
+          <TextBlock Text="{local:Localize ServerConfigDescription}"
+                     Classes="page-subtitle" />
+        </StackPanel>
+      </Grid>
+    </Border>
 
-        <!-- Header -->
-        <TextBlock Text="{local:Localize ServerConfig}"
-                   Classes="page-title" />
+    <!-- Page Content -->
+    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
+      <Border Classes="page-content">
+        <StackPanel Spacing="{StaticResource SpacingL}">
 
-        <!-- Server Connection Section -->
-        <Border Classes="card">
-          <StackPanel Spacing="{StaticResource SpacingM}">
-            <TextBlock Text="{local:Localize ConnectionSettings}"
-                       Classes="section-title" />
+          <!-- Server Connection Section -->
+          <Border Classes="card">
+            <StackPanel Spacing="{StaticResource SpacingM}">
+              <TextBlock Text="{local:Localize ConnectionSettings}"
+                         Classes="section-title" />
 
-            <!-- Server Address -->
-            <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
-              <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="4">
-                <TextBlock Text="{local:Localize ServerAddress}"
-                           Classes="field-label" />
-                <Button Classes="hint-icon"
-                        ToolTip.Tip="{local:Localize TheAddressOfTheFrpsServer}" />
-              </StackPanel>
-              <TextBox Grid.Row="0" Grid.Column="1"
-                       Text="{Binding ServerAddr}"
-                       Watermark="e.g., 127.0.0.1 or your-server.com" />
-            </Grid>
-
-            <!-- Server Port -->
-            <Grid ColumnDefinitions="160,120,10,*" RowDefinitions="Auto,Auto">
-              <TextBlock Grid.Row="0" Grid.Column="0"
-                         Text="{local:Localize ServerPort}"
-                         Classes="field-label" />
-              <TextBox Grid.Row="0" Grid.Column="1"
-                       Text="{Binding ServerPortText}"
-                       Watermark="7000" />
-              <TextBlock Grid.Row="0" Grid.Column="3"
-                         VerticalAlignment="Center">
-                <Run Text="{local:Localize DefaultPort}" /><Run Text=": 7000" />
-              </TextBlock>
-            </Grid>
-
-            <!-- User -->
-            <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
-              <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="4">
-                <TextBlock Text="{local:Localize OptionalUserName}"
-                           Classes="field-label" />
-                <Button Classes="hint-icon"
-                        ToolTip.Tip="{local:Localize OptionalUserNameToAvoidProxyNameConflicts}" />
-              </StackPanel>
-              <TextBox Grid.Row="0" Grid.Column="1"
-                       Text="{Binding User}"
-                       Watermark="Optional user name" />
-            </Grid>
-          </StackPanel>
-        </Border>
-
-        <!-- Authentication Section -->
-        <Border Classes="card">
-          <StackPanel Spacing="{StaticResource SpacingM}">
-            <TextBlock Text="{local:Localize Authentication}"
-                       Classes="section-title" />
-
-            <!-- Auth Method -->
-            <Grid ColumnDefinitions="160,180,*" RowDefinitions="Auto">
-              <TextBlock Grid.Row="0" Grid.Column="0"
-                         Text="{local:Localize Method}"
-                         Classes="field-label" />
-              <ComboBox Grid.Column="1"
-                        SelectedIndex="{Binding AuthMethodIndex}">
-                <ComboBoxItem>Token</ComboBoxItem>
-                <ComboBoxItem>{local:Localize OIDC}</ComboBoxItem>
-              </ComboBox>
-            </Grid>
-
-            <!-- Token Auth -->
-            <StackPanel Spacing="{StaticResource SpacingM}" IsVisible="{Binding !IsOidcAuth}">
+              <!-- Server Address -->
               <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="4">
+                  <TextBlock Text="{local:Localize ServerAddress}"
+                             Classes="field-label" />
+                  <Button Classes="hint-icon"
+                          ToolTip.Tip="{local:Localize TheAddressOfTheFrpsServer}" />
+                </StackPanel>
+                <TextBox Grid.Row="0" Grid.Column="1"
+                         Text="{Binding ServerAddr}"
+                         Watermark="e.g., 127.0.0.1 or your-server.com" />
+              </Grid>
+
+              <!-- Server Port -->
+              <Grid ColumnDefinitions="160,120,10,*" RowDefinitions="Auto,Auto">
                 <TextBlock Grid.Row="0" Grid.Column="0"
-                           Text="{local:Localize Token}"
+                           Text="{local:Localize ServerPort}"
                            Classes="field-label" />
-                <TextBox Grid.Column="1"
-                         Text="{Binding Token}"
-                         PasswordChar="*"
-                         Watermark="{local:Localize EnterYourAuthenticationToken}" />
+                <TextBox Grid.Row="0" Grid.Column="1"
+                         Text="{Binding ServerPortText}"
+                         Watermark="7000" />
+                <TextBlock Grid.Row="0" Grid.Column="3"
+                           VerticalAlignment="Center">
+                  <Run Text="{local:Localize DefaultPort}" /><Run Text=": 7000" />
+                </TextBlock>
+              </Grid>
+
+              <!-- User -->
+              <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="4">
+                  <TextBlock Text="{local:Localize OptionalUserName}"
+                             Classes="field-label" />
+                  <Button Classes="hint-icon"
+                          ToolTip.Tip="{local:Localize OptionalUserNameToAvoidProxyNameConflicts}" />
+                </StackPanel>
+                <TextBox Grid.Row="0" Grid.Column="1"
+                         Text="{Binding User}"
+                         Watermark="Optional user name" />
               </Grid>
             </StackPanel>
+          </Border>
 
-            <!-- OIDC Auth -->
-            <StackPanel Spacing="{StaticResource SpacingM}" IsVisible="{Binding IsOidcAuth}">
-              <!-- Client ID -->
-              <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+          <!-- Authentication Section -->
+          <Border Classes="card">
+            <StackPanel Spacing="{StaticResource SpacingM}">
+              <TextBlock Text="{local:Localize Authentication}"
+                         Classes="section-title" />
+
+              <!-- Auth Method -->
+              <Grid ColumnDefinitions="160,180,*" RowDefinitions="Auto">
                 <TextBlock Grid.Row="0" Grid.Column="0"
-                           Text="{local:Localize ClientId}"
+                           Text="{local:Localize Method}"
                            Classes="field-label" />
-                <TextBox Grid.Column="1"
-                         Text="{Binding OidcClientId}" />
+                <ComboBox Grid.Column="1"
+                          SelectedIndex="{Binding AuthMethodIndex}">
+                  <ComboBoxItem>Token</ComboBoxItem>
+                  <ComboBoxItem>{local:Localize OIDC}</ComboBoxItem>
+                </ComboBox>
               </Grid>
 
-              <!-- Client Secret -->
-              <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+              <!-- Token Auth -->
+              <StackPanel Spacing="{StaticResource SpacingM}" IsVisible="{Binding !IsOidcAuth}">
+                <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+                  <TextBlock Grid.Row="0" Grid.Column="0"
+                             Text="{local:Localize Token}"
+                             Classes="field-label" />
+                  <TextBox Grid.Column="1"
+                           Text="{Binding Token}"
+                           PasswordChar="*"
+                           Watermark="{local:Localize EnterYourAuthenticationToken}" />
+                </Grid>
+              </StackPanel>
+
+              <!-- OIDC Auth -->
+              <StackPanel Spacing="{StaticResource SpacingM}" IsVisible="{Binding IsOidcAuth}">
+                <!-- Client ID -->
+                <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+                  <TextBlock Grid.Row="0" Grid.Column="0"
+                             Text="{local:Localize ClientId}"
+                             Classes="field-label" />
+                  <TextBox Grid.Column="1"
+                           Text="{Binding OidcClientId}" />
+                </Grid>
+
+                <!-- Client Secret -->
+                <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+                  <TextBlock Grid.Row="0" Grid.Column="0"
+                             Text="{local:Localize ClientSecret}"
+                             Classes="field-label" />
+                  <TextBox Grid.Column="1"
+                           Text="{Binding OidcClientSecret}"
+                           PasswordChar="*" />
+                </Grid>
+
+                <!-- Token Endpoint -->
+                <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+                  <TextBlock Grid.Row="0" Grid.Column="0"
+                             Text="{local:Localize TokenEndpoint}"
+                             Classes="field-label" />
+                  <TextBox Grid.Column="1"
+                           Text="{Binding OidcTokenEndpointUrl}"
+                           Watermark="https://" />
+                </Grid>
+
+                <!-- Audience -->
+                <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+                  <TextBlock Grid.Row="0" Grid.Column="0"
+                             Text="{local:Localize Audience}"
+                             Classes="field-label" />
+                  <TextBox Grid.Column="1"
+                           Text="{Binding OidcAudience}"
+                           Watermark="{local:Localize OptionalAudience}" />
+                </Grid>
+
+                <!-- Scope -->
+                <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+                  <TextBlock Grid.Row="0" Grid.Column="0"
+                             Text="{local:Localize Scope}"
+                             Classes="field-label" />
+                  <TextBox Grid.Column="1"
+                           Text="{Binding OidcScope}"
+                           Watermark="{local:Localize EgOpenidProfile}" />
+                </Grid>
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+          <!-- Transport Section -->
+          <Border Classes="card">
+            <StackPanel Spacing="{StaticResource SpacingM}">
+              <TextBlock Text="{local:Localize TransportSettings}"
+                         Classes="section-title" />
+
+              <!-- Protocol -->
+              <Grid ColumnDefinitions="160,180,*" RowDefinitions="Auto">
                 <TextBlock Grid.Row="0" Grid.Column="0"
-                           Text="{local:Localize ClientSecret}"
+                           Text="{local:Localize TransportProtocol}"
                            Classes="field-label" />
-                <TextBox Grid.Column="1"
-                         Text="{Binding OidcClientSecret}"
-                         PasswordChar="*" />
+                <ComboBox Grid.Column="1"
+                          SelectedIndex="{Binding TransportProtocolIndex}">
+                  <ComboBoxItem>TCP</ComboBoxItem>
+                  <ComboBoxItem>KCP</ComboBoxItem>
+                  <ComboBoxItem>QUIC</ComboBoxItem>
+                  <ComboBoxItem>WebSocket</ComboBoxItem>
+                  <ComboBoxItem>Secure WebSocket (WSS)</ComboBoxItem>
+                </ComboBox>
               </Grid>
 
-              <!-- Token Endpoint -->
-              <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+              <!-- Timeout and Mux -->
+              <Grid ColumnDefinitions="160,120,10,*" RowDefinitions="Auto,Auto">
+                <!-- Dial Timeout -->
                 <TextBlock Grid.Row="0" Grid.Column="0"
-                           Text="{local:Localize TokenEndpoint}"
+                           Text="{local:Localize DialTimeout}"
                            Classes="field-label" />
-                <TextBox Grid.Column="1"
-                         Text="{Binding OidcTokenEndpointUrl}"
-                         Watermark="https://" />
+                <TextBox Grid.Row="0" Grid.Column="1"
+                         Text="{Binding DialServerTimeoutText}"
+                         Watermark="10" />
+                <TextBlock Grid.Row="0" Grid.Column="3"
+                           Text="{local:Localize Seconds}"
+                           VerticalAlignment="Center" />
+
               </Grid>
 
-              <!-- Audience -->
-              <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+              <!-- TCP Mux -->
+              <Grid ColumnDefinitions="160,120,*" RowDefinitions="Auto,Auto">
                 <TextBlock Grid.Row="0" Grid.Column="0"
-                           Text="{local:Localize Audience}"
+                           Text="{local:Localize TcpMux}"
                            Classes="field-label" />
-                <TextBox Grid.Column="1"
-                         Text="{Binding OidcAudience}"
-                         Watermark="{local:Localize OptionalAudience}" />
+                <CheckBox Grid.Row="0" Grid.Column="1"
+                          IsChecked="{Binding TcpMux}"
+                          VerticalAlignment="Center" />
               </Grid>
 
-              <!-- Scope -->
-              <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+              <!-- Heartbeat Interval -->
+              <Grid ColumnDefinitions="160,120,10,*" RowDefinitions="Auto,Auto">
                 <TextBlock Grid.Row="0" Grid.Column="0"
-                           Text="{local:Localize Scope}"
+                           Text="{local:Localize HeartbeatInterval}"
                            Classes="field-label" />
-                <TextBox Grid.Column="1"
-                         Text="{Binding OidcScope}"
-                         Watermark="{local:Localize EgOpenidProfile}" />
+                <TextBox Grid.Row="0" Grid.Column="1"
+                         Text="{Binding HeartbeatIntervalText}"
+                         Watermark="30" />
+                <TextBlock Grid.Row="0" Grid.Column="3"
+                           Text="{local:Localize Seconds}"
+                           VerticalAlignment="Center" />
+              </Grid>
+
+              <!-- Heartbeat Timeout -->
+              <Grid ColumnDefinitions="160,120,*" RowDefinitions="Auto,Auto">
+                <TextBlock Grid.Row="1" Grid.Column="0"
+                           Text="{local:Localize HeartbeatTimeout}"
+                           Classes="field-label" />
+                <TextBox Grid.Row="1" Grid.Column="1"
+                         Text="{Binding HeartbeatTimeoutText}"
+                         Watermark="90" />
+              </Grid>
+
+              <!-- TLS -->
+              <Grid ColumnDefinitions="160,120,*" RowDefinitions="Auto">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                  <TextBlock Text="{local:Localize EnableTLS}"
+                             Classes="field-label" />
+                  <Button Classes="hint-icon"
+                          ToolTip.Tip="{local:Localize EncryptCommunicationWithTheFrpsServer}" />
+                </StackPanel>
+                <CheckBox Grid.Row="0" Grid.Column="1"
+                          IsChecked="{Binding TlsEnabled}"
+                          VerticalAlignment="Center" />
               </Grid>
             </StackPanel>
-          </StackPanel>
-        </Border>
+          </Border>
 
-        <!-- Transport Section -->
-        <Border Classes="card">
-          <StackPanel Spacing="{StaticResource SpacingM}">
-            <TextBlock Text="{local:Localize TransportSettings}"
-                       Classes="section-title" />
+          <!-- Logging Section -->
+          <Border Classes="card">
+            <StackPanel Spacing="{StaticResource SpacingM}">
+              <TextBlock Text="{local:Localize LoggingSection}"
+                         Classes="section-title" />
 
-            <!-- Protocol -->
-            <Grid ColumnDefinitions="160,180,*" RowDefinitions="Auto">
-              <TextBlock Grid.Row="0" Grid.Column="0"
-                         Text="{local:Localize TransportProtocol}"
-                         Classes="field-label" />
-              <ComboBox Grid.Column="1"
-                        SelectedIndex="{Binding TransportProtocolIndex}">
-                <ComboBoxItem>TCP</ComboBoxItem>
-                <ComboBoxItem>KCP</ComboBoxItem>
-                <ComboBoxItem>QUIC</ComboBoxItem>
-                <ComboBoxItem>WebSocket</ComboBoxItem>
-                <ComboBoxItem>Secure WebSocket (WSS)</ComboBoxItem>
-              </ComboBox>
-            </Grid>
-
-            <!-- Timeout and Mux -->
-            <Grid ColumnDefinitions="160,120,10,*" RowDefinitions="Auto,Auto">
-              <!-- Dial Timeout -->
-              <TextBlock Grid.Row="0" Grid.Column="0"
-                         Text="{local:Localize DialTimeout}"
-                         Classes="field-label" />
-              <TextBox Grid.Row="0" Grid.Column="1"
-                       Text="{Binding DialServerTimeoutText}"
-                       Watermark="10" />
-              <TextBlock Grid.Row="0" Grid.Column="3"
-                         Text="{local:Localize Seconds}"
-                         VerticalAlignment="Center" />
-
-            </Grid>
-
-            <!-- TCP Mux -->
-            <Grid ColumnDefinitions="160,120,*" RowDefinitions="Auto,Auto">
-              <TextBlock Grid.Row="0" Grid.Column="0"
-                         Text="{local:Localize TcpMux}"
-                         Classes="field-label" />
-              <CheckBox Grid.Row="0" Grid.Column="1"
-                        IsChecked="{Binding TcpMux}"
-                        VerticalAlignment="Center" />
-            </Grid>
-
-            <!-- Heartbeat Interval -->
-            <Grid ColumnDefinitions="160,120,10,*" RowDefinitions="Auto,Auto">
-              <TextBlock Grid.Row="0" Grid.Column="0"
-                         Text="{local:Localize HeartbeatInterval}"
-                         Classes="field-label" />
-              <TextBox Grid.Row="0" Grid.Column="1"
-                       Text="{Binding HeartbeatIntervalText}"
-                       Watermark="30" />
-              <TextBlock Grid.Row="0" Grid.Column="3"
-                         Text="{local:Localize Seconds}"
-                         VerticalAlignment="Center" />
-            </Grid>
-
-            <!-- Heartbeat Timeout -->
-            <Grid ColumnDefinitions="160,120,*" RowDefinitions="Auto,Auto">
-              <TextBlock Grid.Row="1" Grid.Column="0"
-                         Text="{local:Localize HeartbeatTimeout}"
-                         Classes="field-label" />
-              <TextBox Grid.Row="1" Grid.Column="1"
-                       Text="{Binding HeartbeatTimeoutText}"
-                       Watermark="90" />
-            </Grid>
-
-            <!-- TLS -->
-            <Grid ColumnDefinitions="160,120,*" RowDefinitions="Auto">
-              <StackPanel Orientation="Horizontal" Spacing="4">
-                <TextBlock Text="{local:Localize EnableTLS}"
+              <!-- Log Level and Max Days -->
+              <Grid ColumnDefinitions="160,180" RowDefinitions="Auto">
+                <!-- Log Level -->
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="Log Level"
                            Classes="field-label" />
-                <Button Classes="hint-icon"
-                        ToolTip.Tip="{local:Localize EncryptCommunicationWithTheFrpsServer}" />
-              </StackPanel>
-              <CheckBox Grid.Row="0" Grid.Column="1"
-                        IsChecked="{Binding TlsEnabled}"
-                        VerticalAlignment="Center" />
-            </Grid>
-          </StackPanel>
-        </Border>
-
-        <!-- Logging Section -->
-        <Border Classes="card">
-          <StackPanel Spacing="{StaticResource SpacingM}">
-            <TextBlock Text="{local:Localize LoggingSection}"
-                       Classes="section-title" />
-
-            <!-- Log Level and Max Days -->
-            <Grid ColumnDefinitions="160,180,20,Auto,120" RowDefinitions="Auto">
-              <!-- Log Level -->
-              <TextBlock Grid.Row="0" Grid.Column="0"
-                         Text="Log Level"
-                         Classes="field-label" />
-              <ComboBox Grid.Column="1"
-                        SelectedIndex="{Binding LogLevelIndex}">
-                <ComboBoxItem>Trace</ComboBoxItem>
-                <ComboBoxItem>Debug</ComboBoxItem>
-                <ComboBoxItem>Info</ComboBoxItem>
-                <ComboBoxItem>Warn</ComboBoxItem>
-                <ComboBoxItem>Error</ComboBoxItem>
-              </ComboBox>
+                <ComboBox Grid.Column="1"
+                          SelectedIndex="{Binding LogLevelIndex}">
+                  <ComboBoxItem>Trace</ComboBoxItem>
+                  <ComboBoxItem>Debug</ComboBoxItem>
+                  <ComboBoxItem>Info</ComboBoxItem>
+                  <ComboBoxItem>Warn</ComboBoxItem>
+                  <ComboBoxItem>Error</ComboBoxItem>
+                </ComboBox>
+              </Grid>
 
               <!-- Max Days -->
-              <TextBlock Grid.Column="3"
-                         Text="{local:Localize MaxDays}"
-                         Classes="field-label" />
-              <TextBox Grid.Column="4"
-                       Text="{Binding LogMaxDaysText}"
-                       Watermark="3" />
-            </Grid>
+              <Grid ColumnDefinitions="160,120" RowDefinitions="Auto">
+                <TextBlock Grid.Column="0"
+                           Text="{local:Localize MaxDays}"
+                           Classes="field-label" />
+                <TextBox Grid.Column="1"
+                         Text="{Binding LogMaxDaysText}"
+                         Watermark="3" />
 
-            <!-- Log To -->
-            <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
-              <TextBlock Grid.Row="0" Grid.Column="0"
-                         Text="{local:Localize LogTo}"
-                         Classes="field-label" />
-              <TextBox Grid.Column="1"
-                       Text="{Binding LogTo}"
-                       Watermark="{local:Localize EgConsolePathToLogfile}" />
-            </Grid>
-          </StackPanel>
-        </Border>
+              </Grid>
 
-        <!-- Status Section -->
-        <Border Classes="card"
-                IsVisible="{Binding IsValid}">
-          <StackPanel Spacing="{StaticResource SpacingS}">
-            <TextBlock Text="{local:Localize StatusSection}"
-                       Classes="section-title" />
-
-            <TextBlock Text="{Binding ValidationError}"
-                       Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}"
-                       IsVisible="{Binding HasValidationError}" />
-
-            <TextBlock Text="{Binding ValidationWarning}"
-                       Foreground="Orange"
-                       IsVisible="{Binding HasValidationWarning}" />
-
-            <TextBlock Text="{local:Localize ConfigurationIsValid}"
-                       Foreground="{DynamicResource SystemAccentColor1Brush}"
-                       IsVisible="{Binding IsValid}" />
-          </StackPanel>
-        </Border>
-
-        <!-- Action Buttons -->
-        <StackPanel Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Spacing="{StaticResource SpacingM}"
-                    Margin="{StaticResource ThicknessTopS}">
-          <Button Content="{local:Localize ResetToDefaults}"
-                  Command="{Binding ResetCommand}"
-                  IsEnabled="{Binding !IsSaving}"
-                  Classes="action-button" />
-
-          <Button Command="{Binding SaveCommand}"
-                  IsEnabled="{Binding !IsSaving}"
-                  Classes="action-button primary icon-text-button">
-            <StackPanel>
-              <mi:MaterialIcon Kind="ContentSave" />
-              <TextBlock Text="{local:Localize SaveConfiguration}" />
-              <ProgressBar IsIndeterminate="True"
-                           Width="16"
-                           Height="16"
-                           IsVisible="{Binding IsSaving}" />
+              <!-- Log To -->
+              <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="{local:Localize LogTo}"
+                           Classes="field-label" />
+                <TextBox Grid.Column="1"
+                         Text="{Binding LogTo}"
+                         Watermark="{local:Localize EgConsolePathToLogfile}" />
+              </Grid>
             </StackPanel>
-          </Button>
-        </StackPanel>
+          </Border>
 
-      </StackPanel>
-    </Panel>
-  </ScrollViewer>
+          <!-- Status Section -->
+          <Border Classes="card"
+                  IsVisible="{Binding IsValid}">
+            <StackPanel Spacing="{StaticResource SpacingS}">
+              <TextBlock Text="{local:Localize StatusSection}"
+                         Classes="section-title" />
+
+              <TextBlock Text="{Binding ValidationError}"
+                         Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}"
+                         IsVisible="{Binding HasValidationError}" />
+
+              <TextBlock Text="{Binding ValidationWarning}"
+                         Foreground="Orange"
+                         IsVisible="{Binding HasValidationWarning}" />
+
+              <TextBlock Text="{local:Localize ConfigurationIsValid}"
+                         Foreground="{DynamicResource SystemAccentColor1Brush}"
+                         IsVisible="{Binding IsValid}" />
+            </StackPanel>
+          </Border>
+
+          <!-- Action Buttons -->
+          <StackPanel Orientation="Horizontal"
+                      HorizontalAlignment="Right"
+                      Spacing="{StaticResource SpacingM}"
+                      Margin="{StaticResource ThicknessTopS}">
+            <Button Content="{local:Localize ResetToDefaults}"
+                    Command="{Binding ResetCommand}"
+                    IsEnabled="{Binding !IsSaving}"
+                    Classes="action-button" />
+
+            <Button Command="{Binding SaveCommand}"
+                    IsEnabled="{Binding !IsSaving}"
+                    Classes="action-button primary icon-text-button">
+              <StackPanel>
+                <mi:MaterialIcon Kind="ContentSave" />
+                <TextBlock Text="{local:Localize SaveConfiguration}" />
+                <ProgressBar IsIndeterminate="True"
+                             Width="16"
+                             Height="16"
+                             IsVisible="{Binding IsSaving}" />
+              </StackPanel>
+            </Button>
+          </StackPanel>
+
+        </StackPanel>
+      </Border>
+    </ScrollViewer>
+  </Grid>
 </UserControl>
