@@ -18,17 +18,19 @@
   <Window.Styles>
     <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
 
-    <!-- Link button style - no color change on hover -->
+    <!-- Link button style - no color change on hover, underline on hover -->
     <Style Selector="Button.link-button">
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="Cursor" Value="Hand" />
-      <Setter Property="Padding" Value="0" />
+      <Setter Property="Padding" Value="10,0" />
     </Style>
     <Style Selector="Button.link-button:pointerover /template/ ContentPresenter">
       <Setter Property="Background" Value="Transparent" />
-      <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}" />
+    </Style>
+    <Style Selector="Button.link-button:pointerover TextBlock.underline-on-hover">
+      <Setter Property="TextDecorations" Value="Underline" />
     </Style>
   </Window.Styles>
 
@@ -79,6 +81,8 @@
                        Text="Apache License 2.0"
                        FontSize="13"
                        VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Padding="10,0"
                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                        TextWrapping="Wrap" />
           </Grid>
@@ -96,13 +100,15 @@
                          FontSize="13" />
             </StackPanel>
             <Button Grid.Row="1"
-                    Content="{Binding ProjectUrlShort}"
                     Command="{Binding OpenProjectUrlCommand}"
                     Classes="link-button"
-                    FontSize="13"
                     VerticalAlignment="Center"
-                    HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Center" />
+                    HorizontalAlignment="Center">
+              <TextBlock Text="{Binding ProjectUrlShort}"
+                         FontSize="13"
+                         Foreground="{DynamicResource SystemAccentColor}"
+                         Classes="underline-on-hover" />
+            </Button>
           </Grid>
         </Border>
       </Grid>

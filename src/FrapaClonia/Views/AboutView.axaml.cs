@@ -5,6 +5,7 @@ namespace FrapaClonia.Views;
 
 public partial class AboutView : Window
 {
+    // ReSharper disable once MemberCanBePrivate.Global
     public AboutView()
     {
         InitializeComponent();
