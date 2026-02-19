@@ -2,11 +2,11 @@ using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using FrapaClonia.Core.Interfaces;
-using FrapaClonia.Infrastructure.Resources;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using Microsoft.VisualBasic;
 
 namespace FrapaClonia.UI.MarkupExtensions;
 

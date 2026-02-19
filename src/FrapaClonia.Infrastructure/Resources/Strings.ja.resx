@@ -90,9 +90,6 @@
   <data name="BindSettings" xml:space="preserve">
     <value>バインド設定</value>
   </data>
-  <data name="BothMethodsUse" xml:space="preserve">
-    <value>• 両方の方法でサーバー設定から同じ設定ファイルを使用します</value>
-  </data>
   <data name="Browse" xml:space="preserve">
     <value>Browse</value>
   </data>
@@ -237,9 +234,6 @@
   <data name="Deployment" xml:space="preserve">
     <value>Frpc デプロイ</value>
   </data>
-  <data name="DeploymentInformation" xml:space="preserve">
-    <value>デプロイメント情報</value>
-  </data>
   <data name="DeploymentMode" xml:space="preserve">
     <value>デプロイメントモード</value>
   </data>
@@ -257,9 +251,6 @@
   </data>
   <data name="DockerDeployment" xml:space="preserve">
     <value>Dockerデプロイメント</value>
-  </data>
-  <data name="DockerDeploymentRequiresDocker" xml:space="preserve">
-    <value>• DockerデプロイメントにはDockerとDocker Composeのインストールが必要です</value>
   </data>
   <data name="DockerImage" xml:space="preserve">
     <value>Dockerイメージ</value>
@@ -557,9 +548,6 @@
   </data>
   <data name="NativeDeployment" xml:space="preserve">
     <value>ネイティブデプロイメント</value>
-  </data>
-  <data name="NativeDeploymentDownloadsAndExtracts" xml:space="preserve">
-    <value>• ネイティブデプロイメントは、プラットフォーム用のfrpcバイナリをダウンロードして展開します</value>
   </data>
   <data name="NoLogsAvailable" xml:space="preserve">
     <value>利用可能なログがありません</value>

@@ -161,7 +161,7 @@
                     <StackPanel Grid.Row="0" Grid.Column="1"
                                 Orientation="Horizontal"
                                 Spacing="{StaticResource SpacingM}">
-                      <TextBlock Text="{Binding ServiceStatus.State}"
+                      <TextBlock Text="{Binding ServiceStatus.State, FallbackValue=Unknown}"
                                  VerticalAlignment="Center"
                                  FontFamily="{DynamicResource MonoFontFamily}" />
                       <Button Command="{Binding RefreshServiceStatusCommand}"
@@ -232,8 +232,9 @@
               <StackPanel Grid.Row="0" Grid.Column="1"
                           Orientation="Horizontal"
                           Spacing="{StaticResource SpacingM}">
-                <TextBlock Text="{Binding IsDockerAvailable, Converter={StaticResource BoolToAvailableStringConverter}}"
-                           VerticalAlignment="Center" />
+                <TextBlock
+                  Text="{Binding IsDockerAvailable, Converter={StaticResource BoolToAvailableStringConverter}}"
+                  VerticalAlignment="Center" />
                 <Button Command="{Binding CheckDockerCommand}"
                         Content="{local:Localize CheckDocker}"
                         IsEnabled="{Binding !IsDockerChecking}"
@@ -289,26 +290,8 @@
             </StackPanel>
           </StackPanel>
         </Border>
-
-        <!-- Information -->
-        <Border Classes="settings-card">
-          <StackPanel Spacing="{StaticResource SpacingS}">
-            <StackPanel Orientation="Horizontal" Spacing="4">
-              <TextBlock Text="{local:Localize DeploymentInformation}"
-                         Classes="section-title" />
-              <Button Classes="icon-button">
-                <ToolTip.Tip>
-                  <StackPanel>
-                    <TextBlock Text="{local:Localize DockerDeploymentRequiresDocker}" />
-                    <TextBlock Text="{local:Localize NativeDeploymentDownloadsAndExtracts}" />
-                    <TextBlock Text="{local:Localize BothMethodsUse}" />
-                  </StackPanel>
-                </ToolTip.Tip>
-              </Button>
-            </StackPanel>
-          </StackPanel>
-        </Border>
       </StackPanel>
     </Panel>
   </ScrollViewer>
 </UserControl>
+

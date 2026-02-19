@@ -90,9 +90,6 @@
   <data name="BindSettings" xml:space="preserve">
     <value>Bind Settings</value>
   </data>
-  <data name="BothMethodsUse" xml:space="preserve">
-    <value>Both methods use the same configuration file from the Server settings</value>
-  </data>
   <data name="Browse" xml:space="preserve">
     <value>Browse</value>
   </data>
@@ -240,9 +237,6 @@
   <data name="Deployment" xml:space="preserve">
     <value>Frpc Deployment</value>
   </data>
-  <data name="DeploymentInformation" xml:space="preserve">
-    <value>Deployment Information</value>
-  </data>
   <data name="DeploymentMode" xml:space="preserve">
     <value>Deployment Mode</value>
   </data>
@@ -260,9 +254,6 @@
   </data>
   <data name="DockerDeployment" xml:space="preserve">
     <value>Docker Deployment</value>
-  </data>
-  <data name="DockerDeploymentRequiresDocker" xml:space="preserve">
-    <value>Docker deployment requires Docker and Docker Compose to be installed</value>
   </data>
   <data name="DockerImage" xml:space="preserve">
     <value>Docker Image</value>
@@ -560,9 +551,6 @@
   </data>
   <data name="NativeDeployment" xml:space="preserve">
     <value>Native Deployment</value>
-  </data>
-  <data name="NativeDeploymentDownloadsAndExtracts" xml:space="preserve">
-    <value>Native deployment downloads and extracts the frpc binary for your platform</value>
   </data>
   <data name="NoLogsAvailable" xml:space="preserve">
     <value>No logs available</value>

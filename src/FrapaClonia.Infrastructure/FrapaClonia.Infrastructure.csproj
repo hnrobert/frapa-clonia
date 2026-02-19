@@ -5,20 +5,19 @@
     <ProjectReference Include="..\FrapaClonia.Domain\FrapaClonia.Domain.csproj" />
   </ItemGroup>
 
+  <!-- Generate strongly-typed resource class from Strings.resx -->
   <ItemGroup>
     <EmbeddedResource Update="Resources\Strings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <StronglyTypedFileName>Resources\Strings.Designer.cs</StronglyTypedFileName>
+      <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+      <StronglyTypedClassName>Strings</StronglyTypedClassName>
+      <StronglyTypedNamespace>FrapaClonia.Infrastructure.Resources</StronglyTypedNamespace>
     </EmbeddedResource>
   </ItemGroup>
-  
+
+  <!-- Allow UI project to access internal Strings class -->
   <ItemGroup>
-    <EmbeddedResource Update="Strings.zh-CN.resx">
-      <DependentUpon>Strings.resx</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Strings.zh-TW.resx">
-      <DependentUpon>Strings.resx</DependentUpon>
-    </EmbeddedResource>
+    <InternalsVisibleTo Include="FrapaClonia.UI" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,11 +35,6 @@
     <IsAotCompatible>true</IsAotCompatible>
     <EnableAotAnalyzer>true</EnableAotAnalyzer>
   </PropertyGroup>
-
-  <!-- Allow UI project to access internal Strings class -->
-  <ItemGroup>
-    <InternalsVisibleTo Include="FrapaClonia.UI" />
-  </ItemGroup>
 
   <!-- Suppress common ILLink/Trim/AOT warnings only when trimming/AOT is enabled -->
   <PropertyGroup Condition="'$(PublishTrimmed)' == 'true' Or '$(PublishAot)' == 'true'">

@@ -90,9 +90,6 @@
   <data name="BindSettings" xml:space="preserve">
     <value>Настройки привязки</value>
   </data>
-  <data name="BothMethodsUse" xml:space="preserve">
-    <value>• Оба метода используют один и тот же файл конфигурации из настроек сервера</value>
-  </data>
   <data name="Browse" xml:space="preserve">
     <value>Browse</value>
   </data>
@@ -243,9 +240,6 @@
   <data name="Deployment" xml:space="preserve">
     <value>Развертывание Frpc</value>
   </data>
-  <data name="DeploymentInformation" xml:space="preserve">
-    <value>Информация о развертывании</value>
-  </data>
   <data name="DeploymentMode" xml:space="preserve">
     <value>Режим развертывания</value>
   </data>
@@ -263,9 +257,6 @@
   </data>
   <data name="DockerDeployment" xml:space="preserve">
     <value>Развертывание Docker</value>
-  </data>
-  <data name="DockerDeploymentRequiresDocker" xml:space="preserve">
-    <value>• Развертывание Docker требует установки Docker и Docker Compose</value>
   </data>
   <data name="DockerImage" xml:space="preserve">
     <value>Образ Docker</value>
@@ -581,9 +572,6 @@
   </data>
   <data name="NativeDeployment" xml:space="preserve">
     <value>Нативное развертывание</value>
-  </data>
-  <data name="NativeDeploymentDownloadsAndExtracts" xml:space="preserve">
-    <value>• Нативное развертывание загружает и распаковывает бинарный файл frpc для вашей платформы</value>
   </data>
   <data name="NoLogsAvailable" xml:space="preserve">
     <value>Журналы недоступны</value>

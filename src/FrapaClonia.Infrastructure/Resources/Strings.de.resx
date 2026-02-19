@@ -90,9 +90,6 @@
   <data name="BindSettings" xml:space="preserve">
     <value>Bind-Einstellungen</value>
   </data>
-  <data name="BothMethodsUse" xml:space="preserve">
-    <value>• Beide Methoden verwenden dieselbe Konfigurationsdatei aus den Servereinstellungen</value>
-  </data>
   <data name="Browse" xml:space="preserve">
     <value>Browse</value>
   </data>
@@ -243,9 +240,6 @@
   <data name="Deployment" xml:space="preserve">
     <value>Frpc-Bereitstellung</value>
   </data>
-  <data name="DeploymentInformation" xml:space="preserve">
-    <value>Bereitstellungsinformationen</value>
-  </data>
   <data name="DeploymentMode" xml:space="preserve">
     <value>Bereitstellungsmodus</value>
   </data>
@@ -263,9 +257,6 @@
   </data>
   <data name="DockerDeployment" xml:space="preserve">
     <value>Docker-Bereitstellung</value>
-  </data>
-  <data name="DockerDeploymentRequiresDocker" xml:space="preserve">
-    <value>• Docker-Bereitstellung erfordert installiertes Docker und Docker Compose</value>
   </data>
   <data name="DockerImage" xml:space="preserve">
     <value>Docker-Image</value>
@@ -581,9 +572,6 @@
   </data>
   <data name="NativeDeployment" xml:space="preserve">
     <value>Native Bereitstellung</value>
-  </data>
-  <data name="NativeDeploymentDownloadsAndExtracts" xml:space="preserve">
-    <value>• Native Bereitstellung ladt das frpc-Binarprogramm fur Ihre Plattform herunter und extrahiert es</value>
   </data>
   <data name="NoLogsAvailable" xml:space="preserve">
     <value>Keine Protokolle verfugbar</value>

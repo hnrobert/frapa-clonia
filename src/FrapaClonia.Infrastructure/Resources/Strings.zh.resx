@@ -46,7 +46,7 @@
     <value>应用程序模式</value>
   </data>
   <data name="Architecture" xml:space="preserve">
-    <value>Architecture</value>
+    <value>架构</value>
   </data>
   <data name="Audience" xml:space="preserve">
     <value>受众</value>
@@ -90,9 +90,6 @@
   <data name="BindSettings" xml:space="preserve">
     <value>绑定设置</value>
   </data>
-  <data name="BothMethodsUse" xml:space="preserve">
-    <value>• 两种方法都使用来自服务器设置的相同配置文件</value>
-  </data>
   <data name="Browse" xml:space="preserve">
     <value>Browse</value>
   </data>
@@ -121,10 +118,10 @@
     <value>Verify frpc path and get version</value>
   </data>
   <data name="CheckVersions" xml:space="preserve">
-    <value>Check Versions</value>
+    <value>检查版本</value>
   </data>
   <data name="CheckingFrpc" xml:space="preserve">
-    <value>Checking frpc...</value>
+    <value>检查 Frpc 中...</value>
   </data>
   <data name="ChooseHowYouWantToDeployAndRunFrpc" xml:space="preserve">
     <value>选择您想要如何部署和运行 frpc</value>
@@ -181,7 +178,7 @@
     <value>配置和管理您的 frpc 代理配置</value>
   </data>
   <data name="ConfigureFrpcToolTip" xml:space="preserve">
-    <value>Open frpc configuration dialog</value>
+    <value>打开 Frpc 配置界面</value>
   </data>
   <data name="ConfigureYourProxySettingsBelow" xml:space="preserve">
     <value>在下方配置您的代理设置。必填字段标有星号。</value>
@@ -240,9 +237,6 @@
   <data name="Deployment" xml:space="preserve">
     <value>Frpc 部署</value>
   </data>
-  <data name="DeploymentInformation" xml:space="preserve">
-    <value>部署信息</value>
-  </data>
   <data name="DeploymentMode" xml:space="preserve">
     <value>部署模式</value>
   </data>
@@ -260,9 +254,6 @@
   </data>
   <data name="DockerDeployment" xml:space="preserve">
     <value>Docker 部署</value>
-  </data>
-  <data name="DockerDeploymentRequiresDocker" xml:space="preserve">
-    <value>• Docker 部署需要安装 Docker 和 Docker Compose</value>
   </data>
   <data name="DockerImage" xml:space="preserve">
     <value>Docker 镜像</value>
@@ -560,9 +551,6 @@
   </data>
   <data name="NativeDeployment" xml:space="preserve">
     <value>本地部署</value>
-  </data>
-  <data name="NativeDeploymentDownloadsAndExtracts" xml:space="preserve">
-    <value>• 本地部署会下载并解压适用于您平台的 frpc 二进制文件</value>
   </data>
   <data name="NoLogsAvailable" xml:space="preserve">
     <value>没有可用日志</value>

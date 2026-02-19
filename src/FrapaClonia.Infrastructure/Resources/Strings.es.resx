@@ -90,9 +90,6 @@
   <data name="BindSettings" xml:space="preserve">
     <value>Configuracion de Enlace</value>
   </data>
-  <data name="BothMethodsUse" xml:space="preserve">
-    <value>• Ambos metodos usan el mismo archivo de configuracion de la configuracion del servidor</value>
-  </data>
   <data name="Browse" xml:space="preserve">
     <value>Browse</value>
   </data>
@@ -243,9 +240,6 @@
   <data name="Deployment" xml:space="preserve">
     <value>Despliegue de Frpc</value>
   </data>
-  <data name="DeploymentInformation" xml:space="preserve">
-    <value>Informacion de Despliegue</value>
-  </data>
   <data name="DeploymentMode" xml:space="preserve">
     <value>Modo de Despliegue</value>
   </data>
@@ -263,9 +257,6 @@
   </data>
   <data name="DockerDeployment" xml:space="preserve">
     <value>Despliegue Docker</value>
-  </data>
-  <data name="DockerDeploymentRequiresDocker" xml:space="preserve">
-    <value>• El despliegue Docker requiere que Docker y Docker Compose esten instalados</value>
   </data>
   <data name="DockerImage" xml:space="preserve">
     <value>Imagen Docker</value>
@@ -581,9 +572,6 @@
   </data>
   <data name="NativeDeployment" xml:space="preserve">
     <value>Despliegue Nativo</value>
-  </data>
-  <data name="NativeDeploymentDownloadsAndExtracts" xml:space="preserve">
-    <value>• El despliegue nativo descarga y extrae el binario frpc para su plataforma</value>
   </data>
   <data name="NoLogsAvailable" xml:space="preserve">
     <value>No hay registros disponibles</value>

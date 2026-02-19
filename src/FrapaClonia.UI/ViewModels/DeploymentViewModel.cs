@@ -122,7 +122,7 @@ public partial class DeploymentViewModel : ObservableObject
         UninstallServiceCommand = CreateAsyncCommand(UninstallServiceAsync, "Error uninstalling service");
         StartServiceCommand = CreateAsyncCommand(StartServiceAsync, "Error starting service");
         StopServiceCommand = CreateAsyncCommand(StopServiceAsync, "Error stopping service");
-        CheckDockerCommand = CreateAsyncCommand(CheckDockerAsync, "Error checking Docker availability");
+        CheckDockerCommand = CreateAsyncCommand(() => CheckDockerAsync(showToast: true), "Error checking Docker availability");
         GenerateDockerComposeCommand =
             CreateAsyncCommand(GenerateDockerComposeAsync, "Error generating docker compose");
         StartDockerCommand = CreateAsyncCommand(StartDockerAsync, "Error starting docker");
@@ -171,6 +171,12 @@ public partial class DeploymentViewModel : ObservableObject
 
         // Refresh service status
         await RefreshServiceStatusAsync();
+
+        // Auto-check Docker availability if Docker mode is selected
+        if (IsDockerMode)
+        {
+            await CheckDockerAsync(showToast: false);
+        }
     }
 
     private string L(string key, params object[] args) =>
@@ -181,6 +187,12 @@ public partial class DeploymentViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(IsNativeMode));
         OnPropertyChanged(nameof(IsDockerMode));
+
+        // Auto-check Docker availability when switching to Docker mode
+        if (value == "docker" && !IsDockerChecking)
+        {
+            _ = CheckDockerAsync(showToast: false);
+        }
     }
 
     #region Native Methods
@@ -523,7 +535,7 @@ public partial class DeploymentViewModel : ObservableObject
 
     #region Docker Methods
 
-    private async Task CheckDockerAsync()
+    private async Task CheckDockerAsync(bool showToast = true)
     {
         try
         {
@@ -532,13 +544,16 @@ public partial class DeploymentViewModel : ObservableObject
             if (_dockerDeploymentService != null)
                 IsDockerAvailable = await _dockerDeploymentService.IsDockerAvailableAsync();
 
-            if (IsDockerAvailable)
+            if (showToast)
             {
-                _toastService?.Success(L("Toast_DockerAvailable"), L("Toast_DockerReady"));
-            }
-            else
-            {
-                _toastService?.Warning(L("Toast_DockerNotAvailable"), L("Toast_DockerNotInstalled"));
+                if (IsDockerAvailable)
+                {
+                    _toastService?.Success(L("Toast_DockerAvailable"), L("Toast_DockerReady"));
+                }
+                else
+                {
+                    _toastService?.Warning(L("Toast_DockerNotAvailable"), L("Toast_DockerNotInstalled"));
+                }
             }
 
             _logger?.LogInformation("Docker availability check: {IsAvailable}", IsDockerAvailable);
@@ -547,7 +562,10 @@ public partial class DeploymentViewModel : ObservableObject
         {
             _logger?.LogError(ex, "Error checking Docker availability");
             IsDockerAvailable = false;
-            _toastService?.Error(L("Toast_CheckFailed"), L("Toast_CouldNotCheckDocker"));
+            if (showToast)
+            {
+                _toastService?.Error(L("Toast_CheckFailed"), L("Toast_CouldNotCheckDocker"));
+            }
         }
         finally
         {
