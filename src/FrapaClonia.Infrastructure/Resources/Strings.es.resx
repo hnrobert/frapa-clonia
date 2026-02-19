@@ -15,6 +15,9 @@
   <data name="About" xml:space="preserve">
     <value>Acerca de</value>
   </data>
+  <data name="AboutDescription" xml:space="preserve">
+    <value>Un cliente de escritorio multiplataforma para frpc (cliente de proxy inverso rápido) construido con Avalonia UI y .NET. Proporciona una interfaz gráfica para gestionar configuraciones de cliente frp, proxies, visitantes e implementaciones.</value>
+  </data>
   <data name="Active" xml:space="preserve">
     <value>Activo</value>
   </data>
@@ -137,6 +140,9 @@
   </data>
   <data name="ClearAllLogs" xml:space="preserve">
     <value>Limpiar todos los registros</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Cerrar</value>
   </data>
   <data name="ClientID" xml:space="preserve">
     <value>ID de Cliente</value>
@@ -488,6 +494,9 @@
   </data>
   <data name="LeaveEmptyToAllowAllUsers" xml:space="preserve">
     <value>Deje vacio para permitir todos los usuarios</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>Licencia</value>
   </data>
   <data name="Light" xml:space="preserve">
     <value>Claro</value>

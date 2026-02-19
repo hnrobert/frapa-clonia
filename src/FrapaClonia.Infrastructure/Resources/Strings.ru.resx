@@ -15,6 +15,9 @@
   <data name="About" xml:space="preserve">
     <value>О программе</value>
   </data>
+  <data name="AboutDescription" xml:space="preserve">
+    <value>Кроссплатформенный настольный клиент для frpc (быстрый клиент обратного прокси), созданный с использованием Avalonia UI и .NET. Предоставляет графический интерфейс для управления конфигурациями клиента frp, прокси, посетителей и развертываний.</value>
+  </data>
   <data name="Active" xml:space="preserve">
     <value>Активный</value>
   </data>
@@ -137,6 +140,9 @@
   </data>
   <data name="ClearAllLogs" xml:space="preserve">
     <value>Очистить все журналы</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Закрыть</value>
   </data>
   <data name="ClientID" xml:space="preserve">
     <value>ID клиента</value>
@@ -488,6 +494,9 @@
   </data>
   <data name="LeaveEmptyToAllowAllUsers" xml:space="preserve">
     <value>Оставьте пустым, чтобы разрешить всех пользователей</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>Лицензия</value>
   </data>
   <data name="Light" xml:space="preserve">
     <value>Светлая</value>

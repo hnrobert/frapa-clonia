@@ -1,8 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
+using FrapaClonia.Core.Utils;
 using System.Diagnostics;
-using System.Reflection;
 
 namespace FrapaClonia.UI.ViewModels;
 
@@ -17,11 +17,19 @@ public partial class AboutViewModel : ObservableObject
     [ObservableProperty] private string _version = string.Empty;
     [ObservableProperty] private string _copyright = string.Empty;
     [ObservableProperty] private string _description = string.Empty;
-    [ObservableProperty] private string _projectUrl = "https://github.com/anthropics/claude-code";
+    [ObservableProperty] private string _projectUrl = "https://github.com/hnrobert/frapa-clonia";
+
+    public string ProjectUrlShort
+    {
+        get
+        {
+            const string prefix = "github.com/";
+            var index = ProjectUrl.IndexOf(prefix, StringComparison.Ordinal);
+            return index >= 0 ? ProjectUrl[(index + prefix.Length)..] : ProjectUrl;
+        }
+    }
 
     public event EventHandler? CloseRequested;
-
-    public AboutViewModel() : this(null) { }
 
     public AboutViewModel(ILocalizationService? localizationService)
     {
@@ -30,14 +38,9 @@ public partial class AboutViewModel : ObservableObject
         // Set title
         Title = L("About") + " FrapaClonia";
 
-        // Get version from assembly
-        var assembly = Assembly.GetExecutingAssembly();
-        var versionAttr = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-        Version = versionAttr?.InformationalVersion ?? "1.0.0";
-
-        // Set copyright
-        var copyrightAttr = assembly.GetCustomAttribute<AssemblyCopyrightAttribute>();
-        Copyright = copyrightAttr?.Copyright ?? "© 2024 FrapaClonia";
+        // Get version and copyright from utility
+        Version = AppVersion.Version;
+        Copyright = AppVersion.Copyright;
 
         // Set description
         Description = L("AboutDescription");

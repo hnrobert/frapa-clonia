@@ -15,6 +15,9 @@
   <data name="About" xml:space="preserve">
     <value>정보</value>
   </data>
+  <data name="AboutDescription" xml:space="preserve">
+    <value>Avalonia UI와 .NET으로 구축된 frpc(빠른 역방향 프록시 클라이언트)를 위한 크로스 플랫폼 데스크톱 클라이언트입니다. frp 클라이언트 구성, 프록시, 방문자 및 배포를 관리하기 위한 GUI를 제공합니다.</value>
+  </data>
   <data name="Active" xml:space="preserve">
     <value>활성</value>
   </data>
@@ -137,6 +140,9 @@
   </data>
   <data name="ClearAllLogs" xml:space="preserve">
     <value>모든 로그 지우기</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>닫기</value>
   </data>
   <data name="ClientID" xml:space="preserve">
     <value>클라이언트 ID</value>
@@ -488,6 +494,9 @@
   </data>
   <data name="LeaveEmptyToAllowAllUsers" xml:space="preserve">
     <value>모든 사용자를 허용하려면 비워두세요</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>라이선스</value>
   </data>
   <data name="Light" xml:space="preserve">
     <value>밝게</value>

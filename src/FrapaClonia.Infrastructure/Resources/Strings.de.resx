@@ -15,6 +15,9 @@
   <data name="About" xml:space="preserve">
     <value>Uber</value>
   </data>
+  <data name="AboutDescription" xml:space="preserve">
+    <value>Ein plattformübergreifender Desktop-Client für frpc (schneller Reverse-Proxy-Client), erstellt mit Avalonia UI und .NET. Bietet eine GUI zur Verwaltung von frp-Client-Konfigurationen, Proxys, Besuchern und Bereitstellungen.</value>
+  </data>
   <data name="Active" xml:space="preserve">
     <value>Aktiv</value>
   </data>
@@ -137,6 +140,9 @@
   </data>
   <data name="ClearAllLogs" xml:space="preserve">
     <value>Alle Protokolle loschen</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Schließen</value>
   </data>
   <data name="ClientID" xml:space="preserve">
     <value>Client-ID</value>
@@ -488,6 +494,9 @@
   </data>
   <data name="LeaveEmptyToAllowAllUsers" xml:space="preserve">
     <value>Leer lassen, um alle Benutzer zuzulassen</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>Lizenz</value>
   </data>
   <data name="Light" xml:space="preserve">
     <value>Hell</value>

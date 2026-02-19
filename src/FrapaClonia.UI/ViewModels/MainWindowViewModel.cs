@@ -1,13 +1,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
+using FrapaClonia.Core.Utils;
 using FrapaClonia.UI.Models;
 using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
 using Avalonia.Controls;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Reflection;
 using FrapaClonia.Domain.Models;
 
 namespace FrapaClonia.UI.ViewModels;
@@ -100,28 +100,8 @@ public partial class MainWindowViewModel : ObservableObject
         };
     }
 
-    public static string Version
-    {
-        get
-        {
-            var informationalVersion = Assembly.GetEntryAssembly()
-                ?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
-
-            if (string.IsNullOrEmpty(informationalVersion))
-                return Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "Unknown";
-
-#if DEBUG
-            // Debug: Show full version with build metadata
-            return informationalVersion;
-#else
-            // Release: Strip build metadata (everything after '+')
-            var plusIndex = informationalVersion.IndexOf('+');
-            return plusIndex > 0 ? informationalVersion[..plusIndex] : informationalVersion;
-#endif
-        }
-    }
-
-    public static string Copyright => "© 2025 Robert He";
+    public static string Version => AppVersion.Version;
+    public static string Copyright => AppVersion.Copyright;
 
     public IRelayCommand NavigateToDashboardCommand { get; }
     public IRelayCommand NavigateToServerConfigCommand { get; }

@@ -15,6 +15,9 @@
   <data name="About" xml:space="preserve">
     <value>について</value>
   </data>
+  <data name="AboutDescription" xml:space="preserve">
+    <value>Avalonia UI と .NET で構築された frpc（高速リバースプロキシクライアント）用のクロスプラットフォームデスクトップクライアント。frp クライアント設定、プロキシ、ビジター、デプロイメントを管理するための GUI を提供します。</value>
+  </data>
   <data name="Active" xml:space="preserve">
     <value>アクティブ</value>
   </data>
@@ -134,6 +137,9 @@
   </data>
   <data name="ClearAllLogs" xml:space="preserve">
     <value>すべてのログをクリア</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>閉じる</value>
   </data>
   <data name="ClientSecret" xml:space="preserve">
     <value>クライアントシークレット</value>
@@ -464,6 +470,9 @@
   </data>
   <data name="LeaveEmptyToAllowAllUsers" xml:space="preserve">
     <value>すべてのユーザーを許可する場合は空にします</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>ライセンス</value>
   </data>
   <data name="Light" xml:space="preserve">
     <value>ライト</value>

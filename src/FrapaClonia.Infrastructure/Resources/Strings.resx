@@ -15,6 +15,9 @@
   <data name="About" xml:space="preserve">
     <value>About</value>
   </data>
+  <data name="AboutDescription" xml:space="preserve">
+    <value>A cross-platform desktop client for frpc (fast reverse proxy client) built with Avalonia UI and .NET. It provides a GUI for managing frp client configurations, proxies, visitors, and deployments.</value>
+  </data>
   <data name="Active" xml:space="preserve">
     <value>Active</value>
   </data>
@@ -134,6 +137,9 @@
   </data>
   <data name="ClearAllLogs" xml:space="preserve">
     <value>Clear all logs</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
   </data>
   <data name="ClientSecret" xml:space="preserve">
     <value>Client Secret</value>
@@ -467,6 +473,9 @@
   </data>
   <data name="LeaveEmptyToAllowAllUsers" xml:space="preserve">
     <value>Leave empty to allow all users</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>License</value>
   </data>
   <data name="Light" xml:space="preserve">
     <value>Light</value>
