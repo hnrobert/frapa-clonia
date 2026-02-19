@@ -161,7 +161,7 @@
                     <StackPanel Grid.Row="0" Grid.Column="1"
                                 Orientation="Horizontal"
                                 Spacing="{StaticResource SpacingM}">
-                      <TextBlock Text="{Binding ServiceStatus.State, FallbackValue=Unknown}"
+                      <TextBlock Text="{Binding LocalizedServiceState, FallbackValue=Unknown}"
                                  VerticalAlignment="Center"
                                  FontFamily="{DynamicResource MonoFontFamily}" />
                       <Button Command="{Binding RefreshServiceStatusCommand}"
@@ -209,6 +209,14 @@
                       <StackPanel Orientation="Horizontal" Spacing="4">
                         <mi:MaterialIcon Kind="Stop" />
                         <TextBlock Text="{local:Localize Stop}" />
+                      </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ViewLogsCommand}"
+                            IsVisible="{Binding IsServiceInstalled}"
+                            Classes="action-button icon-text-button">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="TextBox" />
+                        <TextBlock Text="{local:Localize ViewLogs}" />
                       </StackPanel>
                     </Button>
                   </StackPanel>

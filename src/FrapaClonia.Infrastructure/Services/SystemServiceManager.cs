@@ -157,7 +157,8 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
         try
         {
             var plistPath = GetPlistPath(config.ServiceName, config.Scope);
-            var plistContent = GenerateLaunchdPlist(config);
+            // Don't auto-start on install - set RunAtLoad to false during install
+            var plistContent = GenerateLaunchdPlist(config, runAtLoad: false);
             var plistDir = Path.GetDirectoryName(plistPath)!;
 
             if (config.Scope == ServiceScope.System)
@@ -172,8 +173,8 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
                 Directory.CreateDirectory(plistDir);
                 await File.WriteAllTextAsync(plistPath, plistContent, cancellationToken);
 
-                // Load the service
-                var result = await processManager.ExecuteAsync("launchctl", $"load \"{plistPath}\"",
+                // Load the service without starting it (use -w to disable RunAtLoad)
+                var result = await processManager.ExecuteAsync("launchctl", $"load -w \"{plistPath}\"",
                     cancellationToken: cancellationToken);
                 return result.ExitCode == 0;
             }
@@ -199,8 +200,9 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
                 var plistDir = Path.GetDirectoryName(plistPath);
 
                 // Combine all commands into a single command so user only authenticates once
+                // Use load -w to not auto-start on install
                 var combinedCommand =
-                    $"mkdir -p '{plistDir}' && cp '{tempPlistPath}' '{plistPath}' && chmod 644 '{plistPath}' && launchctl load '{plistPath}'";
+                    $"mkdir -p '{plistDir}' && cp '{tempPlistPath}' '{plistPath}' && chmod 644 '{plistPath}' && launchctl load -w '{plistPath}'";
 
                 var result = await ExecuteWithAdminPrivilegesAsync(combinedCommand, cancellationToken);
                 if (result) return true;
@@ -273,7 +275,25 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
     {
         var result = await processManager.ExecuteAsync("launchctl", $"list {GetServiceLabel(serviceName)}",
             cancellationToken: cancellationToken);
-        return result.ExitCode == 0;
+
+        if (result.ExitCode != 0)
+            return false;
+
+        // Parse the output to check if service is actually running (has a PID)
+        // Output format: {PID} {LastExitStatus} {Label}
+        // If PID is "-", the service is not running
+        var output = result.StandardOutput.Trim();
+        if (string.IsNullOrEmpty(output))
+            return false;
+
+        var parts = output.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length < 1)
+            return false;
+
+        // If first column is a number > 0, service is running
+        // If first column is "-", service is loaded but not running
+        var pidStr = parts[0];
+        return pidStr != "-" && int.TryParse(pidStr, out var pid) && pid > 0;
     }
 
     public async Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope,
@@ -365,8 +385,11 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
 
     private static string GetServiceLabel(string serviceName) => $"com.frapaclonia.{serviceName.Replace("-", "")}";
 
-    private static string GenerateLaunchdPlist(ServiceConfig config)
+    private static string GenerateLaunchdPlist(ServiceConfig config, bool? runAtLoad = null)
     {
+        // Use provided runAtLoad or fall back to config.AutoStart
+        var shouldRunAtLoad = runAtLoad ?? config.AutoStart;
+
         return $""""
                 <?xml version="1.0" encoding="UTF-8"?>
                 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -381,9 +404,9 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
                         <string>{config.ConfigPath}</string>
                     </array>
                     <key>RunAtLoad</key>
-                    <{config.AutoStart.ToString().ToLowerInvariant()}/>
+                    <{shouldRunAtLoad.ToString().ToLowerInvariant()}/>
                     <key>KeepAlive</key>
-                    <true/>
+                    <false/>
                     <key>StandardOutPath</key>
                     <string>/tmp/{config.ServiceName}.log</string>
                     <key>StandardErrorPath</key>

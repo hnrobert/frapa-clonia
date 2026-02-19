@@ -786,6 +786,21 @@
   <data name="ServiceStatus" xml:space="preserve">
     <value>Service Status</value>
   </data>
+  <data name="StatusNotInstalled" xml:space="preserve">
+    <value>Не установлен</value>
+  </data>
+  <data name="StatusNotRunning" xml:space="preserve">
+    <value>Не запущен</value>
+  </data>
+  <data name="StatusRunning" xml:space="preserve">
+    <value>Запущен</value>
+  </data>
+  <data name="StatusStopped" xml:space="preserve">
+    <value>Остановлен</value>
+  </data>
+  <data name="StatusUnknown" xml:space="preserve">
+    <value>Неизвестно</value>
+  </data>
   <data name="Settings" xml:space="preserve">
     <value>Настройки</value>
   </data>
@@ -1101,6 +1116,12 @@
   <data name="Toast_StopFailed" xml:space="preserve">
     <value>Stop Failed</value>
   </data>
+  <data name="Toast_ServiceStartFailedVerification" xml:space="preserve">
+    <value>Service started but verification failed. Check logs for details.</value>
+  </data>
+  <data name="Toast_Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
   <data name="Toast_VersionDeleted" xml:space="preserve">
     <value>Version {0} has been deleted</value>
   </data>
@@ -1163,6 +1184,9 @@
   </data>
   <data name="View" xml:space="preserve">
     <value>Просмотр</value>
+  </data>
+  <data name="ViewLogs" xml:space="preserve">
+    <value>Просмотр Журналов</value>
   </data>
   <data name="ViewRealtimeLogsFromFrpc" xml:space="preserve">
     <value>Просмотр журналов в реальном времени от процесса frpc</value>

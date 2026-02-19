@@ -25,6 +25,7 @@ public partial class DeploymentViewModel : ObservableObject
     private readonly ToastService? _toastService;
     private readonly ILocalizationService? _localizationService;
     private readonly IPresetService? _presetService;
+    private readonly NavigationService? _navigationService;
 
     #region Mode Selection
 
@@ -53,7 +54,21 @@ public partial class DeploymentViewModel : ObservableObject
     [ObservableProperty] private bool _isServiceInstalled;
     [ObservableProperty] private bool _isServiceRunning;
     [ObservableProperty] private bool _isServiceChecking;
-    [ObservableProperty] private ServiceStatus? _serviceStatus;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(LocalizedServiceState))]
+    private ServiceStatus? _serviceStatus;
+
+    /// <summary>
+    /// Gets the localized service state string
+    /// </summary>
+    public string LocalizedServiceState => ServiceStatus?.State switch
+    {
+        "running" => L("StatusRunning"),
+        "stopped" => L("StatusStopped"),
+        "not_running" => L("StatusNotRunning"),
+        "not_installed" => L("StatusNotInstalled"),
+        _ => L("StatusUnknown")
+    };
 
     private ServiceScope GetServiceScopeEnum() =>
         ServiceScopeValue == "system" ? ServiceScope.System : ServiceScope.User;
@@ -79,6 +94,7 @@ public partial class DeploymentViewModel : ObservableObject
     public IRelayCommand UninstallServiceCommand { get; }
     public IRelayCommand StartServiceCommand { get; }
     public IRelayCommand StopServiceCommand { get; }
+    public IRelayCommand ViewLogsCommand { get; }
     public IRelayCommand CheckDockerCommand { get; }
     public IRelayCommand GenerateDockerComposeCommand { get; }
     public IRelayCommand StartDockerCommand { get; }
@@ -90,7 +106,7 @@ public partial class DeploymentViewModel : ObservableObject
     // Default constructor for design-time support
     public DeploymentViewModel() : this(
         Microsoft.Extensions.Logging.Abstractions.NullLogger<DeploymentViewModel>.Instance,
-        null!, null!, null!, null!, null!, null!, null!, null!)
+        null!, null!, null!, null!, null!, null!, null!, null!, null!)
     {
     }
 
@@ -103,7 +119,8 @@ public partial class DeploymentViewModel : ObservableObject
         IServiceProvider serviceProvider,
         ToastService? toastService,
         ILocalizationService? localizationService,
-        IPresetService? presetService)
+        IPresetService? presetService,
+        NavigationService? navigationService)
     {
         _logger = logger;
         _frpcVersionService = frpcVersionService;
@@ -114,6 +131,7 @@ public partial class DeploymentViewModel : ObservableObject
         _toastService = toastService;
         _localizationService = localizationService;
         _presetService = presetService;
+        _navigationService = navigationService;
 
         CheckFrpcPathCommand = CreateAsyncCommand(CheckFrpcPathAsync, "Error checking frpc path");
         ConfigureFrpcCommand = CreateAsyncCommand(ConfigureFrpcAsync, "Error opening configuration");
@@ -122,6 +140,7 @@ public partial class DeploymentViewModel : ObservableObject
         UninstallServiceCommand = CreateAsyncCommand(UninstallServiceAsync, "Error uninstalling service");
         StartServiceCommand = CreateAsyncCommand(StartServiceAsync, "Error starting service");
         StopServiceCommand = CreateAsyncCommand(StopServiceAsync, "Error stopping service");
+        ViewLogsCommand = new RelayCommand(NavigateToLogs);
         CheckDockerCommand =
             CreateAsyncCommand(() => CheckDockerAsync(showToast: true), "Error checking Docker availability");
         GenerateDockerComposeCommand =
@@ -460,14 +479,15 @@ public partial class DeploymentViewModel : ObservableObject
 
             if (success)
             {
-                IsServiceInstalled = false;
-                IsServiceRunning = false;
                 _toastService?.Success(L("Toast_ServiceUninstalled"), L("Toast_FrpcServiceUninstalled"));
             }
             else
             {
                 _toastService?.Error(L("Toast_UninstallFailed"), L("Toast_CouldNotUninstallService"));
             }
+
+            // Always refresh status after operation
+            await RefreshServiceStatusAsync();
         }
         catch (Exception ex)
         {
@@ -488,12 +508,28 @@ public partial class DeploymentViewModel : ObservableObject
 
             if (success)
             {
-                IsServiceRunning = true;
-                _toastService?.Success(L("Toast_ServiceStarted"), L("Toast_FrpcServiceStarted"));
+                // Wait a moment for the service to actually start
+                await Task.Delay(500);
+
+                // Refresh status to verify service actually started
+                await RefreshServiceStatusAsync();
+
+                // Check if the service is actually running
+                if (IsServiceRunning)
+                {
+                    _toastService?.Success(L("Toast_ServiceStarted"), L("Toast_FrpcServiceStarted"));
+                }
+                else
+                {
+                    // Service start command succeeded but service is not running
+                    _toastService?.Warning(L("Toast_Warning"), L("Toast_ServiceStartFailedVerification"));
+                    _logger?.LogWarning("Service start command succeeded but service is not running");
+                }
             }
             else
             {
                 _toastService?.Error(L("Toast_StartFailed"), L("Toast_CouldNotStartService"));
+                await RefreshServiceStatusAsync();
             }
         }
         catch (Exception ex)
@@ -501,6 +537,11 @@ public partial class DeploymentViewModel : ObservableObject
             _logger?.LogError(ex, "Error starting service");
             _toastService?.Error(L("Toast_Error"), L("Toast_ServiceStartFailed", ex.Message));
         }
+    }
+
+    private void NavigateToLogs()
+    {
+        _navigationService?.NavigateTo("logs");
     }
 
     private async Task StopServiceAsync()
@@ -515,13 +556,15 @@ public partial class DeploymentViewModel : ObservableObject
 
             if (success)
             {
-                IsServiceRunning = false;
                 _toastService?.Success(L("Toast_ServiceStopped"), L("Toast_FrpcServiceStopped"));
             }
             else
             {
                 _toastService?.Error(L("Toast_StopFailed"), L("Toast_CouldNotStopService"));
             }
+
+            // Always refresh status after operation
+            await RefreshServiceStatusAsync();
         }
         catch (Exception ex)
         {
