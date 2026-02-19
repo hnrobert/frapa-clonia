@@ -428,7 +428,7 @@
                           </Panel>
                           <!-- Use Button -->
                           <Button Grid.Column="4"
-                                  Command="{Binding $parent[ItemsControl].((vm:FrpcConfigurationViewModel)DataContext).UseVersionCommand}"
+                                  Command="{Binding $parent[ItemsControl].((vm:FrpcConfigurationViewModel)DataContext).UseVersionCommand, FallbackValue={x:Null}}"
                                   CommandParameter="{Binding}"
                                   Classes="icon-button"
                                   Width="32"
@@ -442,7 +442,7 @@
                           </Button>
                           <!-- Delete/Undo Button -->
                           <Button Grid.Column="5"
-                                  Command="{Binding $parent[ItemsControl].((vm:FrpcConfigurationViewModel)DataContext).DeleteVersionCommand}"
+                                  Command="{Binding $parent[ItemsControl].((vm:FrpcConfigurationViewModel)DataContext).DeleteVersionCommand, FallbackValue={x:Null}}"
                                   CommandParameter="{Binding}"
                                   Classes="icon-button"
                                   Width="32"
