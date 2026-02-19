@@ -191,8 +191,7 @@ public class FrpcDownloader(ILogger<FrpcDownloader> logger) : IFrpcDownloader
         var lower = assetName.ToLowerInvariant();
         if (lower.Contains("windows") || lower.Contains("win")) return "windows";
         if (lower.Contains("darwin") || lower.Contains("mac") || lower.Contains("osx")) return "darwin";
-        if (lower.Contains("linux")) return "linux";
-        return "unknown";
+        return lower.Contains("linux") ? "linux" : "unknown";
     }
 
     private static List<string> GetArchitectureFromAssetName(string assetName)

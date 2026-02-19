@@ -1,8 +1,6 @@
-using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
-using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.UI.Models;
 using FrapaClonia.UI.Services;
 using FrapaClonia.UI.ViewModels;
@@ -18,15 +16,9 @@ public partial class ToastNotification : UserControl
     private ToastItem? _toastItem;
     private DispatcherTimer? _animationTimer;
 
-    /// <summary>
-    /// Command to close this toast
-    /// </summary>
-    public ICommand CloseCommand { get; }
-
     public ToastNotification()
     {
         InitializeComponent();
-        CloseCommand = new RelayCommand(CloseToast);
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
     }
@@ -84,11 +76,9 @@ public partial class ToastNotification : UserControl
 
     private void UnsubscribeFromToastItem()
     {
-        if (_toastItem != null)
-        {
-            _toastItem.CloseRequested -= OnCloseRequested;
-            _toastItem = null;
-        }
+        if (_toastItem == null) return;
+        _toastItem.CloseRequested -= OnCloseRequested;
+        _toastItem = null;
     }
 
     private void OnCloseRequested(object? sender, EventArgs e)
@@ -132,17 +122,12 @@ public partial class ToastNotification : UserControl
                 _layoutRoot.Opacity = startOpacity + (endOpacity - startOpacity) * easedProgress;
 
                 // Animate X position
-                if (_transform != null)
-                {
-                    _transform.X = startX + (endX - startX) * easedProgress;
-                }
+                _transform?.X = startX + (endX - startX) * easedProgress;
             }
 
-            if (progress >= 1.0)
-            {
-                StopAnimationTimer();
-                OnAnimationComplete();
-            }
+            if (!(progress >= 1.0)) return;
+            StopAnimationTimer();
+            OnAnimationComplete();
         };
 
         _animationTimer.Start();
@@ -189,6 +174,7 @@ public partial class ToastNotification : UserControl
             {
                 return vm.ToastService;
             }
+
             parent = parent.Parent;
         }
 

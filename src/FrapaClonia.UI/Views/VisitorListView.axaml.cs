@@ -34,14 +34,13 @@ public partial class VisitorListView : UserControl
 
     private void OnDuplicateClick(object sender, RoutedEventArgs e)
     {
-        if (sender is Button { DataContext: VisitorConfig visitor } &&
-            DataContext is VisitorListViewModel viewModel)
+        if (sender is not Button { DataContext: VisitorConfig visitor } ||
+            DataContext is not VisitorListViewModel viewModel) return;
+        
+        viewModel.SelectedVisitor = visitor;
+        if (viewModel.DuplicateVisitorCommand.CanExecute(null))
         {
-            viewModel.SelectedVisitor = visitor;
-            if (viewModel.DuplicateVisitorCommand.CanExecute(null))
-            {
-                viewModel.DuplicateVisitorCommand.Execute(null);
-            }
+            viewModel.DuplicateVisitorCommand.Execute(null);
         }
     }
 

@@ -108,7 +108,7 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
         }
     }
 
-    private FrpClientConfig ParseToml(string tomlContent)
+    private static FrpClientConfig ParseToml(string tomlContent)
     {
         var config = new FrpClientConfig
         {
@@ -139,13 +139,14 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
                     arrayName = trimmed[2..^1].Trim();
                     inArraySection = true;
 
-                    if (arrayName == "proxies")
+                    switch (arrayName)
                     {
-                        config.Proxies.Add(new ProxyConfig { Name = "", Type = "tcp", LocalIP = "127.0.0.1" });
-                    }
-                    else if (arrayName == "visitors")
-                    {
-                        config.Visitors.Add(new VisitorConfig { Name = "", Type = "stcp", BindAddr = "127.0.0.1" });
+                        case "proxies":
+                            config.Proxies.Add(new ProxyConfig { Name = "", Type = "tcp", LocalIP = "127.0.0.1" });
+                            break;
+                        case "visitors":
+                            config.Visitors.Add(new VisitorConfig { Name = "", Type = "stcp", BindAddr = "127.0.0.1" });
+                            break;
                     }
                 }
                 else
@@ -158,39 +159,37 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
 
             // Key-value pair
             var eqIndex = trimmed.IndexOf('=');
-            if (eqIndex > 0)
+            if (eqIndex <= 0) continue;
+            var key = trimmed[..eqIndex].Trim();
+            var value = trimmed[(eqIndex + 1)..].Trim();
+
+            // Remove quotes from string values
+            if (value.StartsWith('"') && value.EndsWith('"'))
+                value = value[1..^1];
+
+            // Parse array values
+            if (value.StartsWith('[') && value.EndsWith(']'))
             {
-                var key = trimmed[..eqIndex].Trim();
-                var value = trimmed[(eqIndex + 1)..].Trim();
+                value = value[1..^1];
+                var values = value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .Select(v => v.Trim('"')).ToList();
 
-                // Remove quotes from string values
-                if (value.StartsWith('"') && value.EndsWith('"'))
-                    value = value[1..^1];
-
-                // Parse array values
-                if (value.StartsWith('[') && value.EndsWith(']'))
-                {
-                    value = value[1..^1];
-                    var values = value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                        .Select(v => v.Trim('"')).ToList();
-
-                    SetConfigValue(config, currentSection, arrayName, inArraySection, key, values);
-                }
-                // Parse boolean
-                else if (bool.TryParse(value, out var boolVal))
-                {
-                    SetConfigValue(config, currentSection, arrayName, inArraySection, key, boolVal);
-                }
-                // Parse integer
-                else if (int.TryParse(value, out var intVal))
-                {
-                    SetConfigValue(config, currentSection, arrayName, inArraySection, key, intVal);
-                }
-                // String value
-                else
-                {
-                    SetConfigValue(config, currentSection, arrayName, inArraySection, key, value);
-                }
+                SetConfigValue(config, currentSection, arrayName, inArraySection, key, values);
+            }
+            // Parse boolean
+            else if (bool.TryParse(value, out var boolVal))
+            {
+                SetConfigValue(config, currentSection, arrayName, inArraySection, key, boolVal);
+            }
+            // Parse integer
+            else if (int.TryParse(value, out var intVal))
+            {
+                SetConfigValue(config, currentSection, arrayName, inArraySection, key, intVal);
+            }
+            // String value
+            else
+            {
+                SetConfigValue(config, currentSection, arrayName, inArraySection, key, value);
             }
         }
 
@@ -201,15 +200,20 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
     {
         if (inArray)
         {
-            if (arrayName == "proxies" && config.Proxies.Count > 0)
+            switch (arrayName)
             {
-                var proxy = config.Proxies[^1];
-                SetProxyValue(proxy, key, value);
-            }
-            else if (arrayName == "visitors" && config.Visitors.Count > 0)
-            {
-                var visitor = config.Visitors[^1];
-                SetVisitorValue(visitor, key, value);
+                case "proxies" when config.Proxies.Count > 0:
+                {
+                    var proxy = config.Proxies[^1];
+                    SetProxyValue(proxy, key, value);
+                    break;
+                }
+                case "visitors" when config.Visitors.Count > 0:
+                {
+                    var visitor = config.Visitors[^1];
+                    SetVisitorValue(visitor, key, value);
+                    break;
+                }
             }
         }
         else
@@ -235,7 +239,7 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
             case "localIP": proxy.LocalIP = value.ToString() ?? "127.0.0.1"; break;
             case "localPort": proxy.LocalPort = Convert.ToInt32(value); break;
             case "remotePort": proxy.RemotePort = Convert.ToInt32(value); break;
-            case "customDomains": proxy.CustomDomains = ((List<string>)value); break;
+            case "customDomains": proxy.CustomDomains = (List<string>)value; break;
             case "subdomain": proxy.Subdomain = value.ToString(); break;
             case "secretKey": proxy.SecretKey = value.ToString(); break;
         }
@@ -285,7 +289,7 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
             sb.AppendLine($"method = \"{EscapeString(config.Auth.Method)}\"");
             if (config.Auth.Token != null)
                 sb.AppendLine($"token = \"{EscapeString(config.Auth.Token)}\"");
-            if (config.Auth.AdditionalScopes != null && config.Auth.AdditionalScopes.Count > 0)
+            if (config.Auth.AdditionalScopes is { Count: > 0 })
                 sb.AppendLine($"additionalScopes = [{string.Join(", ", config.Auth.AdditionalScopes.Select(s => $"\"{s}\""))}]");
         }
 
@@ -310,7 +314,7 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
         if (proxy.RemotePort.HasValue)
             sb.AppendLine($"remotePort = {proxy.RemotePort.Value}");
 
-        if (proxy.CustomDomains != null && proxy.CustomDomains.Count > 0)
+        if (proxy.CustomDomains is { Count: > 0 })
             sb.AppendLine($"customDomains = [{string.Join(", ", proxy.CustomDomains.Select(d => $"\"{d}\""))}]");
 
         if (!string.IsNullOrEmpty(proxy.Subdomain))
@@ -337,7 +341,6 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
 
     private static string EscapeString(string? value)
     {
-        if (value == null) return "";
-        return value.Replace("\\", "\\\\").Replace("\"", "\\\"");
+        return value == null ? "" : value.Replace("\\", "\\\\").Replace("\"", "\\\"");
     }
 }

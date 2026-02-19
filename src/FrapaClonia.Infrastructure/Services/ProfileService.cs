@@ -132,12 +132,9 @@ public class ProfileService(ILogger<ProfileService> logger) : IProfileService
     {
         try
         {
-            if (File.Exists(_activeProfileFile))
-            {
-                var activeProfile = await File.ReadAllTextAsync(_activeProfileFile, cancellationToken);
-                return activeProfile.Trim();
-            }
-            return null;
+            if (!File.Exists(_activeProfileFile)) return null;
+            var activeProfile = await File.ReadAllTextAsync(_activeProfileFile, cancellationToken);
+            return activeProfile.Trim();
         }
         catch (Exception ex)
         {

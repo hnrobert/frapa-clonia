@@ -21,18 +21,16 @@ public partial class MainWindow : Window
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
         // Find the main layout grid (first child of the outer grid)
-        if (Content is Grid outerGrid && outerGrid.Children.Count > 0 && outerGrid.Children[0] is Grid mainGrid)
+        if (Content is not Grid { Children.Count: > 0 } outerGrid || outerGrid.Children[0] is not Grid mainGrid) return;
+        _sidebarColumn = mainGrid.ColumnDefinitions[0];
+        _gridSplitter = mainGrid.Children[1] as GridSplitter;
+
+        // Initialize sidebar width to default
+        _sidebarColumn?.Width = new GridLength(DefaultSidebarWidth);
+
+        if (_gridSplitter != null)
         {
-            _sidebarColumn = mainGrid.ColumnDefinitions[0];
-            _gridSplitter = mainGrid.Children[1] as GridSplitter;
-
-            // Initialize sidebar width to default
-            _sidebarColumn?.Width = new GridLength(DefaultSidebarWidth);
-
-            if (_gridSplitter != null)
-            {
-                _gridSplitter.DragDelta += OnGridSplitterDragDelta;
-            }
+            _gridSplitter.DragDelta += OnGridSplitterDragDelta;
         }
     }
 
@@ -43,15 +41,13 @@ public partial class MainWindow : Window
         var currentWidth = _sidebarColumn.Width.Value;
         var newWidth = currentWidth + e.Vector.X;
 
-        // Clamp the width
-        if (newWidth < MinSidebarWidth)
+        newWidth = newWidth switch
         {
-            newWidth = MinSidebarWidth;
-        }
-        else if (newWidth > MaxSidebarWidth)
-        {
-            newWidth = MaxSidebarWidth;
-        }
+            // Clamp the width
+            < MinSidebarWidth => MinSidebarWidth,
+            > MaxSidebarWidth => MaxSidebarWidth,
+            _ => newWidth
+        };
 
         _sidebarColumn.Width = new GridLength(newWidth);
     }

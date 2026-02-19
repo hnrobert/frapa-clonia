@@ -431,12 +431,14 @@ public class PresetService : IPresetService
         }
     }
 
-    private async Task ExportAsIniAsync(string filePath, FrpClientConfig config)
+    private static async Task ExportAsIniAsync(string filePath, FrpClientConfig config)
     {
-        var lines = new List<string>();
+        var lines = new List<string>
+        {
+            // Common section
+            "[common]"
+        };
 
-        // Common section
-        lines.Add("[common]");
         if (config.CommonConfig != null)
         {
             var cc = config.CommonConfig;

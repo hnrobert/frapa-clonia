@@ -23,7 +23,8 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
         _ => "amd64"
     };
 
-    public async Task<string> DeployFromArchiveAsync(string archivePath, string version, string platform, string architecture,
+    public async Task<string> DeployFromArchiveAsync(string archivePath, string version, string platform,
+        string architecture,
         CancellationToken cancellationToken = default)
     {
         try
@@ -116,36 +117,33 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
             }
 
             // On Unix, try to execute with --version flag
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return true;
+            try
             {
-                try
+                var process = new System.Diagnostics.Process
                 {
-                    var process = new System.Diagnostics.Process
+                    StartInfo = new System.Diagnostics.ProcessStartInfo
                     {
-                        StartInfo = new System.Diagnostics.ProcessStartInfo
-                        {
-                            FileName = binaryPath,
-                            Arguments = "--version",
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-                            UseShellExecute = false
-                        }
-                    };
-                    process.Start();
-                    await process.WaitForExitAsync(cancellationToken);
+                        FileName = binaryPath,
+                        Arguments = "--version",
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        UseShellExecute = false
+                    }
+                };
+                process.Start();
+                await process.WaitForExitAsync(cancellationToken);
 
-                    // Exit code 0 usually means the binary ran successfully
-                    // frpc returns 0 when it can run (even with invalid args)
-                    return process.ExitCode == 0 || process.StandardOutput.ReadToEnd().Contains("frpc");
-                }
-                catch
-                {
-                    logger.LogWarning("Could not execute {BinaryPath} to verify", binaryPath);
-                    return false;
-                }
+                // Exit code 0 usually means the binary ran successfully
+                // frpc returns 0 when it can run (even with invalid args)
+                return process.ExitCode == 0 ||
+                       (await process.StandardOutput.ReadToEndAsync(cancellationToken)).Contains("frpc");
             }
-
-            return true;
+            catch
+            {
+                logger.LogWarning("Could not execute {BinaryPath} to verify", binaryPath);
+                return false;
+            }
         }
         catch (Exception ex)
         {
@@ -228,7 +226,8 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
         }
     }
 
-    public Task<IReadOnlyList<DownloadedFrpcVersion>> GetDownloadedVersionsAsync(CancellationToken cancellationToken = default)
+    public Task<IReadOnlyList<DownloadedFrpcVersion>> GetDownloadedVersionsAsync(
+        CancellationToken cancellationToken = default)
     {
         var versions = new List<DownloadedFrpcVersion>();
         var binDir = GetDefaultDeploymentDirectory();
@@ -248,28 +247,24 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
 
                 // Parse folder name: version_platform_arch (e.g., "0.62.1_darwin_arm64")
                 var parts = folderName.Split('_');
-                if (parts.Length >= 3)
-                {
-                    var binaryPath = Path.Combine(folder, exeName);
-                    if (File.Exists(binaryPath))
-                    {
-                        var fileInfo = new FileInfo(binaryPath);
-                        var dirInfo = new DirectoryInfo(folder);
+                if (parts.Length < 3) continue;
+                var binaryPath = Path.Combine(folder, exeName);
+                if (!File.Exists(binaryPath)) continue;
+                var fileInfo = new FileInfo(binaryPath);
+                var dirInfo = new DirectoryInfo(folder);
 
-                        versions.Add(new DownloadedFrpcVersion
-                        {
-                            Version = parts[0],
-                            Platform = parts[1],
-                            Architecture = parts[2],
-                            FolderPath = folder,
-                            BinaryPath = binaryPath,
-                            SizeBytes = fileInfo.Length,
-                            DownloadedAt = dirInfo.CreationTimeUtc,
-                            IsInUse = false, // Will be set by caller if needed
-                            Source = FrpcSource.AppDownload
-                        });
-                    }
-                }
+                versions.Add(new DownloadedFrpcVersion
+                {
+                    Version = parts[0],
+                    Platform = parts[1],
+                    Architecture = parts[2],
+                    FolderPath = folder,
+                    BinaryPath = binaryPath,
+                    SizeBytes = fileInfo.Length,
+                    DownloadedAt = dirInfo.CreationTimeUtc,
+                    IsInUse = false, // Will be set by caller if needed
+                    Source = FrpcSource.AppDownload
+                });
             }
             catch (Exception ex)
             {
@@ -346,7 +341,7 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
 
                 if (process.ExitCode != 0)
                 {
-                    var error = process.StandardError.ReadToEnd();
+                    var error = await process.StandardError.ReadToEndAsync(cancellationToken);
                     throw new InvalidOperationException($"Failed to extract archive: {error}");
                 }
             }
@@ -375,7 +370,8 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
             var executable = allFiles.FirstOrDefault(f =>
                 f.Contains("frpc") && (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || f.EndsWith("frpc")));
 
-            if (executable != null)
+            if (executable == null)
+                throw new InvalidOperationException("Could not find frpc binary in extracted archive");
             {
                 var finalPath = Path.Combine(targetDirectory, Path.GetFileName(executable));
                 File.Copy(executable, finalPath, true);
@@ -383,7 +379,6 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
                 return finalPath;
             }
 
-            throw new InvalidOperationException("Could not find frpc binary in extracted archive");
         }
         finally
         {
@@ -414,7 +409,7 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
             Directory.CreateDirectory(tempDir);
 
             // Use System.IO.Compression for ZIP files
-            System.IO.Compression.ZipFile.ExtractToDirectory(archivePath, tempDir);
+            await System.IO.Compression.ZipFile.ExtractToDirectoryAsync(archivePath, tempDir, cancellationToken);
 
             // Find the frpc binary
             var frpcName = "frpc.exe";
@@ -432,7 +427,8 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
             var allFiles = Directory.GetFiles(tempDir, "*", SearchOption.AllDirectories);
             var executable = allFiles.FirstOrDefault(f => f.Contains("frpc"));
 
-            if (executable != null)
+            if (executable == null)
+                throw new InvalidOperationException("Could not find frpc binary in extracted archive");
             {
                 var finalPath = Path.Combine(targetDirectory, Path.GetFileName(executable));
                 File.Copy(executable, finalPath, true);
@@ -440,7 +436,6 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
                 return finalPath;
             }
 
-            throw new InvalidOperationException("Could not find frpc binary in extracted archive");
         }
         finally
         {
@@ -492,28 +487,29 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
         {
             try
             {
-                var packageManagers = await packageManagerService.DetectAvailablePackageManagersAsync(cancellationToken);
+                var packageManagers =
+                    await packageManagerService.DetectAvailablePackageManagersAsync(cancellationToken);
                 foreach (var pm in packageManagers.Where(p => p is { IsInstalled: true, CanInstallFrpc: true }))
                 {
                     try
                     {
                         var binaryPath = await packageManagerService.GetFrpcBinaryPathAsync(pm.Name, cancellationToken);
-                        if (!string.IsNullOrEmpty(binaryPath) && File.Exists(binaryPath) && !seenPaths.Contains(binaryPath))
+                        if (string.IsNullOrEmpty(binaryPath) || !File.Exists(binaryPath) ||
+                            seenPaths.Contains(binaryPath)) continue;
+                        var version =
+                            await GetVersionFromBinaryAsync(binaryPath, processManager, cancellationToken);
+                        allVersions.Add(new DownloadedFrpcVersion
                         {
-                            var version = await GetVersionFromBinaryAsync(binaryPath, processManager, cancellationToken);
-                            allVersions.Add(new DownloadedFrpcVersion
-                            {
-                                Version = version,
-                                Platform = CurrentPlatform,
-                                Architecture = CurrentArchitecture,
-                                FolderPath = "", // No folder for package manager installs
-                                BinaryPath = binaryPath,
-                                Source = FrpcSource.PackageManager,
-                                PackageManagerName = pm.Name,
-                                DownloadedAt = DateTimeOffset.MinValue // Unknown
-                            });
-                            seenPaths.Add(binaryPath);
-                        }
+                            Version = version,
+                            Platform = CurrentPlatform,
+                            Architecture = CurrentArchitecture,
+                            FolderPath = "", // No folder for package manager installs
+                            BinaryPath = binaryPath,
+                            Source = FrpcSource.PackageManager,
+                            PackageManagerName = pm.Name,
+                            DownloadedAt = DateTimeOffset.MinValue // Unknown
+                        });
+                        seenPaths.Add(binaryPath);
                     }
                     catch (Exception ex)
                     {
@@ -528,14 +524,19 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
         }
 
         // 3. Get frpc from system PATH
-        if (processManager != null)
+        if (processManager == null)
+            return allVersions
+                .OrderBy(v => v.Source)
+                .ThenByDescending(v => v.Version, new VersionComparer())
+                .ToList();
         {
             try
             {
                 // On Windows, 'where' returns all matches; on Unix, 'which -a' returns all matches
                 var whichCmd = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "where" : "which";
                 var whichArgs = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "frpc" : "-a frpc";
-                var result = await processManager.ExecuteAsync(whichCmd, whichArgs, cancellationToken: cancellationToken);
+                var result =
+                    await processManager.ExecuteAsync(whichCmd, whichArgs, cancellationToken: cancellationToken);
 
                 if (result.Success)
                 {
@@ -545,21 +546,19 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
 
                     foreach (var path in paths)
                     {
-                        if (!seenPaths.Contains(path))
+                        if (seenPaths.Contains(path)) continue;
+                        var version = await GetVersionFromBinaryAsync(path, processManager, cancellationToken);
+                        allVersions.Add(new DownloadedFrpcVersion
                         {
-                            var version = await GetVersionFromBinaryAsync(path, processManager, cancellationToken);
-                            allVersions.Add(new DownloadedFrpcVersion
-                            {
-                                Version = version,
-                                Platform = CurrentPlatform,
-                                Architecture = CurrentArchitecture,
-                                FolderPath = "",
-                                BinaryPath = path,
-                                Source = FrpcSource.SystemPath,
-                                DownloadedAt = DateTimeOffset.MinValue
-                            });
-                            seenPaths.Add(path);
-                        }
+                            Version = version,
+                            Platform = CurrentPlatform,
+                            Architecture = CurrentArchitecture,
+                            FolderPath = "",
+                            BinaryPath = path,
+                            Source = FrpcSource.SystemPath,
+                            DownloadedAt = DateTimeOffset.MinValue
+                        });
+                        seenPaths.Add(path);
                     }
                 }
             }
@@ -576,7 +575,8 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
             .ToList();
     }
 
-    private async Task<string> GetVersionFromBinaryAsync(string binaryPath, IProcessManager? processManager, CancellationToken cancellationToken)
+    private static async Task<string> GetVersionFromBinaryAsync(string binaryPath, IProcessManager? processManager,
+        CancellationToken cancellationToken)
     {
         if (processManager == null || !File.Exists(binaryPath))
             return "unknown";
@@ -610,8 +610,14 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
     {
         public int Compare(string? x, string? y)
         {
-            if (x == null && y == null) return 0;
-            if (x == null) return 1;
+            switch (x)
+            {
+                case null when y == null:
+                    return 0;
+                case null:
+                    return 1;
+            }
+
             if (y == null) return -1;
 
             if (!Version.TryParse(x, out var vx) || !Version.TryParse(y, out var vy))

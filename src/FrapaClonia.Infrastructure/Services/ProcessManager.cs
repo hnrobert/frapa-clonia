@@ -61,7 +61,7 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
                 {
                     subject.OnCompleted();
                 }
-            });
+            }, cancellationToken);
 
             logger.LogInformation("Process started with PID {ProcessId}", handle.ProcessId);
             return Task.FromResult<ProcessHandle?>(handle);
@@ -128,13 +128,9 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
 
     public IObservable<string> GetProcessOutput(int processId)
     {
-        if (_processOutputs.TryGetValue(processId, out var subject))
-        {
-            return subject;
-        }
-
-        // Return an empty observable if process not found
-        return System.Reactive.Linq.Observable.Empty<string>();
+        return _processOutputs.TryGetValue(processId, out var subject) ? subject :
+            // Return an empty observable if process not found
+            System.Reactive.Linq.Observable.Empty<string>();
     }
 
     public Task<bool> IsPortAvailableAsync(int port, CancellationToken cancellationToken = default)
@@ -183,11 +179,9 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
             if (commonPorts.Contains(port))
                 continue;
 
-            if (IsPortAvailable(port))
-            {
-                logger.LogDebug("Found available port: {Port}", port);
-                return Task.FromResult<int?>(port);
-            }
+            if (!IsPortAvailable(port)) continue;
+            logger.LogDebug("Found available port: {Port}", port);
+            return Task.FromResult<int?>(port);
         }
 
         logger.LogWarning("No available port found between {MinPort} and {MaxPort}", minPort, maxPort);
@@ -307,7 +301,7 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
                 // Read standard output
                 while (!_process.HasExited && !cancellationToken.IsCancellationRequested)
                 {
-                    var line = await _process.StandardOutput.ReadLineAsync();
+                    var line = await _process.StandardOutput.ReadLineAsync(cancellationToken);
                     if (line == null) break;
 
                     foreach (var observer in _observers.ToList())
@@ -319,7 +313,7 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
                 // Read standard error
                 while (!_process.HasExited && !cancellationToken.IsCancellationRequested)
                 {
-                    var line = await _process.StandardError.ReadLineAsync();
+                    var line = await _process.StandardError.ReadLineAsync(cancellationToken);
                     if (line == null) break;
 
                     foreach (var observer in _observers.ToList())

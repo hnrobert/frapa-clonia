@@ -34,14 +34,13 @@ public partial class ProxyListView : UserControl
 
     private void OnDuplicateClick(object sender, RoutedEventArgs e)
     {
-        if (sender is Button { DataContext: ProxyConfig proxy } &&
-            DataContext is ProxyListViewModel viewModel)
+        if (sender is not Button { DataContext: ProxyConfig proxy } ||
+            DataContext is not ProxyListViewModel viewModel) return;
+        
+        viewModel.SelectedProxy = proxy;
+        if (viewModel.DuplicateProxyCommand.CanExecute(null))
         {
-            viewModel.SelectedProxy = proxy;
-            if (viewModel.DuplicateProxyCommand.CanExecute(null))
-            {
-                viewModel.DuplicateProxyCommand.Execute(null);
-            }
+            viewModel.DuplicateProxyCommand.Execute(null);
         }
     }
 

@@ -236,8 +236,7 @@ public class FrpcProcessService(ILogger<FrpcProcessService> logger, IProcessMana
         if (lower.Contains("warn") || lower.Contains("warning")) return LogLevel.Warning;
         if (lower.Contains("info")) return LogLevel.Information;
         if (lower.Contains("debug")) return LogLevel.Debug;
-        if (lower.Contains("trace")) return LogLevel.Trace;
-        return LogLevel.Information;
+        return lower.Contains("trace") ? LogLevel.Trace : LogLevel.Information;
     }
 
     private void OnProcessStateChanged(ProcessStateChangedEventArgs args)

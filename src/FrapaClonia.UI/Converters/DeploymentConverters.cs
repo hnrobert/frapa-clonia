@@ -81,7 +81,7 @@ public class StringEqualsConverter : IValueConverter
     {
         // Only convert back when the value is true (RadioButton being checked)
         // When false, return BindingValue.DoNothing to avoid setting the property
-        if (value is bool boolValue && boolValue && parameter is string paramValue)
+        if (value is bool and true && parameter is string paramValue)
         {
             return paramValue;
         }
@@ -185,7 +185,7 @@ public class BoolToOpacityConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        var boolValue = value is bool b && b;
+        var boolValue = value is bool and true;
         var invert = parameter?.ToString() == "Invert";
 
         if (invert)

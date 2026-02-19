@@ -13,11 +13,6 @@ public class AutoStartService(ILogger<AutoStartService> logger) : IAutoStartServ
 {
     private const string AppName = "FrapaClonia";
 
-    public bool IsAutoStartSupported =>
-        RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ||
-        RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ||
-        RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
-
     public Task<bool> IsAutoStartEnabledAsync(CancellationToken cancellationToken = default)
     {
         try

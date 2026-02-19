@@ -71,12 +71,11 @@ public partial class ThemeService : ObservableObject
 
     private static void ApplyTheme(ThemeVariant theme)
     {
-        if (Application.Current?.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
+        if (Application.Current?.ApplicationLifetime is not
+            Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop) return;
+        foreach (var window in desktop.Windows)
         {
-            foreach (var window in desktop.Windows)
-            {
-                window.RequestedThemeVariant = theme;
-            }
+            window.RequestedThemeVariant = theme;
         }
     }
 }

@@ -41,7 +41,9 @@ public class LocalizeExtension(string key) : MarkupExtension
         }
     }
 
-    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "<Pending>")]
+    [UnconditionalSuppressMessage("Trimming",
+        "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code",
+        Justification = "<Pending>")]
     public override object ProvideValue(IServiceProvider serviceProvider)
     {
         // Get or create a shared value holder for this key
@@ -72,13 +74,11 @@ public class LocalizeExtension(string key) : MarkupExtension
         // First try to get from Strings class directly (uses ResourceManager internally)
         // This is more efficient and provides compile-time safety
         var property = typeof(Strings).GetProperty(key);
-        if (property != null)
+        if (property == null) return _localizationService != null ? _localizationService.GetString(key) : key;
+        var value = property.GetValue(null) as string;
+        if (!string.IsNullOrEmpty(value))
         {
-            var value = property.GetValue(null) as string;
-            if (!string.IsNullOrEmpty(value))
-            {
-                return value;
-            }
+            return value;
         }
 
         // Fallback to localization service (for dynamic keys)
@@ -96,11 +96,9 @@ public class LocalizeExtension(string key) : MarkupExtension
             get;
             private set
             {
-                if (field != value)
-                {
-                    field = value;
-                    OnPropertyChanged();
-                }
+                if (field == value) return;
+                field = value;
+                OnPropertyChanged();
             }
         } = GetString(key);
 

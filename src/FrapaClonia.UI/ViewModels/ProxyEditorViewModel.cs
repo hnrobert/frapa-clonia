@@ -232,20 +232,19 @@ public partial class ProxyEditorViewModel : ObservableObject
             }
         }
 
-        if (proxy.Plugin != null)
-        {
-            PluginType = proxy.Plugin.Type;
-            PluginHttpProxyUrl = proxy.Plugin.HttpProxyUrl;
-            PluginSocks5Url = proxy.Plugin.Socks5Url;
-            PluginStaticFilePath = proxy.Plugin.StaticFileLocalPath;
-            PluginStaticFilePrefixUrl = proxy.Plugin.StaticFilePrefixUrl;
-            PluginHttps2HttpLocalAddr = proxy.Plugin.Https2HttpLocalAddr;
-            PluginHttps2HttpCrtPath = proxy.Plugin.Https2HttpCrtPath;
-            PluginHttps2HttpKeyPath = proxy.Plugin.Https2HttpKeyPath;
-            PluginHttp2HttpsLocalAddr = proxy.Plugin.Http2HttpsLocalAddr;
-            PluginHttp2HttpsCrtPath = proxy.Plugin.Http2HttpsCrtPath;
-            PluginHttp2HttpsKeyPath = proxy.Plugin.Http2HttpsKeyPath;
-        }
+        if (proxy.Plugin == null) return;
+
+        PluginType = proxy.Plugin.Type;
+        PluginHttpProxyUrl = proxy.Plugin.HttpProxyUrl;
+        PluginSocks5Url = proxy.Plugin.Socks5Url;
+        PluginStaticFilePath = proxy.Plugin.StaticFileLocalPath;
+        PluginStaticFilePrefixUrl = proxy.Plugin.StaticFilePrefixUrl;
+        PluginHttps2HttpLocalAddr = proxy.Plugin.Https2HttpLocalAddr;
+        PluginHttps2HttpCrtPath = proxy.Plugin.Https2HttpCrtPath;
+        PluginHttps2HttpKeyPath = proxy.Plugin.Https2HttpKeyPath;
+        PluginHttp2HttpsLocalAddr = proxy.Plugin.Http2HttpsLocalAddr;
+        PluginHttp2HttpsCrtPath = proxy.Plugin.Http2HttpsCrtPath;
+        PluginHttp2HttpsKeyPath = proxy.Plugin.Http2HttpsKeyPath;
     }
 
     private Task ValidateAsync()

@@ -101,13 +101,11 @@ public class LocalizationService : ILocalizationService
     public void SetCulture(string cultureCode)
     {
         var culture = SupportedCultures.FirstOrDefault(c => c.Name == cultureCode);
-        if (culture != null)
-        {
-            CurrentCulture = culture;
-            ApplyCulture(culture);
-            CultureChanged?.Invoke(this, EventArgs.Empty);
-            _logger.LogInformation("Culture changed to: {Culture}", culture.Name);
-        }
+        if (culture == null) return;
+        CurrentCulture = culture;
+        ApplyCulture(culture);
+        CultureChanged?.Invoke(this, EventArgs.Empty);
+        _logger.LogInformation("Culture changed to: {Culture}", culture.Name);
     }
 
     public string GetString(string key, params object[] args)
@@ -124,13 +122,11 @@ public class LocalizationService : ILocalizationService
             }
 
             // Return key if not found
-            if (string.IsNullOrEmpty(value))
-            {
-                _logger.LogWarning("Localization key not found: {Key}", key);
-                return key;
-            }
+            if (!string.IsNullOrEmpty(value))
+                return args.Length > 0 ? string.Format(CurrentCulture, value, args) : value;
+            _logger.LogWarning("Localization key not found: {Key}", key);
+            return key;
 
-            return args.Length > 0 ? string.Format(CurrentCulture, value, args) : value;
         }
         catch (Exception ex)
         {

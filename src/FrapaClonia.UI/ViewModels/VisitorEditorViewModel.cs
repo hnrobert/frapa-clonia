@@ -163,7 +163,7 @@ public partial class VisitorEditorViewModel : ObservableObject
         };
     }
 
-    public async Task SaveAsync()
+    private async Task SaveAsync()
     {
         try
         {

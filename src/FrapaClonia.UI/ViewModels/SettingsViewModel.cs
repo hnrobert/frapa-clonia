@@ -45,8 +45,6 @@ public partial class SettingsViewModel : ObservableObject
 
     public IRelayCommand SaveCommand { get; }
     public IRelayCommand ResetCommand { get; }
-    public IRelayCommand RefreshVersionsCommand { get; }
-    public IRelayCommand DeleteVersionCommand { get; }
 
     public List<LanguageOption> AvailableLanguages { get; }
 
@@ -115,24 +113,6 @@ public partial class SettingsViewModel : ObservableObject
                 _logger?.LogError(e, "Error loading settings");
             }
         });
-        RefreshVersionsCommand = new RelayCommand(async void () =>
-        {
-            try
-            {
-                await RefreshDownloadedVersionsAsync();
-            }
-            catch (Exception e)
-            {
-                _logger?.LogError(e, "Error refreshing downloaded versions");
-            }
-        });
-        DeleteVersionCommand = new RelayCommand<DownloadedFrpcVersion?>(version =>
-        {
-            if (version != null)
-            {
-                TogglePendingDeletion(version);
-            }
-        });
 
         // Initialize theme from ThemeService
         ThemeIndex = _themeService.CurrentTheme.ToString() switch
@@ -152,9 +132,9 @@ public partial class SettingsViewModel : ObservableObject
         // Initialize available themes
         AvailableThemes =
         [
-            new ThemeOption(0, "Light", _localizationService),
-            new ThemeOption(1, "Dark", _localizationService),
-            new ThemeOption(2, "SystemDefault", _localizationService)
+            new ThemeOption("Light", _localizationService),
+            new ThemeOption("Dark", _localizationService),
+            new ThemeOption("SystemDefault", _localizationService)
         ];
 
         // Load saved settings on initialization
@@ -383,17 +363,6 @@ public partial class SettingsViewModel : ObservableObject
         return usedPaths;
     }
 
-    private void TogglePendingDeletion(DownloadedFrpcVersion version)
-    {
-        if (version.IsInUse)
-        {
-            _toastService?.Warning(L("Toast_VersionInUse"), L("Toast_CannotDeleteUsedVersion"));
-            return;
-        }
-
-        version.IsPendingDeletion = !version.IsPendingDeletion;
-    }
-
     private async Task ApplyPendingDeletionsAsync()
     {
         if (_nativeDeploymentService == null) return;
@@ -428,11 +397,6 @@ public partial class SettingsViewModel : ObservableObject
         }
     }
 
-    public void Initialize()
-    {
-        _ = RefreshDownloadedVersionsAsync();
-    }
-
     #endregion
 }
 
@@ -458,16 +422,12 @@ public class AppSettings
 public class ThemeOption : ObservableObject
 {
     private readonly ILocalizationService? _localizationService;
-    private readonly string _resourceKey;
 
-    public int Index { get; }
+    public string Name => _localizationService?.GetString(field) ?? field;
 
-    public string Name => _localizationService?.GetString(_resourceKey) ?? _resourceKey;
-
-    public ThemeOption(int index, string resourceKey, ILocalizationService? localizationService)
+    public ThemeOption(string resourceKey, ILocalizationService? localizationService)
     {
-        Index = index;
-        _resourceKey = resourceKey;
+        Name = resourceKey;
         _localizationService = localizationService;
 
         if (_localizationService != null)

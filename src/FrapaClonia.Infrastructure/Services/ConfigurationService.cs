@@ -26,7 +26,8 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, ITomlSer
         }
     }
 
-    public Task SaveConfigurationAsync(string filePath, FrpClientConfig configuration, CancellationToken cancellationToken = default)
+    public Task SaveConfigurationAsync(string filePath, FrpClientConfig configuration,
+        CancellationToken cancellationToken = default)
     {
         try
         {

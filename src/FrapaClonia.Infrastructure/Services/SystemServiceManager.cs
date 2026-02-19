@@ -31,29 +31,34 @@ public class SystemServiceManager(ILogger<SystemServiceManager> logger, IProcess
         return await _platformManager.UninstallServiceAsync(serviceName, cancellationToken);
     }
 
-    public async Task<bool> StartServiceAsync(string serviceName, ServiceScope scope = ServiceScope.User, CancellationToken cancellationToken = default)
+    public async Task<bool> StartServiceAsync(string serviceName, ServiceScope scope = ServiceScope.User,
+        CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Starting service {ServiceName}", serviceName);
         return await _platformManager.StartServiceAsync(serviceName, scope, cancellationToken);
     }
 
-    public async Task<bool> StopServiceAsync(string serviceName, ServiceScope scope = ServiceScope.User, CancellationToken cancellationToken = default)
+    public async Task<bool> StopServiceAsync(string serviceName, ServiceScope scope = ServiceScope.User,
+        CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Stopping service {ServiceName}", serviceName);
         return await _platformManager.StopServiceAsync(serviceName, scope, cancellationToken);
     }
 
-    public async Task<bool> IsServiceRunningAsync(string serviceName, ServiceScope scope = ServiceScope.User, CancellationToken cancellationToken = default)
+    public async Task<bool> IsServiceRunningAsync(string serviceName, ServiceScope scope = ServiceScope.User,
+        CancellationToken cancellationToken = default)
     {
         return await _platformManager.IsServiceRunningAsync(serviceName, scope, cancellationToken);
     }
 
-    public async Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope = ServiceScope.User, CancellationToken cancellationToken = default)
+    public async Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope = ServiceScope.User,
+        CancellationToken cancellationToken = default)
     {
         return await _platformManager.GetServiceStatusAsync(serviceName, scope, cancellationToken);
     }
 
-    public async Task<bool> SetAutoStartAsync(string serviceName, bool autoStart, ServiceScope scope = ServiceScope.User, CancellationToken cancellationToken = default)
+    public async Task<bool> SetAutoStartAsync(string serviceName, bool autoStart,
+        ServiceScope scope = ServiceScope.User, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Setting auto-start for {ServiceName} to {AutoStart}", serviceName, autoStart);
         return await _platformManager.SetAutoStartAsync(serviceName, autoStart, scope, cancellationToken);
@@ -67,10 +72,12 @@ public class SystemServiceManager(ILogger<SystemServiceManager> logger, IProcess
         {
             return new MacOsServiceManager(logger, processManager);
         }
+
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             return new WindowsServiceManager(logger, processManager);
         }
+
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
             return new LinuxServiceManager(logger, processManager);
@@ -90,9 +97,15 @@ internal interface IPlatformServiceManager
     Task<bool> UninstallServiceAsync(string serviceName, CancellationToken cancellationToken = default);
     Task<bool> StartServiceAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default);
     Task<bool> StopServiceAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default);
-    Task<bool> IsServiceRunningAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default);
-    Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default);
-    Task<bool> SetAutoStartAsync(string serviceName, bool autoStart, ServiceScope scope, CancellationToken cancellationToken = default);
+
+    Task<bool> IsServiceRunningAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default);
+
+    Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> SetAutoStartAsync(string serviceName, bool autoStart, ServiceScope scope,
+        CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -100,15 +113,30 @@ internal interface IPlatformServiceManager
 /// </summary>
 internal class UnsupportedServiceManager : IPlatformServiceManager
 {
-    public Task<bool> IsServiceInstalledAsync(string serviceName, CancellationToken cancellationToken = default) => Task.FromResult(false);
-    public Task<bool> InstallServiceAsync(ServiceConfig config, CancellationToken cancellationToken = default) => Task.FromResult(false);
-    public Task<bool> UninstallServiceAsync(string serviceName, CancellationToken cancellationToken = default) => Task.FromResult(false);
-    public Task<bool> StartServiceAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default) => Task.FromResult(false);
-    public Task<bool> StopServiceAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default) => Task.FromResult(false);
-    public Task<bool> IsServiceRunningAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default) => Task.FromResult(false);
-    public Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
+    public Task<bool> IsServiceInstalledAsync(string serviceName, CancellationToken cancellationToken = default) =>
+        Task.FromResult(false);
+
+    public Task<bool> InstallServiceAsync(ServiceConfig config, CancellationToken cancellationToken = default) =>
+        Task.FromResult(false);
+
+    public Task<bool> UninstallServiceAsync(string serviceName, CancellationToken cancellationToken = default) =>
+        Task.FromResult(false);
+
+    public Task<bool> StartServiceAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default) => Task.FromResult(false);
+
+    public Task<bool> StopServiceAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default) => Task.FromResult(false);
+
+    public Task<bool> IsServiceRunningAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default) => Task.FromResult(false);
+
+    public Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default)
         => Task.FromResult(new ServiceStatus { IsInstalled = false, State = "unsupported" });
-    public Task<bool> SetAutoStartAsync(string serviceName, bool autoStart, ServiceScope scope, CancellationToken cancellationToken = default) => Task.FromResult(false);
+
+    public Task<bool> SetAutoStartAsync(string serviceName, bool autoStart, ServiceScope scope,
+        CancellationToken cancellationToken = default) => Task.FromResult(false);
 }
 
 /// <summary>
@@ -145,7 +173,8 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
                 await File.WriteAllTextAsync(plistPath, plistContent, cancellationToken);
 
                 // Load the service
-                var result = await processManager.ExecuteAsync("launchctl", $"load \"{plistPath}\"", cancellationToken: cancellationToken);
+                var result = await processManager.ExecuteAsync("launchctl", $"load \"{plistPath}\"",
+                    cancellationToken: cancellationToken);
                 return result.ExitCode == 0;
             }
         }
@@ -156,7 +185,8 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
         }
     }
 
-    private async Task<bool> InstallSystemServiceAsync(string plistPath, string plistContent, CancellationToken cancellationToken)
+    private async Task<bool> InstallSystemServiceAsync(string plistPath, string plistContent,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -169,16 +199,13 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
                 var plistDir = Path.GetDirectoryName(plistPath);
 
                 // Combine all commands into a single command so user only authenticates once
-                var combinedCommand = $"mkdir -p '{plistDir}' && cp '{tempPlistPath}' '{plistPath}' && chmod 644 '{plistPath}' && launchctl load '{plistPath}'";
+                var combinedCommand =
+                    $"mkdir -p '{plistDir}' && cp '{tempPlistPath}' '{plistPath}' && chmod 644 '{plistPath}' && launchctl load '{plistPath}'";
 
                 var result = await ExecuteWithAdminPrivilegesAsync(combinedCommand, cancellationToken);
-                if (!result)
-                {
-                    logger.LogWarning("Install service command failed");
-                    return false;
-                }
-
-                return true;
+                if (result) return true;
+                logger.LogWarning("Install service command failed");
+                return false;
             }
             finally
             {
@@ -206,16 +233,15 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
 
             if (File.Exists(userPlist))
             {
-                await processManager.ExecuteAsync("launchctl", $"unload \"{userPlist}\"", cancellationToken: cancellationToken);
+                await processManager.ExecuteAsync("launchctl", $"unload \"{userPlist}\"",
+                    cancellationToken: cancellationToken);
                 File.Delete(userPlist);
             }
 
-            if (File.Exists(systemPlist))
-            {
-                // System scope requires admin privileges - combine commands to auth only once
-                var combinedCommand = $"launchctl unload '{systemPlist}' && rm '{systemPlist}'";
-                await ExecuteWithAdminPrivilegesAsync(combinedCommand, cancellationToken);
-            }
+            if (!File.Exists(systemPlist)) return true;
+            // System scope requires admin privileges - combine commands to auth only once
+            var combinedCommand = $"launchctl unload '{systemPlist}' && rm '{systemPlist}'";
+            await ExecuteWithAdminPrivilegesAsync(combinedCommand, cancellationToken);
 
             return true;
         }
@@ -226,25 +252,32 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
         }
     }
 
-    public async Task<bool> StartServiceAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<bool> StartServiceAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
-        var result = await processManager.ExecuteAsync("launchctl", $"start {GetServiceLabel(serviceName)}", cancellationToken: cancellationToken);
+        var result = await processManager.ExecuteAsync("launchctl", $"start {GetServiceLabel(serviceName)}",
+            cancellationToken: cancellationToken);
         return result.ExitCode == 0;
     }
 
-    public async Task<bool> StopServiceAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<bool> StopServiceAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
-        var result = await processManager.ExecuteAsync("launchctl", $"stop {GetServiceLabel(serviceName)}", cancellationToken: cancellationToken);
+        var result = await processManager.ExecuteAsync("launchctl", $"stop {GetServiceLabel(serviceName)}",
+            cancellationToken: cancellationToken);
         return result.ExitCode == 0;
     }
 
-    public async Task<bool> IsServiceRunningAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<bool> IsServiceRunningAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
-        var result = await processManager.ExecuteAsync("launchctl", $"list {GetServiceLabel(serviceName)}", cancellationToken: cancellationToken);
+        var result = await processManager.ExecuteAsync("launchctl", $"list {GetServiceLabel(serviceName)}",
+            cancellationToken: cancellationToken);
         return result.ExitCode == 0;
     }
 
-    public async Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
         var isInstalled = await IsServiceInstalledAsync(serviceName, cancellationToken);
         var isRunning = isInstalled && await IsServiceRunningAsync(serviceName, scope, cancellationToken);
@@ -257,12 +290,13 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
         {
             IsInstalled = isInstalled,
             IsRunning = isRunning,
-            State = isRunning ? "running" : (isInstalled ? "stopped" : "not_installed"),
+            State = isRunning ? "running" : isInstalled ? "stopped" : "not_installed",
             Scope = actualScope
         };
     }
 
-    public async Task<bool> SetAutoStartAsync(string serviceName, bool autoStart, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<bool> SetAutoStartAsync(string serviceName, bool autoStart, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
         // launchd handles auto-start via RunAtLoad and KeepAlive in the plist
         // Would need to regenerate the plist to change this
@@ -292,7 +326,8 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
             await File.WriteAllTextAsync(tempScriptPath, scriptContent, cancellationToken);
 
             // Execute the script file
-            var result = await processManager.ExecuteAsync("osascript", $"\"{tempScriptPath}\"", cancellationToken: cancellationToken);
+            var result = await processManager.ExecuteAsync("osascript", $"\"{tempScriptPath}\"",
+                cancellationToken: cancellationToken);
 
             if (result.ExitCode != 0)
             {
@@ -307,7 +342,14 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
             // Clean up temp file
             if (File.Exists(tempScriptPath))
             {
-                try { File.Delete(tempScriptPath); } catch { /* ignore */ }
+                try
+                {
+                    File.Delete(tempScriptPath);
+                }
+                catch
+                {
+                    /* ignore */
+                }
             }
         }
     }
@@ -316,7 +358,8 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
     {
         var fileName = $"{GetServiceLabel(serviceName)}.plist";
         return scope == ServiceScope.User
-            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Library", "LaunchAgents", fileName)
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Library", "LaunchAgents",
+                fileName)
             : $"/Library/LaunchDaemons/{fileName}";
     }
 
@@ -325,29 +368,29 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
     private static string GenerateLaunchdPlist(ServiceConfig config)
     {
         return $""""
-               <?xml version="1.0" encoding="UTF-8"?>
-               <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-               <plist version="1.0">
-               <dict>
-                   <key>Label</key>
-                   <string>{GetServiceLabel(config.ServiceName)}</string>
-                   <key>ProgramArguments</key>
-                   <array>
-                       <string>{config.BinaryPath}</string>
-                       <string>-c</string>
-                       <string>{config.ConfigPath}</string>
-                   </array>
-                   <key>RunAtLoad</key>
-                   <{config.AutoStart.ToString().ToLowerInvariant()}/>
-                   <key>KeepAlive</key>
-                   <true/>
-                   <key>StandardOutPath</key>
-                   <string>/tmp/{config.ServiceName}.log</string>
-                   <key>StandardErrorPath</key>
-                   <string>/tmp/{config.ServiceName}.err</string>
-               </dict>
-               </plist>
-               """";
+                <?xml version="1.0" encoding="UTF-8"?>
+                <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+                <plist version="1.0">
+                <dict>
+                    <key>Label</key>
+                    <string>{GetServiceLabel(config.ServiceName)}</string>
+                    <key>ProgramArguments</key>
+                    <array>
+                        <string>{config.BinaryPath}</string>
+                        <string>-c</string>
+                        <string>{config.ConfigPath}</string>
+                    </array>
+                    <key>RunAtLoad</key>
+                    <{config.AutoStart.ToString().ToLowerInvariant()}/>
+                    <key>KeepAlive</key>
+                    <true/>
+                    <key>StandardOutPath</key>
+                    <string>/tmp/{config.ServiceName}.log</string>
+                    <key>StandardErrorPath</key>
+                    <string>/tmp/{config.ServiceName}.err</string>
+                </dict>
+                </plist>
+                """";
     }
 }
 
@@ -358,7 +401,8 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
 {
     public async Task<bool> IsServiceInstalledAsync(string serviceName, CancellationToken cancellationToken = default)
     {
-        var result = await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"", cancellationToken: cancellationToken);
+        var result =
+            await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"", cancellationToken: cancellationToken);
         return result.ExitCode == 0;
     }
 
@@ -374,13 +418,9 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
                 $"create \"{config.ServiceName}\" binPath= {binPath} start= {startType} DisplayName= \"{config.Description}\"",
                 cancellationToken: cancellationToken);
 
-            if (result.ExitCode != 0)
-            {
-                logger.LogError("Failed to create Windows service: {Error}", result.StandardError);
-                return false;
-            }
-
-            return true;
+            if (result.ExitCode == 0) return true;
+            logger.LogError("Failed to create Windows service: {Error}", result.StandardError);
+            return false;
         }
         catch (Exception ex)
         {
@@ -396,7 +436,8 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
             // Stop first
             await StopServiceAsync(serviceName, ServiceScope.System, cancellationToken);
 
-            var result = await processManager.ExecuteAsync("sc", $"delete \"{serviceName}\"", cancellationToken: cancellationToken);
+            var result = await processManager.ExecuteAsync("sc", $"delete \"{serviceName}\"",
+                cancellationToken: cancellationToken);
             return result.ExitCode == 0;
         }
         catch (Exception ex)
@@ -406,25 +447,32 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
         }
     }
 
-    public async Task<bool> StartServiceAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<bool> StartServiceAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
-        var result = await processManager.ExecuteAsync("sc", $"start \"{serviceName}\"", cancellationToken: cancellationToken);
+        var result =
+            await processManager.ExecuteAsync("sc", $"start \"{serviceName}\"", cancellationToken: cancellationToken);
         return result.ExitCode == 0;
     }
 
-    public async Task<bool> StopServiceAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<bool> StopServiceAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
-        var result = await processManager.ExecuteAsync("sc", $"stop \"{serviceName}\"", cancellationToken: cancellationToken);
+        var result =
+            await processManager.ExecuteAsync("sc", $"stop \"{serviceName}\"", cancellationToken: cancellationToken);
         return result.ExitCode == 0;
     }
 
-    public async Task<bool> IsServiceRunningAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<bool> IsServiceRunningAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
-        var result = await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"", cancellationToken: cancellationToken);
+        var result =
+            await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"", cancellationToken: cancellationToken);
         return result.ExitCode == 0 && result.StandardOutput.Contains("RUNNING");
     }
 
-    public async Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
         var isInstalled = await IsServiceInstalledAsync(serviceName, cancellationToken);
 
@@ -433,14 +481,16 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
             return new ServiceStatus { IsInstalled = false, State = "not_installed" };
         }
 
-        var result = await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"", cancellationToken: cancellationToken);
+        var result =
+            await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"", cancellationToken: cancellationToken);
         var output = result.StandardOutput;
 
         var isRunning = output.Contains("RUNNING");
-        var state = isRunning ? "running" : (output.Contains("STOPPED") ? "stopped" : "unknown");
+        var state = isRunning ? "running" : output.Contains("STOPPED") ? "stopped" : "unknown";
 
         // Check auto-start
-        var qcResult = await processManager.ExecuteAsync("sc", $"qc \"{serviceName}\"", cancellationToken: cancellationToken);
+        var qcResult =
+            await processManager.ExecuteAsync("sc", $"qc \"{serviceName}\"", cancellationToken: cancellationToken);
         var autoStart = qcResult.StandardOutput.Contains("AUTO_START");
 
         return new ServiceStatus
@@ -452,10 +502,12 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
         };
     }
 
-    public async Task<bool> SetAutoStartAsync(string serviceName, bool autoStart, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<bool> SetAutoStartAsync(string serviceName, bool autoStart, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
         var startType = autoStart ? "auto" : "demand";
-        var result = await processManager.ExecuteAsync("sc", $"config \"{serviceName}\" start= {startType}", cancellationToken: cancellationToken);
+        var result = await processManager.ExecuteAsync("sc", $"config \"{serviceName}\" start= {startType}",
+            cancellationToken: cancellationToken);
         return result.ExitCode == 0;
     }
 }
@@ -486,14 +538,13 @@ internal class LinuxServiceManager(ILogger logger, IProcessManager processManage
             await processManager.ExecuteAsync("systemctl", reloadArgs, cancellationToken: cancellationToken);
 
             // Enable if auto-start
-            if (config.AutoStart)
-            {
-                var enableArgs = config.Scope == ServiceScope.User
-                    ? $"--user enable {config.ServiceName}"
-                    : $"enable {config.ServiceName}";
-                var sudoPrefix = config.Scope == ServiceScope.System ? "sudo " : "";
-                await processManager.ExecuteAsync($"{sudoPrefix}systemctl", enableArgs, cancellationToken: cancellationToken);
-            }
+            if (!config.AutoStart) return true;
+            var enableArgs = config.Scope == ServiceScope.User
+                ? $"--user enable {config.ServiceName}"
+                : $"enable {config.ServiceName}";
+            var sudoPrefix = config.Scope == ServiceScope.System ? "sudo " : "";
+            await processManager.ExecuteAsync($"{sudoPrefix}systemctl", enableArgs,
+                cancellationToken: cancellationToken);
 
             return true;
         }
@@ -514,17 +565,19 @@ internal class LinuxServiceManager(ILogger logger, IProcessManager processManage
 
             if (File.Exists(userUnitPath))
             {
-                await processManager.ExecuteAsync("systemctl", $"--user disable {serviceName}", cancellationToken: cancellationToken);
-                await processManager.ExecuteAsync("systemctl", "--user daemon-reload", cancellationToken: cancellationToken);
+                await processManager.ExecuteAsync("systemctl", $"--user disable {serviceName}",
+                    cancellationToken: cancellationToken);
+                await processManager.ExecuteAsync("systemctl", "--user daemon-reload",
+                    cancellationToken: cancellationToken);
                 File.Delete(userUnitPath);
             }
 
-            if (File.Exists(systemUnitPath))
-            {
-                await processManager.ExecuteAsync("sudo", $"systemctl disable {serviceName}", cancellationToken: cancellationToken);
-                await processManager.ExecuteAsync("sudo", "systemctl daemon-reload", cancellationToken: cancellationToken);
-                File.Delete(systemUnitPath);
-            }
+            if (!File.Exists(systemUnitPath)) return true;
+
+            await processManager.ExecuteAsync("sudo", $"systemctl disable {serviceName}",
+                cancellationToken: cancellationToken);
+            await processManager.ExecuteAsync("sudo", "systemctl daemon-reload", cancellationToken: cancellationToken);
+            File.Delete(systemUnitPath);
 
             return true;
         }
@@ -535,35 +588,40 @@ internal class LinuxServiceManager(ILogger logger, IProcessManager processManage
         }
     }
 
-    public async Task<bool> StartServiceAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<bool> StartServiceAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
         var args = scope == ServiceScope.User ? $"--user start {serviceName}" : $"start {serviceName}";
         var result = await processManager.ExecuteAsync("systemctl", args, cancellationToken: cancellationToken);
         return result.ExitCode == 0;
     }
 
-    public async Task<bool> StopServiceAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<bool> StopServiceAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
         var args = scope == ServiceScope.User ? $"--user stop {serviceName}" : $"stop {serviceName}";
         var result = await processManager.ExecuteAsync("systemctl", args, cancellationToken: cancellationToken);
         return result.ExitCode == 0;
     }
 
-    public async Task<bool> IsServiceRunningAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<bool> IsServiceRunningAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
         var args = scope == ServiceScope.User ? $"--user is-active {serviceName}" : $"is-active {serviceName}";
         var result = await processManager.ExecuteAsync("systemctl", args, cancellationToken: cancellationToken);
         return result.ExitCode == 0 && result.StandardOutput.Trim() == "active";
     }
 
-    public async Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
         var isInstalled = await IsServiceInstalledAsync(serviceName, cancellationToken);
         var isRunning = isInstalled && await IsServiceRunningAsync(serviceName, scope, cancellationToken);
 
         // Check if enabled
         var enabledArgs = scope == ServiceScope.User ? $"--user is-enabled {serviceName}" : $"is-enabled {serviceName}";
-        var enabledResult = await processManager.ExecuteAsync("systemctl", enabledArgs, cancellationToken: cancellationToken);
+        var enabledResult =
+            await processManager.ExecuteAsync("systemctl", enabledArgs, cancellationToken: cancellationToken);
         var isEnabled = enabledResult.ExitCode == 0;
 
         return new ServiceStatus
@@ -571,11 +629,12 @@ internal class LinuxServiceManager(ILogger logger, IProcessManager processManage
             IsInstalled = isInstalled,
             IsRunning = isRunning,
             IsAutoStartEnabled = isEnabled,
-            State = isRunning ? "running" : (isInstalled ? "stopped" : "not_installed")
+            State = isRunning ? "running" : isInstalled ? "stopped" : "not_installed"
         };
     }
 
-    public async Task<bool> SetAutoStartAsync(string serviceName, bool autoStart, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<bool> SetAutoStartAsync(string serviceName, bool autoStart, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
         var action = autoStart ? "enable" : "disable";
         var args = scope == ServiceScope.User ? $"--user {action} {serviceName}" : $"{action} {serviceName}";
@@ -587,25 +646,26 @@ internal class LinuxServiceManager(ILogger logger, IProcessManager processManage
     {
         var fileName = $"{serviceName}.service";
         return scope == ServiceScope.User
-            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config", "systemd", "user", fileName)
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config", "systemd",
+                "user", fileName)
             : $"/etc/systemd/system/{fileName}";
     }
 
     private static string GenerateSystemdUnit(ServiceConfig config)
     {
         return $""""
-               [Unit]
-               Description={config.Description}
-               After=network.target
+                [Unit]
+                Description={config.Description}
+                After=network.target
 
-               [Service]
-               Type=simple
-               ExecStart={config.BinaryPath} -c {config.ConfigPath}
-               Restart=always
-               RestartSec=5
+                [Service]
+                Type=simple
+                ExecStart={config.BinaryPath} -c {config.ConfigPath}
+                Restart=always
+                RestartSec=5
 
-               [Install]
-               WantedBy=default.target
-               """";
+                [Install]
+                WantedBy=default.target
+                """";
     }
 }

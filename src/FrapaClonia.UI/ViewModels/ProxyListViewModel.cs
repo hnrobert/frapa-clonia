@@ -353,43 +353,50 @@ public partial class ProxyListViewModel : ObservableObject
 
     private async void DuplicateProxy()
     {
-        if (SelectedProxy == null) return;
-        if (_presetService?.CurrentPreset == null) return;
-
-        _logger?.LogInformation("Duplicate proxy: {ProxyName}", SelectedProxy.Name);
-
         try
         {
-            IsSaving = true;
+            if (SelectedProxy == null) return;
+            if (_presetService?.CurrentPreset == null) return;
 
-            var newProxy = new ProxyConfig
+            _logger?.LogInformation("Duplicate proxy: {ProxyName}", SelectedProxy.Name);
+
+            try
             {
-                Name = $"{SelectedProxy.Name} (Copy)",
-                Type = SelectedProxy.Type,
-                LocalIP = SelectedProxy.LocalIP,
-                LocalPort = SelectedProxy.LocalPort,
-                RemotePort = SelectedProxy.RemotePort,
-                CustomDomains = SelectedProxy.CustomDomains,
-                Subdomain = SelectedProxy.Subdomain,
-                Transport = SelectedProxy.Transport,
-                HealthCheck = SelectedProxy.HealthCheck,
-                Plugin = SelectedProxy.Plugin
-            };
+                IsSaving = true;
 
-            _presetService.CurrentPreset.Configuration.Proxies.Add(newProxy);
-            await _presetService.SaveCurrentPresetAsync();
+                var newProxy = new ProxyConfig
+                {
+                    Name = $"{SelectedProxy.Name} (Copy)",
+                    Type = SelectedProxy.Type,
+                    LocalIP = SelectedProxy.LocalIP,
+                    LocalPort = SelectedProxy.LocalPort,
+                    RemotePort = SelectedProxy.RemotePort,
+                    CustomDomains = SelectedProxy.CustomDomains,
+                    Subdomain = SelectedProxy.Subdomain,
+                    Transport = SelectedProxy.Transport,
+                    HealthCheck = SelectedProxy.HealthCheck,
+                    Plugin = SelectedProxy.Plugin
+                };
 
-            await LoadProxiesAsync();
+                _presetService.CurrentPreset.Configuration.Proxies.Add(newProxy);
+                await _presetService.SaveCurrentPresetAsync();
 
-            _logger?.LogInformation("Proxy duplicated: {NewProxyName}", newProxy.Name);
+                await LoadProxiesAsync();
+
+                _logger?.LogInformation("Proxy duplicated: {NewProxyName}", newProxy.Name);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Error duplicating proxy");
+            }
+            finally
+            {
+                IsSaving = false;
+            }
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            _logger?.LogError(ex, "Error duplicating proxy");
-        }
-        finally
-        {
-            IsSaving = false;
+            _logger?.LogError(e, "Error in DuplicateProxy");
         }
     }
 

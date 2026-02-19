@@ -51,7 +51,8 @@ public partial class FrpcConfigurationViewModel : ObservableObject
 
     // Show version selection for web download mode OR package managers that support it
     public bool ShowVersionSelection => IsWebDownloadMode ||
-        (IsPackageManagerMode && SelectedPackageManager?.SupportsVersionSelection == true);
+                                        (IsPackageManagerMode &&
+                                         SelectedPackageManager?.SupportsVersionSelection == true);
 
     // Package Manager
     [ObservableProperty]
@@ -61,7 +62,8 @@ public partial class FrpcConfigurationViewModel : ObservableObject
 
     // Show info that package manager only installs latest (when it doesn't support version selection)
     public bool ShowPackageManagerVersionInfo => IsPackageManagerMode &&
-        SelectedPackageManager is { CanInstallFrpc: true, SupportsVersionSelection: false };
+                                                 SelectedPackageManager is
+                                                     { CanInstallFrpc: true, SupportsVersionSelection: false };
 
     [ObservableProperty] private List<PackageManagerInfo> _availablePackageManagers = [];
     [ObservableProperty] private bool _isCheckingPackageManagers;
@@ -299,13 +301,11 @@ public partial class FrpcConfigurationViewModel : ObservableObject
             var commonPaths = GetCommonBinaryPaths();
             foreach (var testPath in commonPaths)
             {
-                if (File.Exists(testPath))
-                {
-                    FrpcBinaryPath = testPath;
-                    _toastService?.Success(L("Toast_FrpcDetected"), L("Toast_FrpcFoundAt", testPath));
-                    await ValidatePathAsync();
-                    return;
-                }
+                if (!File.Exists(testPath)) continue;
+                FrpcBinaryPath = testPath;
+                _toastService?.Success(L("Toast_FrpcDetected"), L("Toast_FrpcFoundAt", testPath));
+                await ValidatePathAsync();
+                return;
             }
 
             IsPathValid = false;
@@ -387,7 +387,8 @@ public partial class FrpcConfigurationViewModel : ObservableObject
     {
         try
         {
-            if (Avalonia.Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+            if (Avalonia.Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime
+                desktop)
             {
                 _toastService?.Warning(L("Toast_NotAvailable"), L("Toast_FilePickerNotAvailable"));
                 return;
@@ -545,8 +546,8 @@ public partial class FrpcConfigurationViewModel : ObservableObject
 
                 // Select first installed manager that can install frpc
                 SelectedPackageManager = AvailablePackageManagers
-                    .FirstOrDefault(m => m is { IsInstalled: true, CanInstallFrpc: true }) ??
-                    AvailablePackageManagers.FirstOrDefault(m => m.IsInstalled);
+                                             .FirstOrDefault(m => m is { IsInstalled: true, CanInstallFrpc: true }) ??
+                                         AvailablePackageManagers.FirstOrDefault(m => m.IsInstalled);
 
                 _logger?.LogInformation("Found {Count} package managers", AvailablePackageManagers.Count);
             }
@@ -582,18 +583,21 @@ public partial class FrpcConfigurationViewModel : ObservableObject
             }
 
             var versionText = versionToInstall ?? "latest";
-            _toastService?.Info(L("Toast_Installing"), L("Toast_InstallingFrpcVia", $"{SelectedPackageManager.DisplayName} ({versionText})"));
+            _toastService?.Info(L("Toast_Installing"),
+                L("Toast_InstallingFrpcVia", $"{SelectedPackageManager.DisplayName} ({versionText})"));
 
             if (_packageManagerService != null)
             {
-                var success = await _packageManagerService.InstallFrpcAsync(SelectedPackageManager.Name, versionToInstall);
+                var success =
+                    await _packageManagerService.InstallFrpcAsync(SelectedPackageManager.Name, versionToInstall);
                 if (success)
                 {
                     var path = await _packageManagerService.GetFrpcBinaryPathAsync(SelectedPackageManager.Name);
                     if (!string.IsNullOrEmpty(path))
                     {
                         FrpcBinaryPath = path;
-                        _toastService?.Success(L("Toast_Installed"), L("Toast_FrpcInstalledVia", SelectedPackageManager.DisplayName));
+                        _toastService?.Success(L("Toast_Installed"),
+                            L("Toast_FrpcInstalledVia", SelectedPackageManager.DisplayName));
                     }
                 }
                 else
@@ -713,10 +717,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         }
 
         // Apply pending deletions and close
-        _ = Task.Run(async () =>
-        {
-            await ApplyPendingDeletionsAsync();
-        });
+        _ = Task.Run(async () => { await ApplyPendingDeletionsAsync(); });
 
         DialogResult = true;
         CloseRequested?.Invoke(this, EventArgs.Empty);
@@ -736,8 +737,10 @@ public partial class FrpcConfigurationViewModel : ObservableObject
             [
                 @"C:\Program Files\frpc\frpc.exe",
                 @"C:\ProgramData\chocolatey\bin\frpc.exe",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "scoop", "shims", "frpc.exe"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Microsoft", "WinGet", "Links", "frpc.exe")
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "scoop", "shims",
+                    "frpc.exe"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Microsoft",
+                    "WinGet", "Links", "frpc.exe")
             ];
         }
 
@@ -780,7 +783,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
             foreach (var version in versions)
             {
                 version.IsInUse = !string.IsNullOrEmpty(FrpcBinaryPath) &&
-                    string.Equals(version.BinaryPath, FrpcBinaryPath, StringComparison.OrdinalIgnoreCase);
+                                  string.Equals(version.BinaryPath, FrpcBinaryPath, StringComparison.OrdinalIgnoreCase);
             }
 
             DownloadedVersions = versions.ToList();
@@ -846,34 +849,39 @@ public partial class FrpcConfigurationViewModel : ObservableObject
             {
                 bool success;
 
-                if (version.Source == FrpcSource.PackageManager && !string.IsNullOrEmpty(version.PackageManagerName))
+                switch (version.Source)
                 {
-                    // Uninstall via package manager
-                    if (_packageManagerService != null)
+                    case FrpcSource.PackageManager when !string.IsNullOrEmpty(version.PackageManagerName):
                     {
-                        success = await _packageManagerService.UninstallFrpcAsync(version.PackageManagerName);
-                        if (success)
+                        // Uninstall via package manager
+                        if (_packageManagerService != null)
                         {
-                            _logger?.LogInformation("Uninstalled frpc via package manager {PackageManager}",
-                                version.PackageManagerName);
+                            success = await _packageManagerService.UninstallFrpcAsync(version.PackageManagerName);
+                            if (success)
+                            {
+                                _logger?.LogInformation("Uninstalled frpc via package manager {PackageManager}",
+                                    version.PackageManagerName);
+                            }
                         }
+                        else
+                        {
+                            success = false;
+                        }
+
+                        break;
                     }
-                    else
-                    {
+                    case FrpcSource.AppDownload when _nativeDeploymentService != null:
+                        // Delete app-downloaded version
+                        success = await _nativeDeploymentService.DeleteVersionAsync(version.FolderPath);
+                        break;
+                    case FrpcSource.SystemPath:
+                    case FrpcSource.Manual:
+                    default:
+                        // Cannot delete other sources
+                        _logger?.LogWarning("Cannot delete version {Version} from source {Source}",
+                            version.Version, version.Source);
                         success = false;
-                    }
-                }
-                else if (version.Source == FrpcSource.AppDownload && _nativeDeploymentService != null)
-                {
-                    // Delete app-downloaded version
-                    success = await _nativeDeploymentService.DeleteVersionAsync(version.FolderPath);
-                }
-                else
-                {
-                    // Cannot delete other sources
-                    _logger?.LogWarning("Cannot delete version {Version} from source {Source}",
-                        version.Version, version.Source);
-                    success = false;
+                        break;
                 }
 
                 if (success)

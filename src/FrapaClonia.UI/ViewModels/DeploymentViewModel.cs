@@ -122,7 +122,8 @@ public partial class DeploymentViewModel : ObservableObject
         UninstallServiceCommand = CreateAsyncCommand(UninstallServiceAsync, "Error uninstalling service");
         StartServiceCommand = CreateAsyncCommand(StartServiceAsync, "Error starting service");
         StopServiceCommand = CreateAsyncCommand(StopServiceAsync, "Error stopping service");
-        CheckDockerCommand = CreateAsyncCommand(() => CheckDockerAsync(showToast: true), "Error checking Docker availability");
+        CheckDockerCommand =
+            CreateAsyncCommand(() => CheckDockerAsync(showToast: true), "Error checking Docker availability");
         GenerateDockerComposeCommand =
             CreateAsyncCommand(GenerateDockerComposeAsync, "Error generating docker compose");
         StartDockerCommand = CreateAsyncCommand(StartDockerAsync, "Error starting docker");
@@ -231,12 +232,10 @@ public partial class DeploymentViewModel : ObservableObject
             var commonPaths = GetCommonBinaryPaths();
             foreach (var testPath in commonPaths)
             {
-                if (File.Exists(testPath))
-                {
-                    FrpcBinaryPath = testPath;
-                    await ValidateFrpcPathAsync(testPath);
-                    return;
-                }
+                if (!File.Exists(testPath)) continue;
+                FrpcBinaryPath = testPath;
+                await ValidateFrpcPathAsync(testPath);
+                return;
             }
 
             // Not found

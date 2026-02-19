@@ -128,26 +128,29 @@ public class ValidationService(ILogger<ValidationService> logger) : IValidationS
             errors.Add($"Invalid server port: {serverConfig.ServerPort}. Port must be between 1 and 65535");
         }
 
-        // Token validation for token authentication
-        if (serverConfig.Auth?.Method == "token" && string.IsNullOrWhiteSpace(serverConfig.Auth.Token))
+        switch (serverConfig.Auth?.Method)
         {
-            warnings.Add("Token authentication is configured but no token is provided");
-        }
+            // Token validation for token authentication
+            case "token" when string.IsNullOrWhiteSpace(serverConfig.Auth.Token):
+                warnings.Add("Token authentication is configured but no token is provided");
+                break;
+            // OIDC validation
+            case "oidc":
+            {
+                if (string.IsNullOrWhiteSpace(serverConfig.Auth.Oidc?.ClientId))
+                {
+                    errors.Add("OIDC authentication requires clientId");
+                }
+                if (string.IsNullOrWhiteSpace(serverConfig.Auth.Oidc?.ClientSecret))
+                {
+                    errors.Add("OIDC authentication requires clientSecret");
+                }
+                if (string.IsNullOrWhiteSpace(serverConfig.Auth.Oidc?.TokenEndpointUrl))
+                {
+                    errors.Add("OIDC authentication requires tokenEndpointUrl");
+                }
 
-        // OIDC validation
-        if (serverConfig.Auth?.Method == "oidc")
-        {
-            if (string.IsNullOrWhiteSpace(serverConfig.Auth.Oidc?.ClientId))
-            {
-                errors.Add("OIDC authentication requires clientId");
-            }
-            if (string.IsNullOrWhiteSpace(serverConfig.Auth.Oidc?.ClientSecret))
-            {
-                errors.Add("OIDC authentication requires clientSecret");
-            }
-            if (string.IsNullOrWhiteSpace(serverConfig.Auth.Oidc?.TokenEndpointUrl))
-            {
-                errors.Add("OIDC authentication requires tokenEndpointUrl");
+                break;
             }
         }
 
