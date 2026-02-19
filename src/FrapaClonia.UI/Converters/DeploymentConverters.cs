@@ -1,3 +1,4 @@
+using Avalonia.Data;
 using Avalonia.Data.Converters;
 using System.Globalization;
 
@@ -19,7 +20,7 @@ public class BoolToAvailableStringConverter : IValueConverter
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        return BindingOperations.DoNothing;
     }
 }
 
@@ -39,7 +40,7 @@ public class BoolToDeployedStringConverter : IValueConverter
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        return BindingOperations.DoNothing;
     }
 }
 
@@ -59,7 +60,7 @@ public class LevelToLowerConverter : IValueConverter
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        return BindingOperations.DoNothing;
     }
 }
 
@@ -86,7 +87,7 @@ public class StringEqualsConverter : IValueConverter
             return paramValue;
         }
         // Return DoNothing instead of UnsetValue to prevent the crash
-        return Avalonia.Data.BindingOperations.DoNothing;
+        return BindingOperations.DoNothing;
     }
 }
 
@@ -130,7 +131,7 @@ public class BoolToInUseStringConverter : IValueConverter
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        return BindingOperations.DoNothing;
     }
 }
 
@@ -150,7 +151,7 @@ public class CountToEmptyVisibilityConverter : IValueConverter
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        return BindingOperations.DoNothing;
     }
 }
 
@@ -173,7 +174,7 @@ public class BoolToStringConverter : IValueConverter
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        return BindingOperations.DoNothing;
     }
 }
 
@@ -197,6 +198,6 @@ public class BoolToOpacityConverter : IValueConverter
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        return BindingOperations.DoNothing;
     }
 }

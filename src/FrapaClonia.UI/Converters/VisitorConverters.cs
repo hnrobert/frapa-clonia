@@ -1,3 +1,4 @@
+using Avalonia.Data;
 using Avalonia.Data.Converters;
 using System.Globalization;
 
@@ -25,7 +26,7 @@ public class TypeToColorConverter : IValueConverter
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        return BindingOperations.DoNothing;
     }
 }
 
@@ -41,8 +42,7 @@ public class NotNullConverter : IValueConverter
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        // This converter is one-way only (model to view), so ConvertBack is not implemented
-        throw new NotImplementedException();
+        return BindingOperations.DoNothing;
     }
 }
 
@@ -62,6 +62,6 @@ public class EmptyCollectionConverter : IValueConverter
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        return BindingOperations.DoNothing;
     }
 }
