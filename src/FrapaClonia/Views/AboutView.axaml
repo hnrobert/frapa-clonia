@@ -1,0 +1,114 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+        xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:local="clr-namespace:FrapaClonia.UI.MarkupExtensions;assembly=FrapaClonia.UI"
+        x:Class="FrapaClonia.Views.AboutView"
+        x:DataType="vm:AboutViewModel"
+        Title="{Binding Title}"
+        Width="480"
+        Height="400"
+        MinWidth="400"
+        MinHeight="350"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ExtendClientAreaToDecorationsHint="False"
+        Background="{DynamicResource SystemPageBackgroundBrush}">
+
+  <Window.Styles>
+    <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
+  </Window.Styles>
+
+  <Grid RowDefinitions="Auto,*,Auto" Margin="24">
+    <!-- Header with App Icon and Name -->
+    <StackPanel Grid.Row="0" Spacing="16" Orientation="Horizontal" HorizontalAlignment="Center">
+      <Border Width="64" Height="64" CornerRadius="12"
+              Background="{DynamicResource SystemAccentColor}"
+              Padding="12">
+        <Image Source="/Assets/favicon.ico"
+               Stretch="Uniform" />
+      </Border>
+      <StackPanel Spacing="4" VerticalAlignment="Center">
+        <TextBlock Text="FrapaClonia"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+        <TextBlock Text="{Binding Version, StringFormat='Version {0}'}"
+                   FontSize="13"
+                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+      </StackPanel>
+    </StackPanel>
+
+    <!-- Content -->
+    <StackPanel Grid.Row="1" Spacing="16" Margin="0,24,0,0">
+      <!-- Description -->
+      <Border Classes="card" Padding="16">
+        <TextBlock Text="{Binding Description}"
+                   TextWrapping="Wrap"
+                   FontSize="13"
+                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+      </Border>
+
+      <!-- Info Cards -->
+      <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+        <!-- License -->
+        <Border Grid.Column="0" Classes="card" Padding="12">
+          <StackPanel Spacing="8">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="Certificate"
+                               Width="18" Height="18"
+                               Foreground="{DynamicResource SystemAccentColor}" />
+              <TextBlock Text="{local:Localize License}"
+                         FontWeight="SemiBold"
+                         FontSize="13" />
+            </StackPanel>
+            <TextBlock Text="Apache License 2.0"
+                       FontSize="12"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+
+        <!-- Links -->
+        <Border Grid.Column="1" Classes="card" Padding="12">
+          <StackPanel Spacing="8">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="Github"
+                               Width="18" Height="18"
+                               Foreground="{DynamicResource SystemAccentColor}" />
+              <TextBlock Text="GitHub"
+                         FontWeight="SemiBold"
+                         FontSize="13" />
+            </StackPanel>
+            <Button Content="{Binding ProjectUrl}"
+                    Command="{Binding OpenProjectUrlCommand}"
+                    FontSize="11"
+                    Foreground="{DynamicResource SystemAccentColor}"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Padding="0" />
+          </StackPanel>
+        </Border>
+      </Grid>
+
+      <!-- Copyright -->
+      <TextBlock Text="{Binding Copyright}"
+                 FontSize="11"
+                 HorizontalAlignment="Center"
+                 Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+    </StackPanel>
+
+    <!-- Footer -->
+    <StackPanel Grid.Row="2"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Spacing="12"
+                Margin="0,16,0,0">
+      <Button Command="{Binding CloseCommand}"
+              Classes="primary"
+              MinWidth="80"
+              Content="{local:Localize Close}" />
+    </StackPanel>
+  </Grid>
+</Window>

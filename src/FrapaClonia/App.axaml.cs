@@ -1,8 +1,10 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Markup.Xaml;
+using Avalonia.Input;
 using Microsoft.Extensions.DependencyInjection;
 using FrapaClonia.UI.ViewModels;
 using FrapaClonia.Views;
@@ -11,12 +13,14 @@ using System;
 using System.Threading.Tasks;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.UI.MarkupExtensions;
+using CommunityToolkit.Mvvm.Input;
 
 namespace FrapaClonia;
 
 public class App : Application
 {
     private ServiceProvider? _serviceProvider;
+    private MainWindow? _mainWindow;
 
     // ReSharper disable once UnusedMember.Global
     public static IServiceProvider Services => ((App)Current!)._serviceProvider!;
@@ -46,10 +50,14 @@ public class App : Application
 
             // Resolve MainWindow and its ViewModel from DI container
             var mainWindowViewModel = _serviceProvider.GetRequiredService<MainWindowViewModel>();
-            desktop.MainWindow = new MainWindow
+            _mainWindow = new MainWindow
             {
                 DataContext = mainWindowViewModel
             };
+            desktop.MainWindow = _mainWindow;
+
+            // Set up keyboard shortcuts
+            SetupKeyboardShortcuts(_mainWindow);
 
             // Initialize preset service asynchronously after window is created
             var presetService = _serviceProvider.GetRequiredService<IPresetService>();
@@ -69,6 +77,84 @@ public class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private void SetupKeyboardShortcuts(Window window)
+    {
+        // Define key bindings
+        var keyBindings = new[]
+        {
+            // Cmd+W - Close window
+            (Key.W, KeyModifiers.Meta, "CloseWindow"),
+            // Cmd+M - Minimize window
+            (Key.M, KeyModifiers.Meta, "MinimizeWindow"),
+            // Cmd+, - Settings
+            (Key.OemComma, KeyModifiers.Meta, "OpenSettings"),
+            // Cmd+Shift+A - About
+            (Key.A, KeyModifiers.Meta | KeyModifiers.Shift, "OpenAbout"),
+        };
+
+        foreach (var (key, modifiers, commandName) in keyBindings)
+        {
+            var binding = new KeyBinding
+            {
+                Gesture = new KeyGesture(key, modifiers),
+                Command = new RelayCommand(() => ExecuteShortcutCommand(commandName))
+            };
+            window.KeyBindings.Add(binding);
+        }
+    }
+
+    private void ExecuteShortcutCommand(string commandName)
+    {
+        switch (commandName)
+        {
+            case "CloseWindow":
+                _mainWindow?.Close();
+                break;
+            case "MinimizeWindow":
+                _mainWindow?.WindowState = WindowState.Minimized;
+                break;
+            case "OpenSettings":
+                NavigateToSettings();
+                break;
+            case "OpenAbout":
+                ShowAboutDialog();
+                break;
+        }
+    }
+
+    private void NavigateToSettings()
+    {
+        if (_mainWindow?.DataContext is MainWindowViewModel viewModel)
+        {
+            viewModel.NavigateToSettingsCommand.Execute(null);
+        }
+    }
+
+    private void ShowAboutDialog()
+    {
+        if (_serviceProvider == null) return;
+
+        try
+        {
+            var localizationService = _serviceProvider.GetRequiredService<ILocalizationService>();
+            var aboutViewModel = new AboutViewModel(localizationService);
+            var aboutDialog = new AboutView(aboutViewModel);
+
+            if (_mainWindow != null)
+            {
+                aboutDialog.ShowDialog(_mainWindow);
+            }
+            else
+            {
+                aboutDialog.Show();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Failed to show About dialog: {ex}");
+        }
     }
 
     [RequiresUnreferencedCode("Calls Avalonia.Data.Core.Plugins.BindingPlugins.DataValidators")]

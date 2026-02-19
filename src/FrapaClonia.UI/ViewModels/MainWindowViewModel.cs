@@ -51,7 +51,7 @@ public partial class MainWindowViewModel : ObservableObject
     /// <summary>
     /// The toast notification service
     /// </summary>
-    public ToastService? ToastService { get; private set; }
+    public ToastService? ToastService { get; }
 
     /// <summary>
     /// Collection of active toast notifications for binding
@@ -180,25 +180,6 @@ public partial class MainWindowViewModel : ObservableObject
         Navigate("dashboard");
 
         _logger.LogInformation("MainWindowViewModel initialized");
-    }
-
-    /// <summary>
-    /// Initialize the preset service (call after construction)
-    /// </summary>
-    public async Task InitializeAsync()
-    {
-        if (_presetService != null)
-        {
-            await _presetService.InitializeAsync();
-            UpdatePresetItems();
-
-            // Select current preset
-            if (_presetService.CurrentPreset != null)
-            {
-                _selectedPresetItem = PresetItems.FirstOrDefault(p => p.Id == _presetService.CurrentPreset.Id);
-                OnPropertyChanged(nameof(SelectedPresetItem));
-            }
-        }
     }
 
     /// <summary>

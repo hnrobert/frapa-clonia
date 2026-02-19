@@ -15,6 +15,11 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <PropertyGroup>
+    <!-- Suppress duplicate source file warning (Designer.cs is included both by SDK glob and StronglyTypedFileName) -->
+    <NoWarn>$(NoWarn);CS2002</NoWarn>
+  </PropertyGroup>
+
   <!-- Allow UI project to access internal Strings class -->
   <ItemGroup>
     <InternalsVisibleTo Include="FrapaClonia.UI" />
