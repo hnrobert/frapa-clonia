@@ -147,6 +147,33 @@ public partial class DeploymentViewModel : ObservableObject
             CreateAsyncCommand(GenerateDockerComposeAsync, "Error generating docker compose");
         StartDockerCommand = CreateAsyncCommand(StartDockerAsync, "Error starting docker");
         StopDockerCommand = CreateAsyncCommand(StopDockerAsync, "Error stopping docker");
+
+        // Subscribe to preset changes
+        if (_presetService != null)
+        {
+            _presetService.CurrentPresetChanged += OnCurrentPresetChanged;
+        }
+    }
+
+    private void OnCurrentPresetChanged(object? sender, PresetChangedEventArgs e)
+    {
+        // Reload deployment settings when preset changes
+        if (_presetService?.CurrentPreset != null)
+        {
+            LoadFromPreset(_presetService.CurrentPreset);
+
+            // Auto-detect if no saved path exists or the saved path is invalid
+            if (string.IsNullOrEmpty(FrpcBinaryPath) || !File.Exists(FrpcBinaryPath))
+            {
+                _ = AutoDetectFrpcPathAsync();
+            }
+            else
+            {
+                _ = ValidateFrpcPathAsync(FrpcBinaryPath);
+            }
+
+            _ = RefreshServiceStatusAsync();
+        }
     }
 
     private IRelayCommand CreateAsyncCommand(Func<Task> action, string errorMessage)
