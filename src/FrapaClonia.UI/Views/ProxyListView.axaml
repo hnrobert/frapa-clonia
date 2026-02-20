@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+             xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
              xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:local="clr-namespace:FrapaClonia.UI.MarkupExtensions;assembly=FrapaClonia.UI"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -13,11 +14,15 @@
     <vm:ProxyListViewModel />
   </Design.DataContext>
 
+  <UserControl.Resources>
+    <converters:EmptyCollectionConverter x:Key="EmptyCollectionConverter" />
+  </UserControl.Resources>
+
   <UserControl.Styles>
     <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
   </UserControl.Styles>
 
-  <Grid RowDefinitions="Auto,Auto,Auto,*">
+  <Grid RowDefinitions="Auto,Auto,*">
 
     <!-- Page Header -->
     <Border Grid.Row="0" Classes="page-header">
@@ -29,35 +34,34 @@
                      Classes="page-subtitle" />
         </StackPanel>
 
-        <!-- Loading Indicator and Count -->
-        <StackPanel Grid.Column="1"
-                    Orientation="Horizontal"
-                    Spacing="{StaticResource SpacingM}"
-                    VerticalAlignment="Center">
-          <ProgressBar IsIndeterminate="True"
-                       Width="16" Height="16"
-                       IsVisible="{Binding IsLoading}"
-                       VerticalAlignment="Center" />
-          <TextBlock Text="{local:Localize Loading}"
-                     FontSize="{StaticResource FontSizeS}"
-                     Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                     IsVisible="{Binding IsLoading}"
-                     VerticalAlignment="Center"
-                     Margin="{StaticResource ThicknessLeftS}" />
-
-          <TextBlock>
-            <Run Text="{Binding Proxies.Count}" />
-            <Run Text=" " />
-            <Run Text="{local:Localize ProxiesCount}" />
-          </TextBlock>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
+          <Button Command="{Binding RefreshCommand}"
+                  Classes="action-button icon-text-button"
+                  IsEnabled="{Binding !IsLoading}"
+                  ToolTip.Tip="{local:Localize RefreshProxyList}">
+            <StackPanel>
+              <mi:MaterialIcon Kind="Refresh" />
+              <TextBlock Text="{local:Localize Refresh}" />
+            </StackPanel>
+          </Button>
+          <Button Command="{Binding AddProxyCommand}"
+                  Classes="primary icon-text-button"
+                  ToolTip.Tip="{local:Localize AddNewProxyConfiguration}">
+            <StackPanel>
+              <mi:MaterialIcon Kind="Plus" />
+              <TextBlock Text="{local:Localize AddProxy}" />
+            </StackPanel>
+          </Button>
         </StackPanel>
       </Grid>
     </Border>
 
     <!-- Page Toolbar -->
-    <Border Grid.Row="1" Classes="page-toolbar">
+    <Border Grid.Row="1"
+            Classes="page-toolbar"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+            BorderThickness="0,0,0,1">
       <Grid ColumnDefinitions="*,Auto">
-        <!-- Search and Filter -->
         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
           <TextBox Text="{Binding SearchQuery}"
                    Watermark="{local:Localize SearchByName}"
@@ -69,97 +73,39 @@
                     Classes="filter-box" />
         </StackPanel>
 
-        <!-- Primary Action - Add Proxy -->
-        <Button Grid.Column="1"
-                Command="{Binding AddProxyCommand}"
-                Classes="primary icon-text-button">
-          <StackPanel Orientation="Horizontal">
-            <mi:MaterialIcon Kind="Plus" />
-            <TextBlock Text="{local:Localize AddProxy}" />
+        <!-- Status Info -->
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{StaticResource SpacingL}">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+            <Border Classes="status-dot active" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding Proxies.Count, FallbackValue='0'}"
+                       FontSize="{StaticResource FontSizeM}"
+                       FontWeight="{StaticResource FontWeightSemiBold}"
+                       VerticalAlignment="Center" />
+            <TextBlock Text="{local:Localize Active}"
+                       FontSize="{StaticResource FontSizeM}"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       VerticalAlignment="Center" />
           </StackPanel>
-        </Button>
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
+            <Border Classes="status-dot inactive" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding Proxies.Count, FallbackValue='0'}"
+                       FontSize="{StaticResource FontSizeM}"
+                       FontWeight="{StaticResource FontWeightSemiBold}"
+                       VerticalAlignment="Center" />
+            <TextBlock Text="{local:Localize Total}"
+                       FontSize="{StaticResource FontSizeM}"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </StackPanel>
       </Grid>
     </Border>
 
-    <!-- Bulk Actions Toolbar -->
-    <Border Grid.Row="2"
-            Classes="page-toolbar"
-            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-            BorderThickness="0,0,0,1"
-            IsVisible="{Binding Proxies.Count, Converter={x:Static ObjectConverters.IsNotNull}}">
-      <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingM}" HorizontalAlignment="Right">
-        <Button Command="{Binding RefreshCommand}"
-                IsEnabled="{Binding !IsLoading}"
-                Classes="action-button icon-text-button">
-          <StackPanel Orientation="Horizontal">
-            <mi:MaterialIcon Kind="Refresh" />
-            <TextBlock Text="{local:Localize Refresh}" />
-          </StackPanel>
-        </Button>
-
-        <Button Command="{Binding ExportAllCommand}"
-                Classes="action-button icon-text-button">
-          <StackPanel Orientation="Horizontal">
-            <mi:MaterialIcon Kind="Export" />
-            <TextBlock Text="{local:Localize ExportAll}" />
-          </StackPanel>
-        </Button>
-
-        <Button Command="{Binding ImportCommand}"
-                Classes="action-button icon-text-button">
-          <StackPanel Orientation="Horizontal">
-            <mi:MaterialIcon Kind="Import" />
-            <TextBlock Text="{local:Localize Import}" />
-          </StackPanel>
-        </Button>
-
-        <Button Command="{Binding ClearAllCommand}"
-                Classes="action-button icon-text-button">
-          <StackPanel Orientation="Horizontal">
-            <mi:MaterialIcon Kind="DeleteVariant" />
-            <TextBlock Text="{local:Localize ClearAll}" />
-          </StackPanel>
-        </Button>
-      </StackPanel>
-    </Border>
-
     <!-- Page Content -->
-    <Border Grid.Row="2" Grid.RowSpan="2" Classes="page-content">
-      <Grid>
-        <!-- Empty State -->
-        <Border IsVisible="{Binding Proxies.Count, Converter={x:Static ObjectConverters.IsNull}}"
-                Classes="empty-state"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
-          <StackPanel Spacing="{StaticResource SpacingM}" HorizontalAlignment="Center">
-            <mi:MaterialIcon Kind="ProxyOutline"
-                             Width="48"
-                             Height="48"
-                             Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                             HorizontalAlignment="Center" />
-            <TextBlock Text="{local:Localize NoProxiesConfigured}"
-                       FontSize="{StaticResource FontSizeXL}"
-                       FontWeight="{StaticResource FontWeightSemiBold}"
-                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
-                       HorizontalAlignment="Center" />
-            <TextBlock Text="{local:Localize CreateYourFirstProxyConfiguration}"
-                       FontSize="{StaticResource FontSizeM}"
-                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                       HorizontalAlignment="Center" />
-            <Button Command="{Binding AddProxyCommand}"
-                    Classes="primary icon-text-button"
-                    HorizontalAlignment="Center"
-                    Margin="{StaticResource ThicknessTopL}">
-              <StackPanel Orientation="Horizontal">
-                <mi:MaterialIcon Kind="Plus" />
-                <TextBlock Text="{local:Localize CreateProxy}" />
-              </StackPanel>
-            </Button>
-          </StackPanel>
-        </Border>
-
-        <!-- Proxy Items -->
-        <ScrollViewer IsVisible="{Binding Proxies.Count, Converter={x:Static ObjectConverters.IsNotNull}}">
+    <Border Grid.Row="2" Classes="page-content">
+      <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Spacing="0">
+          <!-- Proxy Items -->
           <ItemsControl ItemsSource="{Binding Proxies}">
             <ItemsControl.ItemTemplate>
               <DataTemplate>
@@ -288,8 +234,41 @@
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
-        </ScrollViewer>
-      </Grid>
+
+          <!-- Empty State -->
+          <Border IsVisible="{Binding Proxies, Converter={StaticResource EmptyCollectionConverter}}"
+                  Classes="empty-state"
+                  HorizontalAlignment="Center">
+            <StackPanel Spacing="{StaticResource SpacingL}" HorizontalAlignment="Center">
+              <mi:MaterialIcon Kind="ProxyOutline"
+                               Width="48"
+                               Height="48"
+                               Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                               HorizontalAlignment="Center" />
+              <TextBlock Text="{local:Localize NoProxiesConfigured}"
+                         FontSize="{StaticResource FontSizeXL}"
+                         FontWeight="{StaticResource FontWeightSemiBold}"
+                         Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                         HorizontalAlignment="Center" />
+              <TextBlock Text="{local:Localize CreateYourFirstProxyConfiguration}"
+                         FontSize="{StaticResource FontSizeM}"
+                         Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                         TextWrapping="Wrap"
+                         TextAlignment="Center"
+                         MaxWidth="400" />
+              <Button Command="{Binding AddProxyCommand}"
+                      Classes="primary icon-text-button"
+                      HorizontalAlignment="Center"
+                      Margin="{StaticResource ThicknessTopS}">
+                <StackPanel>
+                  <mi:MaterialIcon Kind="Plus" />
+                  <TextBlock Text="{local:Localize CreateProxy}" />
+                </StackPanel>
+              </Button>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </ScrollViewer>
     </Border>
   </Grid>
 </UserControl>
