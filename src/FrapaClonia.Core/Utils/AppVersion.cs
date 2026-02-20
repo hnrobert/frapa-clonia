@@ -44,7 +44,7 @@ public static class AppVersion
             }
 #else
             // Release: Strip build metadata (everything after '+')
-            _cachedVersion = plusIndex > 0 ? informationalVersion[..plusIndex] : informationalVersion;
+            field = plusIndex > 0 ? informationalVersion[..plusIndex] : informationalVersion;
 #endif
 
             return field;
