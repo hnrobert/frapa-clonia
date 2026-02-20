@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
+        xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
         xmlns:local="clr-namespace:FrapaClonia.UI.MarkupExtensions;assembly=FrapaClonia.UI"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -17,111 +18,51 @@
     <vm:ProxyEditorViewModel />
   </Design.DataContext>
 
+  <Window.Resources>
+    <converters:EmptyStringConverter x:Key="EmptyStringConverter" />
+  </Window.Resources>
+
   <Window.Styles>
     <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
-
-    <Style Selector="TextBlock.sectionHeader">
-      <Setter Property="FontSize" Value="18" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="Margin" Value="0,0,0,16" />
-    </Style>
-
-    <Style Selector="TextBlock.fieldLabel">
-      <Setter Property="FontSize" Value="13" />
-      <Setter Property="FontWeight" Value="Medium" />
-      <Setter Property="Margin" Value="0,0,0,6" />
-    </Style>
-
-    <Style Selector="TextBlock.fieldLabel.required">
-      <Setter Property="FontSize" Value="13" />
-      <Setter Property="FontWeight" Value="Medium" />
-      <Setter Property="Margin" Value="0,0,0,6" />
-    </Style>
-
-    <Style Selector="TextBlock.hintText">
-      <Setter Property="FontSize" Value="11" />
-      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-      <Setter Property="Margin" Value="0,4,0,0" />
-      <Setter Property="TextWrapping" Value="Wrap" />
-    </Style>
-
-    <Style Selector="Border.settingsCard">
-      <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltMediumBrush}" />
-      <Setter Property="CornerRadius" Value="8" />
-      <Setter Property="Padding" Value="20" />
-      <Setter Property="Margin" Value="0,0,0,20" />
-    </Style>
-
-    <Style Selector="TextBox.fieldControl">
-      <Setter Property="MinHeight" Value="32" />
-      <Setter Property="Padding" Value="10,8" />
-      <Setter Property="FontSize" Value="13" />
-    </Style>
-
-    <Style Selector="ComboBox.fieldControl">
-      <Setter Property="MinHeight" Value="32" />
-      <Setter Property="Padding" Value="10,6" />
-      <Setter Property="FontSize" Value="13" />
-    </Style>
-
-    <Style Selector="NumericUpDown.fieldControl">
-      <Setter Property="MinHeight" Value="32" />
-      <Setter Property="Padding" Value="10,6" />
-      <Setter Property="FontSize" Value="13" />
-    </Style>
-
-    <Style Selector="CheckBox.settingsCheckBox">
-      <Setter Property="Margin" Value="0,8,0,8" />
-    </Style>
-
-    <Style Selector="CheckBox.settingsCheckBox ContentPresenter">
-      <Setter Property="FontSize" Value="13" />
-    </Style>
   </Window.Styles>
 
   <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-    <Panel Margin="32">
+    <Panel Margin="{StaticResource ContentPadding}">
       <Grid RowDefinitions="Auto,Auto">
         <!-- Header Section -->
-        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,32">
+        <StackPanel Grid.Row="0" Spacing="{StaticResource SpacingS}" Margin="{StaticResource ThicknessBottomL}">
           <TextBlock Text="{local:Localize ProxyConfiguration}"
-                     FontSize="28"
-                     FontWeight="SemiBold" />
+                     Classes="page-title" />
           <TextBlock Text="{local:Localize ConfigureYourProxySettingsBelow}"
-                     FontSize="13"
-                     Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                     Classes="page-subtitle" />
         </StackPanel>
 
         <!-- Form Content -->
-        <StackPanel Grid.Row="1" Spacing="0">
+        <StackPanel Grid.Row="1" Spacing="{StaticResource SpacingL}">
 
           <!-- Basic Settings Section -->
-          <Border Classes="settingsCard">
-            <StackPanel Spacing="20">
-              <TextBlock Text="{local:Localize BasicSettings}" Classes="sectionHeader" />
+          <Border Classes="card">
+            <StackPanel Spacing="{StaticResource SpacingM}">
+              <TextBlock Text="{local:Localize BasicSettings}" Classes="section-title" />
 
-              <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="16">
-                <StackPanel Grid.Row="0" Grid.Column="0">
-                  <TextBlock Classes="fieldLabel required">
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}">
+                <StackPanel Grid.Column="0">
+                  <TextBlock Classes="field-label">
                     <Run Text="{local:Localize ProxyName}" />
-                    <Run Text="*"
-                         Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+                    <Run Text="*" Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
                   </TextBlock>
                   <TextBox Text="{Binding ProxyName}"
-                           Classes="fieldControl"
                            Watermark="e.g., my-web-server"
                            Name="ProxyNameTextBox" />
                 </StackPanel>
 
-                <StackPanel Grid.Row="0" Grid.Column="1">
-                  <TextBlock Classes="fieldLabel required">
+                <StackPanel Grid.Column="1">
+                  <TextBlock Classes="field-label">
                     <Run Text="{local:Localize ProxyType}" />
-                    <Run Text="*"
-                         Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+                    <Run Text="*" Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
                   </TextBlock>
                   <ComboBox ItemsSource="{Binding ProxyTypes}"
                             SelectedItem="{Binding ProxyType}"
-                            Classes="fieldControl"
                             Name="ProxyTypeComboBox" />
                 </StackPanel>
               </Grid>
@@ -129,29 +70,26 @@
           </Border>
 
           <!-- Local Settings Section -->
-          <Border Classes="settingsCard">
-            <StackPanel Spacing="20">
-              <TextBlock Text="{local:Localize LocalSettings}" Classes="sectionHeader" />
+          <Border Classes="card">
+            <StackPanel Spacing="{StaticResource SpacingM}">
+              <TextBlock Text="{local:Localize LocalSettings}" Classes="section-title" />
 
-              <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="16">
-                <StackPanel Grid.Row="0" Grid.Column="0">
-                  <TextBlock Text="{local:Localize LocalIP}" Classes="fieldLabel" />
+              <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}">
+                <StackPanel Grid.Column="0">
+                  <TextBlock Text="{local:Localize LocalIP}" Classes="field-label" />
                   <TextBox Text="{Binding LocalIP}"
-                           Classes="fieldControl"
                            Watermark="127.0.0.1"
                            Name="LocalIPTextBox" />
                   <TextBlock Text="{local:Localize TheIPOfTheLocalService}"
-                             Classes="hintText" />
+                             Classes="hint" />
                 </StackPanel>
 
                 <StackPanel Grid.Row="0" Grid.Column="1">
-                  <TextBlock Classes="fieldLabel required">
+                  <TextBlock Classes="field-label">
                     <Run Text="{local:Localize LocalPort}" />
-                    <Run Text="*"
-                         Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+                    <Run Text="*" Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
                   </TextBlock>
                   <NumericUpDown Value="{Binding LocalPort}"
-                                 Classes="fieldControl"
                                  Minimum="1"
                                  Maximum="65535"
                                  Increment="1"
@@ -163,13 +101,11 @@
 
                 <StackPanel Grid.Row="1" Grid.Column="0"
                             IsVisible="{Binding IsTcpOrUdp}">
-                  <TextBlock Classes="fieldLabel required">
+                  <TextBlock Classes="field-label">
                     <Run Text="{local:Localize RemotePort}" />
-                    <Run Text="*"
-                         Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+                    <Run Text="*" Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
                   </TextBlock>
                   <NumericUpDown Value="{Binding RemotePort}"
-                                 Classes="fieldControl"
                                  Minimum="1"
                                  Maximum="65535"
                                  Increment="1"
@@ -178,59 +114,54 @@
                                  HorizontalAlignment="Stretch"
                                  Name="RemotePortNumeric" />
                   <TextBlock Text="The port on the frp server"
-                             Classes="hintText" />
+                             Classes="hint" />
                 </StackPanel>
               </Grid>
             </StackPanel>
           </Border>
 
           <!-- Domain Settings Section (Conditional) -->
-          <Border Classes="settingsCard" IsVisible="{Binding NeedsDomain}">
-            <StackPanel Spacing="20">
-              <TextBlock Text="{local:Localize DomainSettings}" Classes="sectionHeader" />
+          <Border Classes="card" IsVisible="{Binding NeedsDomain}">
+            <StackPanel Spacing="{StaticResource SpacingM}">
+              <TextBlock Text="{local:Localize DomainSettings}" Classes="section-title" />
 
-              <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="16">
-                <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-                  <TextBlock Text="{local:Localize CustomDomains}" Classes="fieldLabel" />
+              <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}">
+                <StackPanel Grid.Column="0" Grid.ColumnSpan="2">
+                  <TextBlock Text="{local:Localize CustomDomains}" Classes="field-label" />
                   <TextBox Text="{Binding CustomDomains}"
-                           Classes="fieldControl"
                            Watermark="{local:Localize EgWwwExampleCom}"
                            Name="CustomDomainsTextBox" />
                   <TextBlock Text="{local:Localize CommaSeparatedList}"
-                             Classes="hintText" />
+                             Classes="hint" />
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Grid.Column="0">
-                  <TextBlock Text="{local:Localize Subdomain}" Classes="fieldLabel" />
+                  <TextBlock Text="{local:Localize Subdomain}" Classes="field-label" />
                   <TextBox Text="{Binding Subdomain}"
-                           Classes="fieldControl"
                            Watermark="e.g., myapp (for myapp.yourdomain.com)"
                            Name="SubdomainTextBox" />
                   <TextBlock Text="{local:Localize LeaveEmptyIfUsingCustomDomains}"
-                             Classes="hintText" />
+                             Classes="hint" />
                 </StackPanel>
 
                 <!-- HTTP Authentication (Conditional) -->
                 <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
                             IsVisible="{Binding IsHttpOrHttps}"
-                            Margin="0,12,0,0">
+                            Margin="{StaticResource ThicknessTopM}">
                   <TextBlock Text="{local:Localize HTTPAuthentication}"
-                             FontSize="14"
-                             FontWeight="SemiBold"
-                             Margin="0,0,0,12" />
-                  <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+                             Classes="section-title" />
+                  <Grid ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}"
+                        Margin="{StaticResource ThicknessTopS}">
                     <StackPanel Grid.Column="0">
-                      <TextBlock Text="{local:Localize Username}" Classes="fieldLabel" />
+                      <TextBlock Text="{local:Localize Username}" Classes="field-label" />
                       <TextBox Text="{Binding HttpUser}"
-                               Classes="fieldControl"
                                Watermark="Optional"
                                Name="HttpUserTextBox" />
                     </StackPanel>
                     <StackPanel Grid.Column="1">
-                      <TextBlock Text="{local:Localize Password}" Classes="fieldLabel" />
+                      <TextBlock Text="{local:Localize Password}" Classes="field-label" />
                       <TextBox Text="{Binding HttpPassword}"
-                               Classes="fieldControl"
-                               PasswordChar="•"
+                               PasswordChar="*"
                                Watermark="Optional"
                                Name="HttpPasswordTextBox" />
                     </StackPanel>
@@ -241,132 +172,119 @@
           </Border>
 
           <!-- Secure Tunnel Settings Section (Conditional) -->
-          <Border Classes="settingsCard" IsVisible="{Binding IsStcpOrXtcpOrSudp}">
-            <StackPanel Spacing="20">
-              <TextBlock Text="{local:Localize SecureTunnelSettings}" Classes="sectionHeader" />
+          <Border Classes="card" IsVisible="{Binding IsStcpOrXtcpOrSudp}">
+            <StackPanel Spacing="{StaticResource SpacingM}">
+              <TextBlock Text="{local:Localize SecureTunnelSettings}" Classes="section-title" />
 
-              <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="16">
-                <StackPanel Grid.Row="0" Grid.Column="0">
-                  <TextBlock Classes="fieldLabel required">
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}">
+                <StackPanel Grid.Column="0">
+                  <TextBlock Classes="field-label">
                     <Run Text="{local:Localize SecretKey}" />
-                    <Run Text="*"
-                         Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+                    <Run Text="*" Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
                   </TextBlock>
                   <TextBox Text="{Binding SecretKey}"
-                           Classes="fieldControl"
-                           PasswordChar="•"
+                           PasswordChar="*"
                            Watermark="Shared secret for this tunnel"
                            Name="SecretKeyTextBox" />
                   <TextBlock Text="{local:Localize MustMatchTheVisitorsSecretKey}"
-                             Classes="hintText" />
+                             Classes="hint" />
                 </StackPanel>
 
-                <StackPanel Grid.Row="0" Grid.Column="1">
-                  <TextBlock Text="{local:Localize AllowedUsers}" Classes="fieldLabel" />
+                <StackPanel Grid.Column="1">
+                  <TextBlock Text="{local:Localize AllowedUsers}" Classes="field-label" />
                   <TextBox Text="{Binding AllowUsers}"
-                           Classes="fieldControl"
                            Watermark="Comma-separated list of allowed users"
                            Name="AllowUsersTextBox" />
                   <TextBlock Text="{local:Localize LeaveEmptyToAllowAllUsers}"
-                             Classes="hintText" />
+                             Classes="hint" />
                 </StackPanel>
               </Grid>
             </StackPanel>
           </Border>
 
           <!-- TCP Multiplexer Settings Section (Conditional) -->
-          <Border Classes="settingsCard" IsVisible="{Binding IsTcpmux}">
-            <StackPanel Spacing="20">
-              <TextBlock Text="{local:Localize TcpMultiplexerSettings}"
-                         Classes="sectionHeader" />
+          <Border Classes="card" IsVisible="{Binding IsTcpmux}">
+            <StackPanel Spacing="{StaticResource SpacingM}">
+              <TextBlock Text="{local:Localize TcpMultiplexerSettings}" Classes="section-title" />
 
               <StackPanel>
-                <TextBlock Text="{local:Localize MultiplexerName}" Classes="fieldLabel" />
+                <TextBlock Text="{local:Localize MultiplexerName}" Classes="field-label" />
                 <TextBox Text="{Binding Multiplexer}"
-                         Classes="fieldControl"
                          Watermark="{local:Localize NameOfTheMultiplexer}"
                          Name="MultiplexerTextBox" />
                 <TextBlock Text="{local:Localize TheMultiplexerMustBeConfiguredOnTheServer}"
-                           Classes="hintText" />
+                           Classes="hint" />
               </StackPanel>
             </StackPanel>
           </Border>
 
           <!-- Transport Options Section -->
-          <Border Classes="settingsCard">
-            <StackPanel Spacing="16">
-              <TextBlock Text="{local:Localize TransportOptions}" Classes="sectionHeader" />
+          <Border Classes="card">
+            <StackPanel Spacing="{StaticResource SpacingM}">
+              <TextBlock Text="{local:Localize TransportOptions}" Classes="section-title" />
 
-              <CheckBox IsChecked="{Binding UseEncryption}" Classes="settingsCheckBox">
-                <StackPanel Spacing="3">
-                  <TextBlock Text="{local:Localize EnableEncryption}" FontSize="13"
-                             FontWeight="Medium" />
-                  <TextBlock
-                    Text="{local:Localize EncryptTheConnectionBetweenClientAndServer}"
-                    FontSize="11"
-                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-                </StackPanel>
-              </CheckBox>
-
-              <CheckBox IsChecked="{Binding UseCompression}" Classes="settingsCheckBox">
-                <StackPanel Spacing="3">
-                  <TextBlock Text="{local:Localize EnableCompression}" FontSize="13"
-                             FontWeight="Medium" />
-                  <TextBlock Text="{local:Localize CompressDataToReduceBandwidthUsage}"
-                             FontSize="11"
+              <CheckBox IsChecked="{Binding UseEncryption}">
+                <StackPanel Spacing="{StaticResource SpacingXS}">
+                  <TextBlock Text="{local:Localize EnableEncryption}" FontWeight="{StaticResource FontWeightMedium}" />
+                  <TextBlock Text="{local:Localize EncryptTheConnectionBetweenClientAndServer}"
+                             FontSize="{StaticResource FontSizeS}"
                              Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                 </StackPanel>
               </CheckBox>
 
-              <StackPanel IsVisible="{Binding BandwidthLimit}" Spacing="8" Margin="0,8,0,0">
-                <TextBlock Text="{local:Localize BandwidthLimit}" Classes="fieldLabel" />
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+              <CheckBox IsChecked="{Binding UseCompression}">
+                <StackPanel Spacing="{StaticResource SpacingXS}">
+                  <TextBlock Text="{local:Localize EnableCompression}" FontWeight="{StaticResource FontWeightMedium}" />
+                  <TextBlock Text="{local:Localize CompressDataToReduceBandwidthUsage}"
+                             FontSize="{StaticResource FontSizeS}"
+                             Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                </StackPanel>
+              </CheckBox>
+
+              <StackPanel IsVisible="{Binding BandwidthLimit}" Spacing="{StaticResource SpacingS}"
+                          Margin="{StaticResource ThicknessTopS}">
+                <TextBlock Text="{local:Localize BandwidthLimit}" Classes="field-label" />
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource SpacingM}">
                   <TextBox Grid.Column="0"
                            Text="{Binding BandwidthLimit}"
-                           Classes="fieldControl"
                            Watermark="{local:Localize Eg1Mb256Kb}"
                            Name="BandwidthLimitTextBox" />
                   <ComboBox Grid.Column="1"
                             ItemsSource="{Binding BandwidthLimitModes}"
-                            SelectedItem="{Binding BandwidthLimitMode}"
-                            Classes="fieldControl"
+                            SelectedItem="{Binding BandwidthLimitMode, Mode=TwoWay}"
                             MinWidth="100"
                             Name="BandwidthLimitModeComboBox" />
                 </Grid>
                 <TextBlock Text="{local:Localize LimitBandwidthForThisProxy}"
-                           Classes="hintText" />
+                           Classes="hint" />
               </StackPanel>
             </StackPanel>
           </Border>
 
           <!-- Health Check Section -->
-          <Border Classes="settingsCard">
-            <StackPanel Spacing="20">
-              <CheckBox IsChecked="{Binding HealthCheckEnabled}" Classes="settingsCheckBox">
-                <StackPanel Spacing="2">
-                  <TextBlock Text="{local:Localize EnableHealthCheck}" FontSize="16"
-                             FontWeight="SemiBold" />
+          <Border Classes="card">
+            <StackPanel Spacing="{StaticResource SpacingM}">
+              <CheckBox IsChecked="{Binding HealthCheckEnabled}">
+                <StackPanel Spacing="{StaticResource SpacingXS}">
+                  <TextBlock Text="{local:Localize EnableHealthCheck}" FontWeight="{StaticResource FontWeightSemiBold}" />
                   <TextBlock Text="{local:Localize MonitorTheHealthOfTheLocalService}"
-                             FontSize="12"
+                             FontSize="{StaticResource FontSizeS}"
                              Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                 </StackPanel>
               </CheckBox>
 
-              <StackPanel IsVisible="{Binding HealthCheckEnabled}" Spacing="20">
-                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="16">
-                  <StackPanel Grid.Row="0" Grid.Column="0">
-                    <TextBlock Text="{local:Localize TypeLabel}" Classes="fieldLabel" />
+              <StackPanel IsVisible="{Binding HealthCheckEnabled}" Spacing="{StaticResource SpacingM}">
+                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}">
+                  <StackPanel Grid.Column="0">
+                    <TextBlock Text="{local:Localize TypeLabel}" Classes="field-label" />
                     <ComboBox ItemsSource="{Binding HealthCheckTypes}"
                               SelectedItem="{Binding HealthCheckType}"
-                              Classes="fieldControl"
                               Name="HealthCheckTypeComboBox" />
                   </StackPanel>
 
                   <StackPanel Grid.Row="0" Grid.Column="1">
-                    <TextBlock Text="{local:Localize TimeoutSeconds}"
-                               Classes="fieldLabel" />
+                    <TextBlock Text="{local:Localize TimeoutSeconds}" Classes="field-label" />
                     <NumericUpDown Value="{Binding HealthCheckTimeoutSeconds}"
-                                   Classes="fieldControl"
                                    Minimum="1"
                                    Maximum="300"
                                    Increment="1"
@@ -377,9 +295,8 @@
                   </StackPanel>
 
                   <StackPanel Grid.Row="1" Grid.Column="0">
-                    <TextBlock Text="{local:Localize MaxFailed}" Classes="fieldLabel" />
+                    <TextBlock Text="{local:Localize MaxFailed}" Classes="field-label" />
                     <NumericUpDown Value="{Binding HealthCheckMaxFailed}"
-                                   Classes="fieldControl"
                                    Minimum="1"
                                    Maximum="100"
                                    Increment="1"
@@ -390,10 +307,8 @@
                   </StackPanel>
 
                   <StackPanel Grid.Row="1" Grid.Column="1">
-                    <TextBlock Text="{local:Localize IntervalSeconds}"
-                               Classes="fieldLabel" />
+                    <TextBlock Text="{local:Localize IntervalSeconds}" Classes="field-label" />
                     <NumericUpDown Value="{Binding HealthCheckIntervalSeconds}"
-                                   Classes="fieldControl"
                                    Minimum="1"
                                    Maximum="3600"
                                    Increment="1"
@@ -404,81 +319,80 @@
                   </StackPanel>
                 </Grid>
 
-                <StackPanel IsVisible="{Binding IsHttpOrHttps}" Spacing="16">
+                <StackPanel IsVisible="{Binding IsHttpOrHttps}" Spacing="{StaticResource SpacingM}">
                   <StackPanel>
-                    <TextBlock Text="{local:Localize PathLabel}" Classes="fieldLabel" />
+                    <TextBlock Text="{local:Localize PathLabel}" Classes="field-label" />
                     <TextBox Text="{Binding HealthCheckPath}"
-                             Classes="fieldControl"
                              Watermark="/health"
                              Name="HealthCheckPathTextBox" />
                   </StackPanel>
 
                   <StackPanel>
-                    <TextBlock Text="{local:Localize HeadersLabel}" Classes="fieldLabel" />
+                    <TextBlock Text="{local:Localize HeadersLabel}" Classes="field-label" />
                     <TextBox Text="{Binding HealthCheckHeaders}"
-                             Classes="fieldControl"
                              Watermark="{local:Localize HeaderNameValue}"
                              AcceptsReturn="True"
                              TextWrapping="Wrap"
                              MinHeight="80"
                              Name="HealthCheckHeadersTextBox" />
                     <TextBlock Text="{local:Localize OneHeaderPerLine}"
-                               Classes="hintText" />
+                               Classes="hint" />
                   </StackPanel>
                 </StackPanel>
               </StackPanel>
             </StackPanel>
           </Border>
 
-          <!-- Plugin Configuration Section (Conditional) -->
-          <Border Classes="settingsCard" IsVisible="{Binding PluginType}">
-            <StackPanel Spacing="20">
-              <TextBlock Text="{local:Localize PluginConfiguration}" Classes="sectionHeader" />
+          <!-- Plugin Configuration Section -->
+          <Border Classes="card">
+            <StackPanel Spacing="{StaticResource SpacingM}">
+              <TextBlock Text="{local:Localize PluginConfiguration}" Classes="section-title" />
 
-              <StackPanel Spacing="8">
-                <TextBlock Text="{local:Localize PluginTypeLabel}" Classes="fieldLabel" />
+              <StackPanel Spacing="{StaticResource SpacingS}">
+                <TextBlock Text="{local:Localize PluginTypeLabel}" Classes="field-label" />
                 <ComboBox ItemsSource="{Binding PluginTypes}"
                           SelectedItem="{Binding PluginType}"
-                          Classes="fieldControl"
-                          Name="PluginTypeComboBox" />
+                          Name="PluginTypeComboBox">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding Converter={StaticResource EmptyStringConverter}}" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
               </StackPanel>
 
               <!-- HTTP Proxy Plugin -->
-              <StackPanel IsVisible="{Binding PluginHttpProxyUrl, FallbackValue=False}" Spacing="8">
-                <TextBlock Text="{local:Localize HTTPProxyUrl}" Classes="fieldLabel" />
+              <StackPanel IsVisible="{Binding IsHttpProxyPlugin}"
+                          Spacing="{StaticResource SpacingS}">
+                <TextBlock Text="{local:Localize HTTPProxyUrl}" Classes="field-label" />
                 <TextBox Text="{Binding PluginHttpProxyUrl}"
-                         Classes="fieldControl"
                          Watermark="http://proxy.example.com:8080"
                          Name="PluginHttpProxyUrlTextBox" />
               </StackPanel>
 
               <!-- SOCKS5 Plugin -->
-              <StackPanel IsVisible="{Binding PluginSocks5Url, FallbackValue=False}" Spacing="8">
-                <TextBlock Text="{local:Localize Socks5Url}" Classes="fieldLabel" />
+              <StackPanel IsVisible="{Binding IsSocks5Plugin}"
+                          Spacing="{StaticResource SpacingS}">
+                <TextBlock Text="{local:Localize Socks5Url}" Classes="field-label" />
                 <TextBox Text="{Binding PluginSocks5Url}"
-                         Classes="fieldControl"
                          Watermark="socks5://proxy.example.com:1080"
                          Name="PluginSocks5UrlTextBox" />
               </StackPanel>
 
               <!-- Static File Plugin -->
-              <StackPanel IsVisible="{Binding PluginStaticFilePath, FallbackValue=False}" Spacing="16">
-                <TextBlock Text="{local:Localize StaticFilePluginSettings}"
-                           FontSize="14"
-                           FontWeight="SemiBold"
-                           Margin="0,0,0,8" />
-                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="16">
-                  <StackPanel Grid.Row="0" Grid.Column="0">
-                    <TextBlock Text="{local:Localize LocalPath}" Classes="fieldLabel" />
+              <StackPanel IsVisible="{Binding IsStaticFilePlugin}"
+                          Spacing="{StaticResource SpacingM}">
+                <TextBlock Text="{local:Localize StaticFilePluginSettings}" Classes="section-title" />
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}">
+                  <StackPanel Grid.Column="0">
+                    <TextBlock Text="{local:Localize LocalPath}" Classes="field-label" />
                     <TextBox Text="{Binding PluginStaticFilePath}"
-                             Classes="fieldControl"
                              Watermark="/path/to/files"
                              Name="PluginStaticFilePathTextBox" />
                   </StackPanel>
-                  <StackPanel Grid.Row="0" Grid.Column="1">
-                    <TextBlock Text="{local:Localize UrlPrefix}" Classes="fieldLabel" />
+                  <StackPanel Grid.Column="1">
+                    <TextBlock Text="{local:Localize UrlPrefix}" Classes="field-label" />
                     <TextBox Text="{Binding PluginStaticFilePrefixUrl}"
-                             Classes="fieldControl"
                              Watermark="/files"
                              Name="PluginStaticFilePrefixUrlTextBox" />
                   </StackPanel>
@@ -486,60 +400,48 @@
               </StackPanel>
 
               <!-- HTTPS to HTTP Plugin -->
-              <StackPanel IsVisible="{Binding PluginHttps2HttpLocalAddr, FallbackValue=False}"
-                          Spacing="16">
-                <TextBlock Text="{local:Localize HttpsToHTTPPluginSettings}"
-                           FontSize="14"
-                           FontWeight="SemiBold"
-                           Margin="0,0,0,8" />
-                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="16">
-                  <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-                    <TextBlock Text="{local:Localize LocalAddress}" Classes="fieldLabel" />
+              <StackPanel IsVisible="{Binding IsHttps2HTTPPlugin}"
+                          Spacing="{StaticResource SpacingM}">
+                <TextBlock Text="{local:Localize HttpsToHTTPPluginSettings}" Classes="section-title" />
+                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}">
+                  <StackPanel Grid.Column="0" Grid.ColumnSpan="2">
+                    <TextBlock Text="{local:Localize LocalAddress}" Classes="field-label" />
                     <TextBox Text="{Binding PluginHttps2HttpLocalAddr}"
-                             Classes="fieldControl"
                              Watermark="127.0.0.1:80"
                              Name="PluginHttps2HttpLocalAddrTextBox" />
                   </StackPanel>
                   <StackPanel Grid.Row="1" Grid.Column="0">
-                    <TextBlock Text="{local:Localize CrtPath}" Classes="fieldLabel" />
+                    <TextBlock Text="{local:Localize CrtPath}" Classes="field-label" />
                     <TextBox Text="{Binding PluginHttps2HttpCrtPath}"
-                             Classes="fieldControl"
                              Name="PluginHttps2HttpCrtPathTextBox" />
                   </StackPanel>
                   <StackPanel Grid.Row="1" Grid.Column="1">
-                    <TextBlock Text="{local:Localize Keypath}" Classes="fieldLabel" />
+                    <TextBlock Text="{local:Localize Keypath}" Classes="field-label" />
                     <TextBox Text="{Binding PluginHttps2HttpKeyPath}"
-                             Classes="fieldControl"
                              Name="PluginHttps2HttpKeyPathTextBox" />
                   </StackPanel>
                 </Grid>
               </StackPanel>
 
               <!-- HTTP to HTTPS Plugin -->
-              <StackPanel IsVisible="{Binding PluginHttp2HttpsLocalAddr, FallbackValue=False}"
-                          Spacing="16">
-                <TextBlock Text="{local:Localize HTTPToHttpsPluginSettings}"
-                           FontSize="14"
-                           FontWeight="SemiBold"
-                           Margin="0,0,0,8" />
-                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="16">
-                  <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-                    <TextBlock Text="{local:Localize LocalAddress}" Classes="fieldLabel" />
+              <StackPanel IsVisible="{Binding IsHttp2HttpsPlugin}"
+                          Spacing="{StaticResource SpacingM}">
+                <TextBlock Text="{local:Localize HTTPToHttpsPluginSettings}" Classes="section-title" />
+                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}">
+                  <StackPanel Grid.Column="0" Grid.ColumnSpan="2">
+                    <TextBlock Text="{local:Localize LocalAddress}" Classes="field-label" />
                     <TextBox Text="{Binding PluginHttp2HttpsLocalAddr}"
-                             Classes="fieldControl"
                              Watermark="127.0.0.1:443"
                              Name="PluginHttp2HttpsLocalAddrTextBox" />
                   </StackPanel>
                   <StackPanel Grid.Row="1" Grid.Column="0">
-                    <TextBlock Text="{local:Localize CrtPath}" Classes="fieldLabel" />
+                    <TextBlock Text="{local:Localize CrtPath}" Classes="field-label" />
                     <TextBox Text="{Binding PluginHttp2HttpsCrtPath}"
-                             Classes="fieldControl"
                              Name="PluginHttp2HttpsCrtPathTextBox" />
                   </StackPanel>
                   <StackPanel Grid.Row="1" Grid.Column="1">
-                    <TextBlock Text="{local:Localize Keypath}" Classes="fieldLabel" />
+                    <TextBlock Text="{local:Localize Keypath}" Classes="field-label" />
                     <TextBox Text="{Binding PluginHttp2HttpsKeyPath}"
-                             Classes="fieldControl"
                              Name="PluginHttp2HttpsKeyPathTextBox" />
                   </StackPanel>
                 </Grid>
@@ -549,17 +451,15 @@
 
           <!-- Validation Error Banner -->
           <Border Background="{DynamicResource SystemControlErrorTextForegroundBrush}"
-                  CornerRadius="6"
-                  Padding="16"
-                  IsVisible="{Binding HasValidationError}"
-                  Margin="0,0,0,24">
-            <StackPanel Spacing="8">
+                  CornerRadius="{StaticResource CornerRadiusM}"
+                  Padding="{StaticResource ThicknessM}"
+                  IsVisible="{Binding HasValidationError}">
+            <StackPanel Spacing="{StaticResource SpacingS}">
               <TextBlock Text="{local:Localize ConfigurationError}"
-                         FontSize="14"
-                         FontWeight="SemiBold"
-                         Foreground="{DynamicResource SystemControlOnAccentHighBrush}" />
+                         FontWeight="{StaticResource FontWeightSemiBold}"
+                         Foreground="White" />
               <TextBlock Text="{Binding ValidationError}"
-                         Foreground="{DynamicResource SystemControlOnAccentHighBrush}"
+                         Foreground="White"
                          TextWrapping="Wrap" />
             </StackPanel>
           </Border>
@@ -567,8 +467,8 @@
           <!-- Action Buttons -->
           <StackPanel Orientation="Horizontal"
                       HorizontalAlignment="Right"
-                      Spacing="12"
-                      Margin="0,8,0,16">
+                      Spacing="{StaticResource SpacingM}"
+                      Margin="{StaticResource ThicknessTopS}">
             <Button Command="{Binding CancelCommand}"
                     Classes="action-button"
                     IsEnabled="{Binding !IsSaving}"

@@ -7,10 +7,12 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0,
+      Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0,
+      Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="About" xml:space="preserve">
     <value>Uber</value>
@@ -315,7 +317,7 @@
   <data name="EGOpenidProfile" xml:space="preserve">
     <value>z.B. openid, profile</value>
   </data>
-  <data name="EG_1MB_256KB" xml:space="preserve">
+  <data name="Eg1Mb256Kb" xml:space="preserve">
     <value>z.B. 1MB, 256KB</value>
   </data>
   <data name="EG_www_example_com" xml:space="preserve">
@@ -597,9 +599,6 @@
   <data name="NoVisitorsConfigured" xml:space="preserve">
     <value>Keine Besucher konfiguriert</value>
   </data>
-  <data name="OIDC" xml:space="preserve">
-    <value>OIDC</value>
-  </data>
   <data name="OneHeaderPerLine" xml:space="preserve">
     <value>Ein Header pro Zeile (z.B. Authorization: Bearer token)</value>
   </data>
@@ -720,7 +719,7 @@
   <data name="RestartFrpc" xml:space="preserve">
     <value>Frpc Neu Starten</value>
   </data>
-  <data name="SOCKS5URL" xml:space="preserve">
+  <data name="Socks5Url" xml:space="preserve">
     <value>SOCKS5-URL</value>
   </data>
   <data name="Save" xml:space="preserve">

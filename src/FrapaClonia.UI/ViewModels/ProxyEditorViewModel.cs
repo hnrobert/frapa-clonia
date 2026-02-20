@@ -26,7 +26,7 @@ public partial class ProxyEditorViewModel : ObservableObject
 
     [ObservableProperty] private string _localIP = "127.0.0.1";
 
-    [ObservableProperty] private int _localPort;
+    [ObservableProperty] private int? _localPort;
 
     [ObservableProperty] private int? _remotePort;
 
@@ -58,7 +58,7 @@ public partial class ProxyEditorViewModel : ObservableObject
 
     [ObservableProperty] private string? _bandwidthLimit;
 
-    [ObservableProperty] private string? _bandwidthLimitMode;
+    [ObservableProperty] private string? _bandwidthLimitMode = "client";
 
     [ObservableProperty] private bool _healthCheckEnabled;
 
@@ -102,6 +102,8 @@ public partial class ProxyEditorViewModel : ObservableObject
 
     [ObservableProperty] private bool _isSaving;
 
+    public event EventHandler? CloseRequested;
+
     public IRelayCommand SaveCommand { get; }
     public IRelayCommand CancelCommand { get; }
     public IRelayCommand AddLocationCommand { get; }
@@ -113,7 +115,7 @@ public partial class ProxyEditorViewModel : ObservableObject
 
     public List<string> BandwidthLimitModes { get; } = ["client", "server"];
 
-    public List<string> PluginTypes { get; } = ["http_proxy", "socks5", "static_file", "https2http", "http2https"];
+    public List<string> PluginTypes { get; } = ["", "http_proxy", "socks5", "static_file", "https2http", "http2https"];
 
     public bool IsTcpOrUdp => ProxyType is "tcp" or "udp";
     public bool IsHttpOrHttps => ProxyType is "http" or "https";
@@ -156,13 +158,18 @@ public partial class ProxyEditorViewModel : ObservableObject
                 _logger?.LogError(e, "Error saving proxy");
             }
         }, () => !IsSaving);
-        CancelCommand = new RelayCommand(() => _logger?.LogInformation("Cancel edit"));
+        CancelCommand = new RelayCommand(() => CloseRequested?.Invoke(this, EventArgs.Empty));
         AddLocationCommand = new RelayCommand(AddLocation);
         AddAllowUserCommand = new RelayCommand(AddAllowUser);
 
         if (proxyToEdit != null)
         {
             LoadFromProxy(proxyToEdit);
+        }
+        else
+        {
+            // Set defaults for new proxy
+            BandwidthLimitMode = "client";
         }
     }
 
@@ -215,7 +222,7 @@ public partial class ProxyEditorViewModel : ObservableObject
         UseEncryption = proxy.Transport?.UseEncryption ?? false;
         UseCompression = proxy.Transport?.UseCompression ?? false;
         BandwidthLimit = proxy.Transport?.BandwidthLimit;
-        BandwidthLimitMode = proxy.Transport?.BandwidthLimitMode;
+        BandwidthLimitMode = proxy.Transport?.BandwidthLimitMode ?? "client";
 
         if (proxy.HealthCheck != null)
         {
@@ -297,7 +304,7 @@ public partial class ProxyEditorViewModel : ObservableObject
             Name = ProxyName,
             Type = ProxyType,
             LocalIP = LocalIP,
-            LocalPort = LocalPort,
+            LocalPort = LocalPort ?? 0,
             RemotePort = RemotePort,
             CustomDomains = ParseList(CustomDomains),
             Subdomain = Subdomain,
@@ -313,7 +320,7 @@ public partial class ProxyEditorViewModel : ObservableObject
                 UseEncryption = UseEncryption,
                 UseCompression = UseCompression,
                 BandwidthLimit = BandwidthLimit,
-                BandwidthLimitMode = BandwidthLimitMode
+                BandwidthLimitMode = !string.IsNullOrWhiteSpace(BandwidthLimit) ? BandwidthLimitMode : null
             },
             HealthCheck = HealthCheckEnabled
                 ? new HealthCheckConfig

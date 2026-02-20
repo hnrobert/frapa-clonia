@@ -7,10 +7,12 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0,
+      Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0,
+      Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="About" xml:space="preserve">
     <value>关于</value>
@@ -26,6 +28,12 @@
   </data>
   <data name="AddProxy" xml:space="preserve">
     <value>添加代理</value>
+  </data>
+  <data name="AddNewProxyConfiguration" xml:space="preserve">
+    <value>添加新的代理配置</value>
+  </data>
+  <data name="RefreshProxyList" xml:space="preserve">
+    <value>刷新代理列表</value>
   </data>
   <data name="AddVisitor" xml:space="preserve">
     <value>添加访问者</value>
@@ -74,6 +82,9 @@
   </data>
   <data name="BandwidthLimit" xml:space="preserve">
     <value>带宽限制</value>
+  </data>
+  <data name="Eg1Mb256Kb" xml:space="preserve">
+    <value>例如：1MB、256KB</value>
   </data>
   <data name="BasicSettings" xml:space="preserve">
     <value>基本设置</value>
@@ -303,7 +314,7 @@
   <data name="DuplicatePreset" xml:space="preserve">
     <value>复制预设</value>
   </data>
-  <data name="DuplicateProxy" xml:space="preserve">
+  <data name="Eg1Mb256Kbxy" xml:space="preserve">
     <value>复制代理</value>
   </data>
   <data name="DuplicateProxyToolTip" xml:space="preserve">
@@ -570,6 +581,9 @@
   <data name="NoLogsAvailable" xml:space="preserve">
     <value>没有可用日志</value>
   </data>
+  <data name="None" xml:space="preserve">
+    <value>无</value>
+  </data>
   <data name="NoProxiesConfigured" xml:space="preserve">
     <value>未配置代理</value>
   </data>
@@ -581,9 +595,6 @@
   </data>
   <data name="NoVisitorsConfigured" xml:space="preserve">
     <value>未配置访问者</value>
-  </data>
-  <data name="OIDC" xml:space="preserve">
-    <value>OIDC</value>
   </data>
   <data name="OneHeaderPerLine" xml:space="preserve">
     <value>每行一个标头（例如：Authorization: Bearer token）</value>
@@ -713,9 +724,6 @@
   </data>
   <data name="RestartFrpc" xml:space="preserve">
     <value>重启 Frpc</value>
-  </data>
-  <data name="SOCKS5URL" xml:space="preserve">
-    <value>SOCKS5 URL</value>
   </data>
   <data name="Source" xml:space="preserve">
     <value>来源</value>
@@ -1298,6 +1306,9 @@
   </data>
   <data name="HTTPProxyUrl" xml:space="preserve">
     <value>HTTP 代理 URL</value>
+  </data>
+  <data name="Socks5Url" xml:space="preserve">
+    <value>SOCKS5 URL</value>
   </data>
   <data name="HTTPToHttpsPluginSettings" xml:space="preserve">
     <value>HTTP 转 HTTPS 插件设置</value>

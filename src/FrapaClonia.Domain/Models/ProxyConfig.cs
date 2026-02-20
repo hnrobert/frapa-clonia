@@ -6,7 +6,7 @@ namespace FrapaClonia.Domain.Models;
 public class ProxyConfig
 {
     public string Name { get; set; } = "";
-    public string Type { get; set; } = "tcp";  // tcp, udp, http, https, tcpmux, stcp, sudp, xtcp
+    public string Type { get; set; } = "tcp"; // tcp, udp, http, https, tcpmux, stcp, sudp, xtcp
     public Dictionary<string, string>? Annotations { get; set; }
     public ProxyTransport? Transport { get; set; }
     public Dictionary<string, string>? Metadata { get; set; }
@@ -27,20 +27,20 @@ public class ProxyConfig
     };
 
     // Type-specific properties
-    public int? RemotePort { get; set; }  // TCP, UDP
-    public List<string>? CustomDomains { get; set; }  // HTTP, HTTPS, TCPMUX
-    public string? Subdomain { get; set; }  // HTTP, HTTPS, TCPMUX
-    public List<string>? Locations { get; set; }  // HTTP
-    public string? HttpUser { get; set; }  // HTTP, TCPMUX
-    public string? HttpPassword { get; set; }  // HTTP, TCPMUX
-    public string? HostHeaderRewrite { get; set; }  // HTTP
-    public HeaderOperations? RequestHeaders { get; set; }  // HTTP
-    public HeaderOperations? ResponseHeaders { get; set; }  // HTTP
-    public string? RouteByHttpUser { get; set; }  // HTTP, TCPMUX
-    public string? SecretKey { get; set; }  // STCP, XTCP, SUDP
-    public List<string>? AllowUsers { get; set; }  // STCP, XTCP, SUDP
-    public NatTraversalConfig? NatTraversal { get; set; }  // XTCP
-    public string? Multiplexer { get; set; }  // TCPMUX
+    public int? RemotePort { get; set; } // TCP, UDP
+    public List<string>? CustomDomains { get; set; } // HTTP, HTTPS, TCPMUX
+    public string? Subdomain { get; set; } // HTTP, HTTPS, TCPMUX
+    public List<string>? Locations { get; set; } // HTTP
+    public string? HttpUser { get; set; } // HTTP, TCPMUX
+    public string? HttpPassword { get; set; } // HTTP, TCPMUX
+    public string? HostHeaderRewrite { get; set; } // HTTP
+    public HeaderOperations? RequestHeaders { get; set; } // HTTP
+    public HeaderOperations? ResponseHeaders { get; set; } // HTTP
+    public string? RouteByHttpUser { get; set; } // HTTP, TCPMUX
+    public string? SecretKey { get; set; } // STCP, XTCP, SUDP
+    public List<string>? AllowUsers { get; set; } // STCP, XTCP, SUDP
+    public NatTraversalConfig? NatTraversal { get; set; } // XTCP
+    public string? Multiplexer { get; set; } // TCPMUX
 }
 
 /// <summary>
@@ -50,9 +50,9 @@ public class ProxyTransport
 {
     public bool UseEncryption { get; init; }
     public bool UseCompression { get; init; }
-    public string? BandwidthLimit { get; init; }  // e.g., "1MB", "256KB"
-    public string? BandwidthLimitMode { get; init; }  // client or server
-    public string? ProxyProtocolVersion { get; init; }  // v1 or v2
+    public string? BandwidthLimit { get; init; } // e.g., "1MB", "256KB"
+    public string? BandwidthLimitMode { get; init; } // client or server
+    public string? ProxyProtocolVersion { get; init; } // v1 or v2
 }
 
 /// <summary>
@@ -79,11 +79,11 @@ public class LoadBalancerConfig
 /// </summary>
 public class HealthCheckConfig
 {
-    public required string Type { get; init; }  // tcp or http
+    public required string Type { get; init; } // tcp or http
     public int TimeoutSeconds { get; init; } = 3;
     public int MaxFailed { get; init; } = 1;
     public int IntervalSeconds { get; init; } = 10;
-    public string? Path { get; init; }  // for http type
+    public string? Path { get; init; } // for http type
     public List<HttpHeader>? HttpHeaders { get; init; }
 }
 
@@ -111,7 +111,7 @@ public class HeaderOperations
 /// </summary>
 public class ClientPluginOptions
 {
-    public required string Type { get; init; }  // http_proxy, socks5, static_file, https2http, http2https
+    public required string Type { get; init; } // http_proxy, socks5, static_file, https2http, http2https
 
     // HTTP/SOCKS proxy
     public string? HttpProxyUrl { get; init; }
@@ -147,7 +147,7 @@ public class NatTraversalConfig
 public class VisitorConfig
 {
     public string Name { get; set; } = "";
-    public string Type { get; set; } = "stcp";  // stcp, xtcp, sudp
+    public string Type { get; set; } = "stcp"; // stcp, xtcp, sudp
     public string ServerName { get; set; } = "";
     public string SecretKey { get; set; } = "";
     public string BindAddr { get; set; } = "127.0.0.1";

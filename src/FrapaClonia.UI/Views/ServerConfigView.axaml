@@ -44,8 +44,10 @@
               <!-- Server Address -->
               <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
                 <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="4">
-                  <TextBlock Text="{local:Localize ServerAddress}"
-                             Classes="field-label" />
+                  <TextBlock Classes="field-label">
+                    <Run Text="{local:Localize ServerAddress}" />
+                    <Run Text="*" Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+                  </TextBlock>
                   <Button Classes="hint-icon"
                           ToolTip.Tip="{local:Localize TheAddressOfTheFrpsServer}" />
                 </StackPanel>
@@ -97,16 +99,17 @@
                 <ComboBox Grid.Column="1"
                           SelectedIndex="{Binding AuthMethodIndex}">
                   <ComboBoxItem>Token</ComboBoxItem>
-                  <ComboBoxItem>{local:Localize OIDC}</ComboBoxItem>
+                  <ComboBoxItem>OIDC</ComboBoxItem>
                 </ComboBox>
               </Grid>
 
               <!-- Token Auth -->
               <StackPanel Spacing="{StaticResource SpacingM}" IsVisible="{Binding !IsOidcAuth}">
                 <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
-                  <TextBlock Grid.Row="0" Grid.Column="0"
-                             Text="{local:Localize Token}"
-                             Classes="field-label" />
+                  <TextBlock Grid.Row="0" Grid.Column="0" Classes="field-label">
+                    <Run Text="{local:Localize Token}" />
+                    <Run Text="*" Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+                  </TextBlock>
                   <TextBox Grid.Column="1"
                            Text="{Binding Token}"
                            PasswordChar="*"
@@ -118,18 +121,20 @@
               <StackPanel Spacing="{StaticResource SpacingM}" IsVisible="{Binding IsOidcAuth}">
                 <!-- Client ID -->
                 <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
-                  <TextBlock Grid.Row="0" Grid.Column="0"
-                             Text="{local:Localize ClientId}"
-                             Classes="field-label" />
+                  <TextBlock Grid.Row="0" Grid.Column="0" Classes="field-label">
+                    <Run Text="{local:Localize ClientId}" />
+                    <Run Text="*" Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+                  </TextBlock>
                   <TextBox Grid.Column="1"
                            Text="{Binding OidcClientId}" />
                 </Grid>
 
                 <!-- Client Secret -->
                 <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
-                  <TextBlock Grid.Row="0" Grid.Column="0"
-                             Text="{local:Localize ClientSecret}"
-                             Classes="field-label" />
+                  <TextBlock Grid.Row="0" Grid.Column="0" Classes="field-label">
+                    <Run Text="{local:Localize ClientSecret}" />
+                    <Run Text="*" Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+                  </TextBlock>
                   <TextBox Grid.Column="1"
                            Text="{Binding OidcClientSecret}"
                            PasswordChar="*" />
@@ -137,9 +142,10 @@
 
                 <!-- Token Endpoint -->
                 <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
-                  <TextBlock Grid.Row="0" Grid.Column="0"
-                             Text="{local:Localize TokenEndpoint}"
-                             Classes="field-label" />
+                  <TextBlock Grid.Row="0" Grid.Column="0" Classes="field-label">
+                    <Run Text="{local:Localize TokenEndpoint}" />
+                    <Run Text="*" Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+                  </TextBlock>
                   <TextBox Grid.Column="1"
                            Text="{Binding OidcTokenEndpointUrl}"
                            Watermark="https://" />
