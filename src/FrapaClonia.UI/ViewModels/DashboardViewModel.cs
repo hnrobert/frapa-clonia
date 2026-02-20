@@ -42,6 +42,8 @@ public partial class DashboardViewModel : ObservableObject
 
     [ObservableProperty] private bool _canDeletePreset = true;
 
+    private string _originalPresetName = "";
+
     public IRelayCommand NavigateToServerConfigCommand { get; }
     public IRelayCommand NavigateToProxyListCommand { get; }
     public IRelayCommand NavigateToDeploymentCommand { get; }
@@ -55,6 +57,7 @@ public partial class DashboardViewModel : ObservableObject
 
     // Preset management commands
     public IRelayCommand RenamePresetCommand { get; }
+    public IRelayCommand CancelRenameCommand { get; }
     public IRelayCommand DeletePresetCommand { get; }
     public IRelayCommand DuplicatePresetCommand { get; }
     public IRelayCommand ExportTomlCommand { get; }
@@ -141,14 +144,32 @@ public partial class DashboardViewModel : ObservableObject
         {
             try
             {
-                await RenamePresetAsync();
+                if (IsRenaming)
+                {
+                    // Save the rename
+                    await RenamePresetAsync();
+                }
+                else
+                {
+                    // Enter renaming mode
+                    IsRenaming = true;
+                    // Store original name in case we need to cancel
+                    _originalPresetName = PresetName;
+                }
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Could not rename preset");
                 _toastService?.Error("Rename Failed", $"Could not rename preset: {e.Message}");
             }
-        }, () => !string.IsNullOrWhiteSpace(PresetName) && _presetService?.CurrentPreset != null);
+        }, () => _presetService?.CurrentPreset != null);
+
+        CancelRenameCommand = new RelayCommand(() =>
+        {
+            // Restore original name and exit renaming mode
+            PresetName = _originalPresetName;
+            IsRenaming = false;
+        }, () => IsRenaming);
 
         DeletePresetCommand = new RelayCommand(async void () =>
         {
@@ -161,7 +182,7 @@ public partial class DashboardViewModel : ObservableObject
                 _logger.LogError(e, "Could not delete preset");
                 _toastService?.Error("Delete Failed", $"Could not delete preset: {e.Message}");
             }
-        }, () => CanDeletePreset);
+        }, () => CanDeletePreset && _presetService?.CurrentPreset != null);
 
         DuplicatePresetCommand = new RelayCommand(async void () =>
         {
@@ -247,6 +268,12 @@ public partial class DashboardViewModel : ObservableObject
         RenamePresetCommand.NotifyCanExecuteChanged();
     }
 
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnIsRenamingChanged(bool value)
+    {
+        CancelRenameCommand.NotifyCanExecuteChanged();
+    }
+
     private void OnProcessStateChanged(object? sender, ProcessStateChangedEventArgs e)
     {
         IsFrpcRunning = e.IsRunning;
@@ -273,6 +300,11 @@ public partial class DashboardViewModel : ObservableObject
         StatusMessage = IsFrpcRunning ? $"Frpc is running (PID: {FrpcProcessId})" : "Frpc is not running";
     }
 
+    public void RefreshPresetInfo()
+    {
+        UpdatePresetInfo();
+    }
+
     private void UpdatePresetInfo()
     {
         if (_presetService?.CurrentPreset != null)
@@ -291,6 +323,8 @@ public partial class DashboardViewModel : ObservableObject
         }
 
         CanDeletePreset = _presetService?.Presets.Count > 1;
+        RenamePresetCommand.NotifyCanExecuteChanged();
+        CancelRenameCommand.NotifyCanExecuteChanged();
         DeletePresetCommand.NotifyCanExecuteChanged();
         DuplicatePresetCommand.NotifyCanExecuteChanged();
         ExportTomlCommand.NotifyCanExecuteChanged();
@@ -377,11 +411,25 @@ public partial class DashboardViewModel : ObservableObject
 
     private async Task RenamePresetAsync()
     {
-        if (_presetService?.CurrentPreset == null || string.IsNullOrWhiteSpace(PresetName)) return;
+        if (_presetService?.CurrentPreset == null) return;
 
-        var oldName = _presetService.CurrentPreset.Name;
-        await _presetService.RenamePresetAsync(_presetService.CurrentPreset.Id, PresetName);
-        _toastService?.Success("Preset Renamed", $"Renamed preset from '{oldName}' to '{PresetName}'");
+        // Validate the new name
+        if (string.IsNullOrWhiteSpace(PresetName))
+        {
+            // Restore original name if empty
+            PresetName = _originalPresetName;
+            IsRenaming = false;
+            return;
+        }
+
+        // Only rename if name actually changed
+        if (PresetName != _originalPresetName)
+        {
+            var oldName = _presetService.CurrentPreset.Name;
+            await _presetService.RenamePresetAsync(_presetService.CurrentPreset.Id, PresetName);
+            _toastService?.Success("Preset Renamed", $"Renamed preset from '{oldName}' to '{PresetName}'");
+        }
+
         IsRenaming = false;
     }
 

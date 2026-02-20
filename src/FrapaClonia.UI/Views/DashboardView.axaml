@@ -78,29 +78,47 @@
             </StackPanel>
 
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource SpacingM}">
-              <!-- Preset Name (Editable) -->
+              <!-- Preset Name (Editable only when renaming) -->
               <TextBox Grid.Column="0"
                        Text="{Binding PresetName}"
                        Watermark="{local:Localize PresetName}"
-                       FontSize="14" />
+                       FontSize="14"
+                       IsReadOnly="{Binding !IsRenaming}"
+                       KeyDown="OnPresetNameKeyDown"
+                       x:Name="PresetNameTextBox" />
 
               <!-- Action Buttons -->
               <StackPanel Grid.Column="1"
                           Orientation="Horizontal"
                           Spacing="{StaticResource SpacingS}">
+                <!-- Rename/Save Button -->
                 <Button Command="{Binding RenamePresetCommand}"
                         ToolTip.Tip="{local:Localize RenamePreset}"
                         Classes="icon-button">
-                  <mi:MaterialIcon Kind="Pencil" Width="18" Height="18" />
+                  <Panel>
+                    <mi:MaterialIcon Kind="Pencil" Width="18" Height="18"
+                                     IsVisible="{Binding !IsRenaming}" />
+                    <mi:MaterialIcon Kind="Check" Width="18" Height="18"
+                                     IsVisible="{Binding IsRenaming}" />
+                  </Panel>
+                </Button>
+                <!-- Cancel Button (only visible when renaming) -->
+                <Button Command="{Binding CancelRenameCommand}"
+                        ToolTip.Tip="{local:Localize CancelRename}"
+                        Classes="icon-button"
+                        IsVisible="{Binding IsRenaming}">
+                  <mi:MaterialIcon Kind="Close" Width="18" Height="18" />
                 </Button>
                 <Button Command="{Binding DuplicatePresetCommand}"
                         ToolTip.Tip="{local:Localize DuplicatePreset}"
-                        Classes="icon-button">
+                        Classes="icon-button"
+                        IsEnabled="{Binding !IsRenaming}">
                   <mi:MaterialIcon Kind="ContentCopy" Width="18" Height="18" />
                 </Button>
                 <Button Command="{Binding DeletePresetCommand}"
                         ToolTip.Tip="{local:Localize DeletePreset}"
-                        Classes="icon-button">
+                        Classes="icon-button"
+                        IsEnabled="{Binding !IsRenaming}">
                   <mi:MaterialIcon Kind="Delete" Width="18" Height="18" />
                 </Button>
 

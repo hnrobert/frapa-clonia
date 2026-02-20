@@ -693,6 +693,12 @@
   <data name="RenamePreset" xml:space="preserve">
     <value>Rename Preset</value>
   </data>
+  <data name="SavePresetName" xml:space="preserve">
+    <value>Save Preset Name</value>
+  </data>
+  <data name="CancelRename" xml:space="preserve">
+    <value>Cancel Rename</value>
+  </data>
   <data name="Required" xml:space="preserve">
     <value>Required</value>
   </data>

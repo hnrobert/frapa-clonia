@@ -693,6 +693,12 @@
   <data name="RenamePreset" xml:space="preserve">
     <value>重命名预设</value>
   </data>
+  <data name="SavePresetName" xml:space="preserve">
+    <value>保存预设名称</value>
+  </data>
+  <data name="CancelRename" xml:space="preserve">
+    <value>取消重命名</value>
+  </data>
   <data name="Required" xml:space="preserve">
     <value>必填</value>
   </data>
