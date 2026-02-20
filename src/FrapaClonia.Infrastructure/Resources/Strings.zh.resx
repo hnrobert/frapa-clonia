@@ -525,6 +525,9 @@
   <data name="LoggingSection" xml:space="preserve">
     <value>日志</value>
   </data>
+  <data name="LogSettings" xml:space="preserve">
+    <value>日志设置</value>
+  </data>
   <data name="Logs" xml:space="preserve">
     <value>日志</value>
   </data>
@@ -1061,6 +1064,12 @@
   </data>
   <data name="Toast_InvalidPath" xml:space="preserve">
     <value>路径无效</value>
+  </data>
+  <data name="Toast_LogSettingsSaved" xml:space="preserve">
+    <value>日志设置已保存</value>
+  </data>
+  <data name="Toast_Saved" xml:space="preserve">
+    <value>已保存</value>
   </data>
   <data name="Toast_NativeDeploymentNotImplemented" xml:space="preserve">
     <value>本地部署功能尚未实现</value>

@@ -252,51 +252,6 @@
             </StackPanel>
           </Border>
 
-          <!-- Logging Section -->
-          <Border Classes="card">
-            <StackPanel Spacing="{StaticResource SpacingM}">
-              <TextBlock Text="{local:Localize LoggingSection}"
-                         Classes="section-title" />
-
-              <!-- Log Level and Max Days -->
-              <Grid ColumnDefinitions="160,180" RowDefinitions="Auto">
-                <!-- Log Level -->
-                <TextBlock Grid.Row="0" Grid.Column="0"
-                           Text="Log Level"
-                           Classes="field-label" />
-                <ComboBox Grid.Column="1"
-                          SelectedIndex="{Binding LogLevelIndex}">
-                  <ComboBoxItem>Trace</ComboBoxItem>
-                  <ComboBoxItem>Debug</ComboBoxItem>
-                  <ComboBoxItem>Info</ComboBoxItem>
-                  <ComboBoxItem>Warn</ComboBoxItem>
-                  <ComboBoxItem>Error</ComboBoxItem>
-                </ComboBox>
-              </Grid>
-
-              <!-- Max Days -->
-              <Grid ColumnDefinitions="160,120" RowDefinitions="Auto">
-                <TextBlock Grid.Column="0"
-                           Text="{local:Localize MaxDays}"
-                           Classes="field-label" />
-                <TextBox Grid.Column="1"
-                         Text="{Binding LogMaxDaysText}"
-                         Watermark="3" />
-
-              </Grid>
-
-              <!-- Log To -->
-              <Grid ColumnDefinitions="160,*" RowDefinitions="Auto">
-                <TextBlock Grid.Row="0" Grid.Column="0"
-                           Text="{local:Localize LogTo}"
-                           Classes="field-label" />
-                <TextBox Grid.Column="1"
-                         Text="{Binding LogTo}"
-                         Watermark="{local:Localize EgConsolePathToLogfile}" />
-              </Grid>
-            </StackPanel>
-          </Border>
-
           <!-- Status Section -->
           <Border Classes="card"
                   IsVisible="{Binding IsValid}">

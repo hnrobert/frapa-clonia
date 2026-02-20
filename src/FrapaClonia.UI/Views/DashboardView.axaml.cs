@@ -52,11 +52,9 @@ public partial class DashboardView : UserControl
     {
         if (e.Key != Key.Enter || DataContext is not DashboardViewModel viewModel) return;
 
-        if (viewModel.IsRenaming && viewModel.RenamePresetCommand.CanExecute(null))
-        {
-            viewModel.RenamePresetCommand.Execute(null);
-            e.Handled = true;
-        }
+        if (!viewModel.IsRenaming || !viewModel.RenamePresetCommand.CanExecute(null)) return;
+        viewModel.RenamePresetCommand.Execute(null);
+        e.Handled = true;
     }
 
     private void SelectAllInTextBox()

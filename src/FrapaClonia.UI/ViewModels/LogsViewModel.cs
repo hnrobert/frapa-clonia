@@ -1,6 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
+using FrapaClonia.Domain.Models;
+using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 
@@ -15,9 +17,9 @@ public partial class LogsViewModel : ObservableObject
 {
     private readonly ILogger<LogsViewModel>? _logger;
     private readonly IFrpcProcessService? _frpcProcessService;
-
-    // ReSharper disable once NotAccessedField.Local
-    private readonly IConfigurationService? _configurationService;
+    private readonly IPresetService? _presetService;
+    private readonly ToastService? _toastService;
+    private readonly ILocalizationService? _localizationService;
 
     [ObservableProperty] private ObservableCollection<LogEntry> _logEntries = [];
 
@@ -31,6 +33,18 @@ public partial class LogsViewModel : ObservableObject
 
     [ObservableProperty] private string _statusMessage = "Waiting for logs...";
 
+    [ObservableProperty] private bool _isSettingsOpen;
+
+    // Logging settings (for dialog)
+    [ObservableProperty] private int _logLevelIndex;
+    [ObservableProperty] private string _logMaxDaysText = "3";
+    [ObservableProperty] private string _logTo = "";
+
+    // Temporary settings for cancel functionality
+    private int _originalLogLevelIndex;
+    private string _originalLogMaxDaysText = "3";
+    private string _originalLogTo = "";
+
     private readonly Queue<LogEntry> _logBuffer = new();
     private const int MaxBufferSize = 10000;
 
@@ -38,12 +52,20 @@ public partial class LogsViewModel : ObservableObject
     public IRelayCommand ExportLogsCommand { get; }
     public IRelayCommand ToggleFollowCommand { get; }
     public IRelayCommand RefreshCommand { get; }
+    public IRelayCommand OpenSettingsCommand { get; }
+    public IRelayCommand SaveSettingsCommand { get; }
+    public IRelayCommand CancelSettingsCommand { get; }
 
     public List<string> LogLevels { get; } = ["All", "Debug", "Information", "Warning", "Error"];
+
+    private string L(string key, params object[] args) =>
+        _localizationService?.GetString(key, args) ?? key;
 
     // Default constructor for design-time support
     public LogsViewModel() : this(
         Microsoft.Extensions.Logging.Abstractions.NullLogger<LogsViewModel>.Instance,
+        null!,
+        null!,
         null!,
         null!)
     {
@@ -52,11 +74,15 @@ public partial class LogsViewModel : ObservableObject
     public LogsViewModel(
         ILogger<LogsViewModel> logger,
         IFrpcProcessService frpcProcessService,
-        IConfigurationService configurationService)
+        IPresetService presetService,
+        ToastService toastService,
+        ILocalizationService localizationService)
     {
         _logger = logger;
         _frpcProcessService = frpcProcessService;
-        _configurationService = configurationService;
+        _presetService = presetService;
+        _toastService = toastService;
+        _localizationService = localizationService;
 
         ClearLogsCommand = new RelayCommand(async void () =>
         {
@@ -77,7 +103,7 @@ public partial class LogsViewModel : ObservableObject
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "Error clearing logs");
+                _logger?.LogError(e, "Error exporting logs");
             }
         });
         ToggleFollowCommand = new RelayCommand(ToggleFollow);
@@ -89,16 +115,109 @@ public partial class LogsViewModel : ObservableObject
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "Error clearing logs");
+                _logger?.LogError(e, "Error refreshing logs");
             }
         });
+        OpenSettingsCommand = new RelayCommand(OpenSettings);
+        SaveSettingsCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await SaveSettingsAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error saving log settings");
+            }
+        });
+        CancelSettingsCommand = new RelayCommand(CancelSettings);
 
         // Subscribe to log events
         _frpcProcessService.LogLineReceived += OnLogLineReceived;
         _frpcProcessService.ProcessStateChanged += OnProcessStateChanged;
 
+        // Subscribe to preset changes
+        if (_presetService != null)
+        {
+            _presetService.CurrentPresetChanged += OnCurrentPresetChanged;
+        }
+
         // Update initial status
         UpdateStatus();
+        LoadSettingsFromPreset();
+    }
+
+    private void OnCurrentPresetChanged(object? sender, PresetChangedEventArgs e)
+    {
+        LoadSettingsFromPreset();
+    }
+
+    private void LoadSettingsFromPreset()
+    {
+        if (_presetService?.CurrentPreset?.Configuration.CommonConfig?.Log is { } log)
+        {
+            LogLevelIndex = log.Level.ToLowerInvariant() switch
+            {
+                "trace" => 0,
+                "debug" => 1,
+                "info" => 2,
+                "warn" => 3,
+                "error" => 4,
+                _ => 2
+            };
+            LogTo = log.To ?? "";
+            LogMaxDaysText = log.MaxDays.ToString();
+        }
+        else
+        {
+            LogLevelIndex = 2; // Info
+            LogTo = "";
+            LogMaxDaysText = "3";
+        }
+    }
+
+    private void OpenSettings()
+    {
+        // Store original values for cancel
+        _originalLogLevelIndex = LogLevelIndex;
+        _originalLogMaxDaysText = LogMaxDaysText;
+        _originalLogTo = LogTo;
+        IsSettingsOpen = true;
+    }
+
+    private void CancelSettings()
+    {
+        // Restore original values
+        LogLevelIndex = _originalLogLevelIndex;
+        LogMaxDaysText = _originalLogMaxDaysText;
+        LogTo = _originalLogTo;
+        IsSettingsOpen = false;
+    }
+
+    private async Task SaveSettingsAsync()
+    {
+        if (_presetService?.CurrentPreset == null) return;
+
+        var config = _presetService.CurrentPreset.Configuration;
+        config.CommonConfig ??= new ClientCommonConfig();
+        config.CommonConfig.Log = new LogConfig
+        {
+            Level = LogLevelIndex switch
+            {
+                0 => "trace",
+                1 => "debug",
+                2 => "info",
+                3 => "warn",
+                4 => "error",
+                _ => "info"
+            },
+            To = LogTo,
+            MaxDays = int.TryParse(LogMaxDaysText, out var days) ? days : 3
+        };
+
+        await _presetService.SaveCurrentPresetAsync();
+        _toastService?.Success(L("Toast_Saved"), L("Toast_LogSettingsSaved"));
+        IsSettingsOpen = false;
     }
 
     // ReSharper disable once UnusedParameterInPartialMethod

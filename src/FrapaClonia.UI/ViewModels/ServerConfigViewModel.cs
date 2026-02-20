@@ -64,15 +64,6 @@ public partial class ServerConfigViewModel : ObservableObject
     // DNS
     [ObservableProperty] private string? _dnsServer;
 
-    // Log configuration
-    [ObservableProperty] private string _logLevel = "info";
-
-    [ObservableProperty] private string? _logTo;
-
-    [ObservableProperty] private string _logMaxDaysText = "3";
-
-    private int LogMaxDays => int.TryParse(LogMaxDaysText, out var days) ? days : 3;
-
     // Validation
     [ObservableProperty] private bool _isValid = true;
 
@@ -111,28 +102,6 @@ public partial class ServerConfigViewModel : ObservableObject
             3 => "websocket",
             4 => "wss",
             _ => "tcp"
-        };
-    }
-
-    public int LogLevelIndex
-    {
-        get => LogLevel switch
-        {
-            "trace" => 0,
-            "debug" => 1,
-            "info" => 2,
-            "warn" => 3,
-            "error" => 4,
-            _ => 2
-        };
-        set => LogLevel = value switch
-        {
-            0 => "trace",
-            1 => "debug",
-            2 => "info",
-            3 => "warn",
-            4 => "error",
-            _ => "info"
         };
     }
 
@@ -275,14 +244,6 @@ public partial class ServerConfigViewModel : ObservableObject
                 // Load DNS
                 DnsServer = cc.DnsServer;
 
-                // Load log
-                if (cc.Log != null)
-                {
-                    LogLevel = cc.Log.Level;
-                    LogTo = cc.Log.To;
-                    LogMaxDaysText = cc.Log.MaxDays.ToString();
-                }
-
                 _logger?.LogInformation("Configuration loaded successfully");
             }
             else
@@ -339,7 +300,7 @@ public partial class ServerConfigViewModel : ObservableObject
                 Auth = CreateAuthConfig(),
                 Transport = CreateTransportConfig(),
                 DnsServer = DnsServer,
-                Log = CreateLogConfig()
+                Log = config.CommonConfig?.Log // Preserve existing log settings (configured in LogsView)
             };
 
             // Validate before saving
@@ -435,16 +396,6 @@ public partial class ServerConfigViewModel : ObservableObject
             {
                 Enable = TlsEnabled
             }
-        };
-    }
-
-    private LogConfig CreateLogConfig()
-    {
-        return new LogConfig
-        {
-            Level = LogLevel,
-            To = LogTo,
-            MaxDays = LogMaxDays
         };
     }
 }

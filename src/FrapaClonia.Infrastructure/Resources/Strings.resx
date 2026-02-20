@@ -525,6 +525,9 @@
   <data name="LoggingSection" xml:space="preserve">
     <value>Logging</value>
   </data>
+  <data name="LogSettings" xml:space="preserve">
+    <value>Log Settings</value>
+  </data>
   <data name="Logs" xml:space="preserve">
     <value>Logs</value>
   </data>
@@ -1061,6 +1064,12 @@
   </data>
   <data name="Toast_InvalidPath" xml:space="preserve">
     <value>Invalid Path</value>
+  </data>
+  <data name="Toast_LogSettingsSaved" xml:space="preserve">
+    <value>Log settings saved successfully</value>
+  </data>
+  <data name="Toast_Saved" xml:space="preserve">
+    <value>Saved</value>
   </data>
   <data name="Toast_NativeDeploymentNotImplemented" xml:space="preserve">
     <value>Native deployment is not yet implemented</value>

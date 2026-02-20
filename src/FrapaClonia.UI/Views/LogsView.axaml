@@ -27,11 +27,24 @@
     <!-- Page Header -->
     <Border Grid.Row="0" Classes="page-header">
       <Grid ColumnDefinitions="*,Auto">
-        <StackPanel Grid.Column="0" Spacing="{StaticResource SpacingS}">
-          <TextBlock Text="{local:Localize Logs}"
-                     Classes="page-title" />
-          <TextBlock Text="{local:Localize ViewRealtimeLogsFromFrpc}"
-                     Classes="page-subtitle" />
+        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
+          <StackPanel Spacing="{StaticResource SpacingS}" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal">
+
+              <TextBlock Text="{local:Localize Logs}"
+                         Classes="page-title" />
+              <Button Command="{Binding OpenSettingsCommand}"
+                      Margin="{StaticResource ThicknessLeftL}"
+                      ToolTip.Tip="{local:Localize LogSettings}"
+                      Classes="icon-button"
+                      VerticalAlignment="Center">
+                <mi:MaterialIcon Kind="Cog" Width="18" Height="18" />
+              </Button>
+            </StackPanel>
+            <TextBlock Text="{local:Localize ViewRealtimeLogsFromFrpc}"
+                       Classes="page-subtitle" />
+          </StackPanel>
+
         </StackPanel>
 
         <!-- Status Info -->
@@ -155,5 +168,77 @@
         </ScrollViewer>
       </Grid>
     </Border>
+
+    <!-- Settings Dialog Overlay -->
+    <Border Grid.Row="0" Grid.RowSpan="3"
+            IsVisible="{Binding IsSettingsOpen}"
+            Background="#80000000"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+      <Border Classes="card"
+              Width="400"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              Padding="{StaticResource ContentPaddingCompact}">
+        <StackPanel Spacing="{StaticResource SpacingL}">
+          <!-- Dialog Header -->
+          <TextBlock Text="{local:Localize LogSettings}"
+                     Classes="card-title"
+                     FontSize="18" />
+
+          <!-- Log Level -->
+          <Grid ColumnDefinitions="120,*" RowDefinitions="Auto">
+            <TextBlock Grid.Row="0" Grid.Column="0"
+                       Text="{local:Localize LogLevelLabel}"
+                       Classes="field-label"
+                       VerticalAlignment="Center" />
+            <ComboBox Grid.Column="1"
+                      SelectedIndex="{Binding LogLevelIndex}">
+              <ComboBoxItem>Trace</ComboBoxItem>
+              <ComboBoxItem>Debug</ComboBoxItem>
+              <ComboBoxItem>Info</ComboBoxItem>
+              <ComboBoxItem>Warn</ComboBoxItem>
+              <ComboBoxItem>Error</ComboBoxItem>
+            </ComboBox>
+          </Grid>
+
+          <!-- Max Days -->
+          <Grid ColumnDefinitions="120,*" RowDefinitions="Auto">
+            <TextBlock Grid.Column="0"
+                       Text="{local:Localize MaxDays}"
+                       Classes="field-label"
+                       VerticalAlignment="Center" />
+            <TextBox Grid.Column="1"
+                     Text="{Binding LogMaxDaysText}"
+                     Watermark="3" />
+          </Grid>
+
+          <!-- Log To -->
+          <Grid ColumnDefinitions="120,*" RowDefinitions="Auto">
+            <TextBlock Grid.Row="0" Grid.Column="0"
+                       Text="{local:Localize LogTo}"
+                       Classes="field-label"
+                       VerticalAlignment="Center" />
+            <TextBox Grid.Column="1"
+                     Text="{Binding LogTo}"
+                     Watermark="{local:Localize EgConsolePathToLogfile}" />
+          </Grid>
+
+          <!-- Dialog Buttons -->
+          <StackPanel Orientation="Horizontal"
+                      HorizontalAlignment="Right"
+                      Spacing="{StaticResource SpacingM}"
+                      Margin="{StaticResource ThicknessTopS}">
+            <Button Command="{Binding CancelSettingsCommand}"
+                    Classes="action-button"
+                    Content="{local:Localize Cancel}" />
+            <Button Command="{Binding SaveSettingsCommand}"
+                    Classes="action-button primary"
+                    Content="{local:Localize Save}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Border>
   </Grid>
 </UserControl>
+
