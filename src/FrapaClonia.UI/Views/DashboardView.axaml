@@ -34,9 +34,13 @@
                       VerticalAlignment="Center">
             <Border Width="8" Height="8"
                     CornerRadius="{StaticResource CornerRadiusFull}"
-                    Background="{DynamicResource AppSuccessBrush}">
+                    Classes.status-running="{Binding IsFrpcRunning}"
+                    Classes.status-stopped="{Binding !IsFrpcRunning}">
               <Border.Styles>
-                <Style Selector="Border">
+                <Style Selector="Border.status-running">
+                  <Setter Property="Background" Value="{DynamicResource AppSuccessBrush}" />
+                </Style>
+                <Style Selector="Border.status-running">
                   <Style.Animations>
                     <Animation Duration="0:0:1.5" IterationCount="Infinite">
                       <KeyFrame Cue="0%">
@@ -50,6 +54,9 @@
                       </KeyFrame>
                     </Animation>
                   </Style.Animations>
+                </Style>
+                <Style Selector="Border.status-stopped">
+                  <Setter Property="Background" Value="{DynamicResource SystemErrorTextColor}" />
                 </Style>
               </Border.Styles>
             </Border>
