@@ -72,7 +72,7 @@
                     Orientation="Horizontal"
                     Spacing="{StaticResource SpacingS}">
           <Button Command="{Binding RefreshCommand}"
-                  Classes="secondary icon-text-button"
+                  Classes="action-button icon-text-button"
                   ToolTip.Tip="{local:Localize ReloadLogsFromBuffer}"
                   IsEnabled="{Binding !IsClearing}">
             <StackPanel>
@@ -81,7 +81,7 @@
             </StackPanel>
           </Button>
           <Button Command="{Binding ClearLogsCommand}"
-                  Classes="destructive icon-text-button"
+                  Classes="action-button icon-text-button"
                   ToolTip.Tip="{local:Localize ClearAllLogs}"
                   IsEnabled="{Binding !IsClearing}">
             <StackPanel>
@@ -90,7 +90,7 @@
             </StackPanel>
           </Button>
           <Button Command="{Binding ExportLogsCommand}"
-                  Classes="secondary icon-text-button"
+                  Classes="action-button icon-text-button"
                   ToolTip.Tip="{local:Localize ExportLogsToFile}">
             <StackPanel>
               <mi:MaterialIcon Kind="Export" />

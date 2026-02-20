@@ -90,7 +90,7 @@
       <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingM}" HorizontalAlignment="Right">
         <Button Command="{Binding RefreshCommand}"
                 IsEnabled="{Binding !IsLoading}"
-                Classes="secondary icon-text-button">
+                Classes="action-button icon-text-button">
           <StackPanel Orientation="Horizontal">
             <mi:MaterialIcon Kind="Refresh" />
             <TextBlock Text="{local:Localize Refresh}" />
@@ -98,7 +98,7 @@
         </Button>
 
         <Button Command="{Binding ExportAllCommand}"
-                Classes="secondary icon-text-button">
+                Classes="action-button icon-text-button">
           <StackPanel Orientation="Horizontal">
             <mi:MaterialIcon Kind="Export" />
             <TextBlock Text="{local:Localize ExportAll}" />
@@ -106,7 +106,7 @@
         </Button>
 
         <Button Command="{Binding ImportCommand}"
-                Classes="secondary icon-text-button">
+                Classes="action-button icon-text-button">
           <StackPanel Orientation="Horizontal">
             <mi:MaterialIcon Kind="Import" />
             <TextBlock Text="{local:Localize Import}" />
@@ -114,7 +114,7 @@
         </Button>
 
         <Button Command="{Binding ClearAllCommand}"
-                Classes="destructive icon-text-button">
+                Classes="action-button icon-text-button">
           <StackPanel Orientation="Horizontal">
             <mi:MaterialIcon Kind="DeleteVariant" />
             <TextBlock Text="{local:Localize ClearAll}" />
@@ -278,7 +278,7 @@
                       </Button>
 
                       <Button Click="OnDeleteClick"
-                              Classes="destructive icon-button"
+                              Classes="icon-button"
                               ToolTip.Tip="{local:Localize DeleteProxyToolTip}">
                         <mi:MaterialIcon Kind="Delete" />
                       </Button>

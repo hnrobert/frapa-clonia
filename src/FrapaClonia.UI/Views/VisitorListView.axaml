@@ -38,7 +38,7 @@
 
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
           <Button Command="{Binding RefreshCommand}"
-                  Classes="secondary icon-text-button"
+                  Classes="action-button icon-text-button"
                   IsEnabled="{Binding !IsLoading}"
                   ToolTip.Tip="Refresh visitor list">
             <StackPanel>
@@ -242,7 +242,7 @@
                           <mi:MaterialIcon Kind="ContentCopy" />
                         </Button>
                         <Button Click="OnDeleteClick"
-                                Classes="destructive icon-button"
+                                Classes="icon-button"
                                 ToolTip.Tip="{local:Localize DeleteVisitor}">
                           <mi:MaterialIcon Kind="Delete" />
                         </Button>

@@ -108,8 +108,16 @@
                         Background="{DynamicResource SystemControlForegroundBaseLowBrush}"
                         Margin="{StaticResource ThicknessXS}" />
 
+                <!-- Import Button -->
+                <Button Command="{Binding ImportCommand}"
+                        ToolTip.Tip="{local:Localize ImportPreset}"
+                        Classes="icon-button">
+                  <mi:MaterialIcon Kind="Import" Width="18" Height="18" />
+                </Button>
+
                 <!-- Export Menu -->
-                <Menu ToolTip.Tip="{local:Localize ExportPreset}">
+                <Menu ToolTip.Tip="{local:Localize ExportPreset}"
+                      Classes="icon-menu">
                   <MenuItem Header="">
                     <MenuItem.HeaderTemplate>
                       <DataTemplate>
@@ -120,12 +128,6 @@
                     <MenuItem Header="INI" Command="{Binding ExportIniCommand}" />
                   </MenuItem>
                 </Menu>
-
-                <Button Command="{Binding ImportCommand}"
-                        ToolTip.Tip="{local:Localize ImportPreset}"
-                        Classes="icon-button">
-                  <mi:MaterialIcon Kind="Import" Width="18" Height="18" />
-                </Button>
               </StackPanel>
             </Grid>
           </StackPanel>
@@ -148,7 +150,7 @@
               </Button>
 
               <Button Command="{Binding StopFrpcCommand}"
-                      Classes="destructive icon-text-button">
+                      Classes="action-button icon-text-button">
                 <StackPanel>
                   <mi:MaterialIcon Kind="Stop" />
                   <TextBlock Text="{local:Localize StopFrpc}" />
@@ -156,7 +158,7 @@
               </Button>
 
               <Button Command="{Binding RestartFrpcCommand}"
-                      Classes="secondary icon-text-button">
+                      Classes="action-button icon-text-button">
                 <StackPanel>
                   <mi:MaterialIcon Kind="Refresh" />
                   <TextBlock Text="{local:Localize RestartFrpc}" />
@@ -170,11 +172,12 @@
                     CornerRadius="{StaticResource CornerRadiusS}"
                     Padding="{StaticResource ThicknessS}"
                     HorizontalAlignment="Right">
-              <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
+              <Grid ColumnDefinitions="Auto,10,Auto" RowDefinitions="Auto,Auto">
                 <TextBlock Grid.Row="0" Grid.Column="0"
-                           Text="{local:Localize ProcessId}"
-                           Classes="label" />
-                <TextBlock Grid.Row="0" Grid.Column="1"
+                           Classes="label">
+                  <Run Text="{local:Localize ProcessId}" /><Run Text=":" />
+                </TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="2"
                            Text="{Binding FrpcProcessId, TargetNullValue='N/A'}"
                            Classes="value"
                            Margin="{StaticResource ThicknessLeftS}" />
@@ -184,7 +187,7 @@
                            Margin="{StaticResource ThicknessTopS}">
                   <Run Text="{local:Localize ServerName}" /><Run Text=":" />
                 </TextBlock>
-                <TextBlock Grid.Row="1" Grid.Column="1"
+                <TextBlock Grid.Row="1" Grid.Column="2"
                            Text="{Binding ServerAddress}"
                            Classes="value"
                            Margin="{StaticResource ThicknessLeftTopS}" />
@@ -222,7 +225,7 @@
                       Content="{local:Localize Manage}"
                       Command="{Binding NavigateToProxyListCommand}"
                       HorizontalAlignment="Left"
-                      Classes="secondary" />
+                      Classes="action-button" />
             </Grid>
           </Border>
 
@@ -246,7 +249,7 @@
                       Content="{local:Localize Setup}"
                       Command="{Binding NavigateToDeploymentCommand}"
                       HorizontalAlignment="Left"
-                      Classes="secondary" />
+                      Classes="action-button" />
             </Grid>
           </Border>
 
@@ -270,7 +273,7 @@
                       Content="{local:Localize View}"
                       Command="{Binding NavigateToLogsCommand}"
                       HorizontalAlignment="Left"
-                      Classes="secondary" />
+                      Classes="action-button" />
             </Grid>
           </Border>
         </Grid>

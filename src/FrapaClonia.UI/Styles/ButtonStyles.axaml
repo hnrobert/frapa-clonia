@@ -6,14 +6,14 @@
        BUTTON STYLES - Unified System
 
        Button Classes can be combined:
-       - Variant: primary, secondary, destructive, ghost
+       - Variant: primary, ghost
        - Layout: icon-text-button (icon + text), icon-button (icon only)
-       - Size: button-sm, button-lg (optional overrides)
+       - Special: action-button (for toolbars/actions)
 
        Examples:
        - Classes="primary icon-text-button" → Primary button with icon + text
-       - Classes="secondary icon-button" → Secondary icon-only button
-       - Classes="destructive icon-text-button" → Destructive action button
+       - Classes="action-button icon-text-button" → Toolbar action button
+       - Classes="icon-button" → Icon-only button
 
        Icon-Text Button Layout:
        - Equal left/right padding (12px)
@@ -73,50 +73,6 @@
     <Setter Property="Foreground" Value="{DynamicResource SystemControlDisabledBaseMediumBrush}" />
   </Style>
 
-  <!-- Secondary Variant -->
-  <Style Selector="Button.secondary">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource AppPrimaryBrush}" />
-  </Style>
-
-  <Style Selector="Button.secondary:pointerover">
-    <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}" />
-    <Setter Property="Foreground" Value="White" />
-  </Style>
-
-  <Style Selector="Button.secondary:pressed">
-    <Setter Property="Background" Value="{DynamicResource AppPrimaryHoverBrush}" />
-  </Style>
-
-  <Style Selector="Button.secondary:disabled /template/ ContentPresenter">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="BorderBrush" Value="{DynamicResource SystemControlDisabledBaseMediumBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource SystemControlDisabledBaseMediumBrush}" />
-  </Style>
-
-  <!-- Destructive Variant -->
-  <Style Selector="Button.destructive">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="Foreground" Value="{DynamicResource AppErrorBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource AppErrorBrush}" />
-  </Style>
-
-  <Style Selector="Button.destructive:pointerover">
-    <Setter Property="Background" Value="{DynamicResource AppErrorBrush}" />
-    <Setter Property="Foreground" Value="White" />
-  </Style>
-
-  <Style Selector="Button.destructive:pressed">
-    <Setter Property="Background" Value="#C62828" />
-  </Style>
-
-  <Style Selector="Button.destructive:disabled /template/ ContentPresenter">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="BorderBrush" Value="{DynamicResource SystemControlDisabledBaseMediumBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource SystemControlDisabledBaseMediumBrush}" />
-  </Style>
-
   <!-- Ghost Variant (transparent, subtle hover) -->
   <Style Selector="Button.ghost">
     <Setter Property="Background" Value="Transparent" />
@@ -135,24 +91,67 @@
   <!-- Icon-Only Button (square, centered icon) -->
   <Style Selector="Button.icon-button">
     <Setter Property="Background" Value="Transparent" />
-    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
     <Setter Property="Padding" Value="0" />
     <Setter Property="Width" Value="36" />
     <Setter Property="Height" Value="36" />
     <Setter Property="MinHeight" Value="36" />
     <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusS}" />
+    <Setter Property="ClipToBounds" Value="True" />
   </Style>
 
-  <Style Selector="Button.icon-button:pointerover /template/ ContentPresenter">
+  <Style Selector="Button.icon-button:pointerover">
     <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+    <Setter Property="BorderBrush" Value="Transparent" />
   </Style>
 
-  <Style Selector="Button.icon-button:pressed /template/ ContentPresenter">
+  <Style Selector="Button.icon-button:pressed">
     <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumBrush}" />
   </Style>
 
-  <Style Selector="Button.icon-button:disabled /template/ ContentPresenter">
+  <Style Selector="Button.icon-button:disabled">
     <Setter Property="Opacity" Value="0.4" />
+  </Style>
+
+  <!-- Icon Menu (looks like icon-button but is a dropdown menu) -->
+  <Style Selector="Menu.icon-menu">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+    <Setter Property="Height" Value="36" />
+    <Setter Property="Width" Value="36" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusS}" />
+    <Setter Property="ClipToBounds" Value="True" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <!-- MenuItem inside icon-menu gets the icon-button styling -->
+  <Style Selector="Menu.icon-menu > MenuItem">
+    <Setter Property="Height" Value="36" />
+    <Setter Property="Width" Value="36" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusS}" />
+    <Setter Property="ClipToBounds" Value="True" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="Menu.icon-menu:pointerover">
+    <Setter Property="BorderBrush" Value="Transparent" />
+  </Style>
+
+  <Style Selector="Menu.icon-menu > MenuItem /template/ Border#MainContainer">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusS}" />
+  </Style>
+
+  <Style Selector="Menu.icon-menu > MenuItem:pointerover /template/ Border#MainContainer">
+    <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+  </Style>
+
+  <Style Selector="Menu.icon-menu > MenuItem:pressed /template/ Border#MainContainer">
+    <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumBrush}" />
   </Style>
 
   <!-- Action Button (for toolbars, with consistent sizing) -->
