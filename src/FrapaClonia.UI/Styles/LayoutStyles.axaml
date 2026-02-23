@@ -11,18 +11,21 @@
     <Setter Property="Padding" Value="{StaticResource ContentPadding}" />
     <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
     <Setter Property="BorderThickness" Value="0,0,0,1" />
+    <Setter Property="Focusable" Value="True" />
   </Style>
 
   <!-- Page Toolbar -->
   <Style Selector="Border.page-toolbar">
     <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundTransparent}" />
     <Setter Property="Padding" Value="{StaticResource ContentPadding}" />
+    <Setter Property="Focusable" Value="True" />
   </Style>
 
   <!-- Page Content -->
   <Style Selector="Border.page-content">
     <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundTransparent}" />
     <Setter Property="Padding" Value="{StaticResource ContentPadding}" />
+    <Setter Property="Focusable" Value="True" />
   </Style>
 
   <!-- Separators -->

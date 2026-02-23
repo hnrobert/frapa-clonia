@@ -1,6 +1,9 @@
+using System.Linq;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 
 namespace FrapaClonia.Views;
 
@@ -16,6 +19,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         Loaded += OnLoaded;
+        PointerPressed += OnPointerPressed;
     }
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
@@ -50,5 +54,24 @@ public partial class MainWindow : Window
         };
 
         _sidebarColumn.Width = new GridLength(newWidth);
+    }
+
+    private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        // Get the source element that was clicked
+        var source = e.Source as Visual;
+
+        // Check if the clicked element or any of its ancestors is an input control
+        var textBox = source?.FindAncestorOfType<TextBox>();
+        var comboBox = source?.FindAncestorOfType<ComboBox>();
+        var numericUpDown = source?.FindAncestorOfType<NumericUpDown>();
+
+        // If we didn't click on an input control, focus on the main content area
+        if (textBox != null || comboBox != null || numericUpDown != null) return;
+        
+        // Find the main content Border and focus it
+        if (Content is not Grid outerGrid || outerGrid.Children[0] is not Grid mainGrid) return;
+        var contentBorder = mainGrid.Children.OfType<Border>().LastOrDefault();
+        contentBorder?.Focus();
     }
 }

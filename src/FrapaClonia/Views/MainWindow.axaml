@@ -371,7 +371,8 @@
 
       <!-- Main Content Area -->
       <Border Grid.Column="2"
-              Background="{DynamicResource SystemPageBackgroundBrush}">
+              Background="{DynamicResource SystemPageBackgroundBrush}"
+              Focusable="True">
         <Grid RowDefinitions="Auto,*">
           <!-- Top Bar (optional for future use) -->
           <Border Grid.Row="0"

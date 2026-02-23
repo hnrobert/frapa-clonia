@@ -1,9 +1,15 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:attached="clr-namespace:FrapaClonia.UI.AttachedProperties">
 
   <!-- =============================================
        INPUT CONTROL STYLES
        ============================================= -->
+
+  <!-- Global TextBox behavior: Lose focus on Escape key -->
+  <Style Selector="TextBox">
+    <Setter Property="attached:TextBoxBehaviors.LoseFocusOnEscape" Value="True" />
+  </Style>
 
   <!-- Fix text clipping at right edge in Fluent theme -->
   <Style Selector="TextBox /template/ ScrollViewer#PART_ScrollViewer">
