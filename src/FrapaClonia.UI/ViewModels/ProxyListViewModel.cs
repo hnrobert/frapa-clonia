@@ -264,7 +264,6 @@ public partial class ProxyListViewModel : ObservableObject
             // Clone the proxy manually to avoid modifying the original until saved
             var proxyClone = CloneProxy(SelectedProxy);
 
-            if (proxyClone == null) return;
             if (_serviceProvider == null) return;
             var editorLogger = _serviceProvider.GetRequiredService<ILogger<ProxyEditorViewModel>>();
 

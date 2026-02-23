@@ -19,9 +19,4 @@ public class AppSettings
     /// Whether to start the application automatically on system boot
     /// </summary>
     public bool AutoStart { get; set; }
-
-    /// <summary>
-    /// Whether the application is running in portable mode
-    /// </summary>
-    public bool PortableMode { get; set; }
 }

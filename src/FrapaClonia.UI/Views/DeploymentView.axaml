@@ -145,10 +145,7 @@
                   <TextBlock Text="{local:Localize SystemServiceSettings}"
                              Classes="section-title" />
 
-                  <CheckBox Content="{local:Localize InstallAsSystemService}"
-                            IsChecked="{Binding ServiceEnabled}" />
-
-                  <StackPanel Spacing="8" IsVisible="{Binding ServiceEnabled}">
+                  <StackPanel Spacing="8">
                     <TextBlock Text="{local:Localize ServiceScope}"
                                Classes="field-label" />
                     <StackPanel Orientation="Horizontal" Spacing="8">

@@ -64,18 +64,19 @@
                        Classes="section-title"
                        Margin="{StaticResource ThicknessBottomM}" />
 
-            <CheckBox IsChecked="{Binding AutoStartEnabled}"
-                      Classes="settings-checkbox"
-                      AutomationProperties.Name="Start on system boot">
-              <StackPanel Orientation="Horizontal" Spacing="4">
-                <TextBlock Text="{local:Localize StartOnSystemBoot}"
-                           FontSize="{StaticResource FontSizeM}"
-                           FontWeight="{StaticResource FontWeightMedium}"
-                           VerticalAlignment="Center" />
-                <Button Classes="hint-icon"
-                        ToolTip.Tip="{local:Localize AutomaticallyLaunchFrapaClonia}" />
-              </StackPanel>
-            </CheckBox>
+            <StackPanel Orientation="Horizontal" Spacing="4">
+              <CheckBox IsChecked="{Binding AutoStartEnabled}"
+                        Classes="settings-checkbox"
+                        AutomationProperties.Name="Start on system boot">
+                <AccessText Text="{local:Localize StartOnSystemBoot}"
+                            FontSize="{StaticResource FontSizeM}"
+                            FontWeight="{StaticResource FontWeightMedium}"
+                            VerticalAlignment="Center" />
+              </CheckBox>
+              <Button Classes="hint-icon"
+                      Margin="0,4,0,0"
+                      ToolTip.Tip="{local:Localize AutomaticallyLaunchFrapaClonia}" />
+            </StackPanel>
           </StackPanel>
         </Border>
 
@@ -108,39 +109,15 @@
           </StackPanel>
         </Border>
 
-        <!-- Application Mode -->
+        <!-- Config Location -->
         <Border Classes="settings-card">
           <StackPanel Spacing="0">
-            <TextBlock Text="{local:Localize ApplicationMode}"
+            <TextBlock Text="{local:Localize ConfigurationLocation}"
                        Classes="section-title"
                        Margin="{StaticResource ThicknessBottomM}" />
-
-            <CheckBox IsChecked="{Binding PortableMode}"
-                      IsEnabled="False"
-                      Classes="settings-checkbox"
-                      AutomationProperties.Name="Portable Mode">
-              <StackPanel Orientation="Horizontal" Spacing="4">
-                <TextBlock Text="{local:Localize PortableMode}"
-                           FontSize="{StaticResource FontSizeM}"
-                           FontWeight="{StaticResource FontWeightMedium}"
-                           VerticalAlignment="Center" />
-                <Button Classes="hint-icon"
-                        ToolTip.Tip="{local:Localize ConfigurationStoredInAppDir}" />
-              </StackPanel>
-            </CheckBox>
-
-            <Border BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                    BorderThickness="0,1,0,0"
-                    Margin="{StaticResource ThicknessTopL}"
-                    Padding="{StaticResource ThicknessTopL}">
-              <StackPanel Spacing="0">
-                <TextBlock Text="{local:Localize ConfigurationLocation}"
-                           Classes="field-label" />
-                <TextBlock Text="{Binding ConfigLocation}"
-                           Classes="readonly-value"
-                           AutomationProperties.Name="Configuration Location" />
-              </StackPanel>
-            </Border>
+            <TextBlock Text="{Binding ConfigLocation}"
+                       Classes="readonly-value"
+                       AutomationProperties.Name="Configuration Location" />
           </StackPanel>
         </Border>
 
@@ -172,3 +149,4 @@
     </Panel>
   </ScrollViewer>
 </UserControl>
+

@@ -222,7 +222,6 @@ public partial class VisitorListViewModel : ObservableObject
             // Clone the visitor manually to avoid modifying the original until saved
             var visitorClone = CloneVisitor(SelectedVisitor);
 
-            if (visitorClone == null) return;
             if (_serviceProvider == null) return;
             var editorLogger = _serviceProvider.GetRequiredService<ILogger<VisitorEditorViewModel>>();
 

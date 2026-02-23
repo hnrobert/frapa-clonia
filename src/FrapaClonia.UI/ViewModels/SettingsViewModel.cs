@@ -26,8 +26,6 @@ public partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty] private bool _autoStartEnabled;
 
-    [ObservableProperty] private bool _portableMode;
-
     [ObservableProperty] private string _configLocation = "";
 
     [ObservableProperty] private bool _isSaving;
@@ -192,7 +190,6 @@ public partial class SettingsViewModel : ObservableObject
             }
 
             if (_autoStartService != null) AutoStartEnabled = await _autoStartService.IsAutoStartEnabledAsync();
-            PortableMode = DetectPortableMode();
             ConfigLocation = GetConfigLocation();
 
             // Set theme from settings
@@ -243,7 +240,6 @@ public partial class SettingsViewModel : ObservableObject
                     _ => "Default"
                 };
                 _settingsService.Settings.AutoStart = AutoStartEnabled;
-                _settingsService.Settings.PortableMode = PortableMode;
 
                 await _settingsService.SaveAsync();
             }
@@ -265,22 +261,8 @@ public partial class SettingsViewModel : ObservableObject
         }
     }
 
-    private static bool DetectPortableMode()
+    private static string GetConfigLocation()
     {
-        // Check if running in portable mode,
-        // Portable mode is detected if the executable is in a directory with a config file
-        var appDir = AppContext.BaseDirectory;
-        var portableMarker = Path.Combine(appDir, "portable.txt");
-        return File.Exists(portableMarker);
-    }
-
-    private string GetConfigLocation()
-    {
-        if (PortableMode)
-        {
-            return Path.Combine(AppContext.BaseDirectory, "config");
-        }
-
         var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         return Path.Combine(appData, "FrapaClonia");
     }
