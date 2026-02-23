@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Text.Json;
 using FrapaClonia.Core.Interfaces;
 using FrapaClonia.Domain.Models;
 using Microsoft.Extensions.Logging;
@@ -13,24 +12,28 @@ public class PresetService : IPresetService
 {
     private readonly ILogger<PresetService> _logger;
     private readonly ITomlSerializer _tomlSerializer;
+    private readonly ITomlConfigSerializer _tomlConfigSerializer;
+    private readonly ICacheService _cacheService;
     private readonly string _presetsDirectory;
-    private readonly string _settingsFilePath;
-    private Guid _currentPresetId;
 
     public ObservableCollection<ConfigPreset> Presets { get; } = [];
     public ConfigPreset? CurrentPreset { get; private set; }
 
     public event EventHandler<PresetChangedEventArgs>? CurrentPresetChanged;
 
-    public PresetService(ILogger<PresetService> logger, ITomlSerializer tomlSerializer)
+    public PresetService(
+        ILogger<PresetService> logger,
+        ITomlSerializer tomlSerializer,
+        ITomlConfigSerializer tomlConfigSerializer,
+        ICacheService cacheService)
     {
         _logger = logger;
         _tomlSerializer = tomlSerializer;
+        _tomlConfigSerializer = tomlConfigSerializer;
+        _cacheService = cacheService;
 
         var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        var baseDir = Path.Combine(appData, "FrapaClonia");
-        _presetsDirectory = Path.Combine(baseDir, "presets");
-        _settingsFilePath = Path.Combine(baseDir, "preset-settings.json");
+        _presetsDirectory = Path.Combine(appData, "FrapaClonia", "presets");
     }
 
     public string GetPresetsDirectory() => _presetsDirectory;
@@ -41,11 +44,11 @@ public class PresetService : IPresetService
         {
             _logger.LogInformation("Initializing preset service...");
 
+            // Initialize cache service first
+            await _cacheService.InitializeAsync();
+
             // Ensure presets directory exists
             Directory.CreateDirectory(_presetsDirectory);
-
-            // Load current preset ID from settings
-            _currentPresetId = await LoadCurrentPresetIdAsync();
 
             // Load all presets
             await LoadPresetsAsync();
@@ -55,20 +58,32 @@ public class PresetService : IPresetService
             {
                 _logger.LogInformation("No presets found, creating default preset");
                 var defaultPreset = await CreatePresetAsync("Default");
-                _currentPresetId = defaultPreset.Id;
-                await SaveCurrentPresetIdAsync();
+                await _cacheService.SetCurrentPresetAsync(defaultPreset.Name);
+                await _cacheService.SaveAsync();
             }
 
-            // Set current preset
-            var current = Presets.FirstOrDefault(p => p.Id == _currentPresetId);
+            // Set current preset from cache
+            var currentPresetName = _cacheService.CurrentPresetName;
+            ConfigPreset? current = null;
+
+            if (!string.IsNullOrEmpty(currentPresetName))
+            {
+                current = Presets.FirstOrDefault(p => p.Name == currentPresetName);
+            }
+
+            // Fallback to first preset if not found
             if (current == null && Presets.Count > 0)
             {
                 current = Presets[0];
-                _currentPresetId = current.Id;
-                await SaveCurrentPresetIdAsync();
             }
 
             CurrentPreset = current;
+            if (current != null)
+            {
+                await _cacheService.SetCurrentPresetAsync(current.Name);
+                await _cacheService.SaveAsync();
+            }
+
             _logger.LogInformation("Preset service initialized with {Count} presets, current: {Name}",
                 Presets.Count, CurrentPreset?.Name ?? "None");
         }
@@ -92,7 +107,7 @@ public class PresetService : IPresetService
                 ModifiedAt = DateTime.Now
             };
 
-            // Save preset to file
+            // Save preset to files
             await SavePresetToFileAsync(preset);
 
             Presets.Add(preset);
@@ -126,11 +141,11 @@ public class PresetService : IPresetService
 
             _logger.LogInformation("Deleting preset: {Name} ({Id})", preset.Name, presetId);
 
-            // Delete preset file
-            var filePath = GetPresetFilePath(presetId);
-            if (File.Exists(filePath))
+            // Delete preset folder
+            var folderPath = GetPresetFolderPath(preset.Name);
+            if (Directory.Exists(folderPath))
             {
-                File.Delete(filePath);
+                Directory.Delete(folderPath, recursive: true);
             }
 
             Presets.Remove(preset);
@@ -164,11 +179,11 @@ public class PresetService : IPresetService
 
             _logger.LogInformation("Switching to preset: {Name} ({Id})", preset.Name, presetId);
 
-            var previousId = _currentPresetId;
-            _currentPresetId = presetId;
+            var previousId = CurrentPreset?.Id ?? Guid.Empty;
             CurrentPreset = preset;
 
-            await SaveCurrentPresetIdAsync();
+            await _cacheService.SetCurrentPresetAsync(preset.Name);
+            await _cacheService.SaveAsync();
 
             CurrentPresetChanged?.Invoke(this, new PresetChangedEventArgs
             {
@@ -225,14 +240,27 @@ public class PresetService : IPresetService
 
             _logger.LogInformation("Renaming preset: {OldName} -> {NewName}", preset.Name, newName);
 
+            var oldFolderPath = GetPresetFolderPath(preset.Name);
+            var oldName = preset.Name;
+
             preset.Name = newName;
             preset.ModifiedAt = DateTime.Now;
 
+            // Save to new location
             await SavePresetToFileAsync(preset);
+
+            // Delete old folder
+            if (Directory.Exists(oldFolderPath) && oldName != newName)
+            {
+                Directory.Delete(oldFolderPath, recursive: true);
+            }
 
             // Raise event to notify UI of name change
             if (CurrentPreset?.Id == presetId)
             {
+                await _cacheService.SetCurrentPresetAsync(newName);
+                await _cacheService.SaveAsync();
+
                 CurrentPresetChanged?.Invoke(this, new PresetChangedEventArgs
                 {
                     PreviousPresetId = presetId,
@@ -348,10 +376,27 @@ public class PresetService : IPresetService
         }
     }
 
-    private string GetPresetFilePath(Guid presetId)
+    #region File Path Methods
+
+    private string GetPresetFolderPath(string presetName) =>
+        Path.Combine(_presetsDirectory, SanitizeFolderName(presetName));
+
+    private string GetPresetConfigPath(string presetName) =>
+        Path.Combine(GetPresetFolderPath(presetName), "config.toml");
+
+    private string GetPresetFrpcPath(string presetName) =>
+        Path.Combine(GetPresetFolderPath(presetName), "frpc.toml");
+
+    private static string SanitizeFolderName(string name)
     {
-        return Path.Combine(_presetsDirectory, $"{presetId}.json");
+        var invalidChars = Path.GetInvalidFileNameChars();
+        var sanitized = string.Join("_", name.Split(invalidChars));
+        return string.IsNullOrWhiteSpace(sanitized) ? "unnamed" : sanitized;
     }
+
+    #endregion
+
+    #region Loading and Saving
 
     private async Task LoadPresetsAsync()
     {
@@ -364,21 +409,42 @@ public class PresetService : IPresetService
                 return;
             }
 
-            var files = Directory.GetFiles(_presetsDirectory, "*.json");
-            foreach (var file in files)
+            // Scan for preset folders (contain config.toml)
+            foreach (var folder in Directory.GetDirectories(_presetsDirectory))
             {
                 try
                 {
-                    var json = await File.ReadAllTextAsync(file);
-                    var preset = JsonSerializer.Deserialize(json, PresetSerializationContext.Default.ConfigPreset);
-                    if (preset != null)
+                    var configPath = Path.Combine(folder, "config.toml");
+                    var frpcPath = Path.Combine(folder, "frpc.toml");
+
+                    if (!File.Exists(configPath))
                     {
-                        Presets.Add(preset);
+                        continue;
                     }
+
+                    var presetConfig = await _tomlConfigSerializer.DeserializeFromFileAsync<PresetConfig>(configPath);
+                    if (presetConfig == null)
+                    {
+                        _logger.LogWarning("Failed to load preset config from: {Path}", configPath);
+                        continue;
+                    }
+
+                    var frpcConfig = await _tomlSerializer.DeserializeFromFileAsync(frpcPath);
+
+                    var preset = new ConfigPreset(presetConfig.Preset.Name)
+                    {
+                        Id = presetConfig.Preset.Id,
+                        CreatedAt = presetConfig.Preset.CreatedAt,
+                        ModifiedAt = presetConfig.Preset.ModifiedAt,
+                        Configuration = frpcConfig ?? new FrpClientConfig(),
+                        Deployment = presetConfig.Deployment
+                    };
+
+                    Presets.Add(preset);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning(ex, "Failed to load preset from file: {File}", file);
+                    _logger.LogWarning(ex, "Failed to load preset from folder: {Folder}", folder);
                 }
             }
 
@@ -392,44 +458,35 @@ public class PresetService : IPresetService
 
     private async Task SavePresetToFileAsync(ConfigPreset preset)
     {
-        var filePath = GetPresetFilePath(preset.Id);
-        var json = JsonSerializer.Serialize(preset, PresetSerializationContext.Default.ConfigPreset);
-        await File.WriteAllTextAsync(filePath, json);
-    }
+        var folderPath = GetPresetFolderPath(preset.Name);
+        Directory.CreateDirectory(folderPath);
 
-    private async Task<Guid> LoadCurrentPresetIdAsync()
-    {
-        try
+        // Save config.toml (metadata + deployment settings)
+        var presetConfig = new PresetConfig
         {
-            if (!File.Exists(_settingsFilePath))
+            Preset = new PresetMetadata
             {
-                return Guid.Empty;
-            }
+                Id = preset.Id,
+                Name = preset.Name,
+                CreatedAt = preset.CreatedAt,
+                ModifiedAt = preset.ModifiedAt
+            },
+            Deployment = preset.Deployment
+        };
 
-            var json = await File.ReadAllTextAsync(_settingsFilePath);
-            var settings = JsonSerializer.Deserialize(json, PresetSettingsContext.Default.PresetSettings);
-            return settings?.CurrentPresetId ?? Guid.Empty;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Failed to load current preset ID from settings");
-            return Guid.Empty;
-        }
+        var configPath = GetPresetConfigPath(preset.Name);
+        await _tomlConfigSerializer.SerializeToFileAsync(configPath, presetConfig);
+
+        // Save frpc.toml (FrpClientConfig)
+        var frpcPath = GetPresetFrpcPath(preset.Name);
+        await _tomlSerializer.SerializeToFileAsync(frpcPath, preset.Configuration);
+
+        _logger.LogInformation("Saved preset '{Name}' to {FolderPath}", preset.Name, folderPath);
     }
 
-    private async Task SaveCurrentPresetIdAsync()
-    {
-        try
-        {
-            var settings = new PresetSettings { CurrentPresetId = _currentPresetId };
-            var json = JsonSerializer.Serialize(settings, PresetSettingsContext.Default.PresetSettings);
-            await File.WriteAllTextAsync(_settingsFilePath, json);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to save current preset ID to settings");
-        }
-    }
+    #endregion
+
+    #region INI Export/Import
 
     private static async Task ExportAsIniAsync(string filePath, FrpClientConfig config)
     {
@@ -499,12 +556,6 @@ public class PresetService : IPresetService
         // since INI and TOML are similar enough for this use case
         return _tomlSerializer.DeserializeFromFileAsync(filePath);
     }
-}
 
-/// <summary>
-/// Settings for preset persistence
-/// </summary>
-public class PresetSettings
-{
-    public Guid CurrentPresetId { get; set; }
+    #endregion
 }

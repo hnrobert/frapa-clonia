@@ -19,9 +19,11 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IConfigurationService, ConfigurationService>();
         services.AddSingleton<IFrpcProcessService, FrpcProcessService>();
         services.AddSingleton<IValidationService, ValidationService>();
-        services.AddSingleton<IProfileService, ProfileService>();
         services.AddSingleton<IAutoStartService, AutoStartService>();
+        services.AddSingleton<ITomlConfigSerializer, TomlConfigSerializer>();
+        services.AddSingleton<ISettingsService, SettingsService>();
         services.AddSingleton<ILocalizationService, LocalizationService>();
+        services.AddSingleton<ICacheService, CacheService>();
         services.AddSingleton<IPresetService, PresetService>();
 
         // Infrastructure Services

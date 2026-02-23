@@ -2,9 +2,9 @@ using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Core.Interfaces;
+using FrapaClonia.Domain.Models;
 using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
 
 namespace FrapaClonia.UI.ViewModels;
 
@@ -16,15 +16,11 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ILogger<SettingsViewModel>? _logger;
     private readonly ILocalizationService? _localizationService;
     private readonly IAutoStartService? _autoStartService;
+    private readonly ISettingsService? _settingsService;
     private readonly ThemeService? _themeService;
     private readonly ToastService? _toastService;
     private readonly INativeDeploymentService? _nativeDeploymentService;
     private readonly IPresetService? _presetService;
-
-    private readonly string _settingsFile = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "FrapaClonia",
-        "settings.json");
 
     [ObservableProperty] private LanguageOption? _selectedLanguage;
 
@@ -58,6 +54,7 @@ public partial class SettingsViewModel : ObservableObject
         null!,
         null!,
         null!,
+        null!,
         null!)
     {
     }
@@ -66,6 +63,7 @@ public partial class SettingsViewModel : ObservableObject
         ILogger<SettingsViewModel> logger,
         ILocalizationService localizationService,
         IAutoStartService autoStartService,
+        ISettingsService settingsService,
         ThemeService themeService,
         ToastService? toastService,
         INativeDeploymentService? nativeDeploymentService,
@@ -74,6 +72,7 @@ public partial class SettingsViewModel : ObservableObject
         _logger = logger;
         _localizationService = localizationService;
         _autoStartService = autoStartService;
+        _settingsService = settingsService;
         _themeService = themeService;
         _toastService = toastService;
         _nativeDeploymentService = nativeDeploymentService;
@@ -171,24 +170,16 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            // Try to load settings from file
-            AppSettings? settings = null;
-            if (File.Exists(_settingsFile))
+            // Load settings from service
+            if (_settingsService != null)
             {
-                try
-                {
-                    var json = await File.ReadAllTextAsync(_settingsFile);
-                    settings = JsonSerializer.Deserialize(json, AppSettingsContext.Default.AppSettings);
-                    _logger?.LogInformation("Settings file loaded from: {SettingsFile}", _settingsFile);
-                }
-                catch (Exception ex)
-                {
-                    _logger?.LogWarning(ex, "Could not load settings file, using defaults");
-                }
+                await _settingsService.LoadAsync();
             }
 
-            // Apply settings or use defaults
-            var cultureCode = settings?.Language ?? "en";
+            var settings = _settingsService?.Settings ?? new AppSettings();
+
+            // Apply settings
+            var cultureCode = settings.Language;
             var languageOption = AvailableLanguages.FirstOrDefault(l => l.Code == cultureCode)
                                   ?? AvailableLanguages.First();
 
@@ -205,7 +196,7 @@ public partial class SettingsViewModel : ObservableObject
             ConfigLocation = GetConfigLocation();
 
             // Set theme from settings
-            var themeStr = settings?.Theme ?? "Default";
+            var themeStr = settings.Theme;
             ThemeIndex = themeStr switch
             {
                 "Light" => 0,
@@ -241,34 +232,26 @@ public partial class SettingsViewModel : ObservableObject
             // Apply pending version deletions
             await ApplyPendingDeletionsAsync();
 
-            // Save settings to file
-            var settings = new AppSettings
+            // Update settings via service
+            if (_settingsService != null)
             {
-                Language = SelectedLanguage?.Code ?? "en",
-                Theme = ThemeIndex switch
+                _settingsService.Settings.Language = SelectedLanguage?.Code ?? "en";
+                _settingsService.Settings.Theme = ThemeIndex switch
                 {
                     0 => "Light",
                     1 => "Dark",
                     _ => "Default"
-                },
-                AutoStart = AutoStartEnabled,
-                PortableMode = PortableMode
-            };
+                };
+                _settingsService.Settings.AutoStart = AutoStartEnabled;
+                _settingsService.Settings.PortableMode = PortableMode;
 
-            // Ensure directory exists
-            var settingsDir = Path.GetDirectoryName(_settingsFile);
-            if (!string.IsNullOrEmpty(settingsDir) && !Directory.Exists(settingsDir))
-            {
-                Directory.CreateDirectory(settingsDir);
+                await _settingsService.SaveAsync();
             }
-
-            var json = JsonSerializer.Serialize(settings, AppSettingsContext.Default.AppSettings);
-            await File.WriteAllTextAsync(_settingsFile, json);
 
             // Refresh version list after deletions
             await RefreshDownloadedVersionsAsync();
 
-            _logger?.LogInformation("Settings saved to: {SettingsFile}", _settingsFile);
+            _logger?.LogInformation("Settings saved successfully");
             _toastService?.Success("Saved", "Settings saved successfully");
         }
         catch (Exception ex)
@@ -404,17 +387,6 @@ public partial class SettingsViewModel : ObservableObject
 /// Language option for selection
 /// </summary>
 public record LanguageOption(string Code, string Name);
-
-/// <summary>
-/// Application settings
-/// </summary>
-public class AppSettings
-{
-    public string Language { get; init; } = "en";
-    public string Theme { get; init; } = "Default";
-    public bool AutoStart { get; init; }
-    public bool PortableMode { get; init; }
-}
 
 /// <summary>
 /// Theme option for selection

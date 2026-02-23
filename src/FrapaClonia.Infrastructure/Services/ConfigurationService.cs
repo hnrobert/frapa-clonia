@@ -1,8 +1,6 @@
 using FrapaClonia.Core.Interfaces;
-using FrapaClonia.Domain;
 using FrapaClonia.Domain.Models;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
 
 namespace FrapaClonia.Infrastructure.Services;
 
@@ -38,34 +36,6 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, ITomlSer
         {
             logger.LogError(ex, "Error saving configuration to {FilePath}", filePath);
             return Task.CompletedTask;
-        }
-    }
-
-    public Task<string> ExportToJsonAsync(FrpClientConfig configuration, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var json = JsonSerializer.Serialize(configuration, FrpClientConfigContext.Default.FrpClientConfig);
-            return Task.FromResult(json);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error exporting configuration to JSON");
-            return Task.FromResult("{}");
-        }
-    }
-
-    public Task<FrpClientConfig?> ImportFromJsonAsync(string json, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var config = JsonSerializer.Deserialize(json, FrpClientConfigContext.Default.FrpClientConfig);
-            return Task.FromResult(config);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error importing configuration from JSON");
-            return Task.FromResult<FrpClientConfig?>(null);
         }
     }
 

@@ -2,7 +2,6 @@ using FrapaClonia.Core.Interfaces;
 using FrapaClonia.Infrastructure.Resources;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
-using System.Text.Json;
 
 namespace FrapaClonia.Infrastructure.Services;
 
@@ -12,15 +11,17 @@ namespace FrapaClonia.Infrastructure.Services;
 public class LocalizationService : ILocalizationService
 {
     private readonly ILogger<LocalizationService> _logger;
+    private readonly ISettingsService? _settingsService;
 
     public CultureInfo CurrentCulture { get; private set; }
     public List<CultureInfo> SupportedCultures { get; }
 
     public event EventHandler? CultureChanged;
 
-    public LocalizationService(ILogger<LocalizationService> logger)
+    public LocalizationService(ILogger<LocalizationService> logger, ISettingsService? settingsService = null)
     {
         _logger = logger;
+        _settingsService = settingsService;
 
         // Define supported cultures
         SupportedCultures =
@@ -35,7 +36,7 @@ public class LocalizationService : ILocalizationService
             new CultureInfo("ru") // Russian
         ];
 
-        // Try to load saved language from settings file first
+        // Try to load saved language from settings
         var savedCulture = LoadSavedCulture();
 
         // If no saved culture, auto-detect system language
@@ -62,31 +63,20 @@ public class LocalizationService : ILocalizationService
     {
         try
         {
-            var settingsFile = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "FrapaClonia",
-                "settings.json");
-
-            if (File.Exists(settingsFile))
+            // Load from settings service if available
+            if (_settingsService != null)
             {
-                var json = File.ReadAllText(settingsFile);
-                using var document = JsonDocument.Parse(json);
+                _settingsService.LoadAsync().GetAwaiter().GetResult();
+                var languageCode = _settingsService.Settings.Language;
 
-                foreach (var languageCode in from property in document.RootElement.EnumerateObject()
-                         where property.Name.Equals("language", StringComparison.OrdinalIgnoreCase)
-                         select property.Value.GetString())
+                if (!string.IsNullOrEmpty(languageCode))
                 {
-                    if (!string.IsNullOrEmpty(languageCode))
+                    var culture = SupportedCultures.FirstOrDefault(c => c.Name == languageCode);
+                    if (culture != null)
                     {
-                        var culture = SupportedCultures.FirstOrDefault(c => c.Name == languageCode);
-                        if (culture != null)
-                        {
-                            _logger.LogInformation("Loaded saved language: {Language}", languageCode);
-                            return culture;
-                        }
+                        _logger.LogInformation("Loaded saved language: {Language}", languageCode);
+                        return culture;
                     }
-
-                    break;
                 }
             }
         }

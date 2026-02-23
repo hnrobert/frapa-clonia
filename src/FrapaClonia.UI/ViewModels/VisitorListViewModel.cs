@@ -7,8 +7,6 @@ using FrapaClonia.UI.Views;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Avalonia.Controls.ApplicationLifetimes;
-using System.Text.Json;
-using FrapaClonia.Domain;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global
@@ -221,9 +219,8 @@ public partial class VisitorListViewModel : ObservableObject
                 return;
             }
 
-            // Clone the visitor to avoid modifying the original until saved
-            var json = JsonSerializer.Serialize(SelectedVisitor, FrpClientConfigContext.Default.VisitorConfig);
-            var visitorClone = JsonSerializer.Deserialize(json, FrpClientConfigContext.Default.VisitorConfig);
+            // Clone the visitor manually to avoid modifying the original until saved
+            var visitorClone = CloneVisitor(SelectedVisitor);
 
             if (visitorClone == null) return;
             if (_serviceProvider == null) return;
@@ -251,6 +248,22 @@ public partial class VisitorListViewModel : ObservableObject
         {
             _logger?.LogError(e, "Error editing visitor");
         }
+    }
+
+    private static VisitorConfig CloneVisitor(VisitorConfig source)
+    {
+        return new VisitorConfig
+        {
+            Name = source.Name,
+            Type = source.Type,
+            ServerName = source.ServerName,
+            SecretKey = source.SecretKey,
+            BindAddr = source.BindAddr,
+            BindPort = source.BindPort,
+            BindIp = source.BindIp,
+            Transport = source.Transport,
+            Metadata = source.Metadata?.ToDictionary(kv => kv.Key, kv => kv.Value)
+        };
     }
 
     private async Task DeleteVisitorAsync()
@@ -293,17 +306,9 @@ public partial class VisitorListViewModel : ObservableObject
         {
             IsSaving = true;
 
-            var duplicate = new VisitorConfig
-            {
-                Name = $"{SelectedVisitor.Name} (Copy)",
-                Type = SelectedVisitor.Type,
-                ServerName = SelectedVisitor.ServerName,
-                SecretKey = SelectedVisitor.SecretKey,
-                BindAddr = SelectedVisitor.BindAddr,
-                BindPort = SelectedVisitor.BindPort + 1,
-                BindIp = SelectedVisitor.BindIp,
-                Transport = SelectedVisitor.Transport
-            };
+            var duplicate = CloneVisitor(SelectedVisitor);
+            duplicate.Name = $"{SelectedVisitor.Name} (Copy)";
+            duplicate.BindPort = SelectedVisitor.BindPort + 1;
 
             _presetService.CurrentPreset.Configuration.Visitors.Add(duplicate);
             await _presetService.SaveCurrentPresetAsync();

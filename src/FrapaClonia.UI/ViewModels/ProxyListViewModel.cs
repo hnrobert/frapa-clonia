@@ -7,8 +7,6 @@ using FrapaClonia.UI.Views;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Avalonia.Controls.ApplicationLifetimes;
-using System.Text.Json;
-using FrapaClonia.Domain;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
@@ -44,8 +42,6 @@ public partial class ProxyListViewModel : ObservableObject
     public IRelayCommand DeleteProxyCommand { get; }
     public IRelayCommand DuplicateProxyCommand { get; }
     public IRelayCommand RefreshCommand { get; }
-    public IRelayCommand ExportAllCommand { get; }
-    public IRelayCommand ImportCommand { get; }
 
     // ReSharper disable once MemberCanBePrivate.Global
     public IRelayCommand ClearAllCommand { get; }
@@ -99,28 +95,6 @@ public partial class ProxyListViewModel : ObservableObject
             catch (Exception e)
             {
                 _logger?.LogError(e, "Error loading proxies");
-            }
-        });
-        ExportAllCommand = new RelayCommand(async void () =>
-        {
-            try
-            {
-                await ExportAllAsync();
-            }
-            catch (Exception e)
-            {
-                _logger?.LogError(e, "Error exporting all proxies");
-            }
-        });
-        ImportCommand = new RelayCommand(async void () =>
-        {
-            try
-            {
-                await ImportAsync();
-            }
-            catch (Exception e)
-            {
-                _logger?.LogError(e, "Error importing proxies");
             }
         });
         ClearAllCommand = new RelayCommand(async void () =>
@@ -287,9 +261,8 @@ public partial class ProxyListViewModel : ObservableObject
                 return;
             }
 
-            // Clone the proxy to avoid modifying the original until saved
-            var json = JsonSerializer.Serialize(SelectedProxy, FrpClientConfigContext.Default.ProxyConfig);
-            var proxyClone = JsonSerializer.Deserialize(json, FrpClientConfigContext.Default.ProxyConfig);
+            // Clone the proxy manually to avoid modifying the original until saved
+            var proxyClone = CloneProxy(SelectedProxy);
 
             if (proxyClone == null) return;
             if (_serviceProvider == null) return;
@@ -320,6 +293,44 @@ public partial class ProxyListViewModel : ObservableObject
         {
             _logger?.LogError(e, "Error editing proxy");
         }
+    }
+
+    private static ProxyConfig CloneProxy(ProxyConfig source)
+    {
+        return new ProxyConfig
+        {
+            Name = source.Name,
+            Type = source.Type,
+            Annotations = source.Annotations?.ToDictionary(kv => kv.Key, kv => kv.Value),
+            Transport = source.Transport != null ? new ProxyTransport
+            {
+                UseEncryption = source.Transport.UseEncryption,
+                UseCompression = source.Transport.UseCompression,
+                BandwidthLimit = source.Transport.BandwidthLimit,
+                BandwidthLimitMode = source.Transport.BandwidthLimitMode,
+                ProxyProtocolVersion = source.Transport.ProxyProtocolVersion
+            } : null,
+            Metadata = source.Metadata?.ToDictionary(kv => kv.Key, kv => kv.Value),
+            LoadBalancer = source.LoadBalancer,
+            HealthCheck = source.HealthCheck,
+            LocalIP = source.LocalIP,
+            LocalPort = source.LocalPort,
+            Plugin = source.Plugin,
+            RemotePort = source.RemotePort,
+            CustomDomains = source.CustomDomains?.ToList(),
+            Subdomain = source.Subdomain,
+            Locations = source.Locations?.ToList(),
+            HttpUser = source.HttpUser,
+            HttpPassword = source.HttpPassword,
+            HostHeaderRewrite = source.HostHeaderRewrite,
+            RequestHeaders = source.RequestHeaders,
+            ResponseHeaders = source.ResponseHeaders,
+            RouteByHttpUser = source.RouteByHttpUser,
+            SecretKey = source.SecretKey,
+            AllowUsers = source.AllowUsers?.ToList(),
+            NatTraversal = source.NatTraversal,
+            Multiplexer = source.Multiplexer
+        };
     }
 
     private async Task DeleteProxyAsync()
@@ -364,19 +375,8 @@ public partial class ProxyListViewModel : ObservableObject
             {
                 IsSaving = true;
 
-                var newProxy = new ProxyConfig
-                {
-                    Name = $"{SelectedProxy.Name} (Copy)",
-                    Type = SelectedProxy.Type,
-                    LocalIP = SelectedProxy.LocalIP,
-                    LocalPort = SelectedProxy.LocalPort,
-                    RemotePort = SelectedProxy.RemotePort,
-                    CustomDomains = SelectedProxy.CustomDomains,
-                    Subdomain = SelectedProxy.Subdomain,
-                    Transport = SelectedProxy.Transport,
-                    HealthCheck = SelectedProxy.HealthCheck,
-                    Plugin = SelectedProxy.Plugin
-                };
+                var newProxy = CloneProxy(SelectedProxy);
+                newProxy.Name = $"{SelectedProxy.Name} (Copy)";
 
                 _presetService.CurrentPreset.Configuration.Proxies.Add(newProxy);
                 await _presetService.SaveCurrentPresetAsync();
@@ -397,110 +397,6 @@ public partial class ProxyListViewModel : ObservableObject
         catch (Exception e)
         {
             _logger?.LogError(e, "Error in DuplicateProxy");
-        }
-    }
-
-    private async Task ExportAllAsync()
-    {
-        _logger?.LogInformation("Export all proxies");
-
-        try
-        {
-            if (Avalonia.Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime
-                desktop)
-                return;
-
-            var storageProvider = desktop.MainWindow?.StorageProvider;
-            if (storageProvider == null) return;
-
-            // Create save file dialog
-            var file = await storageProvider.SaveFilePickerAsync(new Avalonia.Platform.Storage.FilePickerSaveOptions
-            {
-                Title = "Export Proxies",
-                DefaultExtension = "json",
-                FileTypeChoices =
-                [
-                    new Avalonia.Platform.Storage.FilePickerFileType("JSON Files")
-                    {
-                        Patterns = ["*.json"]
-                    },
-                    new Avalonia.Platform.Storage.FilePickerFileType("All Files")
-                    {
-                        Patterns = ["*"]
-                    }
-                ]
-            });
-
-            if (file != null)
-            {
-                await using var stream = await file.OpenWriteAsync();
-                await JsonSerializer.SerializeAsync(stream, Proxies, FrpClientConfigContext.Default.ListProxyConfig);
-                _logger?.LogInformation("Exported {Count} proxies to {FilePath}", Proxies.Count, file.Name);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error exporting proxies");
-        }
-    }
-
-    private async Task ImportAsync()
-    {
-        _logger?.LogInformation("Import proxies");
-
-        try
-        {
-            if (_presetService?.CurrentPreset == null)
-            {
-                _toastService?.Error("Error", "No active preset");
-                return;
-            }
-
-            if (Avalonia.Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime
-                desktop)
-                return;
-
-            var storageProvider = desktop.MainWindow?.StorageProvider;
-            if (storageProvider == null) return;
-
-            // Create open file dialog
-            var files = await storageProvider.OpenFilePickerAsync(new Avalonia.Platform.Storage.FilePickerOpenOptions
-            {
-                Title = "Import Proxies",
-                FileTypeFilter =
-                [
-                    new Avalonia.Platform.Storage.FilePickerFileType("JSON Files")
-                    {
-                        Patterns = ["*.json"]
-                    },
-                    new Avalonia.Platform.Storage.FilePickerFileType("All Files")
-                    {
-                        Patterns = ["*"]
-                    }
-                ],
-                AllowMultiple = false
-            });
-
-            if (files.Count > 0)
-            {
-                var file = files[0];
-                await using var stream = await file.OpenReadAsync();
-                var importedProxies =
-                    await JsonSerializer.DeserializeAsync(stream, FrpClientConfigContext.Default.ListProxyConfig);
-
-                if (importedProxies is null) return;
-
-                _presetService.CurrentPreset.Configuration.Proxies.AddRange(importedProxies);
-                await _presetService.SaveCurrentPresetAsync();
-
-                await LoadProxiesAsync();
-                _logger?.LogInformation("Imported {Count} proxies from {FilePath}", importedProxies.Count,
-                    file.Name);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error importing proxies");
         }
     }
 
