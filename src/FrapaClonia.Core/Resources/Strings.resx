@@ -1361,4 +1361,25 @@
   <data name="VisitorsAllowYouToConnect" xml:space="preserve">
     <value>Visitors allow you to connect to secure tunnel proxies (STCP/XTCP/SUDP)</value>
   </data>
+  <data name="ManageConfiguration" xml:space="preserve">
+    <value>Manage proxy configurations</value>
+  </data>
+  <data name="SetupFrpcStatus" xml:space="preserve">
+    <value>Download and configure frpc</value>
+  </data>
+  <data name="ViewFrpcStatus" xml:space="preserve">
+    <value>View frpc runtime logs</value>
+  </data>
+  <data name="RunningInstances" xml:space="preserve">
+    <value>Running Instances</value>
+  </data>
+  <data name="CurrentPresetRuntime" xml:space="preserve">
+    <value>Current Preset Runtime</value>
+  </data>
+  <data name="TotalActiveProxies" xml:space="preserve">
+    <value>Total Active Proxies</value>
+  </data>
+  <data name="NotRunning" xml:space="preserve">
+    <value>Not Running</value>
+  </data>
 </root>

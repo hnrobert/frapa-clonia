@@ -35,6 +35,11 @@ public partial class DashboardViewModel : ObservableObject
 
     [ObservableProperty] private int _proxyCount;
 
+    // Overview stats
+    [ObservableProperty] private int _runningInstanceCount;
+    [ObservableProperty] private string _currentPresetRuntime = "";
+    [ObservableProperty] private int _totalActiveProxies;
+
     // Preset management properties
     [ObservableProperty] private string _presetName = "";
 
@@ -252,7 +257,20 @@ public partial class DashboardViewModel : ObservableObject
         // Update initial state
         UpdateFrpcStatus();
         UpdatePresetInfo();
+
+        // Timer to update runtime display
+        _runtimeUpdateTimer = new System.Timers.Timer(1000);
+        _runtimeUpdateTimer.Elapsed += (_, _) =>
+        {
+            if (IsFrpcRunning)
+            {
+                UpdateOverviewStats();
+            }
+        };
+        _runtimeUpdateTimer.Start();
     }
+
+    private readonly System.Timers.Timer _runtimeUpdateTimer;
 
     partial void OnIsFrpcRunningChanged(bool value)
     {
@@ -280,6 +298,7 @@ public partial class DashboardViewModel : ObservableObject
         FrpcProcessId = e.ProcessId;
         _logger?.LogInformation("Frpc process state changed: IsRunning={IsRunning}, ProcessId={ProcessId}",
             e.IsRunning, e.ProcessId);
+        UpdateOverviewStats();
     }
 
     private void OnLogLineReceived(object? sender, LogLineEventArgs e)
@@ -298,6 +317,7 @@ public partial class DashboardViewModel : ObservableObject
         IsFrpcRunning = _frpcProcessService.IsRunning;
         FrpcProcessId = _frpcProcessService.ProcessId;
         StatusMessage = IsFrpcRunning ? $"Frpc is running (PID: {FrpcProcessId})" : "Frpc is not running";
+        UpdateOverviewStats();
     }
 
     public void RefreshPresetInfo()
@@ -329,6 +349,36 @@ public partial class DashboardViewModel : ObservableObject
         DuplicatePresetCommand.NotifyCanExecuteChanged();
         ExportTomlCommand.NotifyCanExecuteChanged();
         ExportIniCommand.NotifyCanExecuteChanged();
+        UpdateOverviewStats();
+    }
+
+    private void UpdateOverviewStats()
+    {
+        // Running instance count (0 or 1 since we only support one instance)
+        RunningInstanceCount = IsFrpcRunning ? 1 : 0;
+
+        // Current preset runtime
+        if (IsFrpcRunning && _frpcProcessService?.StartTime != null)
+        {
+            var runtime = DateTime.Now - _frpcProcessService.StartTime.Value;
+            CurrentPresetRuntime = FormatRuntime(runtime);
+        }
+        else
+        {
+            CurrentPresetRuntime = _localizationService?.GetString("NotRunning") ?? "Not running";
+        }
+
+        // Total active proxies across all presets
+        TotalActiveProxies = _presetService?.Presets.Sum(p => p.Configuration.Proxies.Count) ?? 0;
+    }
+
+    private static string FormatRuntime(TimeSpan runtime)
+    {
+        if (runtime.TotalDays >= 1)
+            return $"{(int)runtime.TotalDays}d {runtime.Hours}h {runtime.Minutes}m";
+        if (runtime.TotalHours >= 1)
+            return $"{(int)runtime.TotalHours}h {runtime.Minutes}m {runtime.Seconds}s";
+        return runtime.TotalMinutes >= 1 ? $"{(int)runtime.TotalMinutes}m {runtime.Seconds}s" : $"{runtime.Seconds}s";
     }
 
     private async Task StartFrpcAsync()

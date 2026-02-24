@@ -1358,4 +1358,25 @@
   <data name="VisitorsAllowYouToConnect" xml:space="preserve">
     <value>访问者允许您连接到安全隧道代理（STCP/XTCP/SUDP）</value>
   </data>
+  <data name="ManageConfiguration" xml:space="preserve">
+    <value>管理代理配置</value>
+  </data>
+  <data name="SetupFrpcStatus" xml:space="preserve">
+    <value>下载并配置 frpc</value>
+  </data>
+  <data name="ViewFrpcStatus" xml:space="preserve">
+    <value>查看 frpc 运行日志</value>
+  </data>
+  <data name="RunningInstances" xml:space="preserve">
+    <value>运行中的实例</value>
+  </data>
+  <data name="CurrentPresetRuntime" xml:space="preserve">
+    <value>当前预设运行时间</value>
+  </data>
+  <data name="TotalActiveProxies" xml:space="preserve">
+    <value>代理总数</value>
+  </data>
+  <data name="NotRunning" xml:space="preserve">
+    <value>未运行</value>
+  </data>
 </root>

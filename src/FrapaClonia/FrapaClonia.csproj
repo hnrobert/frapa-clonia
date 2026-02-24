@@ -54,8 +54,7 @@
     <TrimmerRootAssembly Include="FrapaClonia" />
     <TrimmerRootAssembly Include="FrapaClonia.UI" />
     <TrimmerRootAssembly Include="FrapaClonia.Shared" />
-    <TrimmerRootAssembly Include="FrapaClonia.Infrastructure" />
-    <TrimmerRootAssembly Include="FrapaClonia.Domain" />
+    <TrimmerRootAssembly Include="FrapaClonia.Core" />
   </ItemGroup>
 
   <!-- Target to copy project-referenced assemblies for NativeAOT -->

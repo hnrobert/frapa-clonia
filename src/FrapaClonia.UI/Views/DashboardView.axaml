@@ -235,10 +235,8 @@
               <TextBlock Grid.Row="1"
                          Classes="card-description"
                          TextWrapping="Wrap"
-                         VerticalAlignment="Center">
-                <Run Text="{local:Localize Manage}" /><Run Text=" " />
-                <Run Text="{local:Localize Configuration}" />
-              </TextBlock>
+                         VerticalAlignment="Center"
+                         Text="{local:Localize ManageConfiguration}" />
               <Button Grid.Row="2"
                       Content="{local:Localize Manage}"
                       Command="{Binding NavigateToProxyListCommand}"
@@ -259,10 +257,8 @@
               <TextBlock Grid.Row="1"
                          Classes="card-description"
                          TextWrapping="Wrap"
-                         VerticalAlignment="Center">
-                <Run Text="{local:Localize Setup}" /><Run Text=" " />
-                <Run Text="{local:Localize FrpcStatus}" />
-              </TextBlock>
+                         VerticalAlignment="Center"
+                         Text="{local:Localize SetupFrpcStatus}" />
               <Button Grid.Row="2"
                       Content="{local:Localize Setup}"
                       Command="{Binding NavigateToDeploymentCommand}"
@@ -283,10 +279,8 @@
               <TextBlock Grid.Row="1"
                          Classes="card-description"
                          TextWrapping="Wrap"
-                         VerticalAlignment="Center">
-                <Run Text="{local:Localize View}" /><Run Text=" " />
-                <Run Text="{local:Localize FrpcStatus}" />
-              </TextBlock>
+                         VerticalAlignment="Center"
+                         Text="{local:Localize ViewFrpcStatus}" />
               <Button Grid.Row="2"
                       Content="{local:Localize View}"
                       Command="{Binding NavigateToLogsCommand}"
@@ -304,28 +298,15 @@
         <!-- Overview Stats -->
         <Grid ColumnDefinitions="*,*,*"
               ColumnSpacing="{StaticResource CardGridSpacing}">
-          <!-- Proxy Count -->
+          <!-- Running Instances -->
           <Border Grid.Column="0" Classes="card">
             <Grid ColumnDefinitions="Auto,*">
-              <Border Grid.Column="0"
-                      Width="48"
-                      Height="48"
-                      CornerRadius="{StaticResource CornerRadiusS}"
-                      Background="{DynamicResource AppAccentColor}"
-                      Margin="{StaticResource ThicknessRightM}">
-                <mi:MaterialIcon Kind="Proxy"
-                                 Width="24"
-                                 Height="24"
-                                 Foreground="{DynamicResource SystemControlForegroundAltMediumHighBrush}"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Center" />
-              </Border>
-              <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                <TextBlock Text="{Binding ProxyCount, StringFormat={}{0}}"
+              <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="{StaticResource ThicknessLeftM}">
+                <TextBlock Text="{Binding RunningInstanceCount, StringFormat={}{0}}"
                            FontSize="24"
                            FontWeight="{StaticResource FontWeightSemiBold}"
                            Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-                <TextBlock Text="{local:Localize ActiveProxies}"
+                <TextBlock Text="{local:Localize RunningInstances}"
                            FontSize="{StaticResource FontSizeM}"
                            FontWeight="{StaticResource FontWeightMedium}"
                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
@@ -334,28 +315,15 @@
             </Grid>
           </Border>
 
-          <!-- Configuration Status -->
+          <!-- Current Preset Runtime -->
           <Border Grid.Column="1" Classes="card">
             <Grid ColumnDefinitions="Auto,*">
-              <Border Grid.Column="0"
-                      Width="48"
-                      Height="48"
-                      CornerRadius="{StaticResource CornerRadiusS}"
-                      Background="{DynamicResource AppAccentColor}"
-                      Margin="{StaticResource ThicknessRightM}">
-                <mi:MaterialIcon Kind="Cog"
-                                 Width="24"
-                                 Height="24"
-                                 Foreground="{DynamicResource SystemControlForegroundAltMediumHighBrush}"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Center" />
-              </Border>
-              <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                <TextBlock Text="{local:Localize FrpcNotRunning}"
+              <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="{StaticResource ThicknessLeftM}">
+                <TextBlock Text="{Binding CurrentPresetRuntime}"
                            FontSize="{StaticResource FontSizeL}"
                            FontWeight="{StaticResource FontWeightSemiBold}"
                            Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-                <TextBlock Text="{local:Localize Configuration}"
+                <TextBlock Text="{local:Localize CurrentPresetRuntime}"
                            FontSize="{StaticResource FontSizeM}"
                            FontWeight="{StaticResource FontWeightMedium}"
                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
@@ -364,26 +332,20 @@
             </Grid>
           </Border>
 
-          <!-- Recent Activity -->
+          <!-- Total Active Proxies -->
           <Border Grid.Column="2" Classes="card">
-            <Grid RowDefinitions="Auto,*">
-              <TextBlock Grid.Row="0"
-                         Text="{local:Localize RecentActivity}"
-                         Classes="card-title" />
-              <Border Grid.Row="1"
-                      Background="{DynamicResource SystemControlPageBackgroundTransparent}"
-                      CornerRadius="{StaticResource CornerRadiusS}"
-                      Padding="{StaticResource ThicknessS}"
-                      VerticalAlignment="Center"
-                      MinHeight="48"
-                      Margin="{StaticResource ThicknessTopS}">
-                <TextBlock Text="{Binding LastLogLine}"
-                           FontFamily="{DynamicResource MonoFontFamily}"
-                           FontSize="{StaticResource FontSizeS}"
+            <Grid ColumnDefinitions="Auto,*">
+              <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="{StaticResource ThicknessLeftM}">
+                <TextBlock Text="{Binding TotalActiveProxies, StringFormat={}{0}}"
+                           FontSize="24"
+                           FontWeight="{StaticResource FontWeightSemiBold}"
+                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                <TextBlock Text="{local:Localize TotalActiveProxies}"
+                           FontSize="{StaticResource FontSizeM}"
+                           FontWeight="{StaticResource FontWeightMedium}"
                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                           TextWrapping="Wrap"
-                           TextTrimming="CharacterEllipsis" />
-              </Border>
+                           Margin="{StaticResource ThicknessTopXS}" />
+              </StackPanel>
             </Grid>
           </Border>
         </Grid>

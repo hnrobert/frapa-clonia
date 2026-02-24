@@ -16,6 +16,7 @@ public class FrpcProcessService(ILogger<FrpcProcessService> logger, IProcessMana
 
     public bool IsRunning => _currentProcess is { HasExited: false };
     public int? ProcessId => _currentProcess?.Id;
+    public DateTime? StartTime { get; private set; }
 
     public event EventHandler<ProcessStateChangedEventArgs>? ProcessStateChanged;
     public event EventHandler<LogLineEventArgs>? LogLineReceived;
@@ -71,6 +72,7 @@ public class FrpcProcessService(ILogger<FrpcProcessService> logger, IProcessMana
             _currentProcess = System.Diagnostics.Process.GetProcessById(handle.ProcessId);
             _currentProcess.EnableRaisingEvents = true;
             _currentProcess.Exited += OnProcessExited;
+            StartTime = DateTime.Now;
 
             // Start reading output
             _ = Task.Run(() => ReadProcessOutputAsync(_cts.Token), cancellationToken);
@@ -137,6 +139,7 @@ public class FrpcProcessService(ILogger<FrpcProcessService> logger, IProcessMana
                 Timestamp = DateTime.UtcNow
             });
 
+            StartTime = null;
             _currentProcess = null;
             logger.LogInformation("Frpc stopped");
         }
@@ -166,6 +169,7 @@ public class FrpcProcessService(ILogger<FrpcProcessService> logger, IProcessMana
         var processId = _currentProcess?.Id;
         logger.LogInformation("Frpc process (PID {ProcessId}) exited", processId);
 
+        StartTime = null;
         OnProcessStateChanged(new ProcessStateChangedEventArgs
         {
             IsRunning = false,

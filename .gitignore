@@ -58,4 +58,4 @@ Thumbs.db
 
 .idea/
 .claude/settings.local.json
-src/FrapaClonia.Infrastructure/Resources/Strings.Designer.cs
+src/FrapaClonia.Core/Resources/Strings.Designer.cs

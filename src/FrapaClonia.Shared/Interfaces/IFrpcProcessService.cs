@@ -41,6 +41,11 @@ public interface IFrpcProcessService
     /// Gets the process ID if running
     /// </summary>
     int? ProcessId { get; }
+
+    /// <summary>
+    /// Gets the start time of the current process if running
+    /// </summary>
+    DateTime? StartTime { get; }
 }
 
 /// <summary>
