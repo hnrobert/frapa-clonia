@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FrapaClonia.Core.Interfaces;
-using FrapaClonia.Core.Utils;
+using FrapaClonia.Shared.Interfaces;
+using FrapaClonia.Shared.Utils;
 using System.Diagnostics;
 
 namespace FrapaClonia.UI.ViewModels;

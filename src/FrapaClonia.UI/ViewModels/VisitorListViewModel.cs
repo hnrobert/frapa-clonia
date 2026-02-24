@@ -1,12 +1,12 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FrapaClonia.Core.Interfaces;
-using FrapaClonia.Domain.Models;
+using FrapaClonia.Shared.Interfaces;
 using FrapaClonia.UI.Services;
 using FrapaClonia.UI.Views;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Avalonia.Controls.ApplicationLifetimes;
+using FrapaClonia.Shared.Models;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global

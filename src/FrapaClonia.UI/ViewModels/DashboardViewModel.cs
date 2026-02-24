@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FrapaClonia.Core.Interfaces;
+using FrapaClonia.Shared.Interfaces;
 using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
 using Avalonia.Controls.ApplicationLifetimes;

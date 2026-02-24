@@ -1,7 +1,7 @@
 using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using FrapaClonia.Core.Interfaces;
+using FrapaClonia.Shared.Interfaces;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;

@@ -11,7 +11,7 @@ using FrapaClonia.Views;
 using System.Diagnostics.CodeAnalysis;
 using System;
 using System.Threading.Tasks;
-using FrapaClonia.Core.Interfaces;
+using FrapaClonia.Shared.Interfaces;
 using FrapaClonia.UI.MarkupExtensions;
 using CommunityToolkit.Mvvm.Input;
 

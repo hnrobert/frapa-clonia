@@ -1,13 +1,35 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\FrapaClonia.Domain\FrapaClonia.Domain.csproj" />
+    <ProjectReference Include="..\FrapaClonia.Shared\FrapaClonia.Shared.csproj" />
+  </ItemGroup>
+
+  <!-- Generate strongly-typed resource class from Strings.resx -->
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Strings.resx">
+      <StronglyTypedFileName>Resources\Strings.Designer.cs</StronglyTypedFileName>
+      <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+      <StronglyTypedClassName>Strings</StronglyTypedClassName>
+      <StronglyTypedNamespace>FrapaClonia.Core.Resources</StronglyTypedNamespace>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- Suppress duplicate source file warning (Designer.cs is included both by SDK glob and StronglyTypedFileName) -->
+    <NoWarn>$(NoWarn);CS2002</NoWarn>
+    <RootNamespace>FrapaClonia.Core</RootNamespace>
+  </PropertyGroup>
+
+  <!-- Allow UI project to access internal Strings class -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="FrapaClonia.UI" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.2" />
+    <PackageReference Include="Nett" Version="0.15.0" />
+    <PackageReference Include="Octokit" Version="14.0.0" />
+    <PackageReference Include="System.Reactive" Version="6.1.0" />
   </ItemGroup>
 
   <PropertyGroup>

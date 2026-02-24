@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using FrapaClonia.Domain.Models;
+using FrapaClonia.Shared.Models;
 using FrapaClonia.UI.ViewModels;
 
 namespace FrapaClonia.UI.Views;

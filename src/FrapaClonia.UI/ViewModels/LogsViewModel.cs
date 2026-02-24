@@ -1,10 +1,10 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FrapaClonia.Core.Interfaces;
-using FrapaClonia.Domain.Models;
+using FrapaClonia.Shared.Interfaces;
 using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
+using FrapaClonia.Shared.Models;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 

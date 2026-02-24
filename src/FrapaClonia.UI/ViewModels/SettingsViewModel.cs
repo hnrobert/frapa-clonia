@@ -1,8 +1,8 @@
 using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FrapaClonia.Core.Interfaces;
-using FrapaClonia.Domain.Models;
+using FrapaClonia.Shared.Interfaces;
+using FrapaClonia.Shared.Models;
 using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
 

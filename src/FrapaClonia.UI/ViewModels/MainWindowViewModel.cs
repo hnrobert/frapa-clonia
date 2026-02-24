@@ -1,14 +1,15 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FrapaClonia.Core.Interfaces;
-using FrapaClonia.Core.Utils;
+using FrapaClonia.Shared.Interfaces;
+using FrapaClonia.Shared.Utils;
 using FrapaClonia.UI.Models;
 using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
 using Avalonia.Controls;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using FrapaClonia.Domain.Models;
+using FrapaClonia.Shared.Models;
+using ConfigPreset = FrapaClonia.Shared.Models.ConfigPreset;
 
 namespace FrapaClonia.UI.ViewModels;
 

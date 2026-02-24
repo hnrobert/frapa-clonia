@@ -2,12 +2,12 @@ using System.Runtime.InteropServices;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FrapaClonia.Core.Interfaces;
-using FrapaClonia.Domain.Models;
+using FrapaClonia.Shared.Interfaces;
 using FrapaClonia.UI.Services;
 using FrapaClonia.UI.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ConfigPreset = FrapaClonia.Shared.Models.ConfigPreset;
 
 namespace FrapaClonia.UI.ViewModels;
 
@@ -352,7 +352,7 @@ public partial class DeploymentViewModel : ObservableObject
                 var viewModel = new FrpcConfigurationViewModel(
                     _serviceProvider.GetRequiredService<ILogger<FrpcConfigurationViewModel>>(),
                     _serviceProvider.GetRequiredService<IFrpcVersionService>(),
-                    _serviceProvider.GetRequiredService<IFrpcDownloader>(),
+                    _serviceProvider.GetRequiredService<IFrpcDownloadService>(),
                     _serviceProvider.GetRequiredService<INativeDeploymentService>(),
                     _serviceProvider.GetRequiredService<IPackageManagerService>(),
                     _serviceProvider.GetRequiredService<IProcessManager>(),

@@ -46,30 +46,46 @@ The solution follows a layered architecture with clear separation of concerns:
 src/
 ├── FrapaClonia/              # Entry point, main window, DI setup
 ├── FrapaClonia.UI/           # Avalonia views, viewmodels, UI services
-├── FrapaClonia.Core/         # Business interfaces, no infrastructure deps
-├── FrapaClonia.Infrastructure/# Service implementations, external integrations
-└── FrapaClonia.Domain/       # Pure data models (FrpClientConfig, ProxyConfig, etc.)
+├── FrapaClonia.Core/         # Service implementations, resources, external integrations
+└── FrapaClonia.Shared/       # Shared interfaces, models, utils (no external deps)
 ```
 
 ### Project Dependencies
 
-- **Domain**: No dependencies (pure POCO models)
-- **Core**: Depends on Domain, defines service interfaces
-- **Infrastructure**: Implements Core interfaces, handles file I/O, process management, TOML serialization (Nett), GitHub API (Octokit)
-- **UI**: Avalonia views/viewmodels, references Core, Infrastructure, Domain
+- **Shared**: No project dependencies, contains pure interfaces, POCO models, and utilities. Depends only on CommunityToolkit.Mvvm, DI/Logging abstractions
+- **Core**: Depends on Shared, implements all service interfaces. Handles file I/O, process management, TOML serialization (Nett), GitHub API (Octokit), localization
+- **UI**: Avalonia views/viewmodels, references Core and Shared
 - **Main**: Wires everything together via DI
 
 ### Key Services
 
 Registered in `ServiceCollectionExtensions.cs`:
 
+**Core Services (in `FrapaClonia.Core/Services/`):**
+
 - `IConfigurationService` / `ConfigurationService` - App settings persistence
 - `IFrpcProcessService` / `FrpcProcessService` - Manages frpc binary execution
-- `IFrpcDownloader` / `FrpcDownloader` - Downloads frpc from GitHub releases
-- `IProfileService` / `ProfileService` - Manages frp configuration profiles
+- `IFrpcDownloadService` / `FrpcDownloadService` - Downloads frpc from GitHub releases
+- `IFrpcVersionService` / `FrpcVersionService` - frpc version management
+- `IPresetService` / `PresetService` - Manages frp configuration presets
 - `ITomlSerializer` / `TomlSerializer` - TOML config serialization
-- `INavigationService` / `NavigationService` - View navigation
-- `ILocalizationService` / `LocalizationService` - i18n support
+- `ITomlConfigSerializer` / `TomlConfigSerializer` - TOML config serialization for frp configs
+- `ILocalizationService` / `LocalizationService` - i18n support (resources in `Core/Resources/`)
+- `IValidationService` / `ValidationService` - Input validation
+- `IAutoStartService` / `AutoStartService` - Auto-start management
+- `ISettingsService` / `SettingsService` - Settings persistence
+- `ICacheService` / `CacheService` - Application caching
+- `IDockerDeploymentService` / `DockerDeploymentService` - Docker deployment
+- `INativeDeploymentService` / `NativeDeploymentService` - Native deployment
+- `IPackageManagerService` / `PackageManagerService` - Package management
+- `ISystemServiceManager` / `SystemServiceManager` - System service management
+- `IProcessManager` / `ProcessManager` - Process management
+
+**UI Services (in `FrapaClonia.UI/Services/`):**
+
+- `NavigationService` - View navigation (viewmodel-first navigation)
+- `ThemeService` - Theme management
+- `ToastService` - Toast notifications
 
 ### Views and ViewModels
 
@@ -79,11 +95,18 @@ Located in `FrapaClonia.UI/`:
 
 Navigation is handled by `NavigationService` with viewmodel-first navigation.
 
+### Interfaces
+
+All service interfaces are defined in `FrapaClonia.Shared/Interfaces/`:
+
+- Core service interfaces (`IFrpcProcessService`, `IConfigurationService`, etc.)
+- Infrastructure service interfaces (`IDockerDeploymentService`, `IPackageManagerService`, etc.)
+
 ### Styling
 
 - Design tokens defined in `Styles/DesignTokens.axaml` (spacing, colors, typography, etc.)
 - Shared styles in `Styles/SharedStyles.axaml`
-- Use `ResourceInitializer` for runtime resource additions (e.g., localized strings)
+- Localization strings in `FrapaClonia.Core/Resources/Strings.*.resx`
 
 ## NativeAOT Considerations
 
@@ -97,12 +120,14 @@ When adding reflection-dependent code, verify AOT compatibility.
 
 ## Configuration Models
 
-Domain models in `FrapaClonia.Domain/Models/` map to frpc.toml schema:
+Models in `FrapaClonia.Shared/Models/` map to frpc.toml schema:
 
 - `FrpClientConfig` - Root config containing common settings, proxies, visitors
-- `ClientCommonConfig` - Server connection, auth, transport settings
+- `ConfigPreset` - Configuration preset with metadata
+- `PresetConfig` - Preset configuration wrapper
 - `ProxyConfig` - Individual proxy definitions (tcp, http, etc.)
-- `VisitorConfig` - STCP/XTCP/SUDP visitor definitions
+- `AppSettings` - Application settings
+- `AppCache` - Application cache data
 
 ## CI/CD
 

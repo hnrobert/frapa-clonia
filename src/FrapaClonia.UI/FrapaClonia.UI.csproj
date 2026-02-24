@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\FrapaClonia.Shared\FrapaClonia.Shared.csproj" />
     <ProjectReference Include="..\FrapaClonia.Core\FrapaClonia.Core.csproj" />
-    <ProjectReference Include="..\FrapaClonia.Infrastructure\FrapaClonia.Infrastructure.csproj" />
-    <ProjectReference Include="..\FrapaClonia.Domain\FrapaClonia.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

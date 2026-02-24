@@ -1,12 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using FrapaClonia.Core.Interfaces;
-using FrapaClonia.Infrastructure.Services;
+using FrapaClonia.Shared.Interfaces;
 using FrapaClonia.UI.Services;
 using FrapaClonia.UI.ViewModels;
 using Serilog;
 using System.IO;
 using System.Text;
+using FrapaClonia.Core.Services;
 using Serilog.Events;
 
 namespace FrapaClonia;
@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IPresetService, PresetService>();
 
         // Infrastructure Services
-        services.AddSingleton<IFrpcDownloader, FrpcDownloader>();
+        services.AddSingleton<IFrpcDownloadService, FrpcDownloadService>();
         services.AddSingleton<IFrpcVersionService, FrpcVersionService>();
         services.AddSingleton<IDockerDeploymentService, DockerDeploymentService>();
         services.AddSingleton<INativeDeploymentService, NativeDeploymentService>();

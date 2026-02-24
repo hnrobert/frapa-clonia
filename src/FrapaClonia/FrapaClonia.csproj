@@ -53,7 +53,7 @@
   <ItemGroup Condition="'$(PublishTrimmed)' == 'true' Or '$(PublishAot)' == 'true'">
     <TrimmerRootAssembly Include="FrapaClonia" />
     <TrimmerRootAssembly Include="FrapaClonia.UI" />
-    <TrimmerRootAssembly Include="FrapaClonia.Core" />
+    <TrimmerRootAssembly Include="FrapaClonia.Shared" />
     <TrimmerRootAssembly Include="FrapaClonia.Infrastructure" />
     <TrimmerRootAssembly Include="FrapaClonia.Domain" />
   </ItemGroup>
@@ -95,6 +95,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FrapaClonia.UI\FrapaClonia.UI.csproj" />
-    <ProjectReference Include="..\FrapaClonia.Infrastructure\FrapaClonia.Infrastructure.csproj" />
+    <ProjectReference Include="..\FrapaClonia.Core\FrapaClonia.Core.csproj" />
   </ItemGroup>
 </Project>

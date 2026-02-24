@@ -3,7 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FrapaClonia.Core.Interfaces;
+using FrapaClonia.Shared.Interfaces;
 using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
 
@@ -16,7 +16,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
 {
     private readonly ILogger<FrpcConfigurationViewModel>? _logger;
     private readonly IFrpcVersionService? _frpcVersionService;
-    private readonly IFrpcDownloader? _frpcDownloader;
+    private readonly IFrpcDownloadService? _frpcDownloadService;
     private readonly INativeDeploymentService? _nativeDeploymentService;
     private readonly IPackageManagerService? _packageManagerService;
     private readonly IProcessManager? _processManager;
@@ -112,7 +112,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
     public FrpcConfigurationViewModel(
         ILogger<FrpcConfigurationViewModel> logger,
         IFrpcVersionService frpcVersionService,
-        IFrpcDownloader frpcDownloader,
+        IFrpcDownloadService frpcDownloadService,
         INativeDeploymentService nativeDeploymentService,
         IPackageManagerService packageManagerService,
         IProcessManager processManager,
@@ -121,7 +121,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
     {
         _logger = logger;
         _frpcVersionService = frpcVersionService;
-        _frpcDownloader = frpcDownloader;
+        _frpcDownloadService = frpcDownloadService;
         _nativeDeploymentService = nativeDeploymentService;
         _packageManagerService = packageManagerService;
         _processManager = processManager;
@@ -632,7 +632,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
             IsDownloading = true;
             _toastService?.Info(L("Toast_Downloading"), L("Toast_DownloadingFrpc", versionToDownload.Version));
 
-            if (_frpcDownloader != null && _nativeDeploymentService != null)
+            if (_frpcDownloadService != null && _nativeDeploymentService != null)
             {
                 // Get the download URL - either from the version info or construct it
                 var downloadUrl = versionToDownload.DownloadUrl;
@@ -650,7 +650,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
 
                 // Download to temp directory first
                 var tempDir = Path.GetTempPath();
-                var archivePath = await _frpcDownloader.DownloadFromMirrorAsync(downloadUrl, tempDir);
+                var archivePath = await _frpcDownloadService.DownloadFromMirrorAsync(downloadUrl, tempDir);
 
                 _toastService?.Info(L("Toast_Deploying"), L("Toast_DeployingFrpcBinary"));
 
