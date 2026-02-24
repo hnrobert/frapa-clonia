@@ -10,20 +10,6 @@ namespace FrapaClonia.Core.Services;
 public class ConfigurationService(ILogger<ConfigurationService> logger, ITomlSerializer tomlSerializer)
     : IConfigurationService
 {
-    public Task<FrpClientConfig?> LoadConfigurationAsync(string filePath, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            logger.LogInformation("Loading configuration from {FilePath}", filePath);
-            return tomlSerializer.DeserializeFromFileAsync(filePath, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error loading configuration from {FilePath}", filePath);
-            return Task.FromResult<FrpClientConfig?>(null);
-        }
-    }
-
     public Task SaveConfigurationAsync(string filePath, FrpClientConfig configuration,
         CancellationToken cancellationToken = default)
     {
@@ -44,7 +30,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, ITomlSer
         return Path.Combine(GetAppDataDirectory(), "frpc.toml");
     }
 
-    public string GetAppDataDirectory()
+    public static string GetAppDataDirectory()
     {
         var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         return Path.Combine(appData, "FrapaClonia");

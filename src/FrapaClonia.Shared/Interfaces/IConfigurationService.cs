@@ -8,11 +8,6 @@ namespace FrapaClonia.Shared.Interfaces;
 public interface IConfigurationService
 {
     /// <summary>
-    /// Loads configuration from a file
-    /// </summary>
-    Task<FrpClientConfig?> LoadConfigurationAsync(string filePath, CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// Saves configuration to a file
     /// </summary>
     Task SaveConfigurationAsync(string filePath, FrpClientConfig configuration, CancellationToken cancellationToken = default);
@@ -21,9 +16,4 @@ public interface IConfigurationService
     /// Gets the default configuration file path
     /// </summary>
     string GetDefaultConfigPath();
-
-    /// <summary>
-    /// Gets the application data directory
-    /// </summary>
-    string GetAppDataDirectory();
 }

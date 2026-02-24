@@ -183,14 +183,16 @@ public partial class MainWindowViewModel : ObservableObject
 
     private void OnCurrentPresetChanged(object? sender, PresetChangedEventArgs e)
     {
-        UpdatePresetItems();
         OnPropertyChanged(nameof(CurrentPreset));
 
-        // Update selection
+        // Update selection with the new preset
         if (e.CurrentPreset != null)
         {
-            _selectedPresetItem = PresetItems.FirstOrDefault(p => p.Id == e.CurrentPreset.Id);
-            OnPropertyChanged(nameof(SelectedPresetItem));
+            UpdatePresetItemsAndSelect(e.CurrentPreset.Id);
+        }
+        else
+        {
+            UpdatePresetItems();
         }
 
         _logger?.LogInformation("Current preset changed to: {Name}", e.CurrentPreset?.Name);
@@ -198,14 +200,15 @@ public partial class MainWindowViewModel : ObservableObject
 
     private void OnPresetsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        // Update the preset items when presets are added or removed
-        UpdatePresetItems();
-
-        // Keep the current preset selected
-        if (_presetService?.CurrentPreset != null)
+        // Keep the current preset selected when collection changes
+        var currentId = _presetService?.CurrentPreset?.Id;
+        if (currentId.HasValue)
         {
-            _selectedPresetItem = PresetItems.FirstOrDefault(p => p.Id == _presetService.CurrentPreset.Id);
-            OnPropertyChanged(nameof(SelectedPresetItem));
+            UpdatePresetItemsAndSelect(currentId.Value);
+        }
+        else
+        {
+            UpdatePresetItems();
         }
 
         _logger?.LogInformation("Presets collection changed: {Action}", e.Action);
@@ -223,6 +226,27 @@ public partial class MainWindowViewModel : ObservableObject
 
         // Add "+ New Preset..." option
         PresetItems.Add(new PresetItem("+ New Preset...", true));
+    }
+
+    private void UpdatePresetItemsAndSelect(Guid presetIdToSelect)
+    {
+        // First, set selection to null to avoid showing invalid state during update
+        _selectedPresetItem = null;
+        OnPropertyChanged(nameof(SelectedPresetItem));
+
+        // Update the items
+        PresetItems.Clear();
+
+        foreach (var preset in Presets)
+        {
+            PresetItems.Add(new PresetItem(preset));
+        }
+
+        PresetItems.Add(new PresetItem("+ New Preset...", true));
+
+        // Now find and set the correct selection
+        _selectedPresetItem = PresetItems.FirstOrDefault(p => p.Id == presetIdToSelect);
+        OnPropertyChanged(nameof(SelectedPresetItem));
     }
 
     private async Task OnSelectedPresetItemChangedAsync(PresetItem item)

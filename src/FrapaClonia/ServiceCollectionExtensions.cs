@@ -55,7 +55,7 @@ public static class ServiceCollectionExtensions
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
             .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}", standardErrorFromLevel: LogEventLevel.Error)
-            .WriteTo.File(Path.Combine(GetAppDataDirectory(), "logs", "frapa-clonia-.log"), rollingInterval: RollingInterval.Day, encoding: Encoding.UTF8)
+            .WriteTo.File(Path.Combine(ConfigurationService.GetAppDataDirectory(), "logs", "frapa-clonia-.log"), rollingInterval: RollingInterval.Day, encoding: Encoding.UTF8)
             .CreateLogger();
 
         services.AddLogging(builder =>
@@ -63,10 +63,5 @@ public static class ServiceCollectionExtensions
             builder.ClearProviders();
             builder.AddSerilog(dispose: true);
         });
-    }
-
-    private static string GetAppDataDirectory()
-    {
-        return Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), "FrapaClonia");
     }
 }

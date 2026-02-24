@@ -1,6 +1,3 @@
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using FrapaClonia.Shared.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -131,88 +128,6 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
         return _processOutputs.TryGetValue(processId, out var subject) ? subject :
             // Return an empty observable if process not found
             System.Reactive.Linq.Observable.Empty<string>();
-    }
-
-    public Task<bool> IsPortAvailableAsync(int port, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            logger.LogDebug("Checking if port {Port} is available", port);
-
-            // Try to bind to the port
-            var listener = new TcpListener(IPAddress.Loopback, port);
-            listener.Start();
-
-            // If we got here, the port is available
-            listener.Stop();
-            return Task.FromResult(true);
-        }
-        catch (SocketException ex) when (ex.SocketErrorCode == SocketError.AddressAlreadyInUse)
-        {
-            logger.LogDebug("Port {Port} is already in use", port);
-            return Task.FromResult(false);
-        }
-        catch (Exception ex)
-        {
-            logger.LogWarning(ex, "Error checking port {Port}", port);
-            return Task.FromResult(false);
-        }
-    }
-
-    public Task<int?> GetAvailablePortAsync(int minPort, int maxPort, CancellationToken cancellationToken = default)
-    {
-        logger.LogDebug("Finding available port between {MinPort} and {MaxPort}", minPort, maxPort);
-
-        // Common ports that might be in use
-        var commonPorts = new HashSet<int>
-        {
-            80, 443, 22, 21, 23, 25, 53, 110, 143, 3306,
-            3389, 5432, 6379, 7000, 7001, 8000, 8080, 8888
-        };
-
-        // Try to find an available port
-        for (var port = minPort; port <= maxPort; port++)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            // Skip common ports to avoid conflicts
-            if (commonPorts.Contains(port))
-                continue;
-
-            if (!IsPortAvailable(port)) continue;
-            logger.LogDebug("Found available port: {Port}", port);
-            return Task.FromResult<int?>(port);
-        }
-
-        logger.LogWarning("No available port found between {MinPort} and {MaxPort}", minPort, maxPort);
-        return Task.FromResult<int?>(null);
-    }
-
-    private static bool IsPortAvailable(int port)
-    {
-        // Check TCP
-        var ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
-        var tcpConnections = ipGlobalProperties.GetActiveTcpConnections();
-        var tcpListeners = ipGlobalProperties.GetActiveTcpListeners();
-
-        var isInUse = tcpConnections.Any(c => c.LocalEndPoint.Port == port)
-            || tcpListeners.Any(l => l.Port == port);
-
-        if (isInUse)
-            return false;
-
-        // Try to bind to be sure
-        try
-        {
-            using var listener = new TcpListener(IPAddress.Loopback, port);
-            listener.Start();
-            listener.Stop();
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
     }
 
     public async Task<ProcessResult> ExecuteAsync(string fileName, string arguments, string? workingDirectory = null, CancellationToken cancellationToken = default)
