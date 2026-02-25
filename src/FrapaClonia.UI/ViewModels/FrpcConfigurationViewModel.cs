@@ -464,6 +464,17 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         }
     }
 
+    partial void OnSelectedVersionChanged(FrpcVersionInfo? value)
+    {
+        // The version selector in the UI is bound to SelectedVersion.
+        // Keep SelectedGitHubVersion in sync so download actions always use the user's selection.
+        if (value == null) return;
+        if (IsWebDownloadMode || SelectedPackageManager?.SupportsVersionSelection == true)
+        {
+            SelectedGitHubVersion = value;
+        }
+    }
+
     private void UpdateAvailableVersionsForMode()
     {
         if (IsWebDownloadMode)
@@ -619,8 +630,9 @@ public partial class FrpcConfigurationViewModel : ObservableObject
 
     private async Task DownloadDirectAsync()
     {
-        // For web download mode, use the selected GitHub version
-        var versionToDownload = SelectedGitHubVersion ?? SelectedVersion;
+        // UI version selector is bound to SelectedVersion.
+        // Prefer it so the chosen version is always respected.
+        var versionToDownload = SelectedVersion ?? SelectedGitHubVersion;
         if (versionToDownload == null)
         {
             _toastService?.Warning(L("Toast_NoVersion"), L("Toast_SelectVersionFirst"));
