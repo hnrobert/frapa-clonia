@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using FrapaClonia.Shared.Interfaces;
 using FrapaClonia.UI.MarkupExtensions;
 using CommunityToolkit.Mvvm.Input;
+using FrapaClonia.UI.Utils;
 
 namespace FrapaClonia;
 
@@ -88,6 +89,19 @@ public class App : Application
                 DataContext = mainWindowViewModel
             };
             desktop.MainWindow = _mainWindow;
+
+            // Ensure the app exits when the main window closes, even if child windows are still open.
+            desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
+
+            // Close all child windows when main window is closing.
+            _mainWindow.Closing += (_, _) =>
+            {
+                foreach (var window in desktop.Windows.ToList())
+                {
+                    if (ReferenceEquals(window, _mainWindow)) continue;
+                    window.Close();
+                }
+            };
 
             // Set up keyboard shortcuts
             SetupKeyboardShortcuts(_mainWindow);
@@ -171,6 +185,12 @@ public class App : Application
 
         try
         {
+            // If About window is already open, bring it to front.
+            if (WindowReuse.ActivateExisting<AboutView>() != null)
+            {
+                return;
+            }
+
             var localizationService = _serviceProvider.GetRequiredService<ILocalizationService>();
             var aboutViewModel = new AboutViewModel(localizationService);
             var aboutDialog = new AboutView(aboutViewModel);

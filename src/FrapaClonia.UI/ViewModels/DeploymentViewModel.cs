@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FrapaClonia.UI.Utils;
 using FrapaClonia.Shared.Interfaces;
 using FrapaClonia.UI.Services;
 using FrapaClonia.UI.Views;
@@ -54,8 +55,8 @@ public partial class DeploymentViewModel : ObservableObject
     [ObservableProperty] private bool _isServiceInstalled;
     [ObservableProperty] private bool _isServiceRunning;
     [ObservableProperty] private bool _isServiceChecking;
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(LocalizedServiceState))]
+
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(LocalizedServiceState))]
     private ServiceStatus? _serviceStatus;
 
     /// <summary>
@@ -344,6 +345,12 @@ public partial class DeploymentViewModel : ObservableObject
     private async Task ConfigureFrpcAsync()
     {
         if (_serviceProvider == null) return;
+
+        // If the configuration dialog is already open, bring it to front.
+        if (WindowReuse.ActivateExisting<FrpcConfigurationDialog>() != null)
+        {
+            return;
+        }
 
         try
         {

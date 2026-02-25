@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Shared.Interfaces;
 using FrapaClonia.UI.Services;
+using FrapaClonia.UI.Utils;
 using FrapaClonia.UI.Views;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
@@ -171,6 +172,11 @@ public partial class VisitorListViewModel : ObservableObject
         {
             _logger?.LogInformation("Add visitor clicked");
 
+            if (WindowReuse.ActivateExisting<VisitorEditorView>() != null)
+            {
+                return;
+            }
+
             if (_presetService?.CurrentPreset == null)
             {
                 _toastService?.Error("Error", "No active preset");
@@ -212,6 +218,11 @@ public partial class VisitorListViewModel : ObservableObject
         {
             if (SelectedVisitor == null) return;
             _logger?.LogInformation("Edit visitor: {VisitorName}", SelectedVisitor.Name);
+
+            if (WindowReuse.ActivateExisting<VisitorEditorView>() != null)
+            {
+                return;
+            }
 
             if (_presetService?.CurrentPreset == null)
             {

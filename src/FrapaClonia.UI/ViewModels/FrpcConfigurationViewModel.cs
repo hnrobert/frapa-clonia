@@ -687,6 +687,9 @@ public partial class FrpcConfigurationViewModel : ObservableObject
 
                 FrpcBinaryPath = binaryPath;
                 _toastService?.Success(L("Toast_Downloaded"), L("Toast_FrpcDownloaded", binaryPath));
+
+                // Refresh the detected/downloaded versions list so the table updates immediately.
+                await RefreshDownloadedVersionsAsync();
             }
         }
         catch (Exception ex)

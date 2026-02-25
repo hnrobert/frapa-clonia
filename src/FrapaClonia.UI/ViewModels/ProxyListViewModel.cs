@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Shared.Interfaces;
 using FrapaClonia.UI.Services;
+using FrapaClonia.UI.Utils;
 using FrapaClonia.UI.Views;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
@@ -210,6 +211,11 @@ public partial class ProxyListViewModel : ObservableObject
         {
             _logger?.LogInformation("Add proxy clicked");
 
+            if (WindowReuse.ActivateExisting<ProxyEditorView>() != null)
+            {
+                return;
+            }
+
             if (_presetService?.CurrentPreset == null)
             {
                 _toastService?.Error("Error", "No active preset");
@@ -254,6 +260,11 @@ public partial class ProxyListViewModel : ObservableObject
         {
             if (SelectedProxy == null) return;
             _logger?.LogInformation("Edit proxy: {ProxyName}", SelectedProxy.Name);
+
+            if (WindowReuse.ActivateExisting<ProxyEditorView>() != null)
+            {
+                return;
+            }
 
             if (_presetService?.CurrentPreset == null)
             {
@@ -301,14 +312,16 @@ public partial class ProxyListViewModel : ObservableObject
             Name = source.Name,
             Type = source.Type,
             Annotations = source.Annotations?.ToDictionary(kv => kv.Key, kv => kv.Value),
-            Transport = source.Transport != null ? new ProxyTransport
-            {
-                UseEncryption = source.Transport.UseEncryption,
-                UseCompression = source.Transport.UseCompression,
-                BandwidthLimit = source.Transport.BandwidthLimit,
-                BandwidthLimitMode = source.Transport.BandwidthLimitMode,
-                ProxyProtocolVersion = source.Transport.ProxyProtocolVersion
-            } : null,
+            Transport = source.Transport != null
+                ? new ProxyTransport
+                {
+                    UseEncryption = source.Transport.UseEncryption,
+                    UseCompression = source.Transport.UseCompression,
+                    BandwidthLimit = source.Transport.BandwidthLimit,
+                    BandwidthLimitMode = source.Transport.BandwidthLimitMode,
+                    ProxyProtocolVersion = source.Transport.ProxyProtocolVersion
+                }
+                : null,
             Metadata = source.Metadata?.ToDictionary(kv => kv.Key, kv => kv.Value),
             LoadBalancer = source.LoadBalancer,
             HealthCheck = source.HealthCheck,
