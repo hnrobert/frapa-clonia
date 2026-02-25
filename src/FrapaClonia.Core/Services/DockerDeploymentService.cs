@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using FrapaClonia.Shared.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -9,6 +10,8 @@ namespace FrapaClonia.Core.Services;
 /// </summary>
 public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : IDockerDeploymentService
 {
+    private static readonly HttpClient HttpClient = new();
+
     public async Task<bool> IsDockerAvailableAsync(CancellationToken cancellationToken = default)
     {
         try
@@ -51,22 +54,95 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
 
             var composeContent = GenerateDockerComposeContent(config);
 
+            // The caller may pass either a directory (preferred) or a full file path.
+            var composePath = ResolveComposeFilePath(outputPath);
+
             // Ensure directory exists
-            var directory = Path.GetDirectoryName(outputPath);
+            var directory = Path.GetDirectoryName(composePath);
             if (!string.IsNullOrEmpty(directory))
             {
                 Directory.CreateDirectory(directory);
             }
 
-            await File.WriteAllTextAsync(outputPath, composeContent, cancellationToken);
+            await File.WriteAllTextAsync(composePath, composeContent, cancellationToken);
             logger.LogInformation("docker-compose.yml generated successfully");
 
-            return outputPath;
+            return composePath;
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error generating docker-compose.yml at {OutputPath}", outputPath);
             throw;
+        }
+    }
+
+    public async Task<IReadOnlyList<string>> GetAvailableImageTagsAsync(string imageRepository,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(imageRepository))
+            {
+                return Array.Empty<string>();
+            }
+
+            // Only support Docker Hub tags for now.
+            var normalized = NormalizeDockerHubRepository(imageRepository);
+            if (normalized == null)
+            {
+                logger.LogWarning("Image repository '{Image}' is not a supported Docker Hub repository",
+                    imageRepository);
+                return [];
+            }
+
+            var (namespaceName, repoName) = normalized.Value;
+            var tags = new List<string>();
+            var nextUrl = $"https://hub.docker.com/v2/repositories/{namespaceName}/{repoName}/tags?page_size=100";
+
+            // Cap pagination to avoid excessive requests.
+            for (var page = 0; page < 20 && !string.IsNullOrEmpty(nextUrl); page++)
+            {
+                using var request = new HttpRequestMessage(HttpMethod.Get, nextUrl);
+                using var response = await HttpClient.SendAsync(request, cancellationToken);
+                response.EnsureSuccessStatusCode();
+
+                await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+                using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
+
+                if (document.RootElement.TryGetProperty("results", out var results) &&
+                    results.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var item in results.EnumerateArray())
+                    {
+                        if (!item.TryGetProperty("name", out var nameElement) ||
+                            nameElement.ValueKind != JsonValueKind.String) continue;
+
+                        var tag = nameElement.GetString();
+                        if (!string.IsNullOrWhiteSpace(tag))
+                        {
+                            tags.Add(tag);
+                        }
+                    }
+                }
+
+                nextUrl = null;
+                if (document.RootElement.TryGetProperty("next", out var nextElement) &&
+                    nextElement.ValueKind == JsonValueKind.String)
+                {
+                    nextUrl = nextElement.GetString();
+                }
+            }
+
+            return tags.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        }
+        catch (OperationCanceledException)
+        {
+            return Array.Empty<string>();
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Error fetching tags for image repository '{Image}'", imageRepository);
+            return Array.Empty<string>();
         }
     }
 
@@ -84,12 +160,16 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
                 return false;
             }
 
+            var (fileName, argsPrefix) = await GetComposeInvocationAsync(cancellationToken);
+
             var process = new System.Diagnostics.Process
             {
                 StartInfo = new System.Diagnostics.ProcessStartInfo
                 {
-                    FileName = GetDockerComposeCommand(),
-                    Arguments = $"-f \"{composeFile}\" up -d",
+                    FileName = fileName,
+                    Arguments = string.IsNullOrEmpty(argsPrefix)
+                        ? $"-f \"{composeFile}\" up -d"
+                        : $"{argsPrefix} -f \"{composeFile}\" up -d",
                     WorkingDirectory = composeDirectory,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -134,12 +214,16 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
                 return false;
             }
 
+            var (fileName, argsPrefix) = await GetComposeInvocationAsync(cancellationToken);
+
             var process = new System.Diagnostics.Process
             {
                 StartInfo = new System.Diagnostics.ProcessStartInfo
                 {
-                    FileName = GetDockerComposeCommand(),
-                    Arguments = $"-f \"{composeFile}\" down",
+                    FileName = fileName,
+                    Arguments = string.IsNullOrEmpty(argsPrefix)
+                        ? $"-f \"{composeFile}\" down"
+                        : $"{argsPrefix} -f \"{composeFile}\" down",
                     WorkingDirectory = composeDirectory,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -206,6 +290,56 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
         }
     }
 
+    public async Task<bool> IsContainerNameAvailableAsync(string containerName,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(containerName))
+            {
+                return false;
+            }
+
+            // List all container names and check exact match.
+            var process = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = GetDockerCommand(),
+                    Arguments = "ps -a --format \"{{.Names}}\"",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false
+                }
+            };
+
+            process.Start();
+            await process.WaitForExitAsync(cancellationToken);
+
+            if (process.ExitCode != 0)
+            {
+                logger.LogWarning("Docker returned non-zero exit code while listing containers: {ExitCode}",
+                    process.ExitCode);
+                return false;
+            }
+
+            var output = await process.StandardOutput.ReadToEndAsync(cancellationToken);
+            var existingNames = output
+                .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+            return !existingNames.Any(n => string.Equals(n, containerName.Trim(), StringComparison.Ordinal));
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Error checking container name availability for {ContainerName}", containerName);
+            return false;
+        }
+    }
+
     private static string GetDockerCommand()
     {
         return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "docker.exe" : "docker";
@@ -216,16 +350,107 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
         return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "docker-compose.exe" : "docker-compose";
     }
 
+    private static async Task<(string FileName, string ArgsPrefix)> GetComposeInvocationAsync(
+        CancellationToken cancellationToken)
+    {
+        // Prefer the v2 plugin: `docker compose`
+        try
+        {
+            var probe = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = GetDockerCommand(),
+                    Arguments = "compose version",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false
+                }
+            };
+
+            probe.Start();
+            await probe.WaitForExitAsync(cancellationToken);
+            if (probe.ExitCode == 0)
+            {
+                return (GetDockerCommand(), "compose");
+            }
+        }
+        catch
+        {
+            // ignore and fall back
+        }
+
+        // Fall back to legacy standalone binary: `docker-compose`
+        return (GetDockerComposeCommand(), "");
+    }
+
+    private static string ResolveComposeFilePath(string outputPath)
+    {
+        var isYamlFile = outputPath.EndsWith(".yml", StringComparison.OrdinalIgnoreCase) ||
+                         outputPath.EndsWith(".yaml", StringComparison.OrdinalIgnoreCase);
+
+        return isYamlFile
+            ? outputPath
+            : Path.Combine(outputPath, "docker-compose.yml"); // Treat as directory.
+    }
+
+    private static (string Namespace, string Repo)? NormalizeDockerHubRepository(string imageRepository)
+    {
+        // Strip any tag suffix if user accidentally includes it.
+        var repo = imageRepository.Trim();
+
+        // If a registry host is included, only accept docker.io (and common aliases).
+        // Examples accepted:
+        // - fatedier/frpc
+        // - docker.io/fatedier/frpc
+        // - index.docker.io/fatedier/frpc
+        if (repo.StartsWith("docker.io/", StringComparison.OrdinalIgnoreCase))
+        {
+            repo = repo["docker.io/".Length..];
+        }
+        else if (repo.StartsWith("index.docker.io/", StringComparison.OrdinalIgnoreCase))
+        {
+            repo = repo["index.docker.io/".Length..];
+        }
+        else if (repo.Contains('.') && repo.Contains('/'))
+        {
+            // Some other registry (ghcr.io, quay.io, etc.)
+            return null;
+        }
+
+        // Remove tag (last ':' after last '/')
+        var lastSlash = repo.LastIndexOf('/');
+        var lastColon = repo.LastIndexOf(':');
+        if (lastColon > lastSlash)
+        {
+            repo = repo[..lastColon];
+        }
+
+        if (string.IsNullOrWhiteSpace(repo)) return null;
+
+        var parts = repo.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        return parts.Length switch
+        {
+            1 => ("library", parts[0]),
+            2 => (parts[0], parts[1]),
+            _ => null
+        };
+    }
+
     private static string GenerateDockerComposeContent(FrpcDockerConfig config)
     {
         var sb = new System.Text.StringBuilder();
 
+        var containerName = string.IsNullOrWhiteSpace(config.ContainerName)
+            ? "frapa-clonia-frpc"
+            : config.ContainerName.Trim();
+
         sb.AppendLine("version: '3'");
         sb.AppendLine();
         sb.AppendLine("services:");
-        sb.AppendLine("  frpa-clonia-frpc:");
+        sb.AppendLine($"  {containerName}:");
         sb.AppendLine($"    image: {config.ImageName}:{config.Tag}");
-        sb.AppendLine("    container_name: frapa-clonia-frpc");
+        sb.AppendLine($"    container_name: {containerName}");
         sb.AppendLine("    restart: " + (config.AutoRestart ? "always" : "\"no\""));
         sb.AppendLine("    volumes:");
         sb.AppendLine($"      - {Path.GetFullPath(config.ConfigPath)}:/etc/frp/frpc.toml:ro");

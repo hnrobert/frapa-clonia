@@ -13,7 +13,14 @@ public interface IDockerDeploymentService
     /// <summary>
     /// Generates a docker-compose.yml file for frpc
     /// </summary>
-    Task<string> GenerateDockerComposeAsync(string outputPath, FrpcDockerConfig config, CancellationToken cancellationToken = default);
+    Task<string> GenerateDockerComposeAsync(string outputPath, FrpcDockerConfig config,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets available image tags for the given image repository (currently supports Docker Hub).
+    /// </summary>
+    Task<IReadOnlyList<string>> GetAvailableImageTagsAsync(string imageRepository,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Starts frpc using Docker Compose
@@ -29,6 +36,11 @@ public interface IDockerDeploymentService
     /// Gets whether frpc Docker container is running
     /// </summary>
     Task<bool> IsContainerRunningAsync(string containerName, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Checks whether the given container name is available (no existing containers with this name).
+    /// </summary>
+    Task<bool> IsContainerNameAvailableAsync(string containerName, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

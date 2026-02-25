@@ -240,7 +240,7 @@
               <TextBlock Text="{local:Localize DockerDeployment}"
                          Classes="section-title" />
 
-              <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto"
+              <Grid ColumnDefinitions="180,*,Auto" RowDefinitions="Auto,Auto"
                     RowSpacing="{StaticResource SpacingS}">
                 <TextBlock Grid.Row="0" Grid.Column="0"
                            Text="{local:Localize DockerStatus}"
@@ -263,14 +263,54 @@
                 <TextBox Grid.Row="1" Grid.Column="1"
                          Text="{Binding DockerContainerName}"
                          Watermark="frapa-clonia-frpc"
-                         MinWidth="200" />
+                         MinWidth="200"
+                         Margin="0,0,8,0"
+                         LostFocus="DockerContainerNameTextBox_OnLostFocus" />
+
+                <StackPanel Grid.Row="1" Grid.Column="2"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Spacing="6">
+                  <mi:MaterialIcon Kind="Loading"
+                                   Width="18" Height="18"
+                                   IsVisible="{Binding ShowDockerContainerNameChecking}" />
+                  <mi:MaterialIcon Kind="CheckCircle"
+                                   Foreground="Green"
+                                   Width="18" Height="18"
+                                   IsVisible="{Binding ShowDockerContainerNameOk}" />
+                  <mi:MaterialIcon Kind="AlertCircle"
+                                   Foreground="Orange"
+                                   Width="18" Height="18"
+                                   IsVisible="{Binding ShowDockerContainerNameConflict}" />
+                </StackPanel>
               </Grid>
 
               <TextBlock Text="{local:Localize DockerImage}"
                          Classes="field-label"
                          Margin="{StaticResource ThicknessTopS}" />
+
               <TextBox Text="{Binding DockerImageName}"
-                       Watermark="fatedier/frpc:latest" />
+                       Watermark="fatedier/frpc" />
+
+              <TextBlock Text="{local:Localize Version}"
+                         Classes="field-label"
+                         Margin="{StaticResource ThicknessTopS}" />
+
+              <Grid ColumnDefinitions="*,Auto">
+                <ComboBox Grid.Column="0"
+                          ItemsSource="{Binding DockerImageTags}"
+                          SelectedItem="{Binding DockerImageTag}"
+                          IsEnabled="{Binding !IsDockerImageTagsLoading}"
+                          HorizontalAlignment="Stretch"
+                          Margin="0,0,8,0" />
+                <Button Grid.Column="1"
+                        Command="{Binding RefreshDockerImageTagsCommand}"
+                        IsEnabled="{Binding !IsDockerImageTagsLoading}"
+                        Classes="action-button"
+                        ToolTip.Tip="{local:Localize CheckVersions}">
+                  <mi:MaterialIcon Kind="Refresh" />
+                </Button>
+              </Grid>
 
               <TextBlock Text="{local:Localize DockerComposePath}"
                          Classes="field-label"

@@ -19,4 +19,12 @@ public partial class DeploymentView : UserControl
             viewModel.Initialize();
         }
     }
+
+    private void DockerContainerNameTextBox_OnLostFocus(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is DeploymentViewModel viewModel)
+        {
+            viewModel.ValidateDockerContainerNameCommand.Execute(null);
+        }
+    }
 }

@@ -222,7 +222,7 @@ public partial class DeploymentSettings : ObservableObject
     /// Docker image name
     /// </summary>
     [ObservableProperty]
-    private string _dockerImageName = "fatedier/frpc:latest";
+    private string _dockerImageName = "fatedier/frpc";
 
     /// <summary>
     /// Docker image tag

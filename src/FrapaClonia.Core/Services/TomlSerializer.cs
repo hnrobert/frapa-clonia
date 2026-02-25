@@ -113,8 +113,8 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
         var config = new FrpClientConfig
         {
             CommonConfig = new ClientCommonConfig(),
-            Proxies = new List<ProxyConfig>(),
-            Visitors = new List<VisitorConfig>()
+            Proxies = [],
+            Visitors = []
         };
 
         var lines = tomlContent.Split('\n');

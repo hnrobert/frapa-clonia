@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -78,13 +79,55 @@ public partial class DeploymentViewModel : ObservableObject
 
     #region Docker Properties
 
-    [ObservableProperty] private bool _isDockerAvailable;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowDockerContainerNameOk))]
+    [NotifyPropertyChangedFor(nameof(ShowDockerContainerNameConflict))]
+    [NotifyPropertyChangedFor(nameof(ShowDockerContainerNameChecking))]
+    private bool _isDockerAvailable;
+
     [ObservableProperty] private bool _isDockerChecking;
-    [ObservableProperty] private string _dockerContainerName = "frapa-clonia-frpc";
-    [ObservableProperty] private string _dockerImageName = "fatedier/frpc:latest";
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowDockerContainerNameOk))]
+    [NotifyPropertyChangedFor(nameof(ShowDockerContainerNameConflict))]
+    private string _dockerContainerName = "frapa-clonia-frpc";
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowDockerContainerNameOk))]
+    [NotifyPropertyChangedFor(nameof(ShowDockerContainerNameConflict))]
+    private bool _hasDockerContainerNameChecked;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowDockerContainerNameOk))]
+    [NotifyPropertyChangedFor(nameof(ShowDockerContainerNameConflict))]
+    private bool _isDockerContainerNameAvailable;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowDockerContainerNameOk))]
+    [NotifyPropertyChangedFor(nameof(ShowDockerContainerNameConflict))]
+    [NotifyPropertyChangedFor(nameof(ShowDockerContainerNameChecking))]
+    private bool _isDockerContainerNameChecking;
+
+    [ObservableProperty] private string _dockerImageName = "fatedier/frpc";
     [ObservableProperty] private string _dockerImageTag = "latest";
+    [ObservableProperty] private List<string> _dockerImageTags = [];
+    [ObservableProperty] private bool _isDockerImageTagsLoading;
     [ObservableProperty] private string _dockerComposePath = "";
     [ObservableProperty] private bool _isContainerRunning;
+
+    private CancellationTokenSource? _dockerTagsCts;
+
+    private CancellationTokenSource? _dockerContainerNameCts;
+
+    public bool ShowDockerContainerNameOk =>
+        IsDockerAvailable && HasDockerContainerNameChecked && IsDockerContainerNameAvailable &&
+        !IsDockerContainerNameChecking;
+
+    public bool ShowDockerContainerNameConflict =>
+        IsDockerAvailable && HasDockerContainerNameChecked && !IsDockerContainerNameAvailable &&
+        !IsDockerContainerNameChecking;
+
+    public bool ShowDockerContainerNameChecking => IsDockerAvailable && IsDockerContainerNameChecking;
 
     #endregion
 
@@ -100,9 +143,8 @@ public partial class DeploymentViewModel : ObservableObject
     public IRelayCommand GenerateDockerComposeCommand { get; }
     public IRelayCommand StartDockerCommand { get; }
     public IRelayCommand StopDockerCommand { get; }
-
-    public List<string> DeploymentModes { get; } = ["native", "docker"];
-    public List<string> ServiceScopes { get; } = ["user", "system"];
+    public IRelayCommand RefreshDockerImageTagsCommand { get; }
+    public IRelayCommand ValidateDockerContainerNameCommand { get; }
 
     // Default constructor for design-time support
     public DeploymentViewModel() : this(
@@ -148,6 +190,11 @@ public partial class DeploymentViewModel : ObservableObject
             CreateAsyncCommand(GenerateDockerComposeAsync, "Error generating docker compose");
         StartDockerCommand = CreateAsyncCommand(StartDockerAsync, "Error starting docker");
         StopDockerCommand = CreateAsyncCommand(StopDockerAsync, "Error stopping docker");
+        RefreshDockerImageTagsCommand =
+            CreateAsyncCommand(() => RefreshDockerImageTagsAsync(showToast: true), "Error refreshing docker tags");
+        ValidateDockerContainerNameCommand =
+            CreateAsyncCommand(() => ValidateDockerContainerNameAsync(showToast: false),
+                "Error validating docker container name");
 
         // Subscribe to preset changes
         if (_presetService != null)
@@ -235,9 +282,17 @@ public partial class DeploymentViewModel : ObservableObject
         OnPropertyChanged(nameof(IsDockerMode));
 
         // Auto-check Docker availability when switching to Docker mode
-        if (value == "docker" && !IsDockerChecking)
+        if (value != "docker" || IsDockerChecking) return;
+        _ = CheckDockerAsync(showToast: false);
+        _ = RefreshDockerImageTagsAsync(showToast: false);
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnDockerImageNameChanged(string value)
+    {
+        if (IsDockerMode)
         {
-            _ = CheckDockerAsync(showToast: false);
+            _ = RefreshDockerImageTagsAsync(showToast: false);
         }
     }
 
@@ -631,6 +686,11 @@ public partial class DeploymentViewModel : ObservableObject
             }
 
             _logger?.LogInformation("Docker availability check: {IsAvailable}", IsDockerAvailable);
+
+            if (IsDockerAvailable)
+            {
+                _ = ValidateDockerContainerNameAsync(showToast: false);
+            }
         }
         catch (Exception ex)
         {
@@ -647,25 +707,82 @@ public partial class DeploymentViewModel : ObservableObject
         }
     }
 
+    private async Task ValidateDockerContainerNameAsync(bool showToast)
+    {
+        if (!IsDockerAvailable) return;
+        if (_dockerDeploymentService == null) return;
+
+        var containerName = DockerContainerName.Trim();
+        if (string.IsNullOrWhiteSpace(containerName))
+        {
+            HasDockerContainerNameChecked = true;
+            IsDockerContainerNameAvailable = false;
+            return;
+        }
+
+        try
+        {
+            IsDockerContainerNameChecking = true;
+
+            if (_dockerContainerNameCts != null)
+            {
+                await _dockerContainerNameCts.CancelAsync();
+            }
+
+            _dockerContainerNameCts = new CancellationTokenSource();
+
+            var available = await _dockerDeploymentService.IsContainerNameAvailableAsync(containerName,
+                _dockerContainerNameCts.Token);
+
+            HasDockerContainerNameChecked = true;
+            IsDockerContainerNameAvailable = available;
+
+            if (showToast && !available)
+            {
+                _toastService?.Warning(L("Toast_CheckFailed"), L("Toast_CouldNotStartContainer"));
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // ignore
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Error checking docker container name availability");
+            HasDockerContainerNameChecked = true;
+            IsDockerContainerNameAvailable = false;
+        }
+        finally
+        {
+            IsDockerContainerNameChecking = false;
+        }
+    }
+
     private async Task GenerateDockerComposeAsync()
     {
         try
         {
             if (_serviceProvider != null)
             {
-                var configPath = _serviceProvider.GetRequiredService<IConfigurationService>().GetDefaultConfigPath();
+                var presetName = _presetService?.CurrentPreset?.Name;
+                var configPath = string.IsNullOrWhiteSpace(presetName)
+                    ? _serviceProvider.GetRequiredService<IConfigurationService>().GetDefaultConfigPath()
+                    : Path.Combine(GetPresetFolderPath(presetName), "frpc.toml");
+
                 var config = new FrpcDockerConfig
                 {
-                    ImageName = "fatedier/frpc",
+                    ImageName = DockerImageName,
                     Tag = DockerImageTag,
                     ConfigPath = configPath,
                     ContainerName = DockerContainerName,
                     AutoRestart = true
                 };
 
-                var downloadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                    "Downloads");
-                var outputPath = Path.Combine(downloadsPath, "frapa-clonia-docker");
+                var outputPath = !string.IsNullOrWhiteSpace(presetName)
+                    ? GetPresetFolderPath(presetName)
+                    : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                        "Downloads", "frapa-clonia-docker");
+
                 Directory.CreateDirectory(outputPath);
 
                 if (_dockerDeploymentService != null)
@@ -682,6 +799,51 @@ public partial class DeploymentViewModel : ObservableObject
         {
             _logger?.LogError(ex, "Error generating docker-compose.yml");
             _toastService?.Error(L("Toast_GenerationFailed"), L("Toast_CouldNotGenerateDockerCompose"));
+        }
+    }
+
+    private async Task RefreshDockerImageTagsAsync(bool showToast)
+    {
+        if (_dockerDeploymentService == null) return;
+        if (string.IsNullOrWhiteSpace(DockerImageName)) return;
+
+        try
+        {
+            IsDockerImageTagsLoading = true;
+
+            if (_dockerTagsCts != null)
+            {
+                await _dockerTagsCts.CancelAsync();
+            }
+
+            _dockerTagsCts = new CancellationTokenSource();
+
+            var tags = await _dockerDeploymentService.GetAvailableImageTagsAsync(DockerImageName, _dockerTagsCts.Token);
+            DockerImageTags = tags.ToList();
+
+            if (DockerImageTags.Count > 0 &&
+                !DockerImageTags.Contains(DockerImageTag, StringComparer.OrdinalIgnoreCase))
+            {
+                DockerImageTag = DockerImageTags.Contains("latest", StringComparer.OrdinalIgnoreCase)
+                    ? "latest"
+                    : DockerImageTags[0];
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // ignore
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Error refreshing docker image tags");
+            if (showToast)
+            {
+                _toastService?.Warning(L("Toast_CheckFailed"), L("Toast_CouldNotFetchVersions"));
+            }
+        }
+        finally
+        {
+            IsDockerImageTagsLoading = false;
         }
     }
 
@@ -762,7 +924,7 @@ public partial class DeploymentViewModel : ObservableObject
 
     #region Settings Sync
 
-    public void LoadFromPreset(ConfigPreset preset)
+    private void LoadFromPreset(ConfigPreset preset)
     {
         var settings = preset.Deployment;
 
@@ -770,15 +932,38 @@ public partial class DeploymentViewModel : ObservableObject
         FrpcBinaryPath = settings.FrpcBinaryPath ?? "";
 
         DockerContainerName = settings.DockerContainerName;
-        DockerImageName = settings.DockerImageName;
-        DockerImageTag = settings.DockerImageTag;
+        if (string.IsNullOrWhiteSpace(DockerContainerName) ||
+            string.Equals(DockerContainerName, "frapa-clonia-frpc", StringComparison.OrdinalIgnoreCase))
+        {
+            DockerContainerName = GenerateDefaultContainerName(preset.Name);
+        }
+
+        HasDockerContainerNameChecked = false;
+        IsDockerContainerNameAvailable = false;
+
+        // Back-compat: older presets may have DockerImageName containing a tag (e.g. fatedier/frpc:latest)
+        var name = settings.DockerImageName;
+        var tag = settings.DockerImageTag;
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            var lastSlash = name.LastIndexOf('/');
+            var lastColon = name.LastIndexOf(':');
+            if (lastColon > lastSlash)
+            {
+                tag = name[(lastColon + 1)..];
+                name = name[..lastColon];
+            }
+        }
+
+        DockerImageName = string.IsNullOrWhiteSpace(name) ? "fatedier/frpc" : name;
+        DockerImageTag = string.IsNullOrWhiteSpace(tag) ? "latest" : tag;
 
         ServiceScopeValue = settings.ServiceScope;
         AutoStartOnBoot = settings.AutoStartOnBoot;
         ServiceEnabled = settings.ServiceEnabled;
     }
 
-    public void SaveToPreset(ConfigPreset preset)
+    private void SaveToPreset(ConfigPreset preset)
     {
         var settings = preset.Deployment;
 
@@ -795,6 +980,27 @@ public partial class DeploymentViewModel : ObservableObject
     }
 
     #endregion
+
+    private static string GetPresetFolderPath(string presetName)
+    {
+        var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        return Path.Combine(appData, "FrapaClonia", "presets", SanitizeFolderName(presetName));
+    }
+
+    private static string SanitizeFolderName(string name)
+    {
+        var invalidChars = Path.GetInvalidFileNameChars();
+        var sanitized = string.Join("_", name.Split(invalidChars));
+        return string.IsNullOrWhiteSpace(sanitized) ? "unnamed" : sanitized;
+    }
+
+    private static string GenerateDefaultContainerName(string presetName)
+    {
+        var value = presetName.Trim().ToLowerInvariant();
+        value = Regex.Replace(value, "[^a-z0-9]+", "-");
+        value = value.Trim('-');
+        return string.IsNullOrWhiteSpace(value) ? "frpc" : value;
+    }
 
     private static IEnumerable<string> GetCommonBinaryPaths()
     {
