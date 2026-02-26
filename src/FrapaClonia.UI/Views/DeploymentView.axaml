@@ -236,10 +236,11 @@
 
           <!-- Docker Deployment Panel -->
           <Border Classes="settings-card" IsVisible="{Binding IsDockerMode}">
-            <StackPanel Spacing="{StaticResource SpacingM}">
+            <StackPanel Spacing="{StaticResource SpacingL}">
               <TextBlock Text="{local:Localize DockerDeployment}"
                          Classes="section-title" />
 
+              <!-- Docker status + compose path -->
               <Grid ColumnDefinitions="180,*,Auto" RowDefinitions="Auto,Auto"
                     RowSpacing="{StaticResource SpacingS}">
                 <TextBlock Grid.Row="0" Grid.Column="0"
@@ -258,92 +259,186 @@
                 </StackPanel>
 
                 <TextBlock Grid.Row="1" Grid.Column="0"
-                           Text="{local:Localize ContainerName}"
+                           Text="{local:Localize DockerComposePath}"
                            Classes="field-label" />
                 <TextBox Grid.Row="1" Grid.Column="1"
-                         Text="{Binding DockerContainerName}"
-                         Watermark="frapa-clonia-frpc"
-                         MinWidth="200"
-                         Margin="0,0,8,0"
-                         LostFocus="DockerContainerNameTextBox_OnLostFocus" />
-
-                <StackPanel Grid.Row="1" Grid.Column="2"
-                            Orientation="Horizontal"
-                            VerticalAlignment="Center"
-                            Spacing="6">
-                  <mi:MaterialIcon Kind="Loading"
-                                   Width="18" Height="18"
-                                   IsVisible="{Binding ShowDockerContainerNameChecking}" />
-                  <mi:MaterialIcon Kind="CheckCircle"
-                                   Foreground="Green"
-                                   Width="18" Height="18"
-                                   IsVisible="{Binding ShowDockerContainerNameOk}" />
-                  <mi:MaterialIcon Kind="AlertCircle"
-                                   Foreground="Orange"
-                                   Width="18" Height="18"
-                                   IsVisible="{Binding ShowDockerContainerNameConflict}" />
-                </StackPanel>
-              </Grid>
-
-              <TextBlock Text="{local:Localize DockerImage}"
-                         Classes="field-label"
-                         Margin="{StaticResource ThicknessTopS}" />
-
-              <TextBox Text="{Binding DockerImageName}"
-                       Watermark="fatedier/frpc" />
-
-              <TextBlock Text="{local:Localize Version}"
-                         Classes="field-label"
-                         Margin="{StaticResource ThicknessTopS}" />
-
-              <Grid ColumnDefinitions="*,Auto">
-                <ComboBox Grid.Column="0"
-                          ItemsSource="{Binding DockerImageTags}"
-                          SelectedItem="{Binding DockerImageTag}"
-                          IsEnabled="{Binding !IsDockerImageTagsLoading}"
-                          HorizontalAlignment="Stretch"
-                          Margin="0,0,8,0" />
-                <Button Grid.Column="1"
-                        Command="{Binding RefreshDockerImageTagsCommand}"
-                        IsEnabled="{Binding !IsDockerImageTagsLoading}"
+                         Text="{Binding DockerComposePath}"
+                         IsReadOnly="True"
+                         Watermark="Not generated yet"
+                         Margin="0,0,8,0" />
+                <Button Grid.Row="1" Grid.Column="2"
+                        Click="DockerComposeBrowseButton_OnClick"
                         Classes="action-button"
-                        ToolTip.Tip="{local:Localize CheckVersions}">
-                  <mi:MaterialIcon Kind="Refresh" />
+                        ToolTip.Tip="{local:Localize BrowseToolTip}">
+                  <mi:MaterialIcon Kind="FolderOpen" />
                 </Button>
               </Grid>
 
-              <TextBlock Text="{local:Localize DockerComposePath}"
-                         Classes="field-label"
-                         Margin="{StaticResource ThicknessTopS}" />
-              <TextBox Text="{Binding DockerComposePath}"
-                       IsReadOnly="True"
-                       Watermark="Not generated yet" />
+              <!-- Card 2: Compose file properties -->
+              <Border Classes="settings-card" Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                <StackPanel Spacing="{StaticResource SpacingM}">
+                  <TextBlock Text="Compose Configuration"
+                             Classes="section-title" />
+                  <Grid ColumnDefinitions="180,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto"
+                        RowSpacing="{StaticResource SpacingS}">
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                               Text="{local:Localize ContainerName}"
+                               Classes="field-label" />
+                    <Grid Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2">
+                      <TextBox Text="{Binding DockerContainerName}"
+                               Watermark="frapa-clonia-frpc"
+                               MinWidth="200"
+                               Padding="8,4,32,4"
+                               VerticalContentAlignment="Center"
+                               LostFocus="DockerContainerNameTextBox_OnLostFocus" />
+                      <StackPanel Orientation="Horizontal"
+                                  HorizontalAlignment="Right"
+                                  VerticalAlignment="Center"
+                                  Margin="0,0,10,0"
+                                  Spacing="6"
+                                  IsHitTestVisible="False">
+                        <mi:MaterialIcon Kind="Loading"
+                                         Width="18" Height="18"
+                                         IsVisible="{Binding ShowDockerContainerNameChecking}" />
+                        <mi:MaterialIcon Kind="CheckCircle"
+                                         Foreground="Green"
+                                         Width="18" Height="18"
+                                         IsVisible="{Binding ShowDockerContainerNameOk}" />
+                        <mi:MaterialIcon Kind="AlertCircle"
+                                         Foreground="Orange"
+                                         Width="18" Height="18"
+                                         IsVisible="{Binding ShowDockerContainerNameConflict}" />
+                      </StackPanel>
+                    </Grid>
 
-              <StackPanel Orientation="Horizontal"
-                          Spacing="{StaticResource SpacingM}"
-                          Margin="{StaticResource ThicknessTopS}">
-                <Button Command="{Binding GenerateDockerComposeCommand}"
-                        Classes="action-button icon-text-button">
-                  <StackPanel Orientation="Horizontal" Spacing="4">
-                    <mi:MaterialIcon Kind="FileDocument" />
-                    <TextBlock Text="{local:Localize GenerateDockerComposeYml}" />
+                    <TextBlock Grid.Row="1" Grid.Column="0"
+                               Text="{local:Localize DockerImage}"
+                               Classes="field-label" />
+                    <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
+                      <TextBox Text="{Binding DockerImageName}"
+                               Watermark="fatedier/frpc"
+                               Padding="8,4,32,4"
+                               VerticalContentAlignment="Center"
+                               LostFocus="DockerImageNameTextBox_OnLostFocus" />
+                      <StackPanel Orientation="Horizontal"
+                                  HorizontalAlignment="Right"
+                                  VerticalAlignment="Center"
+                                  Margin="0,0,10,0"
+                                  Spacing="6"
+                                  IsHitTestVisible="False">
+                        <mi:MaterialIcon Kind="Loading"
+                                         Width="18" Height="18"
+                                         IsVisible="{Binding ShowDockerImageChecking}" />
+                        <mi:MaterialIcon Kind="CheckCircle"
+                                         Foreground="Green"
+                                         Width="18" Height="18"
+                                         IsVisible="{Binding ShowDockerImageOk}" />
+                        <mi:MaterialIcon Kind="AlertCircle"
+                                         Foreground="Orange"
+                                         Width="18" Height="18"
+                                         IsVisible="{Binding ShowDockerImageConflict}" />
+                      </StackPanel>
+                    </Grid>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0"
+                               Text="{local:Localize Version}"
+                               Classes="field-label" />
+                    <ComboBox Grid.Row="2" Grid.Column="1"
+                              ItemsSource="{Binding DockerImageTags}"
+                              SelectedItem="{Binding DockerImageTag}"
+                              IsEnabled="{Binding !IsDockerImageTagsLoading}"
+                              HorizontalAlignment="Stretch"
+                              Margin="0,0,8,0" />
+                    <Button Grid.Row="2" Grid.Column="2"
+                            Command="{Binding RefreshDockerImageTagsCommand}"
+                            IsEnabled="{Binding !IsDockerImageTagsLoading}"
+                            Classes="action-button"
+                            ToolTip.Tip="{local:Localize CheckVersions}">
+                      <mi:MaterialIcon Kind="Refresh" />
+                    </Button>
+
+                    <StackPanel Grid.Row="3" Grid.Column="0"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Spacing="{StaticResource SpacingXS}">
+                      <TextBlock Text="{local:Localize RestartPolicy}"
+                                 Classes="field-label" />
+                      <Button Classes="hint-icon"
+                              ToolTip.Tip="{Binding DockerRestartPolicyHelp}" />
+                    </StackPanel>
+                    <ComboBox Grid.Row="3" Grid.Column="1"
+                              ItemsSource="{Binding DockerRestartPolicies}"
+                              SelectedItem="{Binding DockerRestartPolicy}"
+                              HorizontalAlignment="Left"
+                              Margin="0,0,8,0" />
+                  </Grid>
+
+                  <StackPanel Orientation="Horizontal"
+                              Spacing="{StaticResource SpacingM}">
+                    <Button Command="{Binding SaveDockerComposeCommand}"
+                            Classes="action-button primary icon-text-button">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="ContentSave" />
+                        <TextBlock Text="{local:Localize Save}" />
+                      </StackPanel>
+                    </Button>
+                    <Button Command="{Binding RestoreDockerComposeFromFileCommand}"
+                            IsEnabled="{Binding CanRestoreDockerComposeFromFile}"
+                            Classes="action-button icon-text-button">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="Undo" />
+                        <TextBlock Text="{local:Localize RestoreFromFile}" />
+                      </StackPanel>
+                    </Button>
                   </StackPanel>
-                </Button>
-                <Button Command="{Binding StartDockerCommand}"
-                        Classes="action-button primary icon-text-button">
-                  <StackPanel Orientation="Horizontal" Spacing="4">
-                    <mi:MaterialIcon Kind="Play" />
-                    <TextBlock Text="{local:Localize StartContainer}" />
+                </StackPanel>
+              </Border>
+
+              <!-- Card 3: Runtime status + controls -->
+              <Border Classes="settings-card" Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                <StackPanel Spacing="{StaticResource SpacingM}">
+                  <TextBlock Text="{local:Localize DeploymentStatus}"
+                             Classes="section-title" />
+                  <Grid ColumnDefinitions="180,*,Auto" RowDefinitions="Auto"
+                        RowSpacing="{StaticResource SpacingS}">
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                               Text="{local:Localize DockerStatus}"
+                               Classes="field-label" />
+                    <StackPanel Grid.Row="0" Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="{StaticResource SpacingM}">
+                      <Border Classes="status-indicator running" IsVisible="{Binding IsContainerRunning}" />
+                      <Border Classes="status-indicator stopped" IsVisible="{Binding !IsContainerRunning}" />
+                      <TextBlock Text="{Binding LocalizedContainerState}"
+                                 VerticalAlignment="Center"
+                                 FontFamily="{DynamicResource MonoFontFamily}" />
+                    </StackPanel>
+                    <Button Grid.Row="0" Grid.Column="2"
+                            Command="{Binding RefreshContainerStatusCommand}"
+                            Classes="action-button">
+                      <mi:MaterialIcon Kind="Refresh" />
+                    </Button>
+                  </Grid>
+
+                  <StackPanel Orientation="Horizontal"
+                              Spacing="{StaticResource SpacingM}">
+                    <Button Command="{Binding StartDockerCommand}"
+                            Classes="action-button primary icon-text-button">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="Play" />
+                        <TextBlock Text="{local:Localize StartContainer}" />
+                      </StackPanel>
+                    </Button>
+                    <Button Command="{Binding StopDockerCommand}"
+                            Classes="action-button icon-text-button">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="Stop" />
+                        <TextBlock Text="{local:Localize StopContainer}" />
+                      </StackPanel>
+                    </Button>
                   </StackPanel>
-                </Button>
-                <Button Command="{Binding StopDockerCommand}"
-                        Classes="action-button icon-text-button">
-                  <StackPanel Orientation="Horizontal" Spacing="4">
-                    <mi:MaterialIcon Kind="Stop" />
-                    <TextBlock Text="{local:Localize StopContainer}" />
-                  </StackPanel>
-                </Button>
-              </StackPanel>
+                </StackPanel>
+              </Border>
             </StackPanel>
           </Border>
         </StackPanel>

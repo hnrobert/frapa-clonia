@@ -451,9 +451,15 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
         sb.AppendLine($"  {containerName}:");
         sb.AppendLine($"    image: {config.ImageName}:{config.Tag}");
         sb.AppendLine($"    container_name: {containerName}");
-        sb.AppendLine("    restart: " + (config.AutoRestart ? "always" : "\"no\""));
+        var restart = string.IsNullOrWhiteSpace(config.RestartPolicy)
+            ? "unless-stopped"
+            : config.RestartPolicy.Trim();
+        sb.AppendLine("    restart: " + (string.Equals(restart, "no", StringComparison.OrdinalIgnoreCase)
+            ? "\"no\""
+            : restart));
         sb.AppendLine("    volumes:");
-        sb.AppendLine($"      - {Path.GetFullPath(config.ConfigPath)}:/etc/frp/frpc.toml:ro");
+        // Keep frpc config path simple and portable: always mount ./frpc.toml next to docker-compose.yml
+        sb.AppendLine("      - ./frpc.toml:/etc/frp/frpc.toml:ro");
 
         // Add environment variables
         if (config.EnvironmentVariables.Count > 0)

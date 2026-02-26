@@ -18,6 +18,24 @@ namespace FrapaClonia.UI.ViewModels;
 /// </summary>
 public partial class DeploymentViewModel : ObservableObject
 {
+    private sealed record DockerComposeSnapshot(
+        string ImageName,
+        string ImageTag,
+        string ContainerName,
+        string RestartPolicy);
+
+    private DockerComposeSnapshot? _composeSnapshot;
+    private bool _suppressComposeDirtyTracking;
+    private bool _suppressDockerAutoRefresh;
+    private bool _suppressDockerImageReset;
+
+    private bool
+        _suppressComposeAutoLoad; // prevents OnDockerComposePathChanged from double-loading during async LoadFromPresetAsync
+
+    // Track the last value that was actually sent for remote validation so LostFocus is a no-op when unchanged.
+    private string _lastValidatedContainerName = "";
+    private string _lastValidatedImageName = "";
+
     private readonly ILogger<DeploymentViewModel>? _logger;
     private readonly IFrpcVersionService? _frpcVersionService;
     private readonly IDockerDeploymentService? _dockerDeploymentService;
@@ -83,6 +101,9 @@ public partial class DeploymentViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(ShowDockerContainerNameOk))]
     [NotifyPropertyChangedFor(nameof(ShowDockerContainerNameConflict))]
     [NotifyPropertyChangedFor(nameof(ShowDockerContainerNameChecking))]
+    [NotifyPropertyChangedFor(nameof(ShowDockerImageOk))]
+    [NotifyPropertyChangedFor(nameof(ShowDockerImageConflict))]
+    [NotifyPropertyChangedFor(nameof(ShowDockerImageChecking))]
     private bool _isDockerAvailable;
 
     [ObservableProperty] private bool _isDockerChecking;
@@ -108,12 +129,59 @@ public partial class DeploymentViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(ShowDockerContainerNameChecking))]
     private bool _isDockerContainerNameChecking;
 
-    [ObservableProperty] private string _dockerImageName = "fatedier/frpc";
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowDockerImageOk))]
+    [NotifyPropertyChangedFor(nameof(ShowDockerImageConflict))]
+    [NotifyPropertyChangedFor(nameof(ShowDockerImageChecking))]
+    private string _dockerImageName = "fatedier/frpc";
+
     [ObservableProperty] private string _dockerImageTag = "latest";
-    [ObservableProperty] private List<string> _dockerImageTags = [];
-    [ObservableProperty] private bool _isDockerImageTagsLoading;
-    [ObservableProperty] private string _dockerComposePath = "";
-    [ObservableProperty] private bool _isContainerRunning;
+    [ObservableProperty] private List<string> _dockerImageTags = ["latest"];
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowDockerImageOk))]
+    [NotifyPropertyChangedFor(nameof(ShowDockerImageConflict))]
+    [NotifyPropertyChangedFor(nameof(ShowDockerImageChecking))]
+    private bool _isDockerImageTagsLoading;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowDockerImageOk))]
+    [NotifyPropertyChangedFor(nameof(ShowDockerImageConflict))]
+    private bool _hasDockerImageChecked;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowDockerImageOk))]
+    [NotifyPropertyChangedFor(nameof(ShowDockerImageConflict))]
+    private bool _isDockerImageAvailable;
+
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(DockerRestartPolicyHelp))]
+    private string _dockerRestartPolicy = "unless-stopped";
+
+    public IReadOnlyList<string> DockerRestartPolicies { get; } =
+        ["no", "always", "on-failure", "unless-stopped"];
+
+    public string DockerRestartPolicyHelp => DockerRestartPolicy switch
+    {
+        "no" => L("RestartPolicyHelp_No"),
+        "always" => L("RestartPolicyHelp_Always"),
+        "on-failure" => L("RestartPolicyHelp_OnFailure"),
+        "unless-stopped" => L("RestartPolicyHelp_UnlessStopped"),
+        _ => ""
+    };
+
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanRestoreDockerComposeFromFile))]
+    private string _dockerComposePath = "";
+
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanRestoreDockerComposeFromFile))]
+    private bool _isDockerComposeDirty;
+
+    public bool CanRestoreDockerComposeFromFile =>
+        !string.IsNullOrWhiteSpace(DockerComposePath) &&
+        File.Exists(DockerComposePath) &&
+        IsDockerComposeDirty;
+
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(LocalizedContainerState))]
+    private bool _isContainerRunning;
 
     private CancellationTokenSource? _dockerTagsCts;
 
@@ -129,6 +197,21 @@ public partial class DeploymentViewModel : ObservableObject
 
     public bool ShowDockerContainerNameChecking => IsDockerAvailable && IsDockerContainerNameChecking;
 
+    public bool ShowDockerImageOk =>
+        IsDockerAvailable && !string.IsNullOrWhiteSpace(DockerImageName) && HasDockerImageChecked &&
+        IsDockerImageAvailable &&
+        !IsDockerImageTagsLoading;
+
+    public bool ShowDockerImageConflict =>
+        IsDockerAvailable && !string.IsNullOrWhiteSpace(DockerImageName) && HasDockerImageChecked &&
+        !IsDockerImageAvailable &&
+        !IsDockerImageTagsLoading;
+
+    public bool ShowDockerImageChecking =>
+        IsDockerAvailable && !string.IsNullOrWhiteSpace(DockerImageName) && IsDockerImageTagsLoading;
+
+    public string LocalizedContainerState => IsContainerRunning ? L("StatusRunning") : L("StatusStopped");
+
     #endregion
 
     public IRelayCommand CheckFrpcPathCommand { get; }
@@ -141,10 +224,14 @@ public partial class DeploymentViewModel : ObservableObject
     public IRelayCommand ViewLogsCommand { get; }
     public IRelayCommand CheckDockerCommand { get; }
     public IRelayCommand GenerateDockerComposeCommand { get; }
+    public IRelayCommand SaveDockerComposeCommand { get; }
     public IRelayCommand StartDockerCommand { get; }
     public IRelayCommand StopDockerCommand { get; }
+    public IRelayCommand RefreshContainerStatusCommand { get; }
     public IRelayCommand RefreshDockerImageTagsCommand { get; }
     public IRelayCommand ValidateDockerContainerNameCommand { get; }
+    public IRelayCommand ValidateDockerImageCommand { get; }
+    public IRelayCommand RestoreDockerComposeFromFileCommand { get; }
 
     // Default constructor for design-time support
     public DeploymentViewModel() : this(
@@ -188,13 +275,22 @@ public partial class DeploymentViewModel : ObservableObject
             CreateAsyncCommand(() => CheckDockerAsync(showToast: true), "Error checking Docker availability");
         GenerateDockerComposeCommand =
             CreateAsyncCommand(GenerateDockerComposeAsync, "Error generating docker compose");
+        SaveDockerComposeCommand =
+            CreateAsyncCommand(SaveDockerComposeAsync, "Error saving docker compose");
         StartDockerCommand = CreateAsyncCommand(StartDockerAsync, "Error starting docker");
         StopDockerCommand = CreateAsyncCommand(StopDockerAsync, "Error stopping docker");
+        RefreshContainerStatusCommand =
+            CreateAsyncCommand(RefreshContainerStatusAsync, "Error refreshing docker container status");
         RefreshDockerImageTagsCommand =
             CreateAsyncCommand(() => RefreshDockerImageTagsAsync(showToast: true), "Error refreshing docker tags");
         ValidateDockerContainerNameCommand =
             CreateAsyncCommand(() => ValidateDockerContainerNameAsync(showToast: false),
                 "Error validating docker container name");
+        ValidateDockerImageCommand =
+            CreateAsyncCommand(() => RefreshDockerImageTagsAsync(showToast: false),
+                "Error validating docker image");
+        RestoreDockerComposeFromFileCommand =
+            CreateAsyncCommand(RestoreDockerComposeFromFileAsync, "Error restoring docker compose from file");
 
         // Subscribe to preset changes
         if (_presetService != null)
@@ -207,7 +303,12 @@ public partial class DeploymentViewModel : ObservableObject
     {
         // Reload deployment settings when preset changes
         if (_presetService?.CurrentPreset == null) return;
-        LoadFromPreset(_presetService.CurrentPreset);
+        _ = LoadFromPresetAndInitAsync(_presetService.CurrentPreset);
+    }
+
+    private async Task LoadFromPresetAndInitAsync(ConfigPreset preset)
+    {
+        await LoadFromPresetAsync(preset);
 
         // Auto-detect if no saved path exists or the saved path is invalid
         if (string.IsNullOrEmpty(FrpcBinaryPath) || !File.Exists(FrpcBinaryPath))
@@ -247,7 +348,7 @@ public partial class DeploymentViewModel : ObservableObject
         // Load saved settings from current preset first
         if (_presetService?.CurrentPreset != null)
         {
-            LoadFromPreset(_presetService.CurrentPreset);
+            await LoadFromPresetAsync(_presetService.CurrentPreset);
             _logger?.LogInformation("Loaded deployment settings from preset: {FrpcBinaryPath}", FrpcBinaryPath);
         }
 
@@ -281,19 +382,116 @@ public partial class DeploymentViewModel : ObservableObject
         OnPropertyChanged(nameof(IsNativeMode));
         OnPropertyChanged(nameof(IsDockerMode));
 
+        // Persist selection immediately so Native/Docker mode is remembered per preset.
+        if (_presetService?.CurrentPreset != null)
+        {
+            var currentPresetMode = _presetService.CurrentPreset.Deployment.DeploymentMode;
+            if (!string.Equals(currentPresetMode, value, StringComparison.Ordinal))
+            {
+                _ = PersistCurrentPresetAsync();
+            }
+        }
+
+        if (_suppressDockerAutoRefresh) return;
+
         // Auto-check Docker availability when switching to Docker mode
         if (value != "docker" || IsDockerChecking) return;
         _ = CheckDockerAsync(showToast: false);
         _ = RefreshDockerImageTagsAsync(showToast: false);
     }
 
+    private async Task RestoreDockerComposeFromFileAsync()
+    {
+        if (string.IsNullOrWhiteSpace(DockerComposePath)) return;
+        if (!File.Exists(DockerComposePath)) return;
+        await LoadDockerComposeFromFileAsync(DockerComposePath);
+    }
+
+    private async Task PersistCurrentPresetAsync()
+    {
+        try
+        {
+            if (_presetService?.CurrentPreset == null)
+            {
+                return;
+            }
+
+            SaveToPreset(_presetService.CurrentPreset);
+            await _presetService.SaveCurrentPresetAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Failed to persist current preset");
+        }
+    }
+
     // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnDockerImageNameChanged(string value)
     {
-        if (IsDockerMode)
+        UpdateDockerComposeDirtyFlag();
+
+        if (_suppressDockerImageReset)
+        {
+            return;
+        }
+
+        HasDockerImageChecked = false;
+        IsDockerImageAvailable = false;
+        DockerImageTags = [];
+
+        if (IsDockerMode && !_suppressDockerAutoRefresh)
         {
             _ = RefreshDockerImageTagsAsync(showToast: false);
         }
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnDockerContainerNameChanged(string value)
+    {
+        UpdateDockerComposeDirtyFlag();
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnDockerImageTagChanged(string value)
+    {
+        // Ignore transient empty values caused by Avalonia's ComboBox clearing its SelectedItem
+        // when the ItemsSource list reference is replaced (even if the same value is in the new list).
+        // Do NOT fall back to "latest" — that silently overwrites a tag loaded from docker-compose.yml.
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return;
+        }
+
+        UpdateDockerComposeDirtyFlag();
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnDockerRestartPolicyChanged(string value)
+    {
+        UpdateDockerComposeDirtyFlag();
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnDockerComposePathChanged(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            _composeSnapshot = null;
+            IsDockerComposeDirty = false;
+            return;
+        }
+
+        if (!File.Exists(value))
+        {
+            _composeSnapshot = null;
+            IsDockerComposeDirty = false;
+            return;
+        }
+
+        // Suppressed when LoadFromPresetAsync handles loading directly (avoids double-load).
+        if (_suppressComposeAutoLoad) return;
+
+        _ = LoadDockerComposeFromFileAsync(value);
     }
 
     #region Native Methods
@@ -690,6 +888,7 @@ public partial class DeploymentViewModel : ObservableObject
             if (IsDockerAvailable)
             {
                 _ = ValidateDockerContainerNameAsync(showToast: false);
+                _ = RefreshContainerStatusAsync();
             }
         }
         catch (Exception ex)
@@ -719,6 +918,17 @@ public partial class DeploymentViewModel : ObservableObject
             IsDockerContainerNameAvailable = false;
             return;
         }
+
+        // LostFocus calls (showToast=false) are no-ops when the value hasn't changed and
+        // we've already checked it, avoiding redundant network calls.
+        if (!showToast &&
+            string.Equals(_lastValidatedContainerName, containerName, StringComparison.Ordinal) &&
+            HasDockerContainerNameChecked)
+        {
+            return;
+        }
+
+        _lastValidatedContainerName = containerName;
 
         try
         {
@@ -760,45 +970,172 @@ public partial class DeploymentViewModel : ObservableObject
 
     private async Task GenerateDockerComposeAsync()
     {
+        // Back-compat: older UI used "Generate"; new UI uses "Save".
+        await SaveDockerComposeAsync();
+    }
+
+    private async Task SaveDockerComposeAsync()
+    {
         try
         {
-            if (_serviceProvider != null)
+            if (_serviceProvider == null || _dockerDeploymentService == null)
             {
-                var presetName = _presetService?.CurrentPreset?.Name;
-                var configPath = string.IsNullOrWhiteSpace(presetName)
-                    ? _serviceProvider.GetRequiredService<IConfigurationService>().GetDefaultConfigPath()
-                    : Path.Combine(GetPresetFolderPath(presetName), "frpc.toml");
+                return;
+            }
 
-                var config = new FrpcDockerConfig
-                {
-                    ImageName = DockerImageName,
-                    Tag = DockerImageTag,
-                    ConfigPath = configPath,
-                    ContainerName = DockerContainerName,
-                    AutoRestart = true
-                };
+            var presetName = _presetService?.CurrentPreset?.Name;
 
-                var outputPath = !string.IsNullOrWhiteSpace(presetName)
-                    ? GetPresetFolderPath(presetName)
-                    : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                        "Downloads", "frapa-clonia-docker");
+            var targetComposePath = string.IsNullOrWhiteSpace(DockerComposePath)
+                ? ResolveDefaultComposeFilePath(presetName)
+                : DockerComposePath;
 
-                Directory.CreateDirectory(outputPath);
+            var config = new FrpcDockerConfig
+            {
+                ImageName = DockerImageName,
+                Tag = DockerImageTag,
+                ConfigPath = "./frpc.toml",
+                ContainerName = DockerContainerName,
+                RestartPolicy = DockerRestartPolicy
+            };
 
-                if (_dockerDeploymentService != null)
-                {
-                    var composePath = await _dockerDeploymentService.GenerateDockerComposeAsync(outputPath, config);
-                    DockerComposePath = composePath;
+            var composePath = await _dockerDeploymentService.GenerateDockerComposeAsync(targetComposePath, config);
+            DockerComposePath = composePath;
 
-                    _toastService?.Success(L("Toast_Generated"), L("Toast_DockerComposeSaved", composePath));
-                    _logger?.LogInformation("Generated docker-compose.yml at {Path}", composePath);
-                }
+            _composeSnapshot = new DockerComposeSnapshot(
+                DockerImageName,
+                DockerImageTag,
+                DockerContainerName,
+                DockerRestartPolicy);
+            IsDockerComposeDirty = false;
+
+            _toastService?.Success(L("Toast_Generated"), L("Toast_DockerComposeSaved", composePath));
+            _logger?.LogInformation("Saved docker-compose.yml at {Path}", composePath);
+
+            if (IsDockerAvailable)
+            {
+                _ = ValidateDockerContainerNameAsync(showToast: false);
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error generating docker-compose.yml");
+            _logger?.LogError(ex, "Error saving docker-compose.yml");
             _toastService?.Error(L("Toast_GenerationFailed"), L("Toast_CouldNotGenerateDockerCompose"));
+        }
+    }
+
+    private async Task RefreshContainerStatusAsync()
+    {
+        try
+        {
+            if (!IsDockerAvailable || _dockerDeploymentService == null)
+            {
+                IsContainerRunning = false;
+                return;
+            }
+
+            IsContainerRunning = await _dockerDeploymentService.IsContainerRunningAsync(DockerContainerName);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Error refreshing docker container status");
+            IsContainerRunning = false;
+        }
+    }
+
+    private async Task LoadDockerComposeFromFileAsync(string composePath)
+    {
+        try
+        {
+            var loadedImageName = DockerImageName;
+            var loadedImageTag = DockerImageTag;
+            var loadedContainerName = DockerContainerName;
+            var loadedRestartPolicy = DockerRestartPolicy;
+
+            var lines = await File.ReadAllLinesAsync(composePath);
+            foreach (var raw in lines)
+            {
+                var line = raw.Trim();
+
+                if (line.StartsWith("image:", StringComparison.OrdinalIgnoreCase))
+                {
+                    var image = line["image:".Length..].Trim().Trim('"', '\'');
+                    if (!string.IsNullOrWhiteSpace(image))
+                    {
+                        var lastSlash = image.LastIndexOf('/');
+                        var lastColon = image.LastIndexOf(':');
+                        if (lastColon > lastSlash)
+                        {
+                            loadedImageTag = image[(lastColon + 1)..];
+                            loadedImageName = image[..lastColon];
+                        }
+                        else
+                        {
+                            loadedImageName = image;
+                        }
+                    }
+                }
+
+                if (line.StartsWith("container_name:", StringComparison.OrdinalIgnoreCase))
+                {
+                    var name = line["container_name:".Length..].Trim().Trim('"', '\'');
+                    if (!string.IsNullOrWhiteSpace(name))
+                    {
+                        loadedContainerName = name;
+                    }
+                }
+
+                if (!line.StartsWith("restart:", StringComparison.OrdinalIgnoreCase)) continue;
+                var restart = line["restart:".Length..].Trim().Trim('"', '\'');
+                if (!string.IsNullOrWhiteSpace(restart))
+                {
+                    loadedRestartPolicy = restart;
+                }
+            }
+
+            _suppressComposeDirtyTracking = true;
+            _suppressDockerAutoRefresh = true;
+            _suppressDockerImageReset = true;
+            DockerImageName = loadedImageName;
+            DockerImageTag = loadedImageTag;
+            DockerContainerName = loadedContainerName;
+            DockerRestartPolicy = loadedRestartPolicy;
+            _suppressComposeDirtyTracking = false;
+            _suppressDockerAutoRefresh = false;
+            _suppressDockerImageReset = false;
+
+            // Seed tag list so the version ComboBox can render the selected value immediately
+            // (especially when switching presets/configs with different images).
+            DockerImageTags = string.IsNullOrWhiteSpace(DockerImageTag) ? [] : [DockerImageTag];
+            HasDockerImageChecked = false;
+            IsDockerImageAvailable = false;
+
+            HasDockerContainerNameChecked = false;
+            IsDockerContainerNameAvailable = false;
+
+            // Update last-validated cache so LostFocus immediately after load is a no-op.
+            _lastValidatedContainerName = DockerContainerName;
+            _lastValidatedImageName = DockerImageName;
+
+            _composeSnapshot = new DockerComposeSnapshot(
+                DockerImageName,
+                DockerImageTag,
+                DockerContainerName,
+                DockerRestartPolicy);
+            IsDockerComposeDirty = false;
+
+            if (IsDockerMode)
+            {
+                _ = RefreshDockerImageTagsAsync(showToast: false);
+            }
+
+            if (IsDockerAvailable)
+            {
+                _ = ValidateDockerContainerNameAsync(showToast: false);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Failed to load docker-compose.yml from {Path}", composePath);
         }
     }
 
@@ -807,9 +1144,24 @@ public partial class DeploymentViewModel : ObservableObject
         if (_dockerDeploymentService == null) return;
         if (string.IsNullOrWhiteSpace(DockerImageName)) return;
 
+        var imageName = DockerImageName.Trim();
+
+        // LostFocus calls (showToast=false) are no-ops when the value hasn't changed and
+        // we've already checked it, avoiding redundant network calls.
+        if (!showToast &&
+            string.Equals(_lastValidatedImageName, imageName, StringComparison.Ordinal) &&
+            HasDockerImageChecked)
+        {
+            return;
+        }
+
+        _lastValidatedImageName = imageName;
+
         try
         {
             IsDockerImageTagsLoading = true;
+            HasDockerImageChecked = false;
+            IsDockerImageAvailable = false;
 
             if (_dockerTagsCts != null)
             {
@@ -819,14 +1171,28 @@ public partial class DeploymentViewModel : ObservableObject
             _dockerTagsCts = new CancellationTokenSource();
 
             var tags = await _dockerDeploymentService.GetAvailableImageTagsAsync(DockerImageName, _dockerTagsCts.Token);
-            DockerImageTags = tags.ToList();
+            var tagList = tags.Where(tag => !string.IsNullOrWhiteSpace(tag)).ToList();
 
-            if (DockerImageTags.Count > 0 &&
-                !DockerImageTags.Contains(DockerImageTag, StringComparer.OrdinalIgnoreCase))
+            DockerImageTags = tagList;
+            // Available = the specific configured tag was found in the fetched list.
+            // ComboBox SelectedItem needs exact item identity/value from ItemsSource to render text,
+            // so normalize the current tag to the exact matched list item (case-preserving).
+            var configuredTag = DockerImageTag.Trim();
+            var matchedTag = string.IsNullOrWhiteSpace(configuredTag)
+                ? null
+                : tagList.FirstOrDefault(tag => string.Equals(tag, configuredTag, StringComparison.OrdinalIgnoreCase));
+
+            IsDockerImageAvailable = matchedTag != null;
+
+            // Avalonia ComboBox SelectedItem can appear empty when value text matches but the
+            // SelectedItem reference is not the exact instance from ItemsSource.
+            // Rebind to the matched instance from tagList to guarantee visible selection.
+            if (matchedTag != null && !ReferenceEquals(DockerImageTag, matchedTag))
             {
-                DockerImageTag = DockerImageTags.Contains("latest", StringComparer.OrdinalIgnoreCase)
-                    ? "latest"
-                    : DockerImageTags[0];
+                var previousSuppressDirty = _suppressComposeDirtyTracking;
+                _suppressComposeDirtyTracking = true;
+                DockerImageTag = matchedTag;
+                _suppressComposeDirtyTracking = previousSuppressDirty;
             }
         }
         catch (OperationCanceledException)
@@ -836,6 +1202,8 @@ public partial class DeploymentViewModel : ObservableObject
         catch (Exception ex)
         {
             _logger?.LogWarning(ex, "Error refreshing docker image tags");
+            DockerImageTags = [];
+            IsDockerImageAvailable = false;
             if (showToast)
             {
                 _toastService?.Warning(L("Toast_CheckFailed"), L("Toast_CouldNotFetchVersions"));
@@ -844,8 +1212,10 @@ public partial class DeploymentViewModel : ObservableObject
         finally
         {
             IsDockerImageTagsLoading = false;
+            HasDockerImageChecked = true;
         }
     }
+
 
     private async Task StartDockerAsync()
     {
@@ -924,43 +1294,68 @@ public partial class DeploymentViewModel : ObservableObject
 
     #region Settings Sync
 
-    private void LoadFromPreset(ConfigPreset preset)
+    private async Task LoadFromPresetAsync(ConfigPreset preset)
     {
-        var settings = preset.Deployment;
-
-        SelectedDeploymentMode = settings.DeploymentMode;
-        FrpcBinaryPath = settings.FrpcBinaryPath ?? "";
-
-        DockerContainerName = settings.DockerContainerName;
-        if (string.IsNullOrWhiteSpace(DockerContainerName) ||
-            string.Equals(DockerContainerName, "frapa-clonia-frpc", StringComparison.OrdinalIgnoreCase))
+        _suppressDockerAutoRefresh = true;
+        _suppressDockerImageReset = true;
+        _suppressComposeAutoLoad = true;
+        try
         {
+            var settings = preset.Deployment;
+
+            FrpcBinaryPath = settings.FrpcBinaryPath ?? "";
+
+            // Reset Docker validation state.
+            HasDockerContainerNameChecked = false;
+            IsDockerContainerNameAvailable = false;
+            HasDockerImageChecked = false;
+            IsDockerImageAvailable = false;
+
+            // Set sensible defaults — will be overwritten below if compose file exists.
             DockerContainerName = GenerateDefaultContainerName(preset.Name);
-        }
+            DockerImageName = "fatedier/frpc";
+            DockerImageTag = "latest";
+            DockerImageTags = ["latest"];
+            DockerRestartPolicy = "unless-stopped";
 
-        HasDockerContainerNameChecked = false;
-        IsDockerContainerNameAvailable = false;
+            // Clear last-validated cache so next user edit triggers a fresh check.
+            _lastValidatedContainerName = DockerContainerName;
+            _lastValidatedImageName = DockerImageName;
 
-        // Back-compat: older presets may have DockerImageName containing a tag (e.g. fatedier/frpc:latest)
-        var name = settings.DockerImageName;
-        var tag = settings.DockerImageTag;
-        if (!string.IsNullOrWhiteSpace(name))
-        {
-            var lastSlash = name.LastIndexOf('/');
-            var lastColon = name.LastIndexOf(':');
-            if (lastColon > lastSlash)
+            var presetFolder = GetPresetFolderPath(preset.Name);
+            var composePath = Path.Combine(presetFolder, "docker-compose.yml");
+
+            // Load docker-compose.yml directly (awaited) so values are ready before the UI renders.
+            if (File.Exists(composePath))
             {
-                tag = name[(lastColon + 1)..];
-                name = name[..lastColon];
+                await LoadDockerComposeFromFileAsync(composePath);
             }
+
+            // Set DockerComposePath after loading so OnDockerComposePathChanged only manages
+            // snapshot/dirty state, not file loading (suppressed above).
+            DockerComposePath = composePath;
+
+            ServiceScopeValue = settings.ServiceScope;
+            AutoStartOnBoot = settings.AutoStartOnBoot;
+            ServiceEnabled = settings.ServiceEnabled;
+
+            // Set mode last so the Docker UI becomes visible only after fields are ready.
+            SelectedDeploymentMode = settings.DeploymentMode;
+        }
+        finally
+        {
+            _suppressDockerAutoRefresh = false;
+            _suppressDockerImageReset = false;
+            _suppressComposeAutoLoad = false;
         }
 
-        DockerImageName = string.IsNullOrWhiteSpace(name) ? "fatedier/frpc" : name;
-        DockerImageTag = string.IsNullOrWhiteSpace(tag) ? "latest" : tag;
-
-        ServiceScopeValue = settings.ServiceScope;
-        AutoStartOnBoot = settings.AutoStartOnBoot;
-        ServiceEnabled = settings.ServiceEnabled;
+        if (!IsDockerMode) return;
+        _ = CheckDockerAsync(showToast: false);
+        // RefreshDockerImageTagsAsync is always called here after SelectedDeploymentMode is set
+        // (IsDockerMode = true). The call inside LoadDockerComposeFromFileAsync is skipped during
+        // preset load because IsDockerMode is still false at that moment (mode is set after the
+        // await). HasDockerImageChecked=false ensures the LostFocus gate doesn't suppress this.
+        _ = RefreshDockerImageTagsAsync(showToast: false);
     }
 
     private void SaveToPreset(ConfigPreset preset)
@@ -970,9 +1365,8 @@ public partial class DeploymentViewModel : ObservableObject
         settings.DeploymentMode = SelectedDeploymentMode;
         settings.FrpcBinaryPath = FrpcBinaryPath;
 
-        settings.DockerContainerName = DockerContainerName;
-        settings.DockerImageName = DockerImageName;
-        settings.DockerImageTag = DockerImageTag;
+        // Docker fields (image, tag, container name, restart policy) are stored exclusively
+        // in docker-compose.yml and are never persisted to the preset.
 
         settings.ServiceScope = ServiceScopeValue;
         settings.AutoStartOnBoot = AutoStartOnBoot;
@@ -999,7 +1393,39 @@ public partial class DeploymentViewModel : ObservableObject
         var value = presetName.Trim().ToLowerInvariant();
         value = Regex.Replace(value, "[^a-z0-9]+", "-");
         value = value.Trim('-');
-        return string.IsNullOrWhiteSpace(value) ? "frpc" : value;
+        return string.IsNullOrWhiteSpace(value) ? "frapa-clonia-frpc" : $"frapa-clonia-{value}";
+    }
+
+    private void UpdateDockerComposeDirtyFlag()
+    {
+        if (_suppressComposeDirtyTracking) return;
+
+        if (_composeSnapshot == null)
+        {
+            IsDockerComposeDirty = false;
+            return;
+        }
+
+        IsDockerComposeDirty =
+            !string.Equals(_composeSnapshot.ImageName, DockerImageName, StringComparison.OrdinalIgnoreCase) ||
+            !string.Equals(_composeSnapshot.ImageTag, DockerImageTag, StringComparison.OrdinalIgnoreCase) ||
+            !string.Equals(_composeSnapshot.ContainerName, DockerContainerName, StringComparison.OrdinalIgnoreCase) ||
+            !string.Equals(_composeSnapshot.RestartPolicy, DockerRestartPolicy, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string ResolveDefaultComposeFilePath(string? presetName)
+    {
+        if (!string.IsNullOrWhiteSpace(presetName))
+        {
+            var dir = GetPresetFolderPath(presetName);
+            Directory.CreateDirectory(dir);
+            return Path.Combine(dir, "docker-compose.yml");
+        }
+
+        var downloadsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            "Downloads", "frapa-clonia-docker");
+        Directory.CreateDirectory(downloadsDir);
+        return Path.Combine(downloadsDir, "docker-compose.yml");
     }
 
     private static IEnumerable<string> GetCommonBinaryPaths()

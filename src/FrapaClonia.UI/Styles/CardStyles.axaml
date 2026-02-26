@@ -12,7 +12,6 @@
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusL}" />
     <Setter Property="Padding" Value="{StaticResource ThicknessCard}" />
-    <Setter Property="Focusable" Value="True" />
   </Style>
 
   <Style Selector="Border.card:pointerover">
@@ -27,7 +26,6 @@
     <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusM}" />
     <Setter Property="Padding" Value="{StaticResource ThicknessCard}" />
     <Setter Property="Margin" Value="{StaticResource ThicknessBottomM}" />
-    <Setter Property="Focusable" Value="True" />
   </Style>
 
   <!-- Settings Card -->
@@ -38,7 +36,6 @@
     <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusL}" />
     <Setter Property="Padding" Value="{StaticResource ThicknessL}" />
     <Setter Property="Margin" Value="{StaticResource ThicknessBottomL}" />
-    <Setter Property="Focusable" Value="True" />
   </Style>
 
   <!-- List Card -->
@@ -49,7 +46,6 @@
     <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusM}" />
     <Setter Property="Padding" Value="{StaticResource ThicknessCard}" />
     <Setter Property="Margin" Value="{StaticResource ThicknessBottomM}" />
-    <Setter Property="Focusable" Value="True" />
   </Style>
 
   <Style Selector="Border.list-card:pointerover">
@@ -61,7 +57,7 @@
     <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltLowBrush}" />
     <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusL}" />
     <Setter Property="Padding" Value="{StaticResource ThicknessXL}" />
-    <Setter Property="Focusable" Value="True" />
   </Style>
 
 </Styles>
+

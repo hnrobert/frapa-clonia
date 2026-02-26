@@ -281,6 +281,24 @@
   <data name="DockerStatus" xml:space="preserve">
     <value>Docker 状态</value>
   </data>
+  <data name="RestartPolicy" xml:space="preserve">
+    <value>重启策略</value>
+  </data>
+  <data name="RestartPolicyHelp_No" xml:space="preserve">
+    <value>永不重启容器。</value>
+  </data>
+  <data name="RestartPolicyHelp_Always" xml:space="preserve">
+    <value>容器停止后始终自动重启。</value>
+  </data>
+  <data name="RestartPolicyHelp_OnFailure" xml:space="preserve">
+    <value>仅在容器以非 0 退出码退出时重启。</value>
+  </data>
+  <data name="RestartPolicyHelp_UnlessStopped" xml:space="preserve">
+    <value>除非你手动停止，否则自动重启。</value>
+  </data>
+  <data name="RestoreFromFile" xml:space="preserve">
+    <value>还原</value>
+  </data>
   <data name="DomainSettings" xml:space="preserve">
     <value>域名设置</value>
   </data>

@@ -52,7 +52,12 @@ public class FrpcDockerConfig
     public required string Tag { get; init; } = "latest";
     public required string ConfigPath { get; init; }
     public required string ContainerName { get; init; } = "frapa-clonia-frpc";
+
+    /// <summary>
+    /// Docker compose restart policy: "no", "always", "on-failure", "unless-stopped"
+    /// </summary>
+    public required string RestartPolicy { get; init; } = "unless-stopped";
+
     public Dictionary<string, string> EnvironmentVariables { get; init; } = new();
     public List<string> Ports { get; init; } = new();
-    public bool AutoRestart { get; init; } = true;
 }

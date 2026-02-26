@@ -278,6 +278,24 @@
   <data name="DockerStatus" xml:space="preserve">
     <value>Docker Status</value>
   </data>
+  <data name="RestartPolicy" xml:space="preserve">
+    <value>Restart Policy</value>
+  </data>
+  <data name="RestartPolicyHelp_No" xml:space="preserve">
+    <value>Never restart the container.</value>
+  </data>
+  <data name="RestartPolicyHelp_Always" xml:space="preserve">
+    <value>Always restart the container if it stops.</value>
+  </data>
+  <data name="RestartPolicyHelp_OnFailure" xml:space="preserve">
+    <value>Restart only when the container exits with a non-zero code.</value>
+  </data>
+  <data name="RestartPolicyHelp_UnlessStopped" xml:space="preserve">
+    <value>Restart unless you explicitly stop it.</value>
+  </data>
+  <data name="RestoreFromFile" xml:space="preserve">
+    <value>Restore</value>
+  </data>
   <data name="DomainSettings" xml:space="preserve">
     <value>Domain Settings</value>
   </data>
