@@ -399,7 +399,7 @@
                 <StackPanel Spacing="{StaticResource SpacingM}">
                   <TextBlock Text="{local:Localize DeploymentStatus}"
                              Classes="section-title" />
-                  <Grid ColumnDefinitions="180,*,Auto" RowDefinitions="Auto"
+                  <Grid ColumnDefinitions="180,*" RowDefinitions="Auto"
                         RowSpacing="{StaticResource SpacingS}">
                     <TextBlock Grid.Row="0" Grid.Column="0"
                                Text="{local:Localize DockerStatus}"
@@ -413,11 +413,6 @@
                                  VerticalAlignment="Center"
                                  FontFamily="{DynamicResource MonoFontFamily}" />
                     </StackPanel>
-                    <Button Grid.Row="0" Grid.Column="2"
-                            Command="{Binding RefreshContainerStatusCommand}"
-                            Classes="action-button">
-                      <mi:MaterialIcon Kind="Refresh" />
-                    </Button>
                   </Grid>
 
                   <StackPanel Orientation="Horizontal"
@@ -436,6 +431,13 @@
                       <StackPanel Orientation="Horizontal" Spacing="4">
                         <mi:MaterialIcon Kind="Stop" />
                         <TextBlock Text="{local:Localize StopContainer}" />
+                      </StackPanel>
+                    </Button>
+                    <Button Command="{Binding RefreshContainerStatusCommand}"
+                            Classes="action-button icon-text-button">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="Refresh" />
+                        <TextBlock Text="{local:Localize Refresh}" />
                       </StackPanel>
                     </Button>
                   </StackPanel>
