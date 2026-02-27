@@ -424,6 +424,120 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
         }
     }
 
+    public async Task<bool> IsContainerOwnedByComposeAsync(string composeDirectory, string containerName,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(composeDirectory) || string.IsNullOrWhiteSpace(containerName))
+            {
+                return false;
+            }
+
+            var composeFile = Path.Combine(composeDirectory, "docker-compose.yml");
+            if (!File.Exists(composeFile))
+            {
+                return false;
+            }
+
+            var (composeFileName, argsPrefix) = await GetComposeInvocationAsync(cancellationToken);
+            var composeArguments = string.IsNullOrWhiteSpace(argsPrefix)
+                ? $"-f \"{composeFile}\" ps -a -q"
+                : $"{argsPrefix} -f \"{composeFile}\" ps -a -q";
+
+            var composeProcess = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = composeFileName,
+                    Arguments = composeArguments,
+                    WorkingDirectory = composeDirectory,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false
+                }
+            };
+
+            composeProcess.Start();
+            await composeProcess.WaitForExitAsync(cancellationToken);
+            if (composeProcess.ExitCode != 0)
+            {
+                return false;
+            }
+
+            var composeContainerIds = (await composeProcess.StandardOutput.ReadToEndAsync(cancellationToken))
+                .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            if (composeContainerIds.Count == 0)
+            {
+                return false;
+            }
+
+            var dockerProcess = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = GetDockerCommand(),
+                    Arguments = "ps -a --format \"{{.ID}} {{.Names}}\"",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false
+                }
+            };
+
+            dockerProcess.Start();
+            await dockerProcess.WaitForExitAsync(cancellationToken);
+            if (dockerProcess.ExitCode != 0)
+            {
+                return false;
+            }
+
+            var output = await dockerProcess.StandardOutput.ReadToEndAsync(cancellationToken);
+            var rows = output
+                .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+            foreach (var row in rows)
+            {
+                var parts = row.Split(' ', 2, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length != 2)
+                {
+                    continue;
+                }
+
+                var id = parts[0];
+                var name = parts[1];
+                var idBelongsToCompose = composeContainerIds.Any(composeId =>
+                    string.Equals(composeId, id, StringComparison.OrdinalIgnoreCase) ||
+                    composeId.StartsWith(id, StringComparison.OrdinalIgnoreCase) ||
+                    id.StartsWith(composeId, StringComparison.OrdinalIgnoreCase));
+
+                if (!idBelongsToCompose)
+                {
+                    continue;
+                }
+
+                if (string.Equals(name, containerName.Trim(), StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex,
+                "Error checking whether container {ContainerName} belongs to compose in {Directory}",
+                containerName, composeDirectory);
+            return false;
+        }
+    }
+
     private static string GetDockerCommand()
     {
         return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "docker.exe" : "docker";

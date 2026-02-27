@@ -46,6 +46,12 @@ public interface IDockerDeploymentService
     /// Checks whether the given container name is available (no existing containers with this name).
     /// </summary>
     Task<bool> IsContainerNameAvailableAsync(string containerName, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Checks whether the given container belongs to the specified docker-compose directory.
+    /// </summary>
+    Task<bool> IsContainerOwnedByComposeAsync(string composeDirectory, string containerName,
+        CancellationToken cancellationToken = default);
 }
 
 /// <summary>

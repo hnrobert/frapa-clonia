@@ -40,6 +40,7 @@ public partial class DeploymentViewModel : ObservableObject
 
     // Track the last value that was actually sent for remote validation so LostFocus is a no-op when unchanged.
     private string _lastValidatedContainerName = "";
+    private string _lastValidatedContainerComposePath = "";
     private string _lastValidatedImageName = "";
 
     private readonly ILogger<DeploymentViewModel>? _logger;
@@ -627,6 +628,8 @@ public partial class DeploymentViewModel : ObservableObject
         {
             _composeSnapshot = null;
             IsDockerComposeDirty = false;
+            HasDockerContainerNameChecked = false;
+            IsDockerContainerNameAvailable = false;
             return;
         }
 
@@ -634,8 +637,13 @@ public partial class DeploymentViewModel : ObservableObject
         {
             _composeSnapshot = null;
             IsDockerComposeDirty = false;
+            HasDockerContainerNameChecked = false;
+            IsDockerContainerNameAvailable = false;
             return;
         }
+
+        HasDockerContainerNameChecked = false;
+        IsDockerContainerNameAvailable = false;
 
         // Suppressed when LoadFromPresetAsync handles loading directly (avoids double-load).
         if (_suppressComposeAutoLoad) return;
@@ -1061,6 +1069,7 @@ public partial class DeploymentViewModel : ObservableObject
         if (_dockerDeploymentService == null) return;
 
         var containerName = DockerContainerName.Trim();
+        var composePathForValidation = DockerComposePath;
         if (string.IsNullOrWhiteSpace(containerName))
         {
             HasDockerContainerNameChecked = true;
@@ -1072,12 +1081,14 @@ public partial class DeploymentViewModel : ObservableObject
         // and we've already checked it, avoiding redundant network calls.
         if (!showToast &&
             string.Equals(_lastValidatedContainerName, containerName, StringComparison.Ordinal) &&
+            string.Equals(_lastValidatedContainerComposePath, composePathForValidation, StringComparison.Ordinal) &&
             HasDockerContainerNameChecked)
         {
             return;
         }
 
         _lastValidatedContainerName = containerName;
+        _lastValidatedContainerComposePath = composePathForValidation;
 
         try
         {
@@ -1092,6 +1103,22 @@ public partial class DeploymentViewModel : ObservableObject
 
             var available = await _dockerDeploymentService.IsContainerNameAvailableAsync(containerName,
                 _dockerContainerNameCts.Token);
+
+            if (!available && !string.IsNullOrWhiteSpace(DockerComposePath))
+            {
+                var composeDirectory = Path.GetDirectoryName(DockerComposePath);
+                if (!string.IsNullOrWhiteSpace(composeDirectory))
+                {
+                    var ownedByCurrentCompose = await _dockerDeploymentService.IsContainerOwnedByComposeAsync(
+                        composeDirectory,
+                        containerName,
+                        _dockerContainerNameCts.Token);
+                    if (ownedByCurrentCompose)
+                    {
+                        available = true;
+                    }
+                }
+            }
 
             HasDockerContainerNameChecked = true;
             IsDockerContainerNameAvailable = available;
