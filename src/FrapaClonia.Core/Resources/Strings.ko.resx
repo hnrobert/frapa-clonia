@@ -815,6 +815,18 @@
   <data name="StartContainer" xml:space="preserve">
     <value>컨테이너 시작</value>
   </data>
+  <data name="RecreateContainer" xml:space="preserve">
+    <value>재생성</value>
+  </data>
+  <data name="Toast_RecreatingContainer" xml:space="preserve">
+    <value>Docker 컨테이너를 재생성하는 중...</value>
+  </data>
+  <data name="Toast_StartingContainer" xml:space="preserve">
+    <value>Docker 컨테이너를 시작하는 중...</value>
+  </data>
+  <data name="Toast_StoppingContainer" xml:space="preserve">
+    <value>Docker 컨테이너를 중지하는 중...</value>
+  </data>
   <data name="StartFrpc" xml:space="preserve">
     <value>Frpc 시작</value>
   </data>

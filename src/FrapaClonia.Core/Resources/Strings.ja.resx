@@ -791,6 +791,18 @@
   <data name="StartContainer" xml:space="preserve">
     <value>コンテナを開始</value>
   </data>
+  <data name="RecreateContainer" xml:space="preserve">
+    <value>再作成</value>
+  </data>
+  <data name="Toast_RecreatingContainer" xml:space="preserve">
+    <value>Docker コンテナを再作成しています...</value>
+  </data>
+  <data name="Toast_StartingContainer" xml:space="preserve">
+    <value>Docker コンテナを開始しています...</value>
+  </data>
+  <data name="Toast_StoppingContainer" xml:space="preserve">
+    <value>Docker コンテナを停止しています...</value>
+  </data>
   <data name="StartFrpc" xml:space="preserve">
     <value>Frpc 開始</value>
   </data>

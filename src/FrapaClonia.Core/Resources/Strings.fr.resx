@@ -815,6 +815,18 @@
   <data name="StartContainer" xml:space="preserve">
     <value>Demarrer le Conteneur</value>
   </data>
+  <data name="RecreateContainer" xml:space="preserve">
+    <value>Recreer</value>
+  </data>
+  <data name="Toast_RecreatingContainer" xml:space="preserve">
+    <value>Recreation du conteneur Docker...</value>
+  </data>
+  <data name="Toast_StartingContainer" xml:space="preserve">
+    <value>Demarrage du conteneur Docker...</value>
+  </data>
+  <data name="Toast_StoppingContainer" xml:space="preserve">
+    <value>Arret du conteneur Docker...</value>
+  </data>
   <data name="StartFrpc" xml:space="preserve">
     <value>Demarrer Frpc</value>
   </data>

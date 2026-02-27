@@ -842,6 +842,18 @@
   <data name="StartContainer" xml:space="preserve">
     <value>Start Container</value>
   </data>
+  <data name="RecreateContainer" xml:space="preserve">
+    <value>Recreate</value>
+  </data>
+  <data name="Toast_RecreatingContainer" xml:space="preserve">
+    <value>Recreating Docker container...</value>
+  </data>
+  <data name="Toast_StartingContainer" xml:space="preserve">
+    <value>Starting Docker container...</value>
+  </data>
+  <data name="Toast_StoppingContainer" xml:space="preserve">
+    <value>Stopping Docker container...</value>
+  </data>
   <data name="StartFrpc" xml:space="preserve">
     <value>Start Frpc</value>
   </data>

@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.UI.Utils;
@@ -28,6 +29,11 @@ public partial class DeploymentViewModel : ObservableObject
     private bool _suppressComposeDirtyTracking;
     private bool _suppressDockerAutoRefresh;
     private bool _suppressDockerImageReset;
+    private bool _suppressDockerImageTagCoercion;
+    private bool _suppressDockerImageTagIndexSync;
+    private bool _pendingDockerImageTagResync;
+
+    private string _lastKnownDockerImageTag = "latest";
 
     private bool
         _suppressComposeAutoLoad; // prevents OnDockerComposePathChanged from double-loading during async LoadFromPresetAsync
@@ -137,6 +143,7 @@ public partial class DeploymentViewModel : ObservableObject
 
     [ObservableProperty] private string _dockerImageTag = "latest";
     [ObservableProperty] private List<string> _dockerImageTags = ["latest"];
+    [ObservableProperty] private int _dockerImageTagSelectedIndex;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowDockerImageOk))]
@@ -180,7 +187,10 @@ public partial class DeploymentViewModel : ObservableObject
         File.Exists(DockerComposePath) &&
         IsDockerComposeDirty;
 
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(LocalizedContainerState))]
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(LocalizedContainerState))]
+    [NotifyPropertyChangedFor(nameof(DockerPrimaryActionText))]
+    [NotifyPropertyChangedFor(nameof(CanStopDockerContainer))]
     private bool _isContainerRunning;
 
     private CancellationTokenSource? _dockerTagsCts;
@@ -211,6 +221,10 @@ public partial class DeploymentViewModel : ObservableObject
         IsDockerAvailable && !string.IsNullOrWhiteSpace(DockerImageName) && IsDockerImageTagsLoading;
 
     public string LocalizedContainerState => IsContainerRunning ? L("StatusRunning") : L("StatusStopped");
+
+    public string DockerPrimaryActionText => IsContainerRunning ? L("RecreateContainer") : L("StartContainer");
+
+    public bool CanStopDockerContainer => IsContainerRunning;
 
     #endregion
 
@@ -454,15 +468,150 @@ public partial class DeploymentViewModel : ObservableObject
     // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnDockerImageTagChanged(string value)
     {
-        // Ignore transient empty values caused by Avalonia's ComboBox clearing its SelectedItem
-        // when the ItemsSource list reference is replaced (even if the same value is in the new list).
-        // Do NOT fall back to "latest" — that silently overwrites a tag loaded from docker-compose.yml.
+        // Avalonia ComboBox may transiently clear SelectedItem when ItemsSource is replaced.
+        // If we accept that empty value, the binding can get stuck showing blank until the user
+        // forces another reload (e.g. by clicking Restore). Instead, coerce empties back to the
+        // last known non-empty tag (prefer the one loaded from docker-compose.yml).
         if (string.IsNullOrWhiteSpace(value))
+        {
+            if (_suppressDockerImageTagCoercion)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(_lastKnownDockerImageTag)) return;
+            _suppressDockerImageTagCoercion = true;
+
+            try
+            {
+                DockerImageTag = _lastKnownDockerImageTag;
+            }
+            finally
+            {
+                _suppressDockerImageTagCoercion = false;
+            }
+
+            return;
+        }
+
+        _lastKnownDockerImageTag = value.Trim();
+        SyncDockerImageTagSelectedIndex();
+        UpdateDockerComposeDirtyFlag();
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnDockerImageTagsChanged(List<string> value)
+    {
+        SyncDockerImageTagSelectedIndex();
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnDockerImageTagSelectedIndexChanged(int value)
+    {
+        if (_suppressDockerImageTagIndexSync)
         {
             return;
         }
 
-        UpdateDockerComposeDirtyFlag();
+        // When ItemsSource changes, Avalonia may temporarily clear selection and push -1 into the binding.
+        // If we accept -1, the ComboBox can stay unselected even though DockerImageTag is valid.
+        // Resync on the UI thread after the control settles.
+        if (value < 0)
+        {
+            if (_pendingDockerImageTagResync)
+            {
+                return;
+            }
+
+            if (DockerImageTags.Count == 0)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(DockerImageTag) && string.IsNullOrWhiteSpace(_lastKnownDockerImageTag))
+            {
+                return;
+            }
+
+            _pendingDockerImageTagResync = true;
+            Dispatcher.UIThread.Post(() =>
+            {
+                _pendingDockerImageTagResync = false;
+                SyncDockerImageTagSelectedIndex();
+            }, DispatcherPriority.Background);
+
+            return;
+        }
+
+        if (value >= DockerImageTags.Count)
+        {
+            return;
+        }
+
+        var selected = DockerImageTags[value];
+        if (string.IsNullOrWhiteSpace(selected))
+        {
+            return;
+        }
+
+        if (string.Equals(DockerImageTag, selected, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        _suppressDockerImageTagCoercion = true;
+        try
+        {
+            DockerImageTag = selected;
+        }
+        finally
+        {
+            _suppressDockerImageTagCoercion = false;
+        }
+    }
+
+    private void SyncDockerImageTagSelectedIndex()
+    {
+        if (_suppressDockerImageTagIndexSync)
+        {
+            return;
+        }
+
+        if (DockerImageTags.Count == 0)
+        {
+            return;
+        }
+
+        var tag = DockerImageTag.Trim();
+        if (string.IsNullOrWhiteSpace(tag))
+        {
+            return;
+        }
+
+        var index = DockerImageTags.FindIndex(t => string.Equals(t, tag, StringComparison.OrdinalIgnoreCase));
+        if (index < 0)
+        {
+            index = 0;
+        }
+
+        // If the computed index is the same as the current value, ItemsSource refresh may have
+        // cleared the ComboBox selection without changing the bound VM value. In that case,
+        // force a property change notification so the binding re-applies the selection.
+        if (DockerImageTagSelectedIndex == index)
+        {
+            OnPropertyChanged(nameof(DockerImageTagSelectedIndex));
+            return;
+        }
+
+        _suppressDockerImageTagIndexSync = true;
+        try
+        {
+            DockerImageTagSelectedIndex = index;
+        }
+        finally
+        {
+            _suppressDockerImageTagIndexSync = false;
+        }
     }
 
     // ReSharper disable once UnusedParameterInPartialMethod
@@ -919,8 +1068,8 @@ public partial class DeploymentViewModel : ObservableObject
             return;
         }
 
-        // LostFocus calls (showToast=false) are no-ops when the value hasn't changed and
-        // we've already checked it, avoiding redundant network calls.
+        // LostFocus calls (showToast=false) are no-ops when the value hasn't changed,
+        // and we've already checked it, avoiding redundant network calls.
         if (!showToast &&
             string.Equals(_lastValidatedContainerName, containerName, StringComparison.Ordinal) &&
             HasDockerContainerNameChecked)
@@ -1097,6 +1246,11 @@ public partial class DeploymentViewModel : ObservableObject
             _suppressDockerImageReset = true;
             DockerImageName = loadedImageName;
             DockerImageTag = loadedImageTag;
+            if (!string.IsNullOrWhiteSpace(loadedImageTag))
+            {
+                _lastKnownDockerImageTag = loadedImageTag.Trim();
+            }
+
             DockerContainerName = loadedContainerName;
             DockerRestartPolicy = loadedRestartPolicy;
             _suppressComposeDirtyTracking = false;
@@ -1146,8 +1300,8 @@ public partial class DeploymentViewModel : ObservableObject
 
         var imageName = DockerImageName.Trim();
 
-        // LostFocus calls (showToast=false) are no-ops when the value hasn't changed and
-        // we've already checked it, avoiding redundant network calls.
+        // LostFocus calls (showToast=false) are no-ops when the value hasn't changed,
+        // and we've already checked it, avoiding redundant network calls.
         if (!showToast &&
             string.Equals(_lastValidatedImageName, imageName, StringComparison.Ordinal) &&
             HasDockerImageChecked)
@@ -1156,6 +1310,8 @@ public partial class DeploymentViewModel : ObservableObject
         }
 
         _lastValidatedImageName = imageName;
+
+        var hasSuccessfulCheck = false;
 
         try
         {
@@ -1171,18 +1327,43 @@ public partial class DeploymentViewModel : ObservableObject
             _dockerTagsCts = new CancellationTokenSource();
 
             var tags = await _dockerDeploymentService.GetAvailableImageTagsAsync(DockerImageName, _dockerTagsCts.Token);
-            var tagList = tags.Where(tag => !string.IsNullOrWhiteSpace(tag)).ToList();
+            var remoteTagList = tags
+                .Where(tag => !string.IsNullOrWhiteSpace(tag))
+                .ToList();
 
-            DockerImageTags = tagList;
+            var configuredTagFromCompose = TryReadImageTagFromCompose(DockerComposePath);
+            if (!string.IsNullOrWhiteSpace(configuredTagFromCompose) &&
+                !string.Equals(DockerImageTag, configuredTagFromCompose, StringComparison.Ordinal))
+            {
+                var previousSuppressDirty = _suppressComposeDirtyTracking;
+                _suppressComposeDirtyTracking = true;
+                DockerImageTag = configuredTagFromCompose;
+                _suppressComposeDirtyTracking = previousSuppressDirty;
+            }
+
+            var configuredTag = string.IsNullOrWhiteSpace(DockerImageTag) ? string.Empty : DockerImageTag.Trim();
+
+            // Keep configured tag visible in ComboBox even when Docker Hub response doesn't include it.
+            // This matches the restore flow behavior (seeded list retains configured version display).
+            var displayTagList = remoteTagList.ToList();
+            if (!string.IsNullOrWhiteSpace(configuredTag) &&
+                !displayTagList.Contains(configuredTag, StringComparer.OrdinalIgnoreCase))
+            {
+                displayTagList.Insert(0, configuredTag);
+            }
+
+            DockerImageTags = displayTagList;
+
             // Available = the specific configured tag was found in the fetched list.
             // ComboBox SelectedItem needs exact item identity/value from ItemsSource to render text,
             // so normalize the current tag to the exact matched list item (case-preserving).
-            var configuredTag = DockerImageTag.Trim();
             var matchedTag = string.IsNullOrWhiteSpace(configuredTag)
                 ? null
-                : tagList.FirstOrDefault(tag => string.Equals(tag, configuredTag, StringComparison.OrdinalIgnoreCase));
+                : displayTagList.FirstOrDefault(tag =>
+                    string.Equals(tag, configuredTag, StringComparison.OrdinalIgnoreCase));
 
-            IsDockerImageAvailable = matchedTag != null;
+            IsDockerImageAvailable = !string.IsNullOrWhiteSpace(configuredTag) &&
+                                     remoteTagList.Contains(configuredTag, StringComparer.OrdinalIgnoreCase);
 
             // Avalonia ComboBox SelectedItem can appear empty when value text matches but the
             // SelectedItem reference is not the exact instance from ItemsSource.
@@ -1194,6 +1375,8 @@ public partial class DeploymentViewModel : ObservableObject
                 DockerImageTag = matchedTag;
                 _suppressComposeDirtyTracking = previousSuppressDirty;
             }
+
+            hasSuccessfulCheck = true;
         }
         catch (OperationCanceledException)
         {
@@ -1202,7 +1385,7 @@ public partial class DeploymentViewModel : ObservableObject
         catch (Exception ex)
         {
             _logger?.LogWarning(ex, "Error refreshing docker image tags");
-            DockerImageTags = [];
+            // Keep current values on refresh failure to avoid clearing selected version on first load.
             IsDockerImageAvailable = false;
             if (showToast)
             {
@@ -1212,8 +1395,110 @@ public partial class DeploymentViewModel : ObservableObject
         finally
         {
             IsDockerImageTagsLoading = false;
-            HasDockerImageChecked = true;
+            HasDockerImageChecked = hasSuccessfulCheck;
+            if (hasSuccessfulCheck)
+            {
+                ScheduleDockerImageTagReselect();
+            }
         }
+    }
+
+    private void ScheduleDockerImageTagReselect()
+    {
+        if (_pendingDockerImageTagResync)
+        {
+            return;
+        }
+
+        _pendingDockerImageTagResync = true;
+        Dispatcher.UIThread.Post(() =>
+        {
+            ApplyDockerImageTagReselect();
+
+            // Some ComboBox state updates happen one frame later after ItemsSource refresh.
+            // Re-apply once more to guarantee final selected state.
+            Dispatcher.UIThread.Post(() =>
+            {
+                ApplyDockerImageTagReselect();
+                _pendingDockerImageTagResync = false;
+            }, DispatcherPriority.Background);
+        }, DispatcherPriority.Loaded);
+    }
+
+    private void ApplyDockerImageTagReselect()
+    {
+        if (DockerImageTags.Count == 0)
+        {
+            return;
+        }
+
+        var tag = string.IsNullOrWhiteSpace(DockerImageTag)
+            ? _lastKnownDockerImageTag
+            : DockerImageTag;
+
+        if (string.IsNullOrWhiteSpace(tag))
+        {
+            return;
+        }
+
+        var index = DockerImageTags.FindIndex(t => string.Equals(t, tag, StringComparison.OrdinalIgnoreCase));
+        if (index < 0)
+        {
+            index = 0;
+        }
+
+        _suppressDockerImageTagIndexSync = true;
+        try
+        {
+            // Force UI to re-apply selection even if index value is unchanged.
+            DockerImageTagSelectedIndex = -1;
+            DockerImageTagSelectedIndex = index;
+        }
+        finally
+        {
+            _suppressDockerImageTagIndexSync = false;
+        }
+    }
+
+    private static string? TryReadImageTagFromCompose(string composePath)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(composePath) || !File.Exists(composePath))
+            {
+                return null;
+            }
+
+            foreach (var raw in File.ReadLines(composePath))
+            {
+                var line = raw.Trim();
+                if (!line.StartsWith("image:", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                var image = line["image:".Length..].Trim().Trim('"', '\'');
+                if (string.IsNullOrWhiteSpace(image))
+                {
+                    return null;
+                }
+
+                var lastSlash = image.LastIndexOf('/');
+                var lastColon = image.LastIndexOf(':');
+                if (lastColon > lastSlash && lastColon < image.Length - 1)
+                {
+                    return image[(lastColon + 1)..];
+                }
+
+                return null;
+            }
+        }
+        catch
+        {
+            // ignore parsing errors and fall back to current in-memory value.
+        }
+
+        return null;
     }
 
 
@@ -1233,6 +1518,30 @@ public partial class DeploymentViewModel : ObservableObject
                 _toastService?.Error(L("Toast_InvalidPath"), L("Toast_CouldNotDetermineDirectory"));
                 return;
             }
+
+            if (IsContainerRunning)
+            {
+                _toastService?.Info(L("RecreateContainer"), L("Toast_RecreatingContainer"));
+
+                var recreateSuccess = _dockerDeploymentService != null &&
+                                      await _dockerDeploymentService.RecreateDockerComposeAsync(composeDirectory);
+                if (recreateSuccess)
+                {
+                    _toastService?.Success(L("Toast_ContainerStarted"), L("Toast_DockerContainerRunning"));
+                    if (_dockerDeploymentService != null)
+                    {
+                        IsContainerRunning = await _dockerDeploymentService.IsContainerRunningAsync(
+                            DockerContainerName);
+                    }
+
+                    return;
+                }
+
+                _toastService?.Error(L("Toast_StartFailed"), L("Toast_CouldNotStartContainer"));
+                return;
+            }
+
+            _toastService?.Info(L("StartContainer"), L("Toast_StartingContainer"));
 
             var success = _dockerDeploymentService != null &&
                           await _dockerDeploymentService.StartDockerComposeAsync(composeDirectory);
@@ -1258,6 +1567,11 @@ public partial class DeploymentViewModel : ObservableObject
     {
         try
         {
+            if (!IsContainerRunning)
+            {
+                return;
+            }
+
             if (string.IsNullOrEmpty(DockerComposePath))
             {
                 _toastService?.Warning(L("Toast_NoConfiguration"), L("Toast_NoDockerComposeFound"));
@@ -1270,6 +1584,8 @@ public partial class DeploymentViewModel : ObservableObject
                 _toastService?.Error(L("Toast_InvalidPath"), L("Toast_CouldNotDetermineDirectory"));
                 return;
             }
+
+            _toastService?.Info(L("StopContainer"), L("Toast_StoppingContainer"));
 
             var success = _dockerDeploymentService != null &&
                           await _dockerDeploymentService.StopDockerComposeAsync(composeDirectory);
@@ -1353,8 +1669,8 @@ public partial class DeploymentViewModel : ObservableObject
         _ = CheckDockerAsync(showToast: false);
         // RefreshDockerImageTagsAsync is always called here after SelectedDeploymentMode is set
         // (IsDockerMode = true). The call inside LoadDockerComposeFromFileAsync is skipped during
-        // preset load because IsDockerMode is still false at that moment (mode is set after the
-        // await). HasDockerImageChecked=false ensures the LostFocus gate doesn't suppress this.
+        // preset load because IsDockerMode is still false at that moment (mode is set after the awaiting).
+        // HasDockerImageChecked=false ensures the LostFocus gate doesn't suppress this.
         _ = RefreshDockerImageTagsAsync(showToast: false);
     }
 

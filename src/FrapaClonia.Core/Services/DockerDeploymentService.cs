@@ -162,14 +162,76 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
 
             var (fileName, argsPrefix) = await GetComposeInvocationAsync(cancellationToken);
 
+            return await ExecuteComposeUpWithRetryAsync(
+                fileName,
+                argsPrefix,
+                composeFile,
+                composeDirectory,
+                forceRecreate: false,
+                cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error starting docker-compose in {Directory}", composeDirectory);
+            return false;
+        }
+    }
+
+    public async Task<bool> RecreateDockerComposeAsync(string composeDirectory,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            logger.LogInformation("Recreating docker-compose services in {Directory}", composeDirectory);
+
+            var composeFile = Path.Combine(composeDirectory, "docker-compose.yml");
+            if (!File.Exists(composeFile))
+            {
+                logger.LogError("docker-compose.yml not found in {Directory}", composeDirectory);
+                return false;
+            }
+
+            var (fileName, argsPrefix) = await GetComposeInvocationAsync(cancellationToken);
+
+            return await ExecuteComposeUpWithRetryAsync(
+                fileName,
+                argsPrefix,
+                composeFile,
+                composeDirectory,
+                forceRecreate: true,
+                cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error recreating docker-compose in {Directory}", composeDirectory);
+            return false;
+        }
+    }
+
+    private async Task<bool> ExecuteComposeUpWithRetryAsync(
+        string fileName,
+        string argsPrefix,
+        string composeFile,
+        string composeDirectory,
+        bool forceRecreate,
+        CancellationToken cancellationToken)
+    {
+        var upArgs = forceRecreate ? "up -d --force-recreate" : "up -d";
+        var operation = forceRecreate ? "recreate" : "start";
+
+        const int maxAttempts = 3; // first try + 2 retries
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var process = new System.Diagnostics.Process
             {
                 StartInfo = new System.Diagnostics.ProcessStartInfo
                 {
                     FileName = fileName,
                     Arguments = string.IsNullOrEmpty(argsPrefix)
-                        ? $"-f \"{composeFile}\" up -d"
-                        : $"{argsPrefix} -f \"{composeFile}\" up -d",
+                        ? $"-f \"{composeFile}\" {upArgs}"
+                        : $"{argsPrefix} -f \"{composeFile}\" {upArgs}",
                     WorkingDirectory = composeDirectory,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -178,26 +240,48 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             };
 
             process.Start();
+
+            var stdOutTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
+            var stdErrTask = process.StandardError.ReadToEndAsync(cancellationToken);
+
             await process.WaitForExitAsync(cancellationToken);
+            var stdout = await stdOutTask;
+            var stderr = await stdErrTask;
 
-            var success = process.ExitCode == 0;
-            if (success)
+            if (process.ExitCode == 0)
             {
-                logger.LogInformation("docker-compose started successfully");
-            }
-            else
-            {
-                logger.LogError("docker-compose start failed: {Error}",
-                    await process.StandardError.ReadToEndAsync(cancellationToken));
+                if (attempt > 1)
+                {
+                    logger.LogInformation("docker-compose {Operation} succeeded on retry attempt {Attempt}",
+                        operation,
+                        attempt);
+                }
+                else
+                {
+                    logger.LogInformation("docker-compose {Operation} succeeded", operation);
+                }
+
+                return true;
             }
 
-            return success;
+            var combinedError =
+                string.Join('\n', new[] { stderr, stdout }.Where(s => !string.IsNullOrWhiteSpace(s)));
+            var shouldRetry = attempt < maxAttempts && IsRetryablePullFailure(combinedError);
+
+            if (!shouldRetry)
+            {
+                logger.LogError("docker-compose {Operation} failed: {Error}", operation, combinedError);
+                return false;
+            }
+
+            logger.LogWarning(
+                "docker-compose {Operation} failed with retryable pull/network error (attempt {Attempt}/{MaxAttempts}): {Error}",
+                operation, attempt, maxAttempts, combinedError);
+
+            await Task.Delay(TimeSpan.FromSeconds(attempt), cancellationToken);
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error starting docker-compose in {Directory}", composeDirectory);
-            return false;
-        }
+
+        return false;
     }
 
     public async Task<bool> StopDockerComposeAsync(string composeDirectory,
@@ -445,8 +529,6 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             ? "frapa-clonia-frpc"
             : config.ContainerName.Trim();
 
-        sb.AppendLine("version: '3'");
-        sb.AppendLine();
         sb.AppendLine("services:");
         sb.AppendLine($"  {containerName}:");
         sb.AppendLine($"    image: {config.ImageName}:{config.Tag}");
@@ -485,5 +567,21 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
         sb.AppendLine("# Generated by FrapaClonia - frpc visual client");
 
         return sb.ToString();
+    }
+
+    private static bool IsRetryablePullFailure(string error)
+    {
+        if (string.IsNullOrWhiteSpace(error))
+        {
+            return false;
+        }
+
+        var value = error.ToLowerInvariant();
+
+        return value.Contains("registry-1.docker.io") &&
+               (value.Contains(" eof") || value.Contains("\neof") || value.Contains("tls") ||
+                value.Contains("timeout") || value.Contains("temporarily unavailable") ||
+                value.Contains("temporary failure") || value.Contains("connection reset") ||
+                value.Contains("i/o timeout") || value.Contains("net/http"));
     }
 }

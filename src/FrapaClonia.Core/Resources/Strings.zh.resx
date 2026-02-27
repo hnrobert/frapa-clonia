@@ -836,6 +836,18 @@
   <data name="StartContainer" xml:space="preserve">
     <value>启动容器</value>
   </data>
+  <data name="RecreateContainer" xml:space="preserve">
+    <value>重建</value>
+  </data>
+  <data name="Toast_RecreatingContainer" xml:space="preserve">
+    <value>正在重建 Docker 容器...</value>
+  </data>
+  <data name="Toast_StartingContainer" xml:space="preserve">
+    <value>正在启动 Docker 容器...</value>
+  </data>
+  <data name="Toast_StoppingContainer" xml:space="preserve">
+    <value>正在停止 Docker 容器...</value>
+  </data>
   <data name="StartFrpc" xml:space="preserve">
     <value>启动 Frpc</value>
   </data>

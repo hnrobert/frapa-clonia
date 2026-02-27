@@ -28,6 +28,11 @@ public interface IDockerDeploymentService
     Task<bool> StartDockerComposeAsync(string composeDirectory, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Recreates frpc using Docker Compose (`up -d --force-recreate`)
+    /// </summary>
+    Task<bool> RecreateDockerComposeAsync(string composeDirectory, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Stops frpc using Docker Compose
     /// </summary>
     Task<bool> StopDockerComposeAsync(string composeDirectory, CancellationToken cancellationToken = default);

@@ -345,7 +345,7 @@
                                Classes="field-label" />
                     <ComboBox Grid.Row="2" Grid.Column="1"
                               ItemsSource="{Binding DockerImageTags}"
-                              SelectedItem="{Binding DockerImageTag}"
+                              SelectedIndex="{Binding DockerImageTagSelectedIndex, Mode=TwoWay}"
                               IsEnabled="{Binding !IsDockerImageTagsLoading}"
                               HorizontalAlignment="Stretch"
                               Margin="0,0,8,0" />
@@ -425,11 +425,13 @@
                     <Button Command="{Binding StartDockerCommand}"
                             Classes="action-button primary icon-text-button">
                       <StackPanel Orientation="Horizontal" Spacing="4">
-                        <mi:MaterialIcon Kind="Play" />
-                        <TextBlock Text="{local:Localize StartContainer}" />
+                        <mi:MaterialIcon Kind="Play" IsVisible="{Binding !IsContainerRunning}" />
+                        <mi:MaterialIcon Kind="Restart" IsVisible="{Binding IsContainerRunning}" />
+                        <TextBlock Text="{Binding DockerPrimaryActionText}" />
                       </StackPanel>
                     </Button>
                     <Button Command="{Binding StopDockerCommand}"
+                            IsEnabled="{Binding CanStopDockerContainer}"
                             Classes="action-button icon-text-button">
                       <StackPanel Orientation="Horizontal" Spacing="4">
                         <mi:MaterialIcon Kind="Stop" />
