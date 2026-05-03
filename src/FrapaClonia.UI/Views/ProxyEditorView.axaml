@@ -74,7 +74,8 @@
             <StackPanel Spacing="{StaticResource SpacingM}">
               <TextBlock Text="{local:Localize LocalSettings}" Classes="section-title" />
 
-              <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}">
+              <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}"
+                    RowSpacing="{StaticResource SpacingS}">
                 <StackPanel Grid.Column="0">
                   <TextBlock Text="{local:Localize LocalIP}" Classes="field-label" />
                   <TextBox Text="{Binding LocalIP}"
@@ -274,7 +275,8 @@
               </CheckBox>
 
               <StackPanel IsVisible="{Binding HealthCheckEnabled}" Spacing="{StaticResource SpacingM}">
-                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}">
+                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}"
+                      RowSpacing="{StaticResource SpacingS}">
                   <StackPanel Grid.Column="0">
                     <TextBlock Text="{local:Localize TypeLabel}" Classes="field-label" />
                     <ComboBox ItemsSource="{Binding HealthCheckTypes}"
@@ -383,7 +385,8 @@
               <StackPanel IsVisible="{Binding IsStaticFilePlugin}"
                           Spacing="{StaticResource SpacingM}">
                 <TextBlock Text="{local:Localize StaticFilePluginSettings}" Classes="section-title" />
-                <Grid ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}">
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}"
+                      RowSpacing="{StaticResource SpacingS}">
                   <StackPanel Grid.Column="0">
                     <TextBlock Text="{local:Localize LocalPath}" Classes="field-label" />
                     <TextBox Text="{Binding PluginStaticFilePath}"
@@ -403,7 +406,8 @@
               <StackPanel IsVisible="{Binding IsHttps2HTTPPlugin}"
                           Spacing="{StaticResource SpacingM}">
                 <TextBlock Text="{local:Localize HttpsToHTTPPluginSettings}" Classes="section-title" />
-                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}">
+                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}"
+                      RowSpacing="{StaticResource SpacingS}">
                   <StackPanel Grid.Column="0" Grid.ColumnSpan="2">
                     <TextBlock Text="{local:Localize LocalAddress}" Classes="field-label" />
                     <TextBox Text="{Binding PluginHttps2HttpLocalAddr}"
@@ -427,7 +431,8 @@
               <StackPanel IsVisible="{Binding IsHttp2HttpsPlugin}"
                           Spacing="{StaticResource SpacingM}">
                 <TextBlock Text="{local:Localize HTTPToHttpsPluginSettings}" Classes="section-title" />
-                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}">
+                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingM}"
+                      RowSpacing="{StaticResource SpacingS}">
                   <StackPanel Grid.Column="0" Grid.ColumnSpan="2">
                     <TextBlock Text="{local:Localize LocalAddress}" Classes="field-label" />
                     <TextBox Text="{Binding PluginHttp2HttpsLocalAddr}"
@@ -493,4 +498,3 @@
     </Panel>
   </ScrollViewer>
 </Window>
-
