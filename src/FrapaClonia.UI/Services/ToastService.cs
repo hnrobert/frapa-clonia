@@ -13,146 +13,149 @@ public class ToastService : ObservableObject
 {
     private readonly ILogger<ToastService>? _logger;
     private readonly int _maxToasts = 5;
+    private int _childWindowCount;
+
+    public static ToastService? Instance { get; private set; }
 
     /// <summary>
-    /// Collection of currently active toasts
+    /// Toasts displayed in the main window
     /// </summary>
     public ObservableCollection<ToastItem> Toasts { get; } = [];
 
     /// <summary>
-    /// Event raised when a toast is added
+    /// Toasts displayed in child windows
     /// </summary>
-    public event EventHandler<ToastItem>? ToastAdded;
+    public ObservableCollection<ToastItem> ChildToasts { get; } = [];
 
-    /// <summary>
-    /// Event raised when a toast is removed
-    /// </summary>
+    public event EventHandler<ToastItem>? ToastAdded;
     public event EventHandler<ToastItem>? ToastRemoved;
 
     public ToastService(ILogger<ToastService>? logger = null)
     {
+        Instance = this;
         _logger = logger;
-        Toasts.CollectionChanged += OnToastsCollectionChanged;
-    }
-
-    private void OnToastsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        // No-op for now, can be used for logging or other side effects
     }
 
     /// <summary>
-    /// Show a success toast notification
+    /// Notify that a child window has opened. Toasts will route to ChildToasts.
     /// </summary>
+    public void PushChildWindow()
+    {
+        _childWindowCount++;
+    }
+
+    /// <summary>
+    /// Notify that a child window has closed. When no child windows remain,
+    /// toasts route back to the main window collection.
+    /// </summary>
+    public void PopChildWindow()
+    {
+        _childWindowCount = Math.Max(0, _childWindowCount - 1);
+        if (_childWindowCount == 0)
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(() => ChildToasts.Clear());
+        }
+    }
+
+    private bool IsChildWindowActive => _childWindowCount > 0;
+
+    private ObservableCollection<ToastItem> TargetCollection => IsChildWindowActive ? ChildToasts : Toasts;
+
     public ToastItem Success(string title, string message, int duration = 4000)
     {
         return ShowToast(title, message, ToastLevel.Success, duration);
     }
 
-    /// <summary>
-    /// Show an info toast notification
-    /// </summary>
     public ToastItem Info(string title, string message, int duration = 4000)
     {
         return ShowToast(title, message, ToastLevel.Info, duration);
     }
 
-    /// <summary>
-    /// Show a warning toast notification
-    /// </summary>
     public ToastItem Warning(string title, string message, int duration = 6000)
     {
         return ShowToast(title, message, ToastLevel.Warning, duration);
     }
 
-    /// <summary>
-    /// Show an error toast notification
-    /// </summary>
     public ToastItem Error(string title, string message, int duration = 0)
     {
         return ShowToast(title, message, ToastLevel.Error, duration);
     }
 
-    /// <summary>
-    /// Show a toast notification with custom level
-    /// </summary>
     public ToastItem ShowToast(string title, string message, ToastLevel level = ToastLevel.Info, int duration = 4000)
     {
         var toast = new ToastItem(title, message, level, duration);
 
         Avalonia.Threading.Dispatcher.UIThread.Post(() =>
         {
-            // Remove oldest toasts if we exceed max
-            while (Toasts.Count >= _maxToasts)
+            var target = TargetCollection;
+
+            while (target.Count >= _maxToasts)
             {
-                var oldest = Toasts[0];
-                RemoveToast(oldest);
+                var oldest = target[0];
+                RemoveFromCollection(target, oldest);
             }
 
-            Toasts.Add(toast);
+            target.Add(toast);
             ToastAdded?.Invoke(this, toast);
             _logger?.LogDebug("Toast shown: [{Level}] {Title} - {Message}", level, title, message);
 
-            // Set up auto-close if duration > 0
             if (duration > 0)
             {
-                _ = AutoCloseAsync(toast, duration);
+                _ = AutoCloseAsync(toast, target, duration);
             }
         });
 
         return toast;
     }
 
-    /// <summary>
-    /// Remove a specific toast
-    /// </summary>
     public void RemoveToast(ToastItem toast)
     {
         Avalonia.Threading.Dispatcher.UIThread.Post(() =>
         {
             toast.IsVisible = false;
-            Toasts.Remove(toast);
+            if (!Toasts.Remove(toast) && !ChildToasts.Remove(toast)) return;
             ToastRemoved?.Invoke(this, toast);
             _logger?.LogDebug("Toast removed: {Title}", toast.Title);
         });
     }
 
-    /// <summary>
-    /// Remove a toast by its ID
-    /// </summary>
     public void RemoveToast(Guid toastId)
     {
-        var toast = Toasts.FirstOrDefault(t => t.Id == toastId);
+        var toast = Toasts.FirstOrDefault(t => t.Id == toastId) ?? ChildToasts.FirstOrDefault(t => t.Id == toastId);
         if (toast != null)
         {
             RemoveToast(toast);
         }
     }
 
-    /// <summary>
-    /// Clear all toasts
-    /// </summary>
     public void ClearAll()
     {
         Avalonia.Threading.Dispatcher.UIThread.Post(() =>
         {
             foreach (var toast in Toasts.ToList())
-            {
                 toast.IsVisible = false;
-            }
+            foreach (var toast in ChildToasts.ToList())
+                toast.IsVisible = false;
 
             Toasts.Clear();
+            ChildToasts.Clear();
             _logger?.LogDebug("All toasts cleared");
         });
     }
 
-    private async Task AutoCloseAsync(ToastItem toast, int duration)
+    private void RemoveFromCollection(ObservableCollection<ToastItem> collection, ToastItem toast)
+    {
+        toast.IsVisible = false;
+        collection.Remove(toast);
+        ToastRemoved?.Invoke(this, toast);
+    }
+
+    private async Task AutoCloseAsync(ToastItem toast, ObservableCollection<ToastItem> collection, int duration)
     {
         await Task.Delay(duration);
 
-        if (Toasts.Contains(toast))
+        if (collection.Contains(toast))
         {
-            // Request close triggers animation in ToastNotification,
-            // which will then call RemoveToast when animation completes
             toast.RequestClose();
         }
     }

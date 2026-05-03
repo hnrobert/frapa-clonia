@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using FrapaClonia.UI.Services;
 using FrapaClonia.UI.ViewModels;
 
 namespace FrapaClonia.UI.Views;
@@ -6,11 +7,13 @@ namespace FrapaClonia.UI.Views;
 public partial class VisitorEditorView : Window
 {
     private VisitorEditorViewModel? _viewModel;
+    private ItemsControl? _toastContainer;
 
     public VisitorEditorView()
     {
         InitializeComponent();
         DataContextChanged += OnDataContextChanged;
+        ToastService.Instance?.PushChildWindow();
     }
 
     private void OnDataContextChanged(object? sender, EventArgs e)
@@ -24,6 +27,12 @@ public partial class VisitorEditorView : Window
 
         if (_viewModel == null) return;
         _viewModel.CloseRequested += OnCloseRequested;
+
+        _toastContainer ??= this.FindControl<ItemsControl>("ToastContainer");
+        if (_toastContainer != null && ToastService.Instance != null)
+        {
+            _toastContainer.ItemsSource = ToastService.Instance.ChildToasts;
+        }
     }
 
     private void OnCloseRequested(object? sender, EventArgs e)
@@ -37,6 +46,7 @@ public partial class VisitorEditorView : Window
         {
             _viewModel.CloseRequested -= OnCloseRequested;
         }
+        ToastService.Instance?.PopChildWindow();
         base.OnClosing(e);
     }
 }

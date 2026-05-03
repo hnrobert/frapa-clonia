@@ -3,6 +3,7 @@
         xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
         xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
         xmlns:local="clr-namespace:FrapaClonia.UI.MarkupExtensions;assembly=FrapaClonia.UI"
+        xmlns:controls="clr-namespace:FrapaClonia.UI.Controls"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="780" d:DesignHeight="800"
@@ -26,6 +27,7 @@
     <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
   </Window.Styles>
 
+  <Panel>
   <ScrollViewer HorizontalScrollBarVisibility="Disabled">
     <Panel Margin="{StaticResource ContentPadding}">
       <Grid RowDefinitions="Auto,Auto">
@@ -497,4 +499,25 @@
       </Grid>
     </Panel>
   </ScrollViewer>
+
+  <!-- Toast Notification Container -->
+  <Panel>
+    <ItemsControl x:Name="ToastContainer"
+                  Margin="20"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Top"
+                  IsHitTestVisible="True">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <StackPanel Orientation="Vertical" Spacing="8" />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      <ItemsControl.ItemTemplate>
+        <DataTemplate>
+          <controls:ToastNotification />
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </Panel>
+  </Panel>
 </Window>

@@ -166,7 +166,11 @@ public partial class ToastNotification : UserControl
 
     private ToastService? FindToastService()
     {
-        // Walk up the visual tree to find the MainWindow's DataContext
+        // Use static instance (singleton)
+        if (ToastService.Instance != null)
+            return ToastService.Instance;
+
+        // Fallback: walk up the visual tree to find the MainWindow's DataContext
         var parent = Parent;
         while (parent != null)
         {
@@ -178,7 +182,6 @@ public partial class ToastNotification : UserControl
             parent = parent.Parent;
         }
 
-        // Fallback: try to find via VisualRoot
         return VisualRoot is TopLevel { DataContext: MainWindowViewModel visualVm } ? visualVm.ToastService : null;
     }
 
