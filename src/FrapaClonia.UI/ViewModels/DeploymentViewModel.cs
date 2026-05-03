@@ -500,13 +500,13 @@ public partial class DeploymentViewModel : ObservableObject
         UpdateDockerComposeDirtyFlag();
     }
 
+    // ReSharper disable once UnusedMember.Local
     // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnDockerImageTagsChanged(List<string> value)
     {
         SyncDockerImageTagSelectedIndex();
     }
 
-    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnDockerImageTagSelectedIndexChanged(int value)
     {
         if (_suppressDockerImageTagIndexSync)

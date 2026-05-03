@@ -64,6 +64,11 @@ public class ValidationService(ILogger<ValidationService> logger) : IValidationS
             errors.Add($"Invalid local port: {proxy.LocalPort}. Port must be between 1 and 65535");
         }
 
+        if (proxy.RemotePort.HasValue && (proxy.RemotePort is <= 0 or > 65535))
+        {
+            errors.Add($"Invalid remote port: {proxy.RemotePort}. Port must be between 1 and 65535");
+        }
+
         // Type-specific validation
         var type = proxy.Type.ToLower();
         switch (type)
@@ -82,6 +87,10 @@ public class ValidationService(ILogger<ValidationService> logger) : IValidationS
                 if ((proxy.CustomDomains == null || proxy.CustomDomains.Count == 0) && string.IsNullOrWhiteSpace(proxy.Subdomain))
                 {
                     warnings.Add($"{type.ToUpper()} proxy should have customDomains or subdomain specified");
+                }
+                if (proxy.RemotePort.HasValue)
+                {
+                    warnings.Add($"{type.ToUpper()} proxy does not use remotePort, it will be ignored");
                 }
                 break;
 

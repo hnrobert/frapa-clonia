@@ -174,6 +174,9 @@ public partial class ProxyEditorViewModel : ObservableObject
     }
 
     // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnProxyNameChanged(string value) => _ = ValidateAsync();
+
+    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnProxyTypeChanged(string value)
     {
         OnPropertyChanged(nameof(IsTcpOrUdp));
@@ -184,6 +187,15 @@ public partial class ProxyEditorViewModel : ObservableObject
         OnPropertyChanged(nameof(NeedsDomain));
         _ = ValidateAsync();
     }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnLocalPortChanged(int? value) => _ = ValidateAsync();
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnRemotePortChanged(int? value) => _ = ValidateAsync();
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnSecretKeyChanged(string? value) => _ = ValidateAsync();
 
     // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnPluginTypeChanged(string? value)
