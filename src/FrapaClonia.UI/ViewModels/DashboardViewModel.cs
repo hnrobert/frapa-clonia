@@ -294,16 +294,22 @@ public partial class DashboardViewModel : ObservableObject
 
     private void OnProcessStateChanged(object? sender, ProcessStateChangedEventArgs e)
     {
-        IsFrpcRunning = e.IsRunning;
-        FrpcProcessId = e.ProcessId;
-        _logger?.LogInformation("Frpc process state changed: IsRunning={IsRunning}, ProcessId={ProcessId}",
-            e.IsRunning, e.ProcessId);
-        UpdateOverviewStats();
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            IsFrpcRunning = e.IsRunning;
+            FrpcProcessId = e.ProcessId;
+            _logger?.LogInformation("Frpc process state changed: IsRunning={IsRunning}, ProcessId={ProcessId}",
+                e.IsRunning, e.ProcessId);
+            UpdateOverviewStats();
+        });
     }
 
     private void OnLogLineReceived(object? sender, LogLineEventArgs e)
     {
-        LastLogLine = $"[{e.LogLevel}] {e.LogLine}";
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            LastLogLine = $"[{e.LogLevel}] {e.LogLine}";
+        });
     }
 
     private void OnCurrentPresetChanged(object? sender, PresetChangedEventArgs e)
