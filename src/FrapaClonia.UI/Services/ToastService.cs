@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using CommunityToolkit.Mvvm.ComponentModel;
 using FrapaClonia.UI.Models;
 using Microsoft.Extensions.Logging;
@@ -150,7 +149,7 @@ public class ToastService : ObservableObject
         ToastRemoved?.Invoke(this, toast);
     }
 
-    private async Task AutoCloseAsync(ToastItem toast, ObservableCollection<ToastItem> collection, int duration)
+    private static async Task AutoCloseAsync(ToastItem toast, ObservableCollection<ToastItem> collection, int duration)
     {
         await Task.Delay(duration);
 

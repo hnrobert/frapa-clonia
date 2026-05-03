@@ -64,7 +64,7 @@ public class ValidationService(ILogger<ValidationService> logger) : IValidationS
             errors.Add($"Invalid local port: {proxy.LocalPort}. Port must be between 1 and 65535");
         }
 
-        if (proxy.RemotePort.HasValue && (proxy.RemotePort is <= 0 or > 65535))
+        if (proxy.RemotePort is <= 0 or > 65535)
         {
             errors.Add($"Invalid remote port: {proxy.RemotePort}. Port must be between 1 and 65535");
         }

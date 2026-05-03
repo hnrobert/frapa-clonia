@@ -265,18 +265,24 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
 
         for (var i = 0; i < content.Length; i++)
         {
-            if (content[i] == '{')
+            switch (content[i])
             {
-                if (depth == 0) start = i;
-                depth++;
-            }
-            else if (content[i] == '}')
-            {
-                depth--;
-                if (depth == 0 && start >= 0)
+                case '{':
                 {
-                    result.Add(ParseInlineTable(content[(start + 1)..i]));
-                    start = -1;
+                    if (depth == 0) start = i;
+                    depth++;
+                    break;
+                }
+                case '}':
+                {
+                    depth--;
+                    if (depth == 0 && start >= 0)
+                    {
+                        result.Add(ParseInlineTable(content[(start + 1)..i]));
+                        start = -1;
+                    }
+
+                    break;
                 }
             }
         }
@@ -289,10 +295,15 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
     {
         if (inArray)
         {
-            if (arrayName == "proxies" && config.Proxies.Count > 0)
-                SetProxyContextValue(config.Proxies[^1], arraySub, key, value);
-            else if (arrayName == "visitors" && config.Visitors.Count > 0)
-                SetVisitorContextValue(config.Visitors[^1], arraySub, key, value);
+            switch (arrayName)
+            {
+                case "proxies" when config.Proxies.Count > 0:
+                    SetProxyContextValue(config.Proxies[^1], arraySub, key, value);
+                    break;
+                case "visitors" when config.Visitors.Count > 0:
+                    SetVisitorContextValue(config.Visitors[^1], arraySub, key, value);
+                    break;
+            }
         }
         else
         {
@@ -810,12 +821,10 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
         }
 
         // FeatureGates
-        if (config.FeatureGates is { Count: > 0 })
-        {
-            sb.AppendLine("[featureGates]");
-            foreach (var (k, v) in config.FeatureGates)
-                sb.AppendLine($"{k} = {BoolStr(v)}");
-        }
+        if (config.FeatureGates is not { Count: > 0 }) return sb.ToString().TrimEnd();
+        sb.AppendLine("[featureGates]");
+        foreach (var (k, v) in config.FeatureGates)
+            sb.AppendLine($"{k} = {BoolStr(v)}");
 
         return sb.ToString().TrimEnd();
     }
@@ -867,16 +876,14 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
                 sb.AppendLine($"serverName = \"{EscapeString(transport.Tls.ServerName)}\"");
         }
 
-        if (transport.Quic != null)
-        {
-            sb.AppendLine("[transport.quic]");
-            if (transport.Quic.KeepaliveInterval.HasValue)
-                sb.AppendLine($"keepaliveInterval = {transport.Quic.KeepaliveInterval.Value}");
-            if (transport.Quic.MaxIdleTimeout.HasValue)
-                sb.AppendLine($"maxIdleTimeout = {transport.Quic.MaxIdleTimeout.Value}");
-            if (transport.Quic.MaxIncomingStreams.HasValue)
-                sb.AppendLine($"maxIncomingStreams = {transport.Quic.MaxIncomingStreams.Value}");
-        }
+        if (transport.Quic == null) return sb.ToString().TrimEnd();
+        sb.AppendLine("[transport.quic]");
+        if (transport.Quic.KeepaliveInterval.HasValue)
+            sb.AppendLine($"keepaliveInterval = {transport.Quic.KeepaliveInterval.Value}");
+        if (transport.Quic.MaxIdleTimeout.HasValue)
+            sb.AppendLine($"maxIdleTimeout = {transport.Quic.MaxIdleTimeout.Value}");
+        if (transport.Quic.MaxIncomingStreams.HasValue)
+            sb.AppendLine($"maxIncomingStreams = {transport.Quic.MaxIncomingStreams.Value}");
 
         return sb.ToString().TrimEnd();
     }
@@ -1037,13 +1044,12 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
         }
 
         // Annotations
-        if (proxy.Annotations is { Count: > 0 })
-        {
-            sb.AppendLine();
-            sb.AppendLine("[proxies.annotations]");
-            foreach (var (k, v) in proxy.Annotations)
-                sb.AppendLine($"{k} = \"{EscapeString(v)}\"");
-        }
+        if (proxy.Annotations is not { Count: > 0 }) return sb.ToString().TrimEnd();
+
+        sb.AppendLine();
+        sb.AppendLine("[proxies.annotations]");
+        foreach (var (k, v) in proxy.Annotations)
+            sb.AppendLine($"{k} = \"{EscapeString(v)}\"");
 
         return sb.ToString().TrimEnd();
     }
@@ -1070,13 +1076,12 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
         }
 
         // Metadata
-        if (visitor.Metadata is { Count: > 0 })
-        {
-            sb.AppendLine();
-            sb.AppendLine("[visitors.metadata]");
-            foreach (var (k, v) in visitor.Metadata)
-                sb.AppendLine($"{k} = \"{EscapeString(v)}\"");
-        }
+        if (visitor.Metadata is not { Count: > 0 }) return sb.ToString().TrimEnd();
+
+        sb.AppendLine();
+        sb.AppendLine("[visitors.metadata]");
+        foreach (var (k, v) in visitor.Metadata)
+            sb.AppendLine($"{k} = \"{EscapeString(v)}\"");
 
         return sb.ToString().TrimEnd();
     }
@@ -1128,16 +1133,14 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
                 sb.AppendLine($"serverName = \"{EscapeString(transport.Tls.ServerName)}\"");
         }
 
-        if (transport.Quic != null)
-        {
-            sb.AppendLine("[visitors.transport.quic]");
-            if (transport.Quic.KeepaliveInterval.HasValue)
-                sb.AppendLine($"keepaliveInterval = {transport.Quic.KeepaliveInterval.Value}");
-            if (transport.Quic.MaxIdleTimeout.HasValue)
-                sb.AppendLine($"maxIdleTimeout = {transport.Quic.MaxIdleTimeout.Value}");
-            if (transport.Quic.MaxIncomingStreams.HasValue)
-                sb.AppendLine($"maxIncomingStreams = {transport.Quic.MaxIncomingStreams.Value}");
-        }
+        if (transport.Quic == null) return sb.ToString().TrimEnd();
+        sb.AppendLine("[visitors.transport.quic]");
+        if (transport.Quic.KeepaliveInterval.HasValue)
+            sb.AppendLine($"keepaliveInterval = {transport.Quic.KeepaliveInterval.Value}");
+        if (transport.Quic.MaxIdleTimeout.HasValue)
+            sb.AppendLine($"maxIdleTimeout = {transport.Quic.MaxIdleTimeout.Value}");
+        if (transport.Quic.MaxIncomingStreams.HasValue)
+            sb.AppendLine($"maxIncomingStreams = {transport.Quic.MaxIncomingStreams.Value}");
 
         return sb.ToString().TrimEnd();
     }
