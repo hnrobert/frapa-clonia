@@ -48,6 +48,8 @@ public partial class VisitorEditorViewModel : ObservableObject
     [ObservableProperty]
     private bool _isSaving;
 
+    public event EventHandler? CloseRequested;
+
     public IRelayCommand SaveCommand { get; }
     public IRelayCommand CancelCommand { get; }
 
@@ -88,7 +90,7 @@ public partial class VisitorEditorViewModel : ObservableObject
                 _logger?.LogError(e, "Error saving visitor");
             }
         }, () => !IsSaving);
-        CancelCommand = new RelayCommand(() => _logger?.LogInformation("Cancel edit"));
+        CancelCommand = new RelayCommand(() => CloseRequested?.Invoke(this, EventArgs.Empty));
 
         if (visitorToEdit != null)
         {
