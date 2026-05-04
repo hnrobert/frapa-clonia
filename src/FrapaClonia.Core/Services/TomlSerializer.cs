@@ -706,12 +706,62 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
     {
         var sb = new StringBuilder();
 
-        // Auth
-        if (config.Auth != null)
+        // Top-level common fields MUST come before any [section]
+        if (!string.IsNullOrEmpty(config.User))
+        {
+            sb.AppendLine($"user = \"{EscapeString(config.User)}\"");
+        }
+
+        if (config.ServerAddr != null)
+        {
+            sb.AppendLine($"serverAddr = \"{EscapeString(config.ServerAddr)}\"");
+        }
+
+        if (config.ServerPort != 7000)
+        {
+            sb.AppendLine($"serverPort = {config.ServerPort}");
+        }
+
+        if (!string.IsNullOrEmpty(config.NatHoleStunServer))
+        {
+            sb.AppendLine($"natHoleStunServer = \"{EscapeString(config.NatHoleStunServer)}\"");
+        }
+
+        if (!string.IsNullOrEmpty(config.DnsServer))
+        {
+            sb.AppendLine($"dnsServer = \"{EscapeString(config.DnsServer)}\"");
+        }
+
+        if (!config.LoginFailExit)
+        {
+            sb.AppendLine($"loginFailExit = {BoolStr(config.LoginFailExit)}");
+        }
+
+        if (config.Start is { Count: > 0 })
+        {
+            sb.AppendLine($"start = [{string.Join(", ", config.Start.Select(s => $"\"{s}\""))}]");
+        }
+
+        if (config.UdpPacketSize != 1500)
+        {
+            sb.AppendLine($"udpPacketSize = {config.UdpPacketSize}");
+        }
+
+        if (config.Includes is { Count: > 0 })
+        {
+            sb.AppendLine($"includes = [{string.Join(", ", config.Includes.Select(s => $"\"{s}\""))}]");
+        }
+
+        sb.AppendLine("");
+
+        // Auth — only write if there's meaningful content
+        if (config.Auth != null && (config.Auth.Method != "token" || !string.IsNullOrEmpty(config.Auth.Token)
+                                                                  || config.Auth.AdditionalScopes is { Count: > 0 } ||
+                                                                  config.Auth.TokenSource != null ||
+                                                                  config.Auth.Oidc != null))
         {
             sb.AppendLine("[auth]");
-            if (config.Auth.Method != "token")
-                sb.AppendLine($"method = \"{EscapeString(config.Auth.Method)}\"");
+            sb.AppendLine($"method = \"{EscapeString(config.Auth.Method)}\"");
             if (config.Auth.Token != null)
                 sb.AppendLine($"token = \"{EscapeString(config.Auth.Token)}\"");
             if (config.Auth.AdditionalScopes is { Count: > 0 })
@@ -730,54 +780,64 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
                 sb.AppendLine($"clientId = \"{EscapeString(config.Auth.Oidc.ClientId)}\"");
                 sb.AppendLine($"clientSecret = \"{EscapeString(config.Auth.Oidc.ClientSecret)}\"");
                 if (config.Auth.Oidc.Audience != null)
+                {
                     sb.AppendLine($"audience = \"{EscapeString(config.Auth.Oidc.Audience)}\"");
+                }
+
                 if (config.Auth.Oidc.Scope != null)
+                {
                     sb.AppendLine($"scope = \"{EscapeString(config.Auth.Oidc.Scope)}\"");
+                }
+
                 sb.AppendLine($"tokenEndpointUrl = \"{EscapeString(config.Auth.Oidc.TokenEndpointUrl)}\"");
                 if (config.Auth.Oidc.AdditionalEndpointParams is { Count: > 0 })
+                {
                     sb.AppendLine(
                         $"additionalEndpointParams = {SerializeInlineTable(config.Auth.Oidc.AdditionalEndpointParams)}");
+                }
+
                 if (config.Auth.Oidc.TrustedCaFile != null)
+                {
                     sb.AppendLine($"trustedCaFile = \"{EscapeString(config.Auth.Oidc.TrustedCaFile)}\"");
+                }
+
                 if (config.Auth.Oidc.InsecureSkipVerify)
+                {
                     sb.AppendLine("insecureSkipVerify = true");
+                }
+
                 if (config.Auth.Oidc.ProxyUrl != null)
+                {
                     sb.AppendLine($"proxyUrl = \"{EscapeString(config.Auth.Oidc.ProxyUrl)}\"");
+                }
             }
         }
 
-        // Top-level common fields
-        if (!string.IsNullOrEmpty(config.User))
-            sb.AppendLine($"user = \"{EscapeString(config.User)}\"");
-        if (config.ServerAddr != null)
-            sb.AppendLine($"serverAddr = \"{EscapeString(config.ServerAddr)}\"");
-        if (config.ServerPort != 7000)
-            sb.AppendLine($"serverPort = {config.ServerPort}");
-        if (!string.IsNullOrEmpty(config.NatHoleStunServer))
-            sb.AppendLine($"natHoleStunServer = \"{EscapeString(config.NatHoleStunServer)}\"");
-        if (!string.IsNullOrEmpty(config.DnsServer))
-            sb.AppendLine($"dnsServer = \"{EscapeString(config.DnsServer)}\"");
-        if (!config.LoginFailExit)
-            sb.AppendLine($"loginFailExit = {BoolStr(config.LoginFailExit)}");
-        if (config.Start is { Count: > 0 })
-            sb.AppendLine($"start = [{string.Join(", ", config.Start.Select(s => $"\"{s}\""))}]");
-        if (config.UdpPacketSize != 1500)
-            sb.AppendLine($"udpPacketSize = {config.UdpPacketSize}");
-        if (config.Includes is { Count: > 0 })
-            sb.AppendLine($"includes = [{string.Join(", ", config.Includes.Select(s => $"\"{s}\""))}]");
-
-        // Log
-        if (config.Log != null)
+        // Log — only write if non-default
+        if (config.Log != null && (config.Log.Level != "info" || config.Log.To != null
+                                                              || config.Log.MaxDays != 3 ||
+                                                              config.Log.DisablePrintColor))
         {
             sb.AppendLine("[log]");
             if (config.Log.Level != "info")
+            {
                 sb.AppendLine($"level = \"{EscapeString(config.Log.Level)}\"");
+            }
+
             if (config.Log.To != null)
+            {
                 sb.AppendLine($"to = \"{EscapeString(config.Log.To)}\"");
+            }
+
             if (config.Log.MaxDays != 3)
+            {
                 sb.AppendLine($"maxDays = {config.Log.MaxDays}");
+            }
+
             if (config.Log.DisablePrintColor)
+            {
                 sb.AppendLine("disablePrintColor = true");
+            }
         }
 
         // WebServer
@@ -787,18 +847,33 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
             sb.AppendLine($"addr = \"{EscapeString(config.WebServer.Addr)}\"");
             sb.AppendLine($"port = {config.WebServer.Port}");
             if (config.WebServer.User != null)
+            {
                 sb.AppendLine($"user = \"{EscapeString(config.WebServer.User)}\"");
+            }
+
             if (config.WebServer.Password != null)
+            {
                 sb.AppendLine($"password = \"{EscapeString(config.WebServer.Password)}\"");
+            }
+
             if (config.WebServer.Token != null)
+            {
                 sb.AppendLine($"token = \"{EscapeString(config.WebServer.Token)}\"");
+            }
+
             if (config.WebServer.PprofEnable)
+            {
                 sb.AppendLine("pprofEnable = true");
+            }
         }
 
-        // Transport
+        // Transport — only write if non-default
         if (config.Transport != null)
-            sb.Append(SerializeClientTransport(config.Transport));
+        {
+            var transportStr = SerializeClientTransport(config.Transport);
+            if (!string.IsNullOrWhiteSpace(transportStr))
+                sb.Append(transportStr);
+        }
 
         // VirtualNet
         if (config.VirtualNet != null)
@@ -831,35 +906,55 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
 
     private static string SerializeClientTransport(ClientTransportConfig transport)
     {
-        var sb = new StringBuilder();
-        sb.AppendLine("[transport]");
+        // Build transport content; only output [transport] if there's non-default content
+        var content = new StringBuilder();
 
         if (transport.Protocol != "tcp")
-            sb.AppendLine($"protocol = \"{EscapeString(transport.Protocol)}\"");
+            content.AppendLine($"protocol = \"{EscapeString(transport.Protocol)}\"");
         if (transport.DialServerTimeout != 10)
-            sb.AppendLine($"dialServerTimeout = {transport.DialServerTimeout}");
+            content.AppendLine($"dialServerTimeout = {transport.DialServerTimeout}");
         if (transport.DialServerKeepalive.HasValue)
-            sb.AppendLine($"dialServerKeepalive = {transport.DialServerKeepalive.Value}");
+            content.AppendLine($"dialServerKeepalive = {transport.DialServerKeepalive.Value}");
         if (transport.ConnectServerLocalIP != null)
-            sb.AppendLine($"connectServerLocalIP = \"{EscapeString(transport.ConnectServerLocalIP)}\"");
+            content.AppendLine($"connectServerLocalIP = \"{EscapeString(transport.ConnectServerLocalIP)}\"");
         if (transport.ProxyUrl != null)
-            sb.AppendLine($"proxyUrl = \"{EscapeString(transport.ProxyUrl)}\"");
+            content.AppendLine($"proxyUrl = \"{EscapeString(transport.ProxyUrl)}\"");
         if (transport.PoolCount.HasValue)
-            sb.AppendLine($"poolCount = {transport.PoolCount.Value}");
+            content.AppendLine($"poolCount = {transport.PoolCount.Value}");
         if (!transport.TcpMux)
-            sb.AppendLine($"tcpMux = {BoolStr(transport.TcpMux)}");
+            content.AppendLine($"tcpMux = {BoolStr(transport.TcpMux)}");
         if (transport.TcpMuxKeepaliveInterval.HasValue)
-            sb.AppendLine($"tcpMuxKeepaliveInterval = {transport.TcpMuxKeepaliveInterval.Value}");
+            content.AppendLine($"tcpMuxKeepaliveInterval = {transport.TcpMuxKeepaliveInterval.Value}");
         if (transport.HeartbeatInterval != 30)
-            sb.AppendLine($"heartbeatInterval = {transport.HeartbeatInterval}");
+            content.AppendLine($"heartbeatInterval = {transport.HeartbeatInterval}");
         if (transport.HeartbeatTimeout != 90)
-            sb.AppendLine($"heartbeatTimeout = {transport.HeartbeatTimeout}");
+            content.AppendLine($"heartbeatTimeout = {transport.HeartbeatTimeout}");
         if (transport.UseEncryption)
-            sb.AppendLine("useEncryption = true");
+            content.AppendLine("useEncryption = true");
         if (transport.UseCompression)
-            sb.AppendLine("useCompression = true");
+            content.AppendLine("useCompression = true");
 
-        if (transport.Tls != null)
+        var sb = new StringBuilder();
+
+        // Only write [transport] header if there are transport-level fields or sub-sections
+        var hasTransportFields = content.Length > 0;
+        var hasTls = transport.Tls != null && (!transport.Tls.Enable
+                                               || transport.Tls.DisableCustomTLSFirstByte ||
+                                               transport.Tls.CertFile != null
+                                               || transport.Tls.KeyFile != null || transport.Tls.CaFile != null ||
+                                               transport.Tls.ServerName != null);
+        var hasQuic = transport.Quic != null && (transport.Quic.KeepaliveInterval.HasValue
+                                                 || transport.Quic.MaxIdleTimeout.HasValue ||
+                                                 transport.Quic.MaxIncomingStreams.HasValue);
+
+        if (!hasTransportFields && !hasTls && !hasQuic)
+            return "";
+
+        sb.AppendLine("[transport]");
+        if (content.Length > 0)
+            sb.Append(content);
+
+        if (transport.Tls != null && hasTls)
         {
             sb.AppendLine("[transport.tls]");
             if (!transport.Tls.Enable)
@@ -876,7 +971,8 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
                 sb.AppendLine($"serverName = \"{EscapeString(transport.Tls.ServerName)}\"");
         }
 
-        if (transport.Quic == null) return sb.ToString().TrimEnd();
+        if (transport.Quic == null || !hasQuic) return sb.ToString().TrimEnd();
+
         sb.AppendLine("[transport.quic]");
         if (transport.Quic.KeepaliveInterval.HasValue)
             sb.AppendLine($"keepaliveInterval = {transport.Quic.KeepaliveInterval.Value}");

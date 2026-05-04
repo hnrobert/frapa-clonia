@@ -484,15 +484,16 @@ public partial class DashboardViewModel : ObservableObject
             {
                 var isRunning = await _systemServiceManager.IsServiceRunningAsync(serviceName, scope);
                 IsServiceRunning = isRunning;
-                if (isRunning && !IsFrpcRunning)
+                switch (isRunning)
                 {
-                    IsFrpcRunning = true;
-                    StatusMessage = "Frpc service is running";
-                }
-                else if (!isRunning && IsFrpcRunning && _frpcProcessService is { IsRunning: false })
-                {
-                    IsFrpcRunning = false;
-                    StatusMessage = "Frpc is not running";
+                    case true when !IsFrpcRunning:
+                        IsFrpcRunning = true;
+                        StatusMessage = "Frpc service is running";
+                        break;
+                    case false when IsFrpcRunning && _frpcProcessService is { IsRunning: false }:
+                        IsFrpcRunning = false;
+                        StatusMessage = "Frpc is not running";
+                        break;
                 }
             }
         }
