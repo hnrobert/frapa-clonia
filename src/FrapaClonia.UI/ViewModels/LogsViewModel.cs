@@ -1,10 +1,10 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Shared.Interfaces;
+using FrapaClonia.Shared.Models;
 using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
-using FrapaClonia.Shared.Models;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
@@ -20,6 +20,7 @@ public partial class LogsViewModel : ObservableObject
     private readonly IPresetService? _presetService;
     private readonly ToastService? _toastService;
     private readonly ILocalizationService? _localizationService;
+    private readonly ISystemServiceManager? _systemServiceManager;
 
     [ObservableProperty] private ObservableCollection<LogEntry> _logEntries = [];
 
@@ -48,6 +49,12 @@ public partial class LogsViewModel : ObservableObject
     private readonly Queue<LogEntry> _logBuffer = new();
     private const int MaxBufferSize = 10000;
 
+    // File-based log tailing for service-managed frpc
+    private System.Timers.Timer? _fileLogTimer;
+    private long _logFilePosition;
+    private string? _serviceLogPath;
+    private bool _isServiceLogActive;
+
     public IRelayCommand ClearLogsCommand { get; }
     public IRelayCommand ExportLogsCommand { get; }
     public IRelayCommand ToggleFollowCommand { get; }
@@ -67,6 +74,7 @@ public partial class LogsViewModel : ObservableObject
         null!,
         null!,
         null!,
+        null!,
         null!)
     {
     }
@@ -76,13 +84,15 @@ public partial class LogsViewModel : ObservableObject
         IFrpcProcessService frpcProcessService,
         IPresetService presetService,
         ToastService toastService,
-        ILocalizationService localizationService)
+        ILocalizationService localizationService,
+        ISystemServiceManager? systemServiceManager)
     {
         _logger = logger;
         _frpcProcessService = frpcProcessService;
         _presetService = presetService;
         _toastService = toastService;
         _localizationService = localizationService;
+        _systemServiceManager = systemServiceManager;
 
         ClearLogsCommand = new RelayCommand(async void () =>
         {
@@ -145,6 +155,13 @@ public partial class LogsViewModel : ObservableObject
         // Update initial status
         UpdateStatus();
         LoadSettingsFromPreset();
+
+        // File log tailing timer
+        _fileLogTimer = new System.Timers.Timer(500);
+        _fileLogTimer.Elapsed += OnFileLogTimerElapsed;
+
+        // Check if frpc is running as a service (no direct process)
+        _ = UpdateLogSourceAsync();
     }
 
     private void OnCurrentPresetChanged(object? sender, PresetChangedEventArgs e)
@@ -265,6 +282,7 @@ public partial class LogsViewModel : ObservableObject
     private void OnProcessStateChanged(object? sender, ProcessStateChangedEventArgs e)
     {
         UpdateStatus();
+        _ = UpdateLogSourceAsync();
     }
 
     private void UpdateStatus()
@@ -368,6 +386,172 @@ public partial class LogsViewModel : ObservableObject
     {
         if (SelectedLogLevel == "All") return true;
         return entry.Level == SelectedLogLevel;
+    }
+
+    private async Task UpdateLogSourceAsync()
+    {
+        if (_frpcProcessService?.IsRunning == true)
+        {
+            // Direct process is running - logs come from LogLineReceived events
+            StopFileLogTailing();
+            return;
+        }
+
+        // No direct process - check if service is running
+        if (_systemServiceManager == null || _presetService?.CurrentPreset == null)
+        {
+            StopFileLogTailing();
+            return;
+        }
+
+        var settings = _presetService.CurrentPreset.Deployment;
+        if (settings.DeploymentMode == "docker")
+        {
+            StopFileLogTailing();
+            return;
+        }
+
+        try
+        {
+            var serviceName = _systemServiceManager.GetDefaultServiceName();
+            var scope = settings.ServiceScope == "system" ? ServiceScope.System : ServiceScope.User;
+            var isRunning = await _systemServiceManager.IsServiceRunningAsync(serviceName, scope);
+
+            if (isRunning)
+            {
+                StartFileLogTailing(serviceName);
+            }
+            else
+            {
+                StopFileLogTailing();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogDebug(ex, "Failed to check service status for log source");
+        }
+    }
+
+    private void StartFileLogTailing(string serviceName)
+    {
+        if (_isServiceLogActive) return;
+
+        // Service log files created by launchd plist: /tmp/{serviceName}.log
+        _serviceLogPath = $"/tmp/{serviceName}.log";
+        _logFilePosition = 0;
+
+        if (!File.Exists(_serviceLogPath))
+        {
+            StatusMessage = "Waiting for service logs...";
+            // Start timer anyway - the file may appear when frpc writes its first output
+        }
+
+        _isServiceLogActive = true;
+        _fileLogTimer?.Start();
+        _logger?.LogInformation("Started tailing service log file: {Path}", _serviceLogPath);
+    }
+
+    private void StopFileLogTailing()
+    {
+        if (!_isServiceLogActive) return;
+
+        _fileLogTimer?.Stop();
+        _isServiceLogActive = false;
+        _serviceLogPath = null;
+        _logFilePosition = 0;
+    }
+
+    private void OnFileLogTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        if (string.IsNullOrEmpty(_serviceLogPath)) return;
+
+        try
+        {
+            if (!File.Exists(_serviceLogPath))
+                return;
+
+            using var stream = new FileStream(_serviceLogPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            if (stream.Length < _logFilePosition)
+            {
+                // File was truncated (service restarted), reset position
+                _logFilePosition = 0;
+            }
+
+            stream.Seek(_logFilePosition, SeekOrigin.Begin);
+            using var reader = new StreamReader(stream);
+
+            string? line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                var (level, message) = ParseFrpcLogLine(line);
+                var entry = new LogEntry
+                {
+                    Timestamp = DateTimeOffset.Now,
+                    Level = level,
+                    Message = message
+                };
+
+                lock (_logBuffer)
+                {
+                    _logBuffer.Enqueue(entry);
+                    while (_logBuffer.Count > MaxBufferSize)
+                        _logBuffer.Dequeue();
+                }
+
+                if (ShouldShowLog(entry))
+                {
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    {
+                        LogEntries.Add(entry);
+                        while (LogEntries.Count > MaxLogEntries)
+                            LogEntries.RemoveAt(0);
+                    });
+                }
+            }
+
+            _logFilePosition = stream.Position;
+
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                StatusMessage = $"Reading logs from service ({LogEntries.Count} entries)";
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogDebug(ex, "Error reading service log file");
+        }
+    }
+
+    private static (string Level, string Message) ParseFrpcLogLine(string line)
+    {
+        // frpc log format: 2024/01/01 12:00:00 [I] [service.go:123] message
+        var level = "Information";
+        var message = line;
+
+        if (line.Length > 21)
+        {
+            var bracketStart = line.IndexOf('[', 20);
+            if (bracketStart >= 0)
+            {
+                var bracketEnd = line.IndexOf(']', bracketStart);
+                if (bracketEnd > bracketStart)
+                {
+                    var levelChar = line.Substring(bracketStart + 1, bracketEnd - bracketStart - 1);
+                    level = levelChar.ToUpperInvariant() switch
+                    {
+                        "T" => "Trace",
+                        "D" => "Debug",
+                        "I" => "Information",
+                        "W" => "Warning",
+                        "E" => "Error",
+                        _ => "Information"
+                    };
+                    message = line.Substring(bracketEnd + 1).TrimStart();
+                }
+            }
+        }
+
+        return (level, message);
     }
 
     private static string MapLogLevel(LogLevel logLevel)

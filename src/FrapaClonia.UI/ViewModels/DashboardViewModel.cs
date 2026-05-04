@@ -616,7 +616,7 @@ public partial class DashboardViewModel : ObservableObject
 
     private async Task RestartFrpcAsync()
     {
-        if (_frpcProcessService == null || _configurationService == null) return;
+        if (_configurationService == null) return;
         _logger?.LogInformation("Restarting frpc...");
 
         // Save current preset configuration to the default config path for frpc
@@ -626,9 +626,36 @@ public partial class DashboardViewModel : ObservableObject
             await _configurationService.SaveConfigurationAsync(configPath, _presetService.CurrentPreset.Configuration);
         }
 
+        // Native mode with service installed: stop + start via service manager
+        if (IsNativeMode && IsServiceInstalled && _systemServiceManager != null)
+        {
+            var serviceName = _systemServiceManager.GetDefaultServiceName();
+            var scope = GetServiceScope();
+
+            await _systemServiceManager.StopServiceAsync(serviceName, scope);
+            await Task.Delay(500);
+            var success = await _systemServiceManager.StartServiceAsync(serviceName, scope);
+
+            if (success)
+            {
+                IsFrpcRunning = true;
+                IsServiceRunning = true;
+                _toastService?.Success("Frpc Restarted", "Frpc service has been restarted");
+            }
+            else
+            {
+                _toastService?.Error("Restart Failed", "Could not restart frpc service");
+            }
+
+            return;
+        }
+
+        // Fallback: restart as direct process
+        if (_frpcProcessService == null) return;
+
         var configPathForRestart = _configurationService.GetDefaultConfigPath();
-        var success = await _frpcProcessService.RestartAsync(configPathForRestart);
-        if (success)
+        var restartSuccess = await _frpcProcessService.RestartAsync(configPathForRestart);
+        if (restartSuccess)
         {
             _toastService?.Success("Frpc Restarted", "Frpc client has been restarted");
         }

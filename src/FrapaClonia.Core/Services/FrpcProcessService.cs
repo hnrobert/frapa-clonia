@@ -11,7 +11,7 @@ public class FrpcProcessService(ILogger<FrpcProcessService> logger, IProcessMana
     : IFrpcProcessService
 {
     private System.Diagnostics.Process? _currentProcess;
-    private readonly CancellationTokenSource _cts = new();
+    private IDisposable? _outputSubscription;
     private readonly SemaphoreSlim _processLock = new(1, 1);
 
     public bool IsRunning => _currentProcess is { HasExited: false };
@@ -74,8 +74,13 @@ public class FrpcProcessService(ILogger<FrpcProcessService> logger, IProcessMana
             _currentProcess.Exited += OnProcessExited;
             StartTime = DateTime.Now;
 
-            // Start reading output
-            _ = Task.Run(() => ReadProcessOutputAsync(_cts.Token), cancellationToken);
+            // Subscribe to process output via processManager
+            var output = processManager.GetProcessOutput(handle.ProcessId);
+            _outputSubscription = output.Subscribe(line =>
+            {
+                var logLevel = ParseLogLevel(line);
+                OnLogLineReceived(line, logLevel);
+            });
 
             OnProcessStateChanged(new ProcessStateChangedEventArgs
             {
@@ -111,8 +116,9 @@ public class FrpcProcessService(ILogger<FrpcProcessService> logger, IProcessMana
 
             logger.LogInformation("Stopping frpc (PID {ProcessId})", _currentProcess!.Id);
 
-            // Cancel the output reading
-            await _cts.CancelAsync();
+            // Dispose output subscription
+            _outputSubscription?.Dispose();
+            _outputSubscription = null;
 
             // Try graceful shutdown first
             if (!_currentProcess.HasExited)
@@ -176,61 +182,6 @@ public class FrpcProcessService(ILogger<FrpcProcessService> logger, IProcessMana
             ProcessId = processId,
             Timestamp = DateTime.UtcNow
         });
-    }
-
-    private Task ReadProcessOutputAsync(CancellationToken cancellationToken)
-    {
-        if (_currentProcess == null)
-            return Task.CompletedTask;
-
-        try
-        {
-            // Read standard output
-            _ = Task.Run(async () =>
-            {
-                try
-                {
-                    while (!_currentProcess.HasExited && !cancellationToken.IsCancellationRequested)
-                    {
-                        var line = await _currentProcess.StandardOutput.ReadLineAsync(cancellationToken);
-                        if (line != null)
-                        {
-                            OnLogLineReceived(line, LogLevel.Information);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logger.LogDebug(ex, "Error reading stdout");
-                }
-            }, cancellationToken);
-
-            // Read standard error
-            _ = Task.Run(async () =>
-            {
-                try
-                {
-                    while (!_currentProcess.HasExited && !cancellationToken.IsCancellationRequested)
-                    {
-                        var line = await _currentProcess.StandardError.ReadLineAsync(cancellationToken);
-                        if (line == null) continue;
-                        // Parse log level from frpc output
-                        var logLevel = ParseLogLevel(line);
-                        OnLogLineReceived(line, logLevel);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logger.LogDebug(ex, "Error reading stderr");
-                }
-            }, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error in ReadProcessOutputAsync");
-        }
-
-        return Task.CompletedTask;
     }
 
     private static LogLevel ParseLogLevel(string logLine)
