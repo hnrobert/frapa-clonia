@@ -20,6 +20,7 @@ public partial class DashboardViewModel : ObservableObject
     private readonly IPresetService? _presetService;
     private readonly ToastService? _toastService;
     private readonly ILocalizationService? _localizationService;
+    private readonly ISystemServiceManager? _systemServiceManager;
 
     [ObservableProperty] private bool _isFrpcRunning;
 
@@ -34,6 +35,13 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty] private string _serverAddress = "Not configured";
 
     [ObservableProperty] private int _proxyCount;
+
+    // Service status
+    [ObservableProperty] private bool _isNativeMode = true;
+    [ObservableProperty] private bool _isServiceInstalled;
+    [ObservableProperty] private bool _isServiceRunning;
+
+    public bool NeedsServiceInstall => IsNativeMode && !IsServiceInstalled && !IsFrpcRunning;
 
     // Overview stats
     [ObservableProperty] private int _runningInstanceCount;
@@ -59,6 +67,7 @@ public partial class DashboardViewModel : ObservableObject
     public IRelayCommand StartFrpcCommand { get; }
     public IRelayCommand StopFrpcCommand { get; }
     public IRelayCommand RestartFrpcCommand { get; }
+    public IRelayCommand InstallServiceCommand { get; }
 
     // Preset management commands
     public IRelayCommand RenamePresetCommand { get; }
@@ -78,6 +87,7 @@ public partial class DashboardViewModel : ObservableObject
         null!,
         null!,
         null!,
+        null!,
         null!)
     {
     }
@@ -90,7 +100,8 @@ public partial class DashboardViewModel : ObservableObject
         IPresetService presetService,
         NavigationService navigationService,
         ToastService? toastService,
-        ILocalizationService? localizationService)
+        ILocalizationService? localizationService,
+        ISystemServiceManager? systemServiceManager)
     {
         _logger = logger;
         _frpcProcessService = frpcProcessService;
@@ -99,6 +110,7 @@ public partial class DashboardViewModel : ObservableObject
         _presetService = presetService;
         _toastService = toastService;
         _localizationService = localizationService;
+        _systemServiceManager = systemServiceManager;
 
         // For design-time or when services are null, use empty commands
         NavigateToServerConfigCommand = new RelayCommand(() => navigationService.NavigateTo("server"));
@@ -143,6 +155,18 @@ public partial class DashboardViewModel : ObservableObject
                 _toastService?.Error("Restart Failed", $"Could not restart frpc: {e.Message}");
             }
         }, () => IsFrpcRunning);
+        InstallServiceCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await InstallServiceAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Could not install service");
+                _toastService?.Error("Install Failed", $"Could not install service: {e.Message}");
+            }
+        }, () => IsNativeMode && !IsServiceInstalled);
 
         // Preset management commands
         RenamePresetCommand = new RelayCommand(async void () =>
@@ -257,6 +281,7 @@ public partial class DashboardViewModel : ObservableObject
         // Update initial state
         UpdateFrpcStatus();
         UpdatePresetInfo();
+        _ = RefreshServiceStatusAsync();
 
         // Timer to update runtime display
         _runtimeUpdateTimer = new System.Timers.Timer(1000);
@@ -277,7 +302,23 @@ public partial class DashboardViewModel : ObservableObject
         StartFrpcCommand.NotifyCanExecuteChanged();
         StopFrpcCommand.NotifyCanExecuteChanged();
         RestartFrpcCommand.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(NeedsServiceInstall));
         StatusMessage = value ? "Frpc is running" : "Frpc is not running";
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnIsServiceInstalledChanged(bool value)
+    {
+        OnPropertyChanged(nameof(NeedsServiceInstall));
+        StartFrpcCommand.NotifyCanExecuteChanged();
+        InstallServiceCommand.NotifyCanExecuteChanged();
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnIsNativeModeChanged(bool value)
+    {
+        OnPropertyChanged(nameof(NeedsServiceInstall));
+        InstallServiceCommand.NotifyCanExecuteChanged();
     }
 
     // ReSharper disable once UnusedParameterInPartialMethod
@@ -315,6 +356,7 @@ public partial class DashboardViewModel : ObservableObject
     private void OnCurrentPresetChanged(object? sender, PresetChangedEventArgs e)
     {
         UpdatePresetInfo();
+        _ = RefreshServiceStatusAsync();
     }
 
     private void UpdateFrpcStatus()
@@ -378,6 +420,94 @@ public partial class DashboardViewModel : ObservableObject
         TotalActiveProxies = _presetService?.Presets.Sum(p => p.Configuration.Proxies.Count) ?? 0;
     }
 
+    private async Task InstallServiceAsync()
+    {
+        if (_systemServiceManager == null || _configurationService == null || _presetService?.CurrentPreset == null)
+            return;
+
+        var settings = _presetService.CurrentPreset.Deployment;
+        var binaryPath = settings.FrpcBinaryPath;
+        if (string.IsNullOrEmpty(binaryPath))
+        {
+            _toastService?.Error("Install Failed", "No frpc binary path configured. Go to Deployment settings.");
+            return;
+        }
+
+        var configPath = _configurationService.GetDefaultConfigPath();
+
+        // Save config first
+        await _configurationService.SaveConfigurationAsync(configPath, _presetService.CurrentPreset.Configuration);
+
+        var serviceName = _systemServiceManager.GetDefaultServiceName();
+        var scope = GetServiceScope();
+
+        var config = new ServiceConfig
+        {
+            ServiceName = serviceName,
+            BinaryPath = binaryPath,
+            ConfigPath = configPath,
+            Scope = scope,
+            AutoStart = settings.AutoStartOnBoot
+        };
+
+        _logger?.LogInformation("Installing frpc service...");
+        var success = await _systemServiceManager.InstallServiceAsync(config);
+        if (success)
+        {
+            IsServiceInstalled = true;
+            _toastService?.Success("Service Installed", "Frpc service has been installed");
+            _logger?.LogInformation("Frpc service installed successfully");
+        }
+        else
+        {
+            _toastService?.Error("Install Failed", "Could not install frpc service");
+        }
+    }
+
+    private async Task RefreshServiceStatusAsync()
+    {
+        if (_systemServiceManager == null || _presetService?.CurrentPreset == null) return;
+
+        var settings = _presetService.CurrentPreset.Deployment;
+        IsNativeMode = settings.DeploymentMode != "docker";
+
+        if (!IsNativeMode) return;
+
+        try
+        {
+            var serviceName = _systemServiceManager.GetDefaultServiceName();
+            var scope = GetServiceScope();
+            var isInstalled = await _systemServiceManager.IsServiceInstalledAsync(serviceName);
+            IsServiceInstalled = isInstalled;
+
+            if (isInstalled)
+            {
+                var isRunning = await _systemServiceManager.IsServiceRunningAsync(serviceName, scope);
+                IsServiceRunning = isRunning;
+                if (isRunning && !IsFrpcRunning)
+                {
+                    IsFrpcRunning = true;
+                    StatusMessage = "Frpc service is running";
+                }
+                else if (!isRunning && IsFrpcRunning && _frpcProcessService is { IsRunning: false })
+                {
+                    IsFrpcRunning = false;
+                    StatusMessage = "Frpc is not running";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Failed to check service status");
+        }
+    }
+
+    private ServiceScope GetServiceScope()
+    {
+        var settings = _presetService?.CurrentPreset?.Deployment;
+        return settings?.ServiceScope == "system" ? ServiceScope.System : ServiceScope.User;
+    }
+
     private static string FormatRuntime(TimeSpan runtime)
     {
         if (runtime.TotalDays >= 1)
@@ -389,7 +519,7 @@ public partial class DashboardViewModel : ObservableObject
 
     private async Task StartFrpcAsync()
     {
-        if (_frpcProcessService == null || _configurationService == null) return;
+        if (_configurationService == null) return;
 
         // Save current preset configuration to the default config path for frpc
         if (_presetService?.CurrentPreset != null)
@@ -397,8 +527,6 @@ public partial class DashboardViewModel : ObservableObject
             var configPath = _configurationService.GetDefaultConfigPath();
             await _configurationService.SaveConfigurationAsync(configPath, _presetService.CurrentPreset.Configuration);
         }
-
-        var configPathForStart = _configurationService.GetDefaultConfigPath();
 
         // Validate configuration before starting
         if (_validationService != null && _presetService?.CurrentPreset != null)
@@ -419,9 +547,33 @@ public partial class DashboardViewModel : ObservableObject
             }
         }
 
+        // Native mode with service installed: start via service manager
+        if (IsNativeMode && IsServiceInstalled && _systemServiceManager != null)
+        {
+            _logger?.LogInformation("Starting frpc service...");
+            var serviceName = _systemServiceManager.GetDefaultServiceName();
+            var scope = GetServiceScope();
+            var success = await _systemServiceManager.StartServiceAsync(serviceName, scope);
+            if (success)
+            {
+                IsFrpcRunning = true;
+                IsServiceRunning = true;
+                _toastService?.Success("Frpc Started", "Frpc service is now running");
+            }
+            else
+            {
+                _toastService?.Error("Start Failed", "Could not start frpc service");
+            }
+            return;
+        }
+
+        // Fallback: start as direct process (docker mode or no service)
+        if (_frpcProcessService == null) return;
+
+        var configPathForStart = _configurationService.GetDefaultConfigPath();
         _logger?.LogInformation("Starting frpc...");
-        var success = await _frpcProcessService.StartAsync(configPathForStart);
-        if (success)
+        var processSuccess = await _frpcProcessService.StartAsync(configPathForStart);
+        if (processSuccess)
         {
             _toastService?.Success("Frpc Started", "Frpc client is now running");
         }
@@ -434,6 +586,27 @@ public partial class DashboardViewModel : ObservableObject
 
     private async Task StopFrpcAsync()
     {
+        // Native mode with service installed: stop via service manager
+        if (IsNativeMode && IsServiceInstalled && _systemServiceManager != null)
+        {
+            _logger?.LogInformation("Stopping frpc service...");
+            var serviceName = _systemServiceManager.GetDefaultServiceName();
+            var scope = GetServiceScope();
+            var success = await _systemServiceManager.StopServiceAsync(serviceName, scope);
+            if (success)
+            {
+                IsFrpcRunning = false;
+                IsServiceRunning = false;
+                _toastService?.Success("Frpc Stopped", "Frpc service has been stopped");
+            }
+            else
+            {
+                _toastService?.Error("Stop Failed", "Could not stop frpc service");
+            }
+            return;
+        }
+
+        // Fallback: stop direct process
         if (_frpcProcessService == null) return;
         _logger?.LogInformation("Stopping frpc...");
         await _frpcProcessService.StopAsync();

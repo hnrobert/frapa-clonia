@@ -159,8 +159,20 @@
                         Orientation="Horizontal"
                         Spacing="{StaticResource SpacingM}"
                         VerticalAlignment="Center">
+              <!-- Install Service (shown when native mode and service not installed) -->
+              <Button Command="{Binding InstallServiceCommand}"
+                      Classes="primary icon-text-button"
+                      IsVisible="{Binding NeedsServiceInstall}">
+                <StackPanel>
+                  <mi:MaterialIcon Kind="Download" />
+                  <TextBlock Text="{local:Localize InstallService}" />
+                </StackPanel>
+              </Button>
+
+              <!-- Start (shown when service is installed or not native mode) -->
               <Button Command="{Binding StartFrpcCommand}"
-                      Classes="primary icon-text-button">
+                      Classes="primary icon-text-button"
+                      IsVisible="{Binding !NeedsServiceInstall}">
                 <StackPanel>
                   <mi:MaterialIcon Kind="Play" />
                   <TextBlock Text="{local:Localize StartFrpc}" />
