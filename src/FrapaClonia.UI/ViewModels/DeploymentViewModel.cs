@@ -49,6 +49,7 @@ public partial class DeploymentViewModel : ObservableObject
     private readonly ISystemServiceManager? _systemServiceManager;
     private readonly IProcessManager? _processManager;
     private readonly IServiceProvider? _serviceProvider;
+    private string? _activeServiceName;
     private readonly ToastService? _toastService;
     private readonly ILocalizationService? _localizationService;
     private readonly IPresetService? _presetService;
@@ -832,11 +833,22 @@ public partial class DeploymentViewModel : ObservableObject
 
             if (_systemServiceManager != null)
             {
-                var serviceName = _systemServiceManager.GetDefaultServiceName();
-                ServiceStatus = await _systemServiceManager.GetServiceStatusAsync(
-                    serviceName,
-                    GetServiceScopeEnum());
+                var serviceName = _systemServiceManager.GetServiceNameForPreset(_presetService?.CurrentPreset?.Name ?? "default");
+                ServiceStatus = await _systemServiceManager.GetServiceStatusAsync(serviceName, GetServiceScopeEnum());
 
+                // Fallback: check old-style global service name
+                if (!ServiceStatus.IsInstalled)
+                {
+                    var defaultName = _systemServiceManager.GetDefaultServiceName();
+                    var defaultStatus = await _systemServiceManager.GetServiceStatusAsync(defaultName, GetServiceScopeEnum());
+                    if (defaultStatus.IsInstalled)
+                    {
+                        ServiceStatus = defaultStatus;
+                        serviceName = defaultName;
+                    }
+                }
+
+                _activeServiceName = ServiceStatus.IsInstalled ? serviceName : null;
                 IsServiceInstalled = ServiceStatus.IsInstalled;
                 IsServiceRunning = ServiceStatus.IsRunning;
                 AutoStartOnBoot = ServiceStatus.IsAutoStartEnabled;
@@ -875,7 +887,15 @@ public partial class DeploymentViewModel : ObservableObject
                 return;
             }
 
-            var serviceName = _systemServiceManager.GetDefaultServiceName();
+            var serviceName = _systemServiceManager.GetServiceNameForPreset(_presetService?.CurrentPreset?.Name ?? "default");
+
+            // Uninstall old-style service if it exists
+            var defaultName = _systemServiceManager.GetDefaultServiceName();
+            if (await _systemServiceManager.IsServiceInstalledAsync(defaultName))
+            {
+                await _systemServiceManager.UninstallServiceAsync(defaultName);
+            }
+
             var config = new ServiceConfig
             {
                 ServiceName = serviceName,
@@ -894,6 +914,7 @@ public partial class DeploymentViewModel : ObservableObject
             var success = await _systemServiceManager.InstallServiceAsync(config);
             if (success)
             {
+                _activeServiceName = serviceName;
                 IsServiceInstalled = true;
                 _toastService?.Success(L("Toast_ServiceInstalled"), L("Toast_FrpcServiceInstalled"));
                 await RefreshServiceStatusAsync();
@@ -916,7 +937,7 @@ public partial class DeploymentViewModel : ObservableObject
         {
             if (_systemServiceManager == null) return;
 
-            var serviceName = _systemServiceManager.GetDefaultServiceName();
+            var serviceName = _activeServiceName ?? _systemServiceManager.GetServiceNameForPreset(_presetService?.CurrentPreset?.Name ?? "default");
             var success = await _systemServiceManager.UninstallServiceAsync(serviceName);
 
             if (success)
@@ -944,7 +965,7 @@ public partial class DeploymentViewModel : ObservableObject
         {
             if (_systemServiceManager == null) return;
 
-            var serviceName = _systemServiceManager.GetDefaultServiceName();
+            var serviceName = _activeServiceName ?? _systemServiceManager.GetServiceNameForPreset(_presetService?.CurrentPreset?.Name ?? "default");
             var scope = GetServiceScopeEnum();
             var success = await _systemServiceManager.StartServiceAsync(serviceName, scope);
 
@@ -992,7 +1013,7 @@ public partial class DeploymentViewModel : ObservableObject
         {
             if (_systemServiceManager == null) return;
 
-            var serviceName = _systemServiceManager.GetDefaultServiceName();
+            var serviceName = _activeServiceName ?? _systemServiceManager.GetServiceNameForPreset(_presetService?.CurrentPreset?.Name ?? "default");
             var scope = GetServiceScopeEnum();
             var success = await _systemServiceManager.StopServiceAsync(serviceName, scope);
 

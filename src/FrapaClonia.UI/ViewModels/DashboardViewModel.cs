@@ -56,6 +56,7 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty] private bool _canDeletePreset = true;
 
     private string _originalPresetName = "";
+    private string? _activeServiceName;
 
     public IRelayCommand NavigateToServerConfigCommand { get; }
     public IRelayCommand NavigateToProxyListCommand { get; }
@@ -371,6 +372,7 @@ public partial class DashboardViewModel : ObservableObject
     public void RefreshPresetInfo()
     {
         UpdatePresetInfo();
+        _ = RefreshServiceStatusAsync();
     }
 
     private void UpdatePresetInfo()
@@ -438,8 +440,15 @@ public partial class DashboardViewModel : ObservableObject
         // Save config first
         await _configurationService.SaveConfigurationAsync(configPath, _presetService.CurrentPreset.Configuration);
 
-        var serviceName = _systemServiceManager.GetDefaultServiceName();
+        var serviceName = _systemServiceManager.GetServiceNameForPreset(_presetService.CurrentPreset.Name);
         var scope = GetServiceScope();
+
+        // Uninstall old-style service if it exists
+        var defaultName = _systemServiceManager.GetDefaultServiceName();
+        if (await _systemServiceManager.IsServiceInstalledAsync(defaultName))
+        {
+            await _systemServiceManager.UninstallServiceAsync(defaultName);
+        }
 
         var config = new ServiceConfig
         {
@@ -454,6 +463,7 @@ public partial class DashboardViewModel : ObservableObject
         var success = await _systemServiceManager.InstallServiceAsync(config);
         if (success)
         {
+            _activeServiceName = serviceName;
             IsServiceInstalled = true;
             _toastService?.Success("Service Installed", "Frpc service has been installed");
             _logger?.LogInformation("Frpc service installed successfully");
@@ -475,13 +485,26 @@ public partial class DashboardViewModel : ObservableObject
 
         try
         {
-            var serviceName = _systemServiceManager.GetDefaultServiceName();
-            var scope = GetServiceScope();
+            // Try per-preset name first, then fall back to old global name
+            var serviceName = _systemServiceManager.GetServiceNameForPreset(_presetService.CurrentPreset.Name);
             var isInstalled = await _systemServiceManager.IsServiceInstalledAsync(serviceName);
+
+            if (!isInstalled)
+            {
+                var defaultName = _systemServiceManager.GetDefaultServiceName();
+                if (await _systemServiceManager.IsServiceInstalledAsync(defaultName))
+                {
+                    serviceName = defaultName;
+                    isInstalled = true;
+                }
+            }
+
+            _activeServiceName = isInstalled ? serviceName : null;
             IsServiceInstalled = isInstalled;
 
             if (isInstalled)
             {
+                var scope = GetServiceScope();
                 var isRunning = await _systemServiceManager.IsServiceRunningAsync(serviceName, scope);
                 IsServiceRunning = isRunning;
                 switch (isRunning)
@@ -552,14 +575,26 @@ public partial class DashboardViewModel : ObservableObject
         if (IsNativeMode && IsServiceInstalled && _systemServiceManager != null)
         {
             _logger?.LogInformation("Starting frpc service...");
-            var serviceName = _systemServiceManager.GetDefaultServiceName();
+            var serviceName = _activeServiceName ?? _systemServiceManager.GetServiceNameForPreset(_presetService?.CurrentPreset?.Name ?? "default");
             var scope = GetServiceScope();
             var success = await _systemServiceManager.StartServiceAsync(serviceName, scope);
             if (success)
             {
-                IsFrpcRunning = true;
-                IsServiceRunning = true;
-                _toastService?.Success("Frpc Started", "Frpc service is now running");
+                // Verify the service actually started
+                await Task.Delay(1000);
+                var isRunning = await _systemServiceManager.IsServiceRunningAsync(serviceName, scope);
+                if (isRunning)
+                {
+                    IsFrpcRunning = true;
+                    IsServiceRunning = true;
+                    _toastService?.Success("Frpc Started", "Frpc service is now running");
+                }
+                else
+                {
+                    _logger?.LogWarning("Service start command succeeded but service is not running");
+                    _toastService?.Warning("Warning", "Service started but verification failed. Check logs for details.");
+                    await RefreshServiceStatusAsync();
+                }
             }
             else
             {
@@ -591,7 +626,7 @@ public partial class DashboardViewModel : ObservableObject
         if (IsNativeMode && IsServiceInstalled && _systemServiceManager != null)
         {
             _logger?.LogInformation("Stopping frpc service...");
-            var serviceName = _systemServiceManager.GetDefaultServiceName();
+            var serviceName = _activeServiceName ?? _systemServiceManager.GetServiceNameForPreset(_presetService?.CurrentPreset?.Name ?? "default");
             var scope = GetServiceScope();
             var success = await _systemServiceManager.StopServiceAsync(serviceName, scope);
             if (success)
@@ -629,7 +664,7 @@ public partial class DashboardViewModel : ObservableObject
         // Native mode with service installed: stop + start via service manager
         if (IsNativeMode && IsServiceInstalled && _systemServiceManager != null)
         {
-            var serviceName = _systemServiceManager.GetDefaultServiceName();
+            var serviceName = _activeServiceName ?? _systemServiceManager.GetServiceNameForPreset(_presetService?.CurrentPreset?.Name ?? "default");
             var scope = GetServiceScope();
 
             await _systemServiceManager.StopServiceAsync(serviceName, scope);

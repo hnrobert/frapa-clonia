@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using FrapaClonia.Shared.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -65,6 +66,12 @@ public class SystemServiceManager(ILogger<SystemServiceManager> logger, IProcess
     }
 
     public string GetDefaultServiceName() => "frapa-clonia-frpc";
+
+    public string GetServiceNameForPreset(string presetName)
+    {
+        var sanitized = Regex.Replace(presetName.ToLowerInvariant(), "[^a-z0-9]+", "-").Trim('-');
+        return $"frapa-clonia-frpc-{sanitized}";
+    }
 
     private static IPlatformServiceManager CreatePlatformManager(ILogger logger, IProcessManager processManager)
     {
@@ -273,27 +280,27 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
     public async Task<bool> IsServiceRunningAsync(string serviceName, ServiceScope scope,
         CancellationToken cancellationToken = default)
     {
-        var result = await processManager.ExecuteAsync("launchctl", $"list {GetServiceLabel(serviceName)}",
+        // Use "launchctl list" (no label) which outputs lines in "PID Status Label" format
+        var result = await processManager.ExecuteAsync("launchctl", "list",
             cancellationToken: cancellationToken);
 
         if (result.ExitCode != 0)
             return false;
 
-        // Parse the output to check if service is actually running (has a PID)
-        // Output format: {PID} {LastExitStatus} {Label}
-        // If PID is "-", the service is not running
-        var output = result.StandardOutput.Trim();
-        if (string.IsNullOrEmpty(output))
-            return false;
+        var label = GetServiceLabel(serviceName);
+        foreach (var line in result.StandardOutput.Split('\n'))
+        {
+            if (!line.Contains(label)) continue;
 
-        var parts = output.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length < 1)
-            return false;
+            // Format: PID\tStatus\tLabel
+            var parts = line.Trim().Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0) continue;
 
-        // If first column is a number > 0, service is running
-        // If first column is "-", service is loaded but not running
-        var pidStr = parts[0];
-        return pidStr != "-" && int.TryParse(pidStr, out var pid) && pid > 0;
+            var pidStr = parts[0];
+            return pidStr != "-" && int.TryParse(pidStr, out var pid) && pid > 0;
+        }
+
+        return false;
     }
 
     public async Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope,

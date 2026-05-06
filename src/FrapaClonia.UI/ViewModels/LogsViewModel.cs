@@ -237,6 +237,11 @@ public partial class LogsViewModel : ObservableObject
         IsSettingsOpen = false;
     }
 
+    public void RefreshOnNavigate()
+    {
+        _ = UpdateLogSourceAsync();
+    }
+
     // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnSelectedLogLevelChanged(string value)
     {
@@ -397,7 +402,7 @@ public partial class LogsViewModel : ObservableObject
             return;
         }
 
-        // No direct process - check if service is running
+        // No direct process - check if service is installed
         if (_systemServiceManager == null || _presetService?.CurrentPreset == null)
         {
             StopFileLogTailing();
@@ -413,11 +418,21 @@ public partial class LogsViewModel : ObservableObject
 
         try
         {
-            var serviceName = _systemServiceManager.GetDefaultServiceName();
-            var scope = settings.ServiceScope == "system" ? ServiceScope.System : ServiceScope.User;
-            var isRunning = await _systemServiceManager.IsServiceRunningAsync(serviceName, scope);
+            // Find which service name is installed (try per-preset first, then old global name)
+            var serviceName = _systemServiceManager.GetServiceNameForPreset(_presetService.CurrentPreset.Name);
+            var isInstalled = await _systemServiceManager.IsServiceInstalledAsync(serviceName);
 
-            if (isRunning)
+            if (!isInstalled)
+            {
+                var defaultName = _systemServiceManager.GetDefaultServiceName();
+                if (await _systemServiceManager.IsServiceInstalledAsync(defaultName))
+                {
+                    serviceName = defaultName;
+                    isInstalled = true;
+                }
+            }
+
+            if (isInstalled)
             {
                 StartFileLogTailing(serviceName);
             }

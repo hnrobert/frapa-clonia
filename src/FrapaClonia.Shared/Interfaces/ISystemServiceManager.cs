@@ -49,6 +49,11 @@ public interface ISystemServiceManager
     /// Gets the default service name for frpc
     /// </summary>
     string GetDefaultServiceName();
+
+    /// <summary>
+    /// Gets a unique service name for a specific preset
+    /// </summary>
+    string GetServiceNameForPreset(string presetName);
 }
 
 /// <summary>
