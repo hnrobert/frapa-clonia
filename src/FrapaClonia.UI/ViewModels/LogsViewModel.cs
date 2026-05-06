@@ -4,7 +4,7 @@ using FrapaClonia.Shared.Interfaces;
 using FrapaClonia.Shared.Models;
 using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
-using System.Collections.ObjectModel;
+using System.Text;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
@@ -22,7 +22,11 @@ public partial class LogsViewModel : ObservableObject
     private readonly ILocalizationService? _localizationService;
     private readonly ISystemServiceManager? _systemServiceManager;
 
-    [ObservableProperty] private ObservableCollection<LogEntry> _logEntries = [];
+    [ObservableProperty] private string _logText = "";
+
+    [ObservableProperty] private string _searchQuery = "";
+
+    [ObservableProperty] private int _searchMatchCount;
 
     [ObservableProperty] private string _selectedLogLevel = "All";
 
@@ -48,6 +52,8 @@ public partial class LogsViewModel : ObservableObject
 
     private readonly Queue<LogEntry> _logBuffer = new();
     private const int MaxBufferSize = 10000;
+    private readonly object _textLock = new();
+    private readonly StringBuilder _logTextBuilder = new();
 
     // File-based log tailing for service-managed frpc
     private System.Timers.Timer? _fileLogTimer;
@@ -96,49 +102,25 @@ public partial class LogsViewModel : ObservableObject
 
         ClearLogsCommand = new RelayCommand(async void () =>
         {
-            try
-            {
-                await ClearLogsAsync();
-            }
-            catch (Exception e)
-            {
-                _logger?.LogError(e, "Error clearing logs");
-            }
+            try { await ClearLogsAsync(); }
+            catch (Exception e) { _logger?.LogError(e, "Error clearing logs"); }
         });
         ExportLogsCommand = new RelayCommand(async void () =>
         {
-            try
-            {
-                await ExportLogsAsync();
-            }
-            catch (Exception e)
-            {
-                _logger?.LogError(e, "Error exporting logs");
-            }
+            try { await ExportLogsAsync(); }
+            catch (Exception e) { _logger?.LogError(e, "Error exporting logs"); }
         });
         ToggleFollowCommand = new RelayCommand(ToggleFollow);
         RefreshCommand = new RelayCommand(async void () =>
         {
-            try
-            {
-                await RefreshAsync();
-            }
-            catch (Exception e)
-            {
-                _logger?.LogError(e, "Error refreshing logs");
-            }
+            try { await RefreshAsync(); }
+            catch (Exception e) { _logger?.LogError(e, "Error refreshing logs"); }
         });
         OpenSettingsCommand = new RelayCommand(OpenSettings);
         SaveSettingsCommand = new RelayCommand(async void () =>
         {
-            try
-            {
-                await SaveSettingsAsync();
-            }
-            catch (Exception e)
-            {
-                _logger?.LogError(e, "Error saving log settings");
-            }
+            try { await SaveSettingsAsync(); }
+            catch (Exception e) { _logger?.LogError(e, "Error saving log settings"); }
         });
         CancelSettingsCommand = new RelayCommand(CancelSettings);
 
@@ -187,7 +169,7 @@ public partial class LogsViewModel : ObservableObject
         }
         else
         {
-            LogLevelIndex = 2; // Info
+            LogLevelIndex = 2;
             LogTo = "";
             LogMaxDaysText = "3";
         }
@@ -195,7 +177,6 @@ public partial class LogsViewModel : ObservableObject
 
     private void OpenSettings()
     {
-        // Store original values for cancel
         _originalLogLevelIndex = LogLevelIndex;
         _originalLogMaxDaysText = LogMaxDaysText;
         _originalLogTo = LogTo;
@@ -204,7 +185,6 @@ public partial class LogsViewModel : ObservableObject
 
     private void CancelSettings()
     {
-        // Restore original values
         LogLevelIndex = _originalLogLevelIndex;
         LogMaxDaysText = _originalLogMaxDaysText;
         LogTo = _originalLogTo;
@@ -242,11 +222,14 @@ public partial class LogsViewModel : ObservableObject
         _ = UpdateLogSourceAsync();
     }
 
-    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnSearchQueryChanged(string value)
+    {
+        RebuildLogText();
+    }
+
     partial void OnSelectedLogLevelChanged(string value)
     {
-        // Filter logs based on selected level
-        Task.Run(FilterLogsAsync);
+        RebuildLogText();
     }
 
     private void OnLogLineReceived(object? sender, LogLineEventArgs e)
@@ -258,30 +241,7 @@ public partial class LogsViewModel : ObservableObject
             Message = e.LogLine
         };
 
-        // Add to buffer
-        lock (_logBuffer)
-        {
-            _logBuffer.Enqueue(entry);
-            while (_logBuffer.Count > MaxBufferSize)
-            {
-                _logBuffer.Dequeue();
-            }
-        }
-
-        // Add to visible collection if matches filter
-        if (ShouldShowLog(entry))
-        {
-            // Dispatch to UI thread
-            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-            {
-                LogEntries.Add(entry);
-                // Trim to max entries
-                while (LogEntries.Count > MaxLogEntries)
-                {
-                    LogEntries.RemoveAt(0);
-                }
-            });
-        }
+        AddLogEntry(entry);
     }
 
     private void OnProcessStateChanged(object? sender, ProcessStateChangedEventArgs e)
@@ -303,12 +263,72 @@ public partial class LogsViewModel : ObservableObject
         _logger?.LogInformation("Log follow {State}", IsFollowEnabled ? "enabled" : "disabled");
     }
 
+    private void AddLogEntry(LogEntry entry)
+    {
+        lock (_logBuffer)
+        {
+            _logBuffer.Enqueue(entry);
+            while (_logBuffer.Count > MaxBufferSize)
+                _logBuffer.Dequeue();
+        }
+
+        if (!ShouldShowLog(entry)) return;
+
+        var line = FormatEntry(entry);
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            lock (_textLock)
+            {
+                _logTextBuilder.AppendLine(line);
+                LogText = _logTextBuilder.ToString();
+            }
+            UpdateStatus();
+        });
+    }
+
+    private void RebuildLogText()
+    {
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            var sb = new StringBuilder();
+            var searchQuery = string.IsNullOrWhiteSpace(SearchQuery) ? null : SearchQuery;
+
+            lock (_logBuffer)
+            {
+                foreach (var entry in _logBuffer)
+                {
+                    if (!ShouldShowLog(entry)) continue;
+                    var line = FormatEntry(entry);
+                    if (searchQuery != null && !line.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+                        continue;
+                    sb.AppendLine(line);
+                }
+            }
+
+            lock (_textLock)
+            {
+                _logTextBuilder.Clear();
+                _logTextBuilder.Append(sb);
+                LogText = sb.ToString();
+            }
+
+            SearchMatchCount = searchQuery != null
+                ? LogText.Split(searchQuery, StringSplitOptions.None).Length - 1
+                : 0;
+        });
+    }
+
     private Task ClearLogsAsync()
     {
         try
         {
             IsClearing = true;
-            LogEntries.Clear();
+            lock (_logBuffer) { _logBuffer.Clear(); }
+            lock (_textLock)
+            {
+                _logTextBuilder.Clear();
+                LogText = "";
+            }
             _logger?.LogInformation("Logs cleared");
         }
         catch (Exception ex)
@@ -332,8 +352,7 @@ public partial class LogsViewModel : ObservableObject
                 "Downloads",
                 $"frapa-clonia-logs-{DateTime.Now:yyyyMMdd-HHmmss}.txt");
 
-            await File.WriteAllLinesAsync(logsPath, LogEntries.Select(e =>
-                $"[{e.Timestamp:yyyy-MM-dd HH:mm:ss.fff}] [{e.Level}] {e.Message}"));
+            await File.WriteAllTextAsync(logsPath, LogText);
 
             StatusMessage = $"Logs exported to: {logsPath}";
             _logger?.LogInformation("Logs exported to {Path}", logsPath);
@@ -347,44 +366,8 @@ public partial class LogsViewModel : ObservableObject
 
     private async Task RefreshAsync()
     {
-        await Task.Run(() =>
-        {
-            // Reload logs from buffer with current filter
-            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-            {
-                LogEntries.Clear();
-                lock (_logBuffer)
-                {
-                    foreach (var entry in _logBuffer)
-                    {
-                        if (ShouldShowLog(entry))
-                        {
-                            LogEntries.Add(entry);
-                        }
-                    }
-                }
-            });
-        });
-    }
-
-    private async Task FilterLogsAsync()
-    {
-        await Task.Run(() =>
-        {
-            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-            {
-                var filtered = new ObservableCollection<LogEntry>();
-                lock (_logBuffer)
-                {
-                    foreach (var entry in _logBuffer.Where(ShouldShowLog))
-                    {
-                        filtered.Add(entry);
-                    }
-                }
-
-                LogEntries = filtered;
-            });
-        });
+        RebuildLogText();
+        await Task.CompletedTask;
     }
 
     private bool ShouldShowLog(LogEntry entry)
@@ -393,16 +376,19 @@ public partial class LogsViewModel : ObservableObject
         return entry.Level == SelectedLogLevel;
     }
 
+    private static string FormatEntry(LogEntry entry) =>
+        $"[{entry.Timestamp:HH:mm:ss.fff}] [{entry.Level.ToLowerInvariant()}] {entry.Message}";
+
+    // --- File-based log tailing for service-managed frpc ---
+
     private async Task UpdateLogSourceAsync()
     {
         if (_frpcProcessService?.IsRunning == true)
         {
-            // Direct process is running - logs come from LogLineReceived events
             StopFileLogTailing();
             return;
         }
 
-        // No direct process - check if service is installed
         if (_systemServiceManager == null || _presetService?.CurrentPreset == null)
         {
             StopFileLogTailing();
@@ -418,7 +404,6 @@ public partial class LogsViewModel : ObservableObject
 
         try
         {
-            // Find which service name is installed (try per-preset first, then old global name)
             var serviceName = _systemServiceManager.GetServiceNameForPreset(_presetService.CurrentPreset.Name);
             var isInstalled = await _systemServiceManager.IsServiceInstalledAsync(serviceName);
 
@@ -451,16 +436,8 @@ public partial class LogsViewModel : ObservableObject
     {
         if (_isServiceLogActive) return;
 
-        // Service log files created by launchd plist: /tmp/{serviceName}.log
         _serviceLogPath = $"/tmp/{serviceName}.log";
         _logFilePosition = 0;
-
-        if (!File.Exists(_serviceLogPath))
-        {
-            StatusMessage = "Waiting for service logs...";
-            // Start timer anyway - the file may appear when frpc writes its first output
-        }
-
         _isServiceLogActive = true;
         _fileLogTimer?.Start();
         _logger?.LogInformation("Started tailing service log file: {Path}", _serviceLogPath);
@@ -487,10 +464,7 @@ public partial class LogsViewModel : ObservableObject
 
             using var stream = new FileStream(_serviceLogPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             if (stream.Length < _logFilePosition)
-            {
-                // File was truncated (service restarted), reset position
                 _logFilePosition = 0;
-            }
 
             stream.Seek(_logFilePosition, SeekOrigin.Begin);
             using var reader = new StreamReader(stream);
@@ -506,30 +480,10 @@ public partial class LogsViewModel : ObservableObject
                     Message = message
                 };
 
-                lock (_logBuffer)
-                {
-                    _logBuffer.Enqueue(entry);
-                    while (_logBuffer.Count > MaxBufferSize)
-                        _logBuffer.Dequeue();
-                }
-
-                if (ShouldShowLog(entry))
-                {
-                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-                    {
-                        LogEntries.Add(entry);
-                        while (LogEntries.Count > MaxLogEntries)
-                            LogEntries.RemoveAt(0);
-                    });
-                }
+                AddLogEntry(entry);
             }
 
             _logFilePosition = stream.Position;
-
-            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-            {
-                StatusMessage = $"Reading logs from service ({LogEntries.Count} entries)";
-            });
         }
         catch (Exception ex)
         {
@@ -539,7 +493,6 @@ public partial class LogsViewModel : ObservableObject
 
     private static (string Level, string Message) ParseFrpcLogLine(string line)
     {
-        // frpc log format: 2024/01/01 12:00:00 [I] [service.go:123] message
         var level = "Information";
         var message = line;
 
@@ -585,7 +538,7 @@ public partial class LogsViewModel : ObservableObject
 }
 
 /// <summary>
-/// Log entry for display
+/// Log entry for internal buffer
 /// </summary>
 public class LogEntry
 {

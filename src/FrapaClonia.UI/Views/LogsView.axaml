@@ -1,7 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
-             xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
              xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:local="clr-namespace:FrapaClonia.UI.MarkupExtensions;assembly=FrapaClonia.UI"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -14,10 +13,6 @@
     <vm:LogsViewModel />
   </Design.DataContext>
 
-  <UserControl.Resources>
-    <converters:LevelToLowerConverter x:Key="LevelToLowerConverter" />
-  </UserControl.Resources>
-
   <UserControl.Styles>
     <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
   </UserControl.Styles>
@@ -29,22 +24,39 @@
       <Grid ColumnDefinitions="*,Auto">
         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
           <StackPanel Spacing="{StaticResource SpacingS}" VerticalAlignment="Center">
-            <StackPanel Orientation="Horizontal">
-
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingS}">
               <TextBlock Text="{local:Localize Logs}"
                          Classes="page-title" />
               <Button Command="{Binding OpenSettingsCommand}"
-                      Margin="{StaticResource ThicknessLeftL}"
                       ToolTip.Tip="{local:Localize LogSettings}"
                       Classes="icon-button"
                       VerticalAlignment="Center">
                 <mi:MaterialIcon Kind="Cog" Width="18" Height="18" />
               </Button>
+              <Button Command="{Binding RefreshCommand}"
+                      ToolTip.Tip="{local:Localize Refresh}"
+                      Classes="icon-button"
+                      IsEnabled="{Binding !IsClearing}"
+                      VerticalAlignment="Center">
+                <mi:MaterialIcon Kind="Refresh" Width="18" Height="18" />
+              </Button>
+              <Button Command="{Binding ClearLogsCommand}"
+                      ToolTip.Tip="{local:Localize ClearAll}"
+                      Classes="icon-button"
+                      IsEnabled="{Binding !IsClearing}"
+                      VerticalAlignment="Center">
+                <mi:MaterialIcon Kind="DeleteVariant" Width="18" Height="18" />
+              </Button>
+              <Button Command="{Binding ExportLogsCommand}"
+                      ToolTip.Tip="{local:Localize Export}"
+                      Classes="icon-button"
+                      VerticalAlignment="Center">
+                <mi:MaterialIcon Kind="Export" Width="18" Height="18" />
+              </Button>
             </StackPanel>
             <TextBlock Text="{local:Localize ViewRealtimeLogsFromFrpc}"
                        Classes="page-subtitle" />
           </StackPanel>
-
         </StackPanel>
 
         <!-- Status Info -->
@@ -52,73 +64,55 @@
                     Orientation="Horizontal"
                     Spacing="{StaticResource SpacingM}"
                     VerticalAlignment="Center">
-          <TextBlock>
-            <Run Text="{Binding LogEntries.Count}" />
-            <Run Text=" " />
-            <Run Text="{local:Localize Entries}" />
-          </TextBlock>
+          <TextBlock Text="{Binding StatusMessage}"
+                     FontSize="{StaticResource FontSizeM}"
+                     Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
         </StackPanel>
       </Grid>
     </Border>
 
     <!-- Page Toolbar -->
     <Border Grid.Row="1" Classes="page-toolbar">
-      <Grid ColumnDefinitions="*,Auto">
-        <!-- Left: Filters -->
-        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
-          <TextBlock Classes="field-label">
-            <Run Text="{local:Localize LogLevelLabel}" /><Run Text=":" />
-          </TextBlock>
-          <ComboBox ItemsSource="{Binding LogLevels}"
-                    SelectedItem="{Binding SelectedLogLevel}"
-                    PlaceholderText="{local:Localize AllLevels}"
-                    Classes="filter-box" />
+      <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingM}">
+        <TextBlock Classes="field-label">
+          <Run Text="{local:Localize LogLevelLabel}" /><Run Text=":" />
+        </TextBlock>
+        <ComboBox ItemsSource="{Binding LogLevels}"
+                  SelectedItem="{Binding SelectedLogLevel}"
+                  PlaceholderText="{local:Localize AllLevels}"
+                  Classes="filter-box" />
 
-          <CheckBox IsChecked="{Binding IsFollowEnabled}"
-                    Content="{local:Localize AutoScroll}"
-                    Margin="{StaticResource ThicknessLeftL}"
-                    VerticalAlignment="Center" />
-        </StackPanel>
+        <Border Width="1"
+                Background="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                Margin="{StaticResource ThicknessXS}"
+                VerticalAlignment="Stretch" />
 
-        <!-- Right: Action Buttons -->
-        <StackPanel Grid.Column="1"
-                    Orientation="Horizontal"
-                    Spacing="{StaticResource SpacingS}">
-          <Button Command="{Binding RefreshCommand}"
-                  Classes="action-button icon-text-button"
-                  ToolTip.Tip="{local:Localize ReloadLogsFromBuffer}"
-                  IsEnabled="{Binding !IsClearing}">
-            <StackPanel>
-              <mi:MaterialIcon Kind="Refresh" />
-              <TextBlock Text="{local:Localize Refresh}" />
-            </StackPanel>
-          </Button>
-          <Button Command="{Binding ClearLogsCommand}"
-                  Classes="action-button icon-text-button"
-                  ToolTip.Tip="{local:Localize ClearAllLogs}"
-                  IsEnabled="{Binding !IsClearing}">
-            <StackPanel>
-              <mi:MaterialIcon Kind="DeleteVariant" />
-              <TextBlock Text="{local:Localize ClearAll}" />
-            </StackPanel>
-          </Button>
-          <Button Command="{Binding ExportLogsCommand}"
-                  Classes="action-button icon-text-button"
-                  ToolTip.Tip="{local:Localize ExportLogsToFile}">
-            <StackPanel>
-              <mi:MaterialIcon Kind="Export" />
-              <TextBlock Text="{local:Localize Export}" />
-            </StackPanel>
-          </Button>
-        </StackPanel>
-      </Grid>
+        <!-- Search Box -->
+        <TextBox Text="{Binding SearchQuery}"
+                 Watermark="Search logs..."
+                 Classes="search-box"
+                 MinWidth="200" />
+        <TextBlock Text="{Binding SearchMatchCount, StringFormat='{}{0} matches'}"
+                   Classes="hint"
+                   VerticalAlignment="Center"
+                   IsVisible="{Binding SearchQuery, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <Border Width="1"
+                Background="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                Margin="{StaticResource ThicknessXS}"
+                VerticalAlignment="Stretch" />
+
+        <CheckBox IsChecked="{Binding IsFollowEnabled}"
+                  Content="{local:Localize AutoScroll}"
+                  VerticalAlignment="Center" />
+      </StackPanel>
     </Border>
 
-    <!-- Page Content -->
+    <!-- Page Content — stretches to fill remaining space -->
     <Border Grid.Row="2" Classes="page-content">
       <Grid>
         <!-- Empty State -->
-        <Border IsVisible="{Binding LogEntries.Count, Converter={x:Static ObjectConverters.IsNull}}"
+        <Border IsVisible="{Binding LogText, Converter={x:Static StringConverters.IsNullOrEmpty}}"
                 Classes="empty-state"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">
@@ -140,32 +134,23 @@
           </StackPanel>
         </Border>
 
-        <!-- Log Viewer -->
-        <ScrollViewer IsVisible="{Binding LogEntries.Count, Converter={x:Static ObjectConverters.IsNotNull}}"
-                      HorizontalScrollBarVisibility="Disabled">
-          <ListBox ItemsSource="{Binding LogEntries}"
-                   Classes="logViewer"
-                   HorizontalAlignment="Stretch">
-            <ListBox.ItemTemplate>
-              <DataTemplate>
-                <StackPanel Orientation="Horizontal" Spacing="0">
-                  <TextBlock Text="{Binding Timestamp, StringFormat='[{0:HH:mm:ss.fff}]'}"
-                             Classes="log-timestamp" />
-                  <TextBlock Text="["
-                             Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-                  <TextBlock Text="{Binding Level, Converter={StaticResource LevelToLowerConverter}}"
-                             Classes="log-level" />
-                  <TextBlock Text="]"
-                             Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-                  <TextBlock Text=" "
-                             Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-                  <TextBlock Text="{Binding Message}"
-                             TextWrapping="NoWrap" />
-                </StackPanel>
-              </DataTemplate>
-            </ListBox.ItemTemplate>
-          </ListBox>
-        </ScrollViewer>
+        <!-- Log TextBox — always fills the entire area -->
+        <TextBox x:Name="LogTextBox"
+                 Text="{Binding LogText, Mode=OneWay}"
+                 IsReadOnly="True"
+                 AcceptsReturn="True"
+                 TextWrapping="NoWrap"
+                 Classes="logViewer"
+                 Padding="8,4">
+          <TextBox.ContextMenu>
+            <ContextMenu>
+              <MenuItem Header="Copy" InputGesture="Ctrl+C" Click="OnCopyClicked" />
+              <MenuItem Header="Select All" InputGesture="Ctrl+A" Click="OnSelectAllClicked" />
+              <Separator />
+              <MenuItem Header="Clear" Click="OnClearClicked" />
+            </ContextMenu>
+          </TextBox.ContextMenu>
+        </TextBox>
       </Grid>
     </Border>
 
@@ -181,12 +166,10 @@
               VerticalAlignment="Center"
               Padding="{StaticResource ContentPaddingCompact}">
         <StackPanel Spacing="{StaticResource SpacingL}">
-          <!-- Dialog Header -->
           <TextBlock Text="{local:Localize LogSettings}"
                      Classes="card-title"
                      FontSize="18" />
 
-          <!-- Log Level -->
           <Grid ColumnDefinitions="120,*" RowDefinitions="Auto">
             <TextBlock Grid.Row="0" Grid.Column="0"
                        Text="{local:Localize LogLevelLabel}"
@@ -202,7 +185,6 @@
             </ComboBox>
           </Grid>
 
-          <!-- Max Days -->
           <Grid ColumnDefinitions="120,*" RowDefinitions="Auto">
             <TextBlock Grid.Column="0"
                        Text="{local:Localize MaxDays}"
@@ -213,7 +195,6 @@
                      Watermark="3" />
           </Grid>
 
-          <!-- Log To -->
           <Grid ColumnDefinitions="120,*" RowDefinitions="Auto">
             <TextBlock Grid.Row="0" Grid.Column="0"
                        Text="{local:Localize LogTo}"
@@ -224,7 +205,6 @@
                      Watermark="{local:Localize EgConsolePathToLogfile}" />
           </Grid>
 
-          <!-- Dialog Buttons -->
           <StackPanel Orientation="Horizontal"
                       HorizontalAlignment="Right"
                       Spacing="{StaticResource SpacingM}"
@@ -241,4 +221,3 @@
     </Border>
   </Grid>
 </UserControl>
-
