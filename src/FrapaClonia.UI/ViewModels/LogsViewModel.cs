@@ -65,6 +65,7 @@ public partial class LogsViewModel : ObservableObject
 
     public IRelayCommand ClearLogsCommand { get; }
     public IRelayCommand ConfirmClearCommand { get; }
+    public IRelayCommand ConfirmClearWithFileCommand { get; }
     public IRelayCommand CancelClearCommand { get; }
     public IRelayCommand ExportLogsCommand { get; }
     public IRelayCommand ToggleFollowCommand { get; }
@@ -117,6 +118,17 @@ public partial class LogsViewModel : ObservableObject
             }
         });
         CancelClearCommand = new RelayCommand(() => { IsClearConfirmOpen = false; });
+        ConfirmClearWithFileCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await ClearLogsAsync(deleteFiles: true);
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error clearing logs");
+            }
+        });
         ExportLogsCommand = new RelayCommand(async void () =>
         {
             try
@@ -353,12 +365,13 @@ public partial class LogsViewModel : ObservableObject
         });
     }
 
-    private Task ClearLogsAsync()
+    private Task ClearLogsAsync(bool deleteFiles = false)
     {
         try
         {
             IsClearing = true;
             IsClearConfirmOpen = false;
+
             lock (_logBuffer)
             {
                 _logBuffer.Clear();
@@ -370,8 +383,25 @@ public partial class LogsViewModel : ObservableObject
                 LogText = "";
             }
 
-            _toastService?.Success("Cleared", "All logs have been cleared");
-            _logger?.LogInformation("Logs cleared");
+            if (deleteFiles)
+            {
+                // Delete service log files
+                if (!string.IsNullOrEmpty(_serviceLogPath))
+                {
+                    var errPath = Path.ChangeExtension(_serviceLogPath, ".err");
+                    if (File.Exists(_serviceLogPath)) File.Delete(_serviceLogPath);
+                    if (File.Exists(errPath)) File.Delete(errPath);
+                    _logFilePosition = 0;
+                }
+
+                _toastService?.Success("Cleared", "Logs and log files have been cleared");
+            }
+            else
+            {
+                _toastService?.Success("Cleared", "Panel logs have been cleared");
+            }
+
+            _logger?.LogInformation("Logs cleared (deleteFiles={DeleteFiles})", deleteFiles);
         }
         catch (Exception ex)
         {

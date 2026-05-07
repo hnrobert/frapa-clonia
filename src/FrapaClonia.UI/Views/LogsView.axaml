@@ -238,18 +238,21 @@
           <TextBlock Text="Clear Logs"
                      Classes="card-title"
                      FontSize="18" />
-          <TextBlock Text="Are you sure you want to clear all logs? This cannot be undone."
+          <TextBlock Text="Choose how to clear logs:"
                      TextWrapping="Wrap"
                      Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
           <StackPanel Orientation="Horizontal"
                       HorizontalAlignment="Right"
-                      Spacing="{StaticResource SpacingM}">
+                      Spacing="{StaticResource SpacingS}">
             <Button Command="{Binding CancelClearCommand}"
                     Classes="action-button"
                     Content="Cancel" />
             <Button Command="{Binding ConfirmClearCommand}"
                     Classes="action-button"
-                    Content="Clear" />
+                    Content="Clear Panel" />
+            <Button Command="{Binding ConfirmClearWithFileCommand}"
+                    Classes="action-button primary"
+                    Content="Clear All" />
           </StackPanel>
         </StackPanel>
       </Border>
