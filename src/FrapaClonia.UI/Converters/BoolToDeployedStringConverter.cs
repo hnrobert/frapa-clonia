@@ -4,6 +4,7 @@ using System.Globalization;
 
 namespace FrapaClonia.UI.Converters;
 
+// ReSharper disable once UnusedMember.Global
 public class BoolToDeployedStringConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)

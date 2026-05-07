@@ -4,6 +4,7 @@ using System.Globalization;
 
 namespace FrapaClonia.UI.Converters;
 
+// ReSharper disable once UnusedMember.Global
 public class BoolToStringConverter : IValueConverter
 {
     public string TrueValue { get; set; } = "";
