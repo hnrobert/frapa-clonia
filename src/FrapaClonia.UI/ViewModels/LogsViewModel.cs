@@ -32,6 +32,8 @@ public partial class LogsViewModel : ObservableObject
 
     [ObservableProperty] private bool _isFollowEnabled = true;
 
+    [ObservableProperty] private bool _isLoading = true;
+
     [ObservableProperty] private bool _isClearConfirmOpen;
 
     [ObservableProperty] private bool _isClearing;
@@ -480,27 +482,27 @@ public partial class LogsViewModel : ObservableObject
 
     private async Task UpdateLogSourceAsync()
     {
-        if (_frpcProcessService?.IsRunning == true)
-        {
-            StopFileLogTailing();
-            return;
-        }
-
-        if (_systemServiceManager == null || _presetService?.CurrentPreset == null)
-        {
-            StopFileLogTailing();
-            return;
-        }
-
-        var settings = _presetService.CurrentPreset.Deployment;
-        if (settings.DeploymentMode == "docker")
-        {
-            StopFileLogTailing();
-            return;
-        }
-
         try
         {
+            if (_frpcProcessService?.IsRunning == true)
+            {
+                StopFileLogTailing();
+                return;
+            }
+
+            if (_systemServiceManager == null || _presetService?.CurrentPreset == null)
+            {
+                StopFileLogTailing();
+                return;
+            }
+
+            var settings = _presetService.CurrentPreset.Deployment;
+            if (settings.DeploymentMode == "docker")
+            {
+                StopFileLogTailing();
+                return;
+            }
+
             var serviceName = _systemServiceManager.GetServiceNameForPreset(_presetService.CurrentPreset.Name);
             var isInstalled = await _systemServiceManager.IsServiceInstalledAsync(serviceName);
 
@@ -526,6 +528,10 @@ public partial class LogsViewModel : ObservableObject
         catch (Exception ex)
         {
             _logger?.LogDebug(ex, "Failed to check service status for log source");
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 

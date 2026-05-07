@@ -9,10 +9,26 @@
   <Style Selector="TextBox.logViewer">
     <Setter Property="FontFamily" Value="{DynamicResource MonoFontFamily}" />
     <Setter Property="FontSize" Value="{StaticResource FontSizeS}" />
-    <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
+    <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltHighBrush}" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
     <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+    <Setter Property="Margin" Value="10,0,16,16" />
+    <Setter Property="Padding" Value="8" />
+  </Style>
+
+  <!-- Keep consistent background regardless of focus state -->
+  <Style Selector="TextBox.logViewer /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltHighBrush}" />
+  </Style>
+  <Style Selector="TextBox.logViewer:readonly /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltHighBrush}" />
+  </Style>
+  <Style Selector="TextBox.logViewer:not(:focus-within) /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltHighBrush}" />
+  </Style>
+  <Style Selector="TextBox.logViewer:focus-within /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltHighBrush}" />
   </Style>
 
 </Styles>

@@ -110,11 +110,31 @@
 
     <!-- Page Content — stretches to fill remaining space -->
     <Panel Grid.Row="2">
-      <!-- Empty State (no TextBox visible) -->
-      <Border IsVisible="{Binding LogText, Converter={x:Static StringConverters.IsNullOrEmpty}}"
-              Classes="empty-state"
+      <!-- Loading State -->
+      <Border IsVisible="{Binding IsLoading}"
               HorizontalAlignment="Center"
               VerticalAlignment="Center">
+        <StackPanel Spacing="{StaticResource SpacingM}" HorizontalAlignment="Center">
+          <ProgressBar IsIndeterminate="True"
+                       Width="48" Height="48"
+                       HorizontalAlignment="Center" />
+          <TextBlock Text="{local:Localize Loading}"
+                     FontSize="{StaticResource FontSizeL}"
+                     Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                     HorizontalAlignment="Center" />
+        </StackPanel>
+      </Border>
+
+      <!-- Empty State (shown only after loading completes and no logs) -->
+      <Border Classes="empty-state"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+        <Border.IsVisible>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="!IsLoading" />
+            <Binding Path="LogText" Converter="{x:Static StringConverters.IsNullOrEmpty}" />
+          </MultiBinding>
+        </Border.IsVisible>
         <StackPanel Spacing="{StaticResource SpacingM}" HorizontalAlignment="Center">
           <mi:MaterialIcon Kind="FileDocumentOutline"
                            Width="48"
@@ -142,8 +162,7 @@
                TextWrapping="NoWrap"
                Classes="logViewer"
                HorizontalAlignment="Stretch"
-               VerticalAlignment="Stretch"
-               Padding="8,4">
+               VerticalAlignment="Stretch">
         <TextBox.ContextMenu>
           <ContextMenu>
             <MenuItem Header="Copy" InputGesture="Ctrl+C" Click="OnCopyClicked" />
