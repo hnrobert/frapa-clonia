@@ -65,6 +65,9 @@ public partial class LogsViewModel : ObservableObject
     private string? _serviceLogPath;
     private bool _isServiceLogActive;
 
+    // Loading timeout
+    private readonly System.Timers.Timer _loadingTimer;
+
     public IRelayCommand ClearLogsCommand { get; }
     public IRelayCommand ConfirmClearCommand { get; }
     public IRelayCommand ConfirmClearWithFileCommand { get; }
@@ -186,6 +189,12 @@ public partial class LogsViewModel : ObservableObject
         // File log tailing timer
         _fileLogTimer = new System.Timers.Timer(500);
         _fileLogTimer.Elapsed += OnFileLogTimerElapsed;
+
+        // Loading timeout — stop loading after 2s even if no logs arrive
+        _loadingTimer = new System.Timers.Timer(2000) { AutoReset = false };
+        _loadingTimer.Elapsed += (_, _) =>
+            Avalonia.Threading.Dispatcher.UIThread.Post(() => IsLoading = false);
+        _loadingTimer.Start();
 
         // Check if frpc is running as a service (no direct process)
         _ = UpdateLogSourceAsync();
@@ -324,6 +333,12 @@ public partial class LogsViewModel : ObservableObject
         var line = FormatEntry(entry);
         Avalonia.Threading.Dispatcher.UIThread.Post(() =>
         {
+            if (IsLoading)
+            {
+                IsLoading = false;
+                _loadingTimer.Stop();
+            }
+
             lock (_textLock)
             {
                 _logTextBuilder.AppendLine(line);
@@ -528,10 +543,6 @@ public partial class LogsViewModel : ObservableObject
         catch (Exception ex)
         {
             _logger?.LogDebug(ex, "Failed to check service status for log source");
-        }
-        finally
-        {
-            IsLoading = false;
         }
     }
 
