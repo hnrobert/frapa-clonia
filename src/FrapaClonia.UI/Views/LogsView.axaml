@@ -109,50 +109,51 @@
     </Border>
 
     <!-- Page Content — stretches to fill remaining space -->
-    <Border Grid.Row="2" Classes="page-content">
-      <Grid>
-        <!-- Empty State -->
-        <Border IsVisible="{Binding LogText, Converter={x:Static StringConverters.IsNullOrEmpty}}"
-                Classes="empty-state"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
-          <StackPanel Spacing="{StaticResource SpacingM}" HorizontalAlignment="Center">
-            <mi:MaterialIcon Kind="FileDocumentOutline"
-                             Width="48"
-                             Height="48"
-                             Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                             HorizontalAlignment="Center" />
-            <TextBlock Text="{local:Localize NoLogsAvailable}"
-                       FontSize="{StaticResource FontSizeXL}"
-                       FontWeight="{StaticResource FontWeightSemiBold}"
-                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
-                       HorizontalAlignment="Center" />
-            <TextBlock Text="{local:Localize LogsWillAppearHere}"
-                       FontSize="{StaticResource FontSizeM}"
-                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                       HorizontalAlignment="Center" />
-          </StackPanel>
-        </Border>
+    <Panel Grid.Row="2">
+      <!-- Empty State (no TextBox visible) -->
+      <Border IsVisible="{Binding LogText, Converter={x:Static StringConverters.IsNullOrEmpty}}"
+              Classes="empty-state"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+        <StackPanel Spacing="{StaticResource SpacingM}" HorizontalAlignment="Center">
+          <mi:MaterialIcon Kind="FileDocumentOutline"
+                           Width="48"
+                           Height="48"
+                           Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                           HorizontalAlignment="Center" />
+          <TextBlock Text="{local:Localize NoLogsAvailable}"
+                     FontSize="{StaticResource FontSizeXL}"
+                     FontWeight="{StaticResource FontWeightSemiBold}"
+                     Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                     HorizontalAlignment="Center" />
+          <TextBlock Text="{local:Localize LogsWillAppearHere}"
+                     FontSize="{StaticResource FontSizeM}"
+                     Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                     HorizontalAlignment="Center" />
+        </StackPanel>
+      </Border>
 
-        <!-- Log TextBox — always fills the entire area -->
-        <TextBox x:Name="LogTextBox"
-                 Text="{Binding LogText, Mode=OneWay}"
-                 IsReadOnly="True"
-                 AcceptsReturn="True"
-                 TextWrapping="NoWrap"
-                 Classes="logViewer"
-                 Padding="8,4">
-          <TextBox.ContextMenu>
-            <ContextMenu>
-              <MenuItem Header="Copy" InputGesture="Ctrl+C" Click="OnCopyClicked" />
-              <MenuItem Header="Select All" InputGesture="Ctrl+A" Click="OnSelectAllClicked" />
-              <Separator />
-              <MenuItem Header="Clear" Click="OnClearClicked" />
-            </ContextMenu>
-          </TextBox.ContextMenu>
-        </TextBox>
-      </Grid>
-    </Border>
+      <!-- Log TextBox — fills entire area, only when there is content -->
+      <TextBox x:Name="LogTextBox"
+               IsVisible="{Binding LogText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+               Text="{Binding LogText, Mode=OneWay}"
+               IsReadOnly="True"
+               AcceptsReturn="True"
+               TextWrapping="NoWrap"
+               Classes="logViewer"
+               HorizontalAlignment="Stretch"
+               VerticalAlignment="Stretch"
+               Padding="8,4">
+        <TextBox.ContextMenu>
+          <ContextMenu>
+            <MenuItem Header="Copy" InputGesture="Ctrl+C" Click="OnCopyClicked" />
+            <MenuItem Header="Select All" InputGesture="Ctrl+A" Click="OnSelectAllClicked" />
+            <Separator />
+            <MenuItem Header="Clear" Click="OnClearClicked" />
+          </ContextMenu>
+        </TextBox.ContextMenu>
+      </TextBox>
+    </Panel>
 
     <!-- Settings Dialog Overlay -->
     <Border Grid.Row="0" Grid.RowSpan="3"
@@ -162,6 +163,7 @@
             VerticalAlignment="Stretch">
       <Border Classes="card"
               Width="400"
+              Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
               HorizontalAlignment="Center"
               VerticalAlignment="Center"
               Padding="{StaticResource ContentPaddingCompact}">
@@ -228,6 +230,7 @@
             VerticalAlignment="Stretch">
       <Border Classes="card"
               Width="360"
+              Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
               HorizontalAlignment="Center"
               VerticalAlignment="Center"
               Padding="{StaticResource ContentPaddingCompact}">
