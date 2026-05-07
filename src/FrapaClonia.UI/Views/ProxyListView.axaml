@@ -16,6 +16,7 @@
 
   <UserControl.Resources>
     <converters:EmptyCollectionConverter x:Key="EmptyCollectionConverter" />
+    <converters:ListToStringConverter x:Key="ListToStringConverter" />
   </UserControl.Resources>
 
   <UserControl.Styles>
@@ -185,7 +186,7 @@
                                          Height="14"
                                          VerticalAlignment="Center"
                                          Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-                        <TextBlock Text="{Binding CustomDomains}"
+                        <TextBlock Text="{Binding CustomDomains, Converter={StaticResource ListToStringConverter}}"
                                    FontSize="{StaticResource FontSizeS}"
                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                       </StackPanel>
