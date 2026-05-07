@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using FrapaClonia.UI.ViewModels;
@@ -11,11 +10,41 @@ public partial class LogsView : UserControl
     private ScrollViewer? _scrollViewer;
     private double _lastVerticalOffset;
     private bool _programmaticScroll;
+    private LogsViewModel? _subscribedVm;
 
     public LogsView()
     {
         InitializeComponent();
         Loaded += OnLoaded;
+        DataContextChanged += OnDataContextChanged;
+    }
+
+    private void OnDataContextChanged(object? sender, EventArgs e)
+    {
+        if (_subscribedVm != null)
+        {
+            _subscribedVm.PropertyChanged -= OnVmPropertyChanged;
+        }
+
+        _subscribedVm = DataContext as LogsViewModel;
+
+        if (_subscribedVm != null)
+        {
+            _subscribedVm.PropertyChanged += OnVmPropertyChanged;
+        }
+    }
+
+    private void OnVmPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(LogsViewModel.IsFollowEnabled) && _subscribedVm?.IsFollowEnabled == true)
+        {
+            // User checked Auto Scroll → scroll to bottom immediately
+            _programmaticScroll = true;
+            LogTextBox.CaretIndex = LogTextBox.Text?.Length ?? 0;
+            _scrollViewer?.ScrollToEnd();
+            _lastVerticalOffset = _scrollViewer?.Offset.Y ?? 0;
+            _programmaticScroll = false;
+        }
     }
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
@@ -23,6 +52,8 @@ public partial class LogsView : UserControl
         if (DataContext is LogsViewModel viewModel)
         {
             viewModel.RefreshOnNavigate();
+            _subscribedVm = viewModel;
+            _subscribedVm.PropertyChanged += OnVmPropertyChanged;
         }
 
         // Find the internal ScrollViewer inside the TextBox
@@ -38,17 +69,18 @@ public partial class LogsView : UserControl
 
     private void OnLogTextChanged(object? sender, TextChangedEventArgs e)
     {
-        if (DataContext is not LogsViewModel vm || !vm.IsFollowEnabled) return;
+        if (_subscribedVm is not { IsFollowEnabled: true }) return;
 
         _programmaticScroll = true;
         LogTextBox.CaretIndex = LogTextBox.Text?.Length ?? 0;
         _scrollViewer?.ScrollToEnd();
+        _lastVerticalOffset = _scrollViewer?.Offset.Y ?? 0;
         _programmaticScroll = false;
     }
 
     private void OnScrollChanged(object? sender, ScrollChangedEventArgs e)
     {
-        if (_programmaticScroll || _scrollViewer == null || DataContext is not LogsViewModel vm) return;
+        if (_programmaticScroll || _scrollViewer == null || _subscribedVm == null) return;
 
         var currentOffset = _scrollViewer.Offset.Y;
         var isScrollingUp = currentOffset < _lastVerticalOffset;
@@ -56,13 +88,13 @@ public partial class LogsView : UserControl
 
         var isAtBottom = _scrollViewer.Extent.Height - _scrollViewer.Viewport.Height - currentOffset < 5;
 
-        if (isAtBottom && !vm.IsFollowEnabled)
+        if (isAtBottom && !_subscribedVm.IsFollowEnabled)
         {
-            vm.IsFollowEnabled = true;
+            _subscribedVm.IsFollowEnabled = true;
         }
-        else if (isScrollingUp && vm.IsFollowEnabled)
+        else if (isScrollingUp && _subscribedVm.IsFollowEnabled)
         {
-            vm.IsFollowEnabled = false;
+            _subscribedVm.IsFollowEnabled = false;
         }
     }
 

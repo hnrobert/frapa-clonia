@@ -219,5 +219,37 @@
         </StackPanel>
       </Border>
     </Border>
+
+    <!-- Clear Confirmation Overlay -->
+    <Border Grid.Row="0" Grid.RowSpan="3"
+            IsVisible="{Binding IsClearConfirmOpen}"
+            Background="#80000000"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+      <Border Classes="card"
+              Width="360"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              Padding="{StaticResource ContentPaddingCompact}">
+        <StackPanel Spacing="{StaticResource SpacingL}">
+          <TextBlock Text="Clear Logs"
+                     Classes="card-title"
+                     FontSize="18" />
+          <TextBlock Text="Are you sure you want to clear all logs? This cannot be undone."
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+          <StackPanel Orientation="Horizontal"
+                      HorizontalAlignment="Right"
+                      Spacing="{StaticResource SpacingM}">
+            <Button Command="{Binding CancelClearCommand}"
+                    Classes="action-button"
+                    Content="Cancel" />
+            <Button Command="{Binding ConfirmClearCommand}"
+                    Classes="action-button"
+                    Content="Clear" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Border>
   </Grid>
 </UserControl>

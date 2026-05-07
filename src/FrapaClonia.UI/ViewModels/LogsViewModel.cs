@@ -32,6 +32,8 @@ public partial class LogsViewModel : ObservableObject
 
     [ObservableProperty] private bool _isFollowEnabled = true;
 
+    [ObservableProperty] private bool _isClearConfirmOpen;
+
     [ObservableProperty] private bool _isClearing;
 
     [ObservableProperty] private int _maxLogEntries = 1000;
@@ -52,16 +54,18 @@ public partial class LogsViewModel : ObservableObject
 
     private readonly Queue<LogEntry> _logBuffer = new();
     private const int MaxBufferSize = 10000;
-    private readonly object _textLock = new();
+    private readonly Lock _textLock = new();
     private readonly StringBuilder _logTextBuilder = new();
 
     // File-based log tailing for service-managed frpc
-    private System.Timers.Timer? _fileLogTimer;
+    private readonly System.Timers.Timer? _fileLogTimer;
     private long _logFilePosition;
     private string? _serviceLogPath;
     private bool _isServiceLogActive;
 
     public IRelayCommand ClearLogsCommand { get; }
+    public IRelayCommand ConfirmClearCommand { get; }
+    public IRelayCommand CancelClearCommand { get; }
     public IRelayCommand ExportLogsCommand { get; }
     public IRelayCommand ToggleFollowCommand { get; }
     public IRelayCommand RefreshCommand { get; }
@@ -100,27 +104,54 @@ public partial class LogsViewModel : ObservableObject
         _localizationService = localizationService;
         _systemServiceManager = systemServiceManager;
 
-        ClearLogsCommand = new RelayCommand(async void () =>
+        ClearLogsCommand = new RelayCommand(() => { IsClearConfirmOpen = true; });
+        ConfirmClearCommand = new RelayCommand(async void () =>
         {
-            try { await ClearLogsAsync(); }
-            catch (Exception e) { _logger?.LogError(e, "Error clearing logs"); }
+            try
+            {
+                await ClearLogsAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error clearing logs");
+            }
         });
+        CancelClearCommand = new RelayCommand(() => { IsClearConfirmOpen = false; });
         ExportLogsCommand = new RelayCommand(async void () =>
         {
-            try { await ExportLogsAsync(); }
-            catch (Exception e) { _logger?.LogError(e, "Error exporting logs"); }
+            try
+            {
+                await ExportLogsAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error exporting logs");
+            }
         });
         ToggleFollowCommand = new RelayCommand(ToggleFollow);
         RefreshCommand = new RelayCommand(async void () =>
         {
-            try { await RefreshAsync(); }
-            catch (Exception e) { _logger?.LogError(e, "Error refreshing logs"); }
+            try
+            {
+                await RefreshAsync();
+                _toastService?.Info("Refreshed", "Logs have been refreshed");
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error refreshing logs");
+            }
         });
         OpenSettingsCommand = new RelayCommand(OpenSettings);
         SaveSettingsCommand = new RelayCommand(async void () =>
         {
-            try { await SaveSettingsAsync(); }
-            catch (Exception e) { _logger?.LogError(e, "Error saving log settings"); }
+            try
+            {
+                await SaveSettingsAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error saving log settings");
+            }
         });
         CancelSettingsCommand = new RelayCommand(CancelSettings);
 
@@ -222,11 +253,13 @@ public partial class LogsViewModel : ObservableObject
         _ = UpdateLogSourceAsync();
     }
 
+    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnSearchQueryChanged(string value)
     {
         RebuildLogText();
     }
 
+    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnSelectedLogLevelChanged(string value)
     {
         RebuildLogText();
@@ -282,6 +315,7 @@ public partial class LogsViewModel : ObservableObject
                 _logTextBuilder.AppendLine(line);
                 LogText = _logTextBuilder.ToString();
             }
+
             UpdateStatus();
         });
     }
@@ -295,12 +329,13 @@ public partial class LogsViewModel : ObservableObject
 
             lock (_logBuffer)
             {
-                foreach (var entry in _logBuffer)
+                foreach (var line in from entry in _logBuffer
+                         where ShouldShowLog(entry)
+                         select FormatEntry(entry)
+                         into line
+                         where searchQuery == null || line.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+                         select line)
                 {
-                    if (!ShouldShowLog(entry)) continue;
-                    var line = FormatEntry(entry);
-                    if (searchQuery != null && !line.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
-                        continue;
                     sb.AppendLine(line);
                 }
             }
@@ -313,7 +348,7 @@ public partial class LogsViewModel : ObservableObject
             }
 
             SearchMatchCount = searchQuery != null
-                ? LogText.Split(searchQuery, StringSplitOptions.None).Length - 1
+                ? LogText.Split(searchQuery).Length - 1
                 : 0;
         });
     }
@@ -323,17 +358,25 @@ public partial class LogsViewModel : ObservableObject
         try
         {
             IsClearing = true;
-            lock (_logBuffer) { _logBuffer.Clear(); }
+            IsClearConfirmOpen = false;
+            lock (_logBuffer)
+            {
+                _logBuffer.Clear();
+            }
+
             lock (_textLock)
             {
                 _logTextBuilder.Clear();
                 LogText = "";
             }
+
+            _toastService?.Success("Cleared", "All logs have been cleared");
             _logger?.LogInformation("Logs cleared");
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error clearing logs");
+            _toastService?.Error("Clear Failed", "Could not clear logs");
         }
         finally
         {
@@ -347,20 +390,44 @@ public partial class LogsViewModel : ObservableObject
     {
         try
         {
-            var logsPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                "Downloads",
-                $"frapa-clonia-logs-{DateTime.Now:yyyyMMdd-HHmmss}.txt");
+            if (Avalonia.Application.Current!.ApplicationLifetime is not
+                Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
+                return;
 
-            await File.WriteAllTextAsync(logsPath, LogText);
+            var storageProvider = desktop.MainWindow?.StorageProvider;
+            if (storageProvider == null) return;
 
-            StatusMessage = $"Logs exported to: {logsPath}";
-            _logger?.LogInformation("Logs exported to {Path}", logsPath);
+            var file = await storageProvider.SaveFilePickerAsync(new Avalonia.Platform.Storage.FilePickerSaveOptions
+            {
+                Title = "Export Logs",
+                SuggestedFileName = $"frapa-clonia-logs-{DateTime.Now:yyyyMMdd-HHmmss}.txt",
+                DefaultExtension = "txt",
+                FileTypeChoices =
+                [
+                    new Avalonia.Platform.Storage.FilePickerFileType("Text Files")
+                    {
+                        Patterns = ["*.txt"]
+                    },
+                    new Avalonia.Platform.Storage.FilePickerFileType("All Files")
+                    {
+                        Patterns = ["*"]
+                    }
+                ]
+            });
+
+            if (file == null) return;
+
+            await using var stream = await file.OpenWriteAsync();
+            await using var writer = new StreamWriter(stream);
+            await writer.WriteAsync(LogText);
+
+            _toastService?.Success("Exported", $"Logs exported to {file.Name}");
+            _logger?.LogInformation("Logs exported to {Path}", file.Path.LocalPath);
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error exporting logs");
-            StatusMessage = "Error exporting logs";
+            _toastService?.Error("Export Failed", "Could not export logs");
         }
     }
 
@@ -469,8 +536,7 @@ public partial class LogsViewModel : ObservableObject
             stream.Seek(_logFilePosition, SeekOrigin.Begin);
             using var reader = new StreamReader(stream);
 
-            string? line;
-            while ((line = reader.ReadLine()) != null)
+            while (reader.ReadLine() is { } line)
             {
                 var (level, message) = ParseFrpcLogLine(line);
                 var entry = new LogEntry
