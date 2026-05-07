@@ -203,6 +203,14 @@ public partial class LogsViewModel : ObservableObject
     private void OnCurrentPresetChanged(object? sender, PresetChangedEventArgs e)
     {
         LoadSettingsFromPreset();
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            lock (_logBuffer) { _logBuffer.Clear(); }
+            lock (_textLock) { _logTextBuilder.Clear(); LogText = ""; }
+            IsLoading = true;
+            _loadingTimer.Start();
+            _ = UpdateLogSourceAsync();
+        });
     }
 
     private void LoadSettingsFromPreset()
