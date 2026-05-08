@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@main
 
       - name: Get release version from tag
         id: version
@@ -36,7 +36,7 @@ jobs:
       version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@main
 
       - name: Get release version from tag
         id: version
@@ -53,7 +53,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@main
 
       - name: Build and Pack (win-x64)
         uses: ./.github/actions/build-and-pack
@@ -62,7 +62,7 @@ jobs:
           rids: win-x64
 
       - name: Upload build artifacts (Windows)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@main
         with:
           name: release-${{ needs.version.outputs.version }}-win-x64
           path: |
@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@main
 
       - name: Build and Pack (Linux)
         uses: ./.github/actions/build-and-pack
@@ -83,28 +83,28 @@ jobs:
           rids: linux-x64 linux-arm64 linux-musl-x64 linux-musl-arm64
 
       - name: Upload build artifacts (linux-x64)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@main
         with:
           name: release-${{ needs.version.outputs.version }}-linux-x64
           path: FrapaClonia-${{ needs.version.outputs.version }}-linux-x64.tar.gz
           retention-days: 7
 
       - name: Upload build artifacts (linux-arm64)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@main
         with:
           name: release-${{ needs.version.outputs.version }}-linux-arm64
           path: FrapaClonia-${{ needs.version.outputs.version }}-linux-arm64.tar.gz
           retention-days: 7
 
       - name: Upload build artifacts (linux-musl-x64)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@main
         with:
           name: release-${{ needs.version.outputs.version }}-linux-musl-x64
           path: FrapaClonia-${{ needs.version.outputs.version }}-linux-musl-x64.tar.gz
           retention-days: 7
 
       - name: Upload build artifacts (linux-musl-arm64)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@main
         with:
           name: release-${{ needs.version.outputs.version }}-linux-musl-arm64
           path: FrapaClonia-${{ needs.version.outputs.version }}-linux-musl-arm64.tar.gz
@@ -115,7 +115,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@main
 
       - name: Build and Pack (macOS)
         uses: ./.github/actions/build-and-pack
@@ -132,14 +132,14 @@ jobs:
           output_dir: .
 
       - name: Upload DMG artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@main
         with:
           name: release-${{ needs.version.outputs.version }}-macos-x64-dmg
           path: FrapaClonia-${{ needs.version.outputs.version }}-macos-x64.dmg
           retention-days: 7
 
       - name: Upload DMG artifacts (arm64)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@main
         with:
           name: release-${{ needs.version.outputs.version }}-macos-arm64-dmg
           path: FrapaClonia-${{ needs.version.outputs.version }}-macos-arm64.dmg
@@ -149,8 +149,11 @@ jobs:
     needs: [version, build-windows, build-linux, build-macos]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@main
+
       - name: Download build assets
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@main
         with:
           pattern: release-${{ needs.version.outputs.version }}-*
           path: dist
