@@ -203,6 +203,7 @@ public partial class LogsViewModel : ObservableObject
     private void OnCurrentPresetChanged(object? sender, PresetChangedEventArgs e)
     {
         LoadSettingsFromPreset();
+        StopFileLogTailing();
         Avalonia.Threading.Dispatcher.UIThread.Post(() =>
         {
             lock (_logBuffer) { _logBuffer.Clear(); }
@@ -526,18 +527,8 @@ public partial class LogsViewModel : ObservableObject
                 return;
             }
 
-            var serviceName = _systemServiceManager.GetServiceNameForPreset(_presetService.CurrentPreset.Name);
+            var serviceName = _systemServiceManager.GetServiceNameForPreset(_presetService.CurrentPreset.Id);
             var isInstalled = await _systemServiceManager.IsServiceInstalledAsync(serviceName);
-
-            if (!isInstalled)
-            {
-                var defaultName = _systemServiceManager.GetDefaultServiceName();
-                if (await _systemServiceManager.IsServiceInstalledAsync(defaultName))
-                {
-                    serviceName = defaultName;
-                    isInstalled = true;
-                }
-            }
 
             if (isInstalled)
             {

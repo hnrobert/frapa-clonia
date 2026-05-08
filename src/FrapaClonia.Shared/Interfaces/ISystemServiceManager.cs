@@ -46,14 +46,9 @@ public interface ISystemServiceManager
     Task<bool> SetAutoStartAsync(string serviceName, bool autoStart, ServiceScope scope = ServiceScope.User, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Gets the default service name for frpc
-    /// </summary>
-    string GetDefaultServiceName();
-
-    /// <summary>
     /// Gets a unique service name for a specific preset
     /// </summary>
-    string GetServiceNameForPreset(string presetName);
+    string GetServiceNameForPreset(Guid presetId);
 }
 
 /// <summary>

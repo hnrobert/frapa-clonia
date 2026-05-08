@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using FrapaClonia.Shared.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -65,12 +64,9 @@ public class SystemServiceManager(ILogger<SystemServiceManager> logger, IProcess
         return await _platformManager.SetAutoStartAsync(serviceName, autoStart, scope, cancellationToken);
     }
 
-    public string GetDefaultServiceName() => "frapa-clonia-frpc";
-
-    public string GetServiceNameForPreset(string presetName)
+    public string GetServiceNameForPreset(Guid presetId)
     {
-        var sanitized = Regex.Replace(presetName.ToLowerInvariant(), "[^a-z0-9]+", "-").Trim('-');
-        return $"frapa-clonia-frpc-{sanitized}";
+        return $"frapa-clonia-frpc-{presetId:N}";
     }
 
     private static IPlatformServiceManager CreatePlatformManager(ILogger logger, IProcessManager processManager)
