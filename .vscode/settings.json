@@ -81,6 +81,7 @@
         "Meiryo",
         "Modo",
         "mscorlib",
+        "MSVC",
         "Mvvm",
         "myapp",
         "Nicht",
@@ -119,5 +120,9 @@
         "XXXL",
         "yourdomain",
         "Русский"
-    ]
+    ],
+    "markdownlint.config": {
+        "no-inline-html": false,
+        "first-line-h1": false
+    }
 }
