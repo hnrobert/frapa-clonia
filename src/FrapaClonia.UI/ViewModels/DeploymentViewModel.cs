@@ -868,12 +868,10 @@ public partial class DeploymentViewModel : ObservableObject
                 return;
             }
 
-            var configPath = _serviceProvider?.GetRequiredService<IConfigurationService>().GetDefaultConfigPath();
-            if (string.IsNullOrEmpty(configPath))
-            {
-                _toastService?.Warning(L("Toast_NoConfig"), L("Toast_CreateConfigFirst"));
-                return;
-            }
+            var configPath = _presetService!.GetPresetFrpcConfigPath(_presetService!.CurrentPreset!.Id);
+
+            // Save config first
+            await _presetService.SaveCurrentPresetAsync();
 
             var serviceName = _systemServiceManager.GetServiceNameForPreset(_presetService!.CurrentPreset!.Id);
 
@@ -1161,10 +1159,10 @@ public partial class DeploymentViewModel : ObservableObject
                 return;
             }
 
-            var presetName = _presetService?.CurrentPreset?.Name;
+            var presetId = _presetService?.CurrentPreset?.Id;
 
             var targetComposePath = string.IsNullOrWhiteSpace(DockerComposePath)
-                ? ResolveDefaultComposeFilePath(presetName)
+                ? ResolveDefaultComposeFilePath(presetId)
                 : DockerComposePath;
 
             var config = new FrpcDockerConfig
@@ -1667,7 +1665,7 @@ public partial class DeploymentViewModel : ObservableObject
             _lastValidatedContainerName = DockerContainerName;
             _lastValidatedImageName = DockerImageName;
 
-            var presetFolder = GetPresetFolderPath(preset.Name);
+            var presetFolder = GetPresetFolderPath(preset.Id);
             var composePath = Path.Combine(presetFolder, "docker-compose.yml");
 
             // Load docker-compose.yml directly (awaited) so values are ready before the UI renders.
@@ -1720,17 +1718,10 @@ public partial class DeploymentViewModel : ObservableObject
 
     #endregion
 
-    private static string GetPresetFolderPath(string presetName)
+    private static string GetPresetFolderPath(Guid presetId)
     {
         var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        return Path.Combine(appData, "FrapaClonia", "presets", SanitizeFolderName(presetName));
-    }
-
-    private static string SanitizeFolderName(string name)
-    {
-        var invalidChars = Path.GetInvalidFileNameChars();
-        var sanitized = string.Join("_", name.Split(invalidChars));
-        return string.IsNullOrWhiteSpace(sanitized) ? "unnamed" : sanitized;
+        return Path.Combine(appData, "FrapaClonia", "presets", presetId.ToString("N"));
     }
 
     private static string GenerateDefaultContainerName(string presetName)
@@ -1758,11 +1749,11 @@ public partial class DeploymentViewModel : ObservableObject
             !string.Equals(_composeSnapshot.RestartPolicy, DockerRestartPolicy, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static string ResolveDefaultComposeFilePath(string? presetName)
+    private static string ResolveDefaultComposeFilePath(Guid? presetId)
     {
-        if (!string.IsNullOrWhiteSpace(presetName))
+        if (presetId.HasValue)
         {
-            var dir = GetPresetFolderPath(presetName);
+            var dir = GetPresetFolderPath(presetId.Value);
             Directory.CreateDirectory(dir);
             return Path.Combine(dir, "docker-compose.yml");
         }

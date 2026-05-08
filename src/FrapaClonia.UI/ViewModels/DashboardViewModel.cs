@@ -15,7 +15,6 @@ public partial class DashboardViewModel : ObservableObject
 {
     private readonly ILogger<DashboardViewModel>? _logger;
     private readonly IFrpcProcessService? _frpcProcessService;
-    private readonly IConfigurationService? _configurationService;
     private readonly IValidationService? _validationService;
     private readonly IPresetService? _presetService;
     private readonly ToastService? _toastService;
@@ -88,7 +87,6 @@ public partial class DashboardViewModel : ObservableObject
         null!,
         null!,
         null!,
-        null!,
         null!)
     {
     }
@@ -96,7 +94,6 @@ public partial class DashboardViewModel : ObservableObject
     public DashboardViewModel(
         ILogger<DashboardViewModel> logger,
         IFrpcProcessService frpcProcessService,
-        IConfigurationService configurationService,
         IValidationService validationService,
         IPresetService presetService,
         NavigationService navigationService,
@@ -106,7 +103,6 @@ public partial class DashboardViewModel : ObservableObject
     {
         _logger = logger;
         _frpcProcessService = frpcProcessService;
-        _configurationService = configurationService;
         _validationService = validationService;
         _presetService = presetService;
         _toastService = toastService;
@@ -424,7 +420,7 @@ public partial class DashboardViewModel : ObservableObject
 
     private async Task InstallServiceAsync()
     {
-        if (_systemServiceManager == null || _configurationService == null || _presetService?.CurrentPreset == null)
+        if (_systemServiceManager == null || _presetService?.CurrentPreset == null)
             return;
 
         var settings = _presetService.CurrentPreset.Deployment;
@@ -435,10 +431,10 @@ public partial class DashboardViewModel : ObservableObject
             return;
         }
 
-        var configPath = _configurationService.GetDefaultConfigPath();
+        var configPath = _presetService.GetPresetFrpcConfigPath(_presetService.CurrentPreset.Id);
 
         // Save config first
-        await _configurationService.SaveConfigurationAsync(configPath, _presetService.CurrentPreset.Configuration);
+        await _presetService.SaveCurrentPresetAsync();
 
         var serviceName = _systemServiceManager.GetServiceNameForPreset(_presetService.CurrentPreset.Id);
         var scope = GetServiceScope();
@@ -525,14 +521,10 @@ public partial class DashboardViewModel : ObservableObject
 
     private async Task StartFrpcAsync()
     {
-        if (_configurationService == null) return;
+        if (_presetService?.CurrentPreset == null) return;
 
-        // Save current preset configuration to the default config path for frpc
-        if (_presetService?.CurrentPreset != null)
-        {
-            var configPath = _configurationService.GetDefaultConfigPath();
-            await _configurationService.SaveConfigurationAsync(configPath, _presetService.CurrentPreset.Configuration);
-        }
+        // Save current preset configuration
+        await _presetService.SaveCurrentPresetAsync();
 
         // Validate configuration before starting
         if (_validationService != null && _presetService?.CurrentPreset != null)
@@ -586,9 +578,9 @@ public partial class DashboardViewModel : ObservableObject
         }
 
         // Fallback: start as direct process (docker mode or no service)
-        if (_frpcProcessService == null) return;
+        if (_frpcProcessService == null || _presetService?.CurrentPreset == null) return;
 
-        var configPathForStart = _configurationService.GetDefaultConfigPath();
+        var configPathForStart = _presetService.GetPresetFrpcConfigPath(_presetService.CurrentPreset.Id);
         _logger?.LogInformation("Starting frpc...");
         var processSuccess = await _frpcProcessService.StartAsync(configPathForStart);
         if (processSuccess)
@@ -633,15 +625,11 @@ public partial class DashboardViewModel : ObservableObject
 
     private async Task RestartFrpcAsync()
     {
-        if (_configurationService == null) return;
+        if (_presetService?.CurrentPreset == null) return;
         _logger?.LogInformation("Restarting frpc...");
 
-        // Save current preset configuration to the default config path for frpc
-        if (_presetService?.CurrentPreset != null)
-        {
-            var configPath = _configurationService.GetDefaultConfigPath();
-            await _configurationService.SaveConfigurationAsync(configPath, _presetService.CurrentPreset.Configuration);
-        }
+        // Save current preset configuration
+        await _presetService.SaveCurrentPresetAsync();
 
         // Native mode with service installed: stop + start via service manager
         if (IsNativeMode && IsServiceInstalled && _systemServiceManager != null)
@@ -670,7 +658,7 @@ public partial class DashboardViewModel : ObservableObject
         // Fallback: restart as direct process
         if (_frpcProcessService == null) return;
 
-        var configPathForRestart = _configurationService.GetDefaultConfigPath();
+        var configPathForRestart = _presetService.GetPresetFrpcConfigPath(_presetService.CurrentPreset.Id);
         var restartSuccess = await _frpcProcessService.RestartAsync(configPathForRestart);
         if (restartSuccess)
         {

@@ -91,4 +91,9 @@ public interface IPresetService
     /// Get the presets directory path
     /// </summary>
     string GetPresetsDirectory();
+
+    /// <summary>
+    /// Get the frpc.toml path for a specific preset
+    /// </summary>
+    string GetPresetFrpcConfigPath(Guid presetId);
 }

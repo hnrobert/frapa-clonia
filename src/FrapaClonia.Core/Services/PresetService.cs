@@ -39,6 +39,9 @@ public class PresetService : IPresetService
 
     public string GetPresetsDirectory() => _presetsDirectory;
 
+    public string GetPresetFrpcConfigPath(Guid presetId) =>
+        Path.Combine(_presetsDirectory, presetId.ToString("N"), "frpc.toml");
+
     public async Task InitializeAsync()
     {
         try
@@ -143,7 +146,7 @@ public class PresetService : IPresetService
             _logger.LogInformation("Deleting preset: {Name} ({Id})", preset.Name, presetId);
 
             // Delete preset folder
-            var folderPath = GetPresetFolderPath(preset.Name);
+            var folderPath = GetPresetFolderPath(preset.Id);
             if (Directory.Exists(folderPath))
             {
                 Directory.Delete(folderPath, recursive: true);
@@ -241,20 +244,10 @@ public class PresetService : IPresetService
 
             _logger.LogInformation("Renaming preset: {OldName} -> {NewName}", preset.Name, newName);
 
-            var oldFolderPath = GetPresetFolderPath(preset.Name);
-            var oldName = preset.Name;
-
             preset.Name = newName;
             preset.ModifiedAt = DateTime.Now;
 
-            // Save to new location
             await SavePresetToFileAsync(preset);
-
-            // Delete old folder
-            if (Directory.Exists(oldFolderPath) && oldName != newName)
-            {
-                Directory.Delete(oldFolderPath, recursive: true);
-            }
 
             // Raise event to notify UI of name change
             if (CurrentPreset?.Id == presetId)
@@ -379,21 +372,14 @@ public class PresetService : IPresetService
 
     #region File Path Methods
 
-    private string GetPresetFolderPath(string presetName) =>
-        Path.Combine(_presetsDirectory, SanitizeFolderName(presetName));
+    private string GetPresetFolderPath(Guid presetId) =>
+        Path.Combine(_presetsDirectory, presetId.ToString("N"));
 
-    private string GetPresetConfigPath(string presetName) =>
-        Path.Combine(GetPresetFolderPath(presetName), "config.toml");
+    private string GetPresetConfigPath(Guid presetId) =>
+        Path.Combine(GetPresetFolderPath(presetId), "config.toml");
 
-    private string GetPresetFrpcPath(string presetName) =>
-        Path.Combine(GetPresetFolderPath(presetName), "frpc.toml");
-
-    private static string SanitizeFolderName(string name)
-    {
-        var invalidChars = Path.GetInvalidFileNameChars();
-        var sanitized = string.Join("_", name.Split(invalidChars));
-        return string.IsNullOrWhiteSpace(sanitized) ? "unnamed" : sanitized;
-    }
+    private string GetPresetFrpcPath(Guid presetId) =>
+        Path.Combine(GetPresetFolderPath(presetId), "frpc.toml");
 
     #endregion
 
@@ -459,7 +445,7 @@ public class PresetService : IPresetService
 
     private async Task SavePresetToFileAsync(ConfigPreset preset)
     {
-        var folderPath = GetPresetFolderPath(preset.Name);
+        var folderPath = GetPresetFolderPath(preset.Id);
         Directory.CreateDirectory(folderPath);
 
         // Save config.toml (metadata + deployment settings)
@@ -475,11 +461,11 @@ public class PresetService : IPresetService
             Deployment = preset.Deployment
         };
 
-        var configPath = GetPresetConfigPath(preset.Name);
+        var configPath = GetPresetConfigPath(preset.Id);
         await _tomlConfigSerializer.SerializeToFileAsync(configPath, presetConfig);
 
         // Save frpc.toml (FrpClientConfig)
-        var frpcPath = GetPresetFrpcPath(preset.Name);
+        var frpcPath = GetPresetFrpcPath(preset.Id);
         await _tomlSerializer.SerializeToFileAsync(frpcPath, preset.Configuration);
 
         _logger.LogInformation("Saved preset '{Name}' to {FolderPath}", preset.Name, folderPath);
