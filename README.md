@@ -31,9 +31,10 @@
 
 ## Screenshots
 
-<p align="center">
-  <img src="assets/images/social-preview.png" alt="FrapaClonia Preview" width="600">
-</p>
+![demo-frpc-exe-config](assets/images/demo-frpc-exe-config.png)
+![demo-compose-config](assets/images/demo-compose-config.png)
+![demo-server-config](assets/images/demo-server-conf.png)
+![demo-edit-proxy](assets/images/demo-edit-proxy.png)
 
 ## Download
 
