@@ -9,10 +9,9 @@ namespace FrapaClonia.Core.Services;
 /// <summary>
 /// Service for managing frpc versions
 /// </summary>
-public class FrpcVersionService : IFrpcVersionService
+public class FrpcVersionService(ILogger<FrpcVersionService> logger, ICacheService? cacheService)
+    : IFrpcVersionService
 {
-    private readonly ILogger<FrpcVersionService> _logger;
-    private readonly ICacheService? _cacheService;
     private readonly GitHubClient _gitHubClient = new(new ProductHeaderValue("FrapaClonia"));
 
     public bool WasRateLimited { get; private set; }
@@ -23,18 +22,31 @@ public class FrpcVersionService : IFrpcVersionService
     {
     }
 
-    public FrpcVersionService(ILogger<FrpcVersionService> logger, ICacheService? cacheService)
-    {
-        _logger = logger;
-        _cacheService = cacheService;
-    }
-
     private void ApplyToken()
     {
-        var token = _cacheService?.GitHubToken;
+        var token = cacheService?.GitHubToken;
         if (!string.IsNullOrEmpty(token))
         {
             _gitHubClient.Credentials = new Credentials(token);
+        }
+    }
+
+    private async Task<IReadOnlyList<Release>> FetchReleasesWithRetryAsync()
+    {
+        ApplyToken();
+        try
+        {
+            return await _gitHubClient.Repository.Release.GetAll("fatedier", "frp");
+        }
+        catch (AuthorizationException)
+        {
+            logger.LogWarning("GitHub token invalid, retrying without credentials");
+            _gitHubClient.Credentials = Credentials.Anonymous;
+            if (cacheService == null) return await _gitHubClient.Repository.Release.GetAll("fatedier", "frp");
+            cacheService.GitHubToken = null;
+            await cacheService.SaveAsync();
+
+            return await _gitHubClient.Repository.Release.GetAll("fatedier", "frp");
         }
     }
 
@@ -45,13 +57,13 @@ public class FrpcVersionService : IFrpcVersionService
         WasRateLimited = false;
 
         // Return cached versions if still fresh
-        if (_cacheService?.FrpcVersions.Count > 0 && _cacheService.LastFrpcVersionCheck.HasValue)
+        if (cacheService?.FrpcVersions.Count > 0 && cacheService.LastFrpcVersionCheck.HasValue)
         {
-            var age = DateTime.UtcNow - _cacheService.LastFrpcVersionCheck.Value;
+            var age = DateTime.UtcNow - cacheService.LastFrpcVersionCheck.Value;
             if (age < CacheDuration)
             {
-                _logger.LogInformation("Using cached frpc versions (age: {Age})", age);
-                return _cacheService.FrpcVersions.Select(v => new FrpcVersionInfo
+                logger.LogInformation("Using cached frpc versions (age: {Age})", age);
+                return cacheService.FrpcVersions.Select(v => new FrpcVersionInfo
                 {
                     Version = v.Version,
                     TagName = v.TagName,
@@ -64,9 +76,8 @@ public class FrpcVersionService : IFrpcVersionService
 
         try
         {
-            _logger.LogInformation("Fetching available frpc versions from GitHub");
-            ApplyToken();
-            var releases = await _gitHubClient.Repository.Release.GetAll("fatedier", "frp");
+            logger.LogInformation("Fetching available frpc versions from GitHub");
+            var releases = await FetchReleasesWithRetryAsync();
 
             var versions = releases.Select((r, index) => new FrpcVersionInfo
             {
@@ -78,9 +89,9 @@ public class FrpcVersionService : IFrpcVersionService
             }).ToList();
 
             // Update cache
-            if (_cacheService == null) return versions;
-            _cacheService.FrpcVersions.Clear();
-            _cacheService.FrpcVersions.AddRange(versions.Select(v => new CachedFrpcVersion
+            if (cacheService == null) return versions;
+            cacheService.FrpcVersions.Clear();
+            cacheService.FrpcVersions.AddRange(versions.Select(v => new CachedFrpcVersion
             {
                 Version = v.Version,
                 TagName = v.TagName,
@@ -88,21 +99,21 @@ public class FrpcVersionService : IFrpcVersionService
                 DownloadUrl = v.DownloadUrl,
                 IsLatest = v.IsLatest
             }));
-            _cacheService.LastFrpcVersionCheck = DateTime.UtcNow;
-            await _cacheService.SaveAsync();
+            cacheService.LastFrpcVersionCheck = DateTime.UtcNow;
+            await cacheService.SaveAsync();
 
             return versions;
         }
         catch (RateLimitExceededException ex)
         {
             WasRateLimited = true;
-            _logger.LogWarning(ex, "GitHub API rate limit exceeded");
+            logger.LogWarning(ex, "GitHub API rate limit exceeded");
 
             // Fall back to stale cache if available
-            if (_cacheService?.FrpcVersions.Count > 0)
+            if (cacheService?.FrpcVersions.Count > 0)
             {
-                _logger.LogInformation("Falling back to stale cached versions");
-                return _cacheService.FrpcVersions.Select(v => new FrpcVersionInfo
+                logger.LogInformation("Falling back to stale cached versions");
+                return cacheService.FrpcVersions.Select(v => new FrpcVersionInfo
                 {
                     Version = v.Version,
                     TagName = v.TagName,
@@ -116,12 +127,12 @@ public class FrpcVersionService : IFrpcVersionService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error fetching available versions from GitHub");
+            logger.LogError(ex, "Error fetching available versions from GitHub");
 
             // Fall back to stale cache if available
-            if (_cacheService?.FrpcVersions.Count > 0)
+            if (cacheService?.FrpcVersions.Count > 0)
             {
-                return _cacheService.FrpcVersions.Select(v => new FrpcVersionInfo
+                return cacheService.FrpcVersions.Select(v => new FrpcVersionInfo
                 {
                     Version = v.Version,
                     TagName = v.TagName,
@@ -141,7 +152,7 @@ public class FrpcVersionService : IFrpcVersionService
     {
         if (!File.Exists(binaryPath))
         {
-            _logger.LogWarning("Binary not found at {Path}", binaryPath);
+            logger.LogWarning("Binary not found at {Path}", binaryPath);
             return null;
         }
 
@@ -178,12 +189,12 @@ public class FrpcVersionService : IFrpcVersionService
                 };
             }
 
-            _logger.LogWarning("Could not parse version from output: {Output}", output);
+            logger.LogWarning("Could not parse version from output: {Output}", output);
             return null;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting binary version from {Path}", binaryPath);
+            logger.LogError(ex, "Error getting binary version from {Path}", binaryPath);
             return null;
         }
     }
