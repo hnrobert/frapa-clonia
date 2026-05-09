@@ -1,3 +1,5 @@
+using FrapaClonia.Shared.Models;
+
 namespace FrapaClonia.Shared.Interfaces;
 
 /// <summary>
@@ -29,4 +31,14 @@ public interface ICacheService
     /// GitHub personal access token for higher API rate limits
     /// </summary>
     string? GitHubToken { get; set; }
+
+    /// <summary>
+    /// Cached frpc versions from GitHub
+    /// </summary>
+    List<CachedFrpcVersion> FrpcVersions { get; }
+
+    /// <summary>
+    /// When frpc versions were last fetched from GitHub
+    /// </summary>
+    DateTime? LastFrpcVersionCheck { get; set; }
 }

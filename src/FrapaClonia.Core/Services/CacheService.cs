@@ -22,6 +22,14 @@ public class CacheService : ICacheService
         set => _cache.App.GitHubToken = value;
     }
 
+    public List<CachedFrpcVersion> FrpcVersions => _cache.App.FrpcVersions;
+
+    public DateTime? LastFrpcVersionCheck
+    {
+        get => _cache.App.LastFrpcVersionCheck;
+        set => _cache.App.LastFrpcVersionCheck = value;
+    }
+
     public CacheService(ILogger<CacheService> logger, ITomlConfigSerializer tomlSerializer)
     {
         _logger = logger;
