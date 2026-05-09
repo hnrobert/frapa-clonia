@@ -41,4 +41,9 @@ public class AppInfo
     /// Last update check timestamp
     /// </summary>
     public DateTime? LastCheck { get; set; }
+
+    /// <summary>
+    /// GitHub personal access token for higher API rate limits
+    /// </summary>
+    public string? GitHubToken { get; set; }
 }

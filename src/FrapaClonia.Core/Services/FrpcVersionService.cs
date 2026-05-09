@@ -8,15 +8,42 @@ namespace FrapaClonia.Core.Services;
 /// <summary>
 /// Service for managing frpc versions
 /// </summary>
-public class FrpcVersionService(ILogger<FrpcVersionService> logger) : IFrpcVersionService
+public class FrpcVersionService : IFrpcVersionService
 {
+    private readonly ILogger<FrpcVersionService> _logger;
+    private readonly ICacheService? _cacheService;
     private readonly GitHubClient _gitHubClient = new(new ProductHeaderValue("FrapaClonia"));
+
+    public bool WasRateLimited { get; private set; }
+
+    // Default constructor for design-time
+    public FrpcVersionService() : this(
+        Microsoft.Extensions.Logging.Abstractions.NullLogger<FrpcVersionService>.Instance, null!)
+    {
+    }
+
+    public FrpcVersionService(ILogger<FrpcVersionService> logger, ICacheService? cacheService)
+    {
+        _logger = logger;
+        _cacheService = cacheService;
+    }
+
+    private void ApplyToken()
+    {
+        var token = _cacheService?.GitHubToken;
+        if (!string.IsNullOrEmpty(token))
+        {
+            _gitHubClient.Credentials = new Credentials(token);
+        }
+    }
 
     public async Task<IReadOnlyList<FrpcVersionInfo>> GetAvailableVersionsAsync()
     {
+        WasRateLimited = false;
         try
         {
-            logger.LogInformation("Fetching available frpc versions from GitHub");
+            _logger.LogInformation("Fetching available frpc versions from GitHub");
+            ApplyToken();
             var releases = await _gitHubClient.Repository.Release.GetAll("fatedier", "frp");
 
             return releases.Select((r, index) => new FrpcVersionInfo
@@ -28,9 +55,15 @@ public class FrpcVersionService(ILogger<FrpcVersionService> logger) : IFrpcVersi
                 IsLatest = index == 0
             }).ToList();
         }
+        catch (RateLimitExceededException ex)
+        {
+            WasRateLimited = true;
+            _logger.LogWarning(ex, "GitHub API rate limit exceeded");
+            return new List<FrpcVersionInfo>();
+        }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error fetching available versions from GitHub");
+            _logger.LogError(ex, "Error fetching available versions from GitHub");
             return new List<FrpcVersionInfo>();
         }
     }
@@ -41,7 +74,7 @@ public class FrpcVersionService(ILogger<FrpcVersionService> logger) : IFrpcVersi
     {
         if (!File.Exists(binaryPath))
         {
-            logger.LogWarning("Binary not found at {Path}", binaryPath);
+            _logger.LogWarning("Binary not found at {Path}", binaryPath);
             return null;
         }
 
@@ -78,12 +111,12 @@ public class FrpcVersionService(ILogger<FrpcVersionService> logger) : IFrpcVersi
                 };
             }
 
-            logger.LogWarning("Could not parse version from output: {Output}", output);
+            _logger.LogWarning("Could not parse version from output: {Output}", output);
             return null;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error getting binary version from {Path}", binaryPath);
+            _logger.LogError(ex, "Error getting binary version from {Path}", binaryPath);
             return null;
         }
     }

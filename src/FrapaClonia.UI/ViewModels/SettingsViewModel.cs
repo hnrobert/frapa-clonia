@@ -21,6 +21,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ToastService? _toastService;
     private readonly INativeDeploymentService? _nativeDeploymentService;
     private readonly IPresetService? _presetService;
+    private readonly ICacheService? _cacheService;
 
     [ObservableProperty] private LanguageOption? _selectedLanguage;
 
@@ -37,8 +38,15 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _isLoadingVersions;
     [ObservableProperty] private DownloadedFrpcVersion? _selectedVersion;
 
+    // GitHub Integration
+    [ObservableProperty] private bool _isGitHubLoggedIn;
+    [ObservableProperty] private string _gitHubTokenInput = "";
+
     public IRelayCommand SaveCommand { get; }
     public IRelayCommand ResetCommand { get; }
+    public IRelayCommand GitHubLoginCommand { get; }
+    public IRelayCommand GitHubConnectCommand { get; }
+    public IRelayCommand GitHubLogoutCommand { get; }
 
     public List<LanguageOption> AvailableLanguages { get; }
 
@@ -47,6 +55,7 @@ public partial class SettingsViewModel : ObservableObject
     // Default constructor for design-time support
     public SettingsViewModel() : this(
         Microsoft.Extensions.Logging.Abstractions.NullLogger<SettingsViewModel>.Instance,
+        null!,
         null!,
         null!,
         null!,
@@ -65,7 +74,8 @@ public partial class SettingsViewModel : ObservableObject
         ThemeService themeService,
         ToastService? toastService,
         INativeDeploymentService? nativeDeploymentService,
-        IPresetService? presetService)
+        IPresetService? presetService,
+        ICacheService? cacheService)
     {
         _logger = logger;
         _localizationService = localizationService;
@@ -75,6 +85,7 @@ public partial class SettingsViewModel : ObservableObject
         _toastService = toastService;
         _nativeDeploymentService = nativeDeploymentService;
         _presetService = presetService;
+        _cacheService = cacheService;
 
         AvailableLanguages =
         [
@@ -110,6 +121,29 @@ public partial class SettingsViewModel : ObservableObject
                 _logger?.LogError(e, "Error loading settings");
             }
         });
+        GitHubLoginCommand = new RelayCommand(OpenGitHubTokenPage);
+        GitHubConnectCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await ConnectGitHubAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error connecting GitHub");
+            }
+        });
+        GitHubLogoutCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await DisconnectGitHubAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error disconnecting GitHub");
+            }
+        });
 
         // Initialize theme from ThemeService
         ThemeIndex = _themeService.CurrentTheme.ToString() switch
@@ -139,6 +173,7 @@ public partial class SettingsViewModel : ObservableObject
         {
             await LoadSettingsAsync();
             await RefreshDownloadedVersionsAsync();
+            IsGitHubLoggedIn = !string.IsNullOrEmpty(_cacheService?.GitHubToken);
         });
     }
 
@@ -266,6 +301,85 @@ public partial class SettingsViewModel : ObservableObject
         var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         return Path.Combine(appData, "FrapaClonia");
     }
+
+    #region GitHub Integration
+
+    private void OpenGitHubTokenPage()
+    {
+        try
+        {
+            var url = "https://github.com/settings/tokens/new?description=FrapaClonia&scopes=public_repo";
+            using var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true
+            });
+            _logger?.LogInformation("Opened GitHub token creation page");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error opening GitHub token page");
+            _toastService?.Error(L("Toast_Error"), L("Toast_CouldNotOpenUrl"));
+        }
+    }
+
+    private async Task ConnectGitHubAsync()
+    {
+        var token = GitHubTokenInput.Trim();
+        if (string.IsNullOrEmpty(token))
+        {
+            _toastService?.Warning(L("Toast_Warning"), L("Toast_GitHubTokenInvalid"));
+            return;
+        }
+
+        try
+        {
+            // Validate token by trying to use it
+            var gitHubClient = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("FrapaClonia"))
+            {
+                Credentials = new Octokit.Credentials(token)
+            };
+            await gitHubClient.User.Current(); // Throws if token is invalid
+
+            if (_cacheService != null)
+            {
+                _cacheService.GitHubToken = token;
+                await _cacheService.SaveAsync();
+            }
+
+            IsGitHubLoggedIn = true;
+            GitHubTokenInput = "";
+            _logger?.LogInformation("GitHub token saved successfully");
+            _toastService?.Success(L("Toast_Success"), L("Toast_GitHubConnected"));
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "GitHub token validation failed");
+            _toastService?.Error(L("Toast_Error"), L("Toast_GitHubTokenInvalid"));
+        }
+    }
+
+    private async Task DisconnectGitHubAsync()
+    {
+        try
+        {
+            if (_cacheService != null)
+            {
+                _cacheService.GitHubToken = null;
+                await _cacheService.SaveAsync();
+            }
+
+            IsGitHubLoggedIn = false;
+            _logger?.LogInformation("GitHub token removed");
+            _toastService?.Success(L("Toast_Success"), L("Toast_GitHubDisconnected"));
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error disconnecting GitHub");
+        }
+    }
+
+    #endregion
 
     #region Frpc Version Management
 

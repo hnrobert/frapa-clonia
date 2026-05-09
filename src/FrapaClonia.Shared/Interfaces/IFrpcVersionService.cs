@@ -19,6 +19,11 @@ public interface IFrpcVersionService
     /// Gets the platform-specific download URL for a version
     /// </summary>
     string? GetDownloadUrl(FrpcVersionInfo version);
+
+    /// <summary>
+    /// Whether the last GitHub API call was rate limited
+    /// </summary>
+    bool WasRateLimited { get; }
 }
 
 /// <summary>

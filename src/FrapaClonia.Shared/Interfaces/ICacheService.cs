@@ -24,4 +24,9 @@ public interface ICacheService
     /// Saves the cache to storage
     /// </summary>
     Task SaveAsync();
+
+    /// <summary>
+    /// GitHub personal access token for higher API rate limits
+    /// </summary>
+    string? GitHubToken { get; set; }
 }

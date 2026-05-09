@@ -516,6 +516,11 @@ public partial class FrpcConfigurationViewModel : ObservableObject
                 SelectedGitHubVersion = GitHubVersions.FirstOrDefault();
 
                 _logger?.LogInformation("Found {Count} frpc versions from GitHub", GitHubVersions.Count);
+
+                if (GitHubVersions.Count == 0 && _frpcVersionService.WasRateLimited)
+                {
+                    _toastService?.Warning(L("Toast_Warning"), L("Toast_GitHubRateLimited"));
+                }
             }
         }
         catch (Exception ex)

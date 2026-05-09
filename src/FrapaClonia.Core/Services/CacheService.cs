@@ -16,6 +16,12 @@ public class CacheService : ICacheService
 
     public string CurrentPresetName => _cache.CurrentPreset.Name;
 
+    public string? GitHubToken
+    {
+        get => _cache.App.GitHubToken;
+        set => _cache.App.GitHubToken = value;
+    }
+
     public CacheService(ILogger<CacheService> logger, ITomlConfigSerializer tomlSerializer)
     {
         _logger = logger;

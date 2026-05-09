@@ -109,6 +109,60 @@
           </StackPanel>
         </Border>
 
+        <!-- GitHub Integration -->
+        <Border Classes="settings-card">
+          <StackPanel Spacing="0">
+            <TextBlock Text="{local:Localize GitHubIntegration}"
+                       Classes="section-title"
+                       Margin="{StaticResource ThicknessBottomM}" />
+
+            <!-- Logged out state -->
+            <StackPanel IsVisible="{Binding !IsGitHubLoggedIn}" Spacing="8">
+              <TextBlock Text="{local:Localize GitHubConnectDescription}"
+                         Classes="field-label"
+                         TextWrapping="Wrap"
+                         Opacity="0.7" />
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Command="{Binding GitHubLoginCommand}"
+                        Classes="action-button"
+                        Content="{local:Localize LoginToGitHub}" />
+              </StackPanel>
+              <TextBlock Text="{local:Localize GitHubTokenPrompt}"
+                         Classes="field-label"
+                         TextWrapping="Wrap"
+                         Opacity="0.5"
+                         Margin="0,4,0,0" />
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <TextBox Grid.Column="0"
+                         Text="{Binding GitHubTokenInput}"
+                         Classes="settings-input"
+                         PasswordChar="•"
+                         Watermark="{local:Localize GitHubTokenLabel}" />
+                <Button Grid.Column="1"
+                        Command="{Binding GitHubConnectCommand}"
+                        Classes="action-button primary"
+                        Content="{local:Localize Connect}"
+                        IsEnabled="{Binding GitHubTokenInput, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+              </Grid>
+            </StackPanel>
+
+            <!-- Logged in state -->
+            <StackPanel IsVisible="{Binding IsGitHubLoggedIn}" Spacing="8">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="✔"
+                           Foreground="#4CAF50"
+                           VerticalAlignment="Center" />
+                <TextBlock Text="{local:Localize ConnectedToGitHub}"
+                           Classes="field-label"
+                           Foreground="#4CAF50" />
+              </StackPanel>
+              <Button Command="{Binding GitHubLogoutCommand}"
+                      Classes="action-button"
+                      Content="{local:Localize Disconnect}" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
         <!-- Config Location -->
         <Border Classes="settings-card">
           <StackPanel Spacing="0">
