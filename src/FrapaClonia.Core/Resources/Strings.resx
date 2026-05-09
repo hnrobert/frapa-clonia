@@ -1418,8 +1418,8 @@
   <data name="GitHubConnectDescription" xml:space="preserve">
     <value>Connect your GitHub account for higher API rate limits when fetching frpc versions.</value>
   </data>
-  <data name="LoginToGitHub" xml:space="preserve">
-    <value>Login to GitHub</value>
+  <data name="GenerateGitHubPAT" xml:space="preserve">
+    <value>Generate GitHub PAT</value>
   </data>
   <data name="ConnectedToGitHub" xml:space="preserve">
     <value>Connected to GitHub</value>
@@ -1431,7 +1431,7 @@
     <value>A browser tab will open to create a Personal Access Token. Paste the token below:</value>
   </data>
   <data name="GitHubTokenLabel" xml:space="preserve">
-    <value>GitHub Token</value>
+    <value>GitHub Personal Access Token</value>
   </data>
   <data name="Connect" xml:space="preserve">
     <value>Connect</value>
