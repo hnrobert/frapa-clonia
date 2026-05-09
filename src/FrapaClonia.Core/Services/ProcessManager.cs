@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using FrapaClonia.Shared.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -9,6 +10,65 @@ namespace FrapaClonia.Core.Services;
 public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
 {
     private readonly Dictionary<int, ProcessOutputSubject> _processOutputs = new();
+
+    // Cached shell PATH, resolved once on first use
+    private string? _shellPath;
+    private bool _shellPathResolved;
+
+    /// <summary>
+    /// Gets the user's shell PATH by running a login shell.
+    /// Packaged apps (NativeAOT) don't inherit the user's shell PATH,
+    /// so we resolve it from the shell itself.
+    /// </summary>
+    private async Task<string?> GetShellPathAsync()
+    {
+        if (_shellPathResolved) return _shellPath;
+        _shellPathResolved = true;
+
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX) &&
+            !RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            return null;
+        }
+
+        try
+        {
+            var shell = Environment.GetEnvironmentVariable("SHELL") ?? "/bin/zsh";
+            using var process = new System.Diagnostics.Process();
+            process.StartInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = shell,
+                Arguments = "-l -c \"echo $PATH\"",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            process.Start();
+            var output = await process.StandardOutput.ReadToEndAsync();
+            await process.WaitForExitAsync();
+
+            _shellPath = output.Trim();
+            if (!string.IsNullOrEmpty(_shellPath))
+            {
+                logger.LogDebug("Resolved shell PATH: {Path}", _shellPath);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogDebug(ex, "Failed to resolve shell PATH");
+        }
+
+        return _shellPath;
+    }
+
+    private void ApplyShellPath(System.Diagnostics.ProcessStartInfo startInfo)
+    {
+        if (_shellPath is not null)
+        {
+            startInfo.Environment["PATH"] = _shellPath;
+        }
+    }
 
     public Task<ProcessHandle?> StartProcessAsync(ProcessStartOptions startInfo, CancellationToken cancellationToken = default)
     {
@@ -36,6 +96,12 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
                 {
                     process.StartInfo.Environment[kvp.Key] = kvp.Value;
                 }
+            }
+
+            // Apply shell PATH if available
+            if (_shellPathResolved && _shellPath != null)
+            {
+                ApplyShellPath(process.StartInfo);
             }
 
             process.Start();
@@ -136,6 +202,9 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
         {
             logger.LogInformation("Executing command: {FileName} {Arguments}", fileName, arguments);
 
+            // Ensure shell PATH is resolved for packaged apps
+            _ = await GetShellPathAsync();
+
             using var process = new System.Diagnostics.Process();
             process.StartInfo = new System.Diagnostics.ProcessStartInfo
             {
@@ -147,6 +216,8 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
+
+            ApplyShellPath(process.StartInfo);
 
             process.Start();
 
@@ -184,7 +255,7 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
     {
         private readonly System.Diagnostics.Process _process;
         private readonly ILogger<ProcessManager> _logger;
-        private readonly List<IObserver<string>> _observers = new();
+        private readonly List<IObserver<string>> _observers = [];
         private readonly CancellationTokenSource _cts = new();
 
         public ProcessOutputSubject(System.Diagnostics.Process process, ILogger<ProcessManager> logger)
