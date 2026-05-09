@@ -22,9 +22,9 @@ public class AppCache
 public class CurrentPresetInfo
 {
     /// <summary>
-    /// Name of the current preset
+    /// ID of the current preset
     /// </summary>
-    public string Name { get; set; } = "";
+    public Guid Id { get; set; }
 }
 
 /// <summary>
@@ -32,11 +32,6 @@ public class CurrentPresetInfo
 /// </summary>
 public class AppInfo
 {
-    /// <summary>
-    /// Current language setting
-    /// </summary>
-    public string Language { get; set; } = "en";
-
     /// <summary>
     /// Last update check timestamp
     /// </summary>

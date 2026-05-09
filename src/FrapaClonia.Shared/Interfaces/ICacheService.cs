@@ -6,9 +6,9 @@ namespace FrapaClonia.Shared.Interfaces;
 public interface ICacheService
 {
     /// <summary>
-    /// Gets the name of the currently selected preset
+    /// Gets the ID of the currently selected preset
     /// </summary>
-    string? CurrentPresetName { get; }
+    Guid CurrentPresetId { get; }
 
     /// <summary>
     /// Initializes the cache service, loading cache data from storage
@@ -16,9 +16,9 @@ public interface ICacheService
     Task InitializeAsync();
 
     /// <summary>
-    /// Sets the current preset by name
+    /// Sets the current preset by ID
     /// </summary>
-    Task SetCurrentPresetAsync(string presetName);
+    Task SetCurrentPresetAsync(Guid presetId);
 
     /// <summary>
     /// Saves the cache to storage

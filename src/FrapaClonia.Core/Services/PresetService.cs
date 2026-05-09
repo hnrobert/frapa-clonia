@@ -62,17 +62,17 @@ public class PresetService : IPresetService
             {
                 _logger.LogInformation("No presets found, creating default preset");
                 var defaultPreset = await CreatePresetAsync("Default");
-                await _cacheService.SetCurrentPresetAsync(defaultPreset.Name);
+                await _cacheService.SetCurrentPresetAsync(defaultPreset.Id);
                 await _cacheService.SaveAsync();
             }
 
             // Set current preset from cache
-            var currentPresetName = _cacheService.CurrentPresetName;
+            var currentPresetId = _cacheService.CurrentPresetId;
             ConfigPreset? current = null;
 
-            if (!string.IsNullOrEmpty(currentPresetName))
+            if (currentPresetId != Guid.Empty)
             {
-                current = Presets.FirstOrDefault(p => p.Name == currentPresetName);
+                current = Presets.FirstOrDefault(p => p.Id == currentPresetId);
             }
 
             // Fallback to first preset if not found
@@ -84,7 +84,7 @@ public class PresetService : IPresetService
             CurrentPreset = current;
             if (current != null)
             {
-                await _cacheService.SetCurrentPresetAsync(current.Name);
+                await _cacheService.SetCurrentPresetAsync(current.Id);
                 await _cacheService.SaveAsync();
             }
 
@@ -186,7 +186,7 @@ public class PresetService : IPresetService
             var previousId = CurrentPreset?.Id ?? Guid.Empty;
             CurrentPreset = preset;
 
-            await _cacheService.SetCurrentPresetAsync(preset.Name);
+            await _cacheService.SetCurrentPresetAsync(preset.Id);
             await _cacheService.SaveAsync();
 
             CurrentPresetChanged?.Invoke(this, new PresetChangedEventArgs
@@ -252,7 +252,7 @@ public class PresetService : IPresetService
             // Raise event to notify UI of name change
             if (CurrentPreset?.Id == presetId)
             {
-                await _cacheService.SetCurrentPresetAsync(newName);
+                await _cacheService.SetCurrentPresetAsync(presetId);
                 await _cacheService.SaveAsync();
 
                 CurrentPresetChanged?.Invoke(this, new PresetChangedEventArgs

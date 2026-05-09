@@ -14,7 +14,7 @@ public class CacheService : ICacheService
     private readonly string _cacheFilePath;
     private AppCache _cache = new();
 
-    public string CurrentPresetName => _cache.CurrentPreset.Name;
+    public Guid CurrentPresetId => _cache.CurrentPreset.Id;
 
     public string? GitHubToken
     {
@@ -42,7 +42,7 @@ public class CacheService : ICacheService
             if (cache != null)
             {
                 _cache = cache;
-                _logger.LogInformation("Cache loaded, current preset: {PresetName}", _cache.CurrentPreset.Name);
+                _logger.LogInformation("Cache loaded, current preset: {PresetId}", _cache.CurrentPreset.Id);
             }
             else
             {
@@ -57,10 +57,10 @@ public class CacheService : ICacheService
         }
     }
 
-    public Task SetCurrentPresetAsync(string presetName)
+    public Task SetCurrentPresetAsync(Guid presetId)
     {
-        _cache.CurrentPreset.Name = presetName;
-        _logger.LogInformation("Current preset set to: {PresetName}", presetName);
+        _cache.CurrentPreset.Id = presetId;
+        _logger.LogInformation("Current preset set to: {PresetId}", presetId);
         return Task.CompletedTask;
     }
 
