@@ -322,6 +322,19 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
     {
         try
         {
+            // Try common absolute paths first (for packaged apps without shell PATH)
+            string[] commonPaths = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+                ? [$"/opt/homebrew/bin/{command}", $"/usr/local/bin/{command}"]
+                : RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+                    ? [$"/usr/bin/{command}", $"/usr/local/bin/{command}", $"/bin/{command}"]
+                    : [];
+
+            foreach (var path in commonPaths)
+            {
+                if (File.Exists(path))
+                    return true;
+            }
+
             var whichCommand = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "where" : "which";
             var result = await processManager.ExecuteAsync(whichCommand, command, cancellationToken: cancellationToken);
             return result.ExitCode == 0;

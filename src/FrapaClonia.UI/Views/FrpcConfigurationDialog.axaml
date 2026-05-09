@@ -390,8 +390,13 @@
 
                 <!-- Version list (no internal scroll viewer, full height) -->
                 <ItemsControl Grid.Row="1"
-                              ItemsSource="{Binding DownloadedVersions}"
-                              IsVisible="{Binding !IsLoadingDownloadedVersions}">
+                              ItemsSource="{Binding DownloadedVersions}">
+                  <ItemsControl.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                      <Binding Path="!IsLoadingDownloadedVersions" />
+                      <Binding Path="DownloadedVersions.Count" Converter="{x:Static ObjectConverters.IsNotNull}" />
+                    </MultiBinding>
+                  </ItemsControl.IsVisible>
                   <ItemsControl.ItemTemplate>
                     <DataTemplate>
                       <Border Background="Transparent"
