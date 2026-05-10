@@ -1217,6 +1217,9 @@
   <data name="Toast_ServiceStartFailedVerification" xml:space="preserve">
     <value>Service started but verification failed. Check logs for details.</value>
   </data>
+  <data name="Toast_Success" xml:space="preserve">
+    <value>Success</value>
+  </data>
   <data name="Toast_Warning" xml:space="preserve">
     <value>Warning</value>
   </data>
@@ -1498,5 +1501,11 @@
   </data>
   <data name="ToggleTokenVisibility" xml:space="preserve">
     <value>Show/hide token</value>
+  </data>
+  <data name="Show" xml:space="preserve">
+    <value>Show</value>
+  </data>
+  <data name="Hide" xml:space="preserve">
+    <value>Hide</value>
   </data>
 </root>

@@ -176,7 +176,7 @@
                         IsVisible="{Binding !IsGitHubUpdating}"
                         ToolTip.Tip="{local:Localize VerifyToken}">
                   <StackPanel Orientation="Horizontal" Spacing="4">
-                    <mi:MaterialIcon Kind="CheckCircle" />
+                    <mi:MaterialIcon Kind="ShieldCheck" />
                     <TextBlock Text="{local:Localize Verify}" />
                   </StackPanel>
                 </Button>
@@ -189,19 +189,19 @@
                            Text="{Binding GitHubTokenInput}"
                            PasswordChar="{Binding TokenPasswordChar}"
                            Watermark="{local:Localize GitHubTokenLabel}" />
-                  <Button Grid.Column="1" Classes="action-button"
+                  <Button Grid.Column="1" Classes="icon-button"
                           Command="{Binding GitHubToggleTokenVisibilityCommand}"
                           ToolTip.Tip="{local:Localize ToggleTokenVisibility}">
                     <Panel>
-                      <mi:MaterialIcon Kind="Eye" IsVisible="{Binding !IsTokenVisible}" />
-                      <mi:MaterialIcon Kind="EyeOff" IsVisible="{Binding IsTokenVisible}" />
+                      <mi:MaterialIcon Kind="Eye" IsVisible="{Binding !IsTokenVisible}" Width="18" Height="18" />
+                      <mi:MaterialIcon Kind="EyeOff" IsVisible="{Binding IsTokenVisible}" Width="18" Height="18" />
                     </Panel>
                   </Button>
-                  <Button Grid.Column="2" Classes="action-button"
+                  <Button Grid.Column="2" Classes="icon-button"
                           Command="{Binding GitHubVerifyCommand}"
                           IsEnabled="{Binding GitHubTokenInput, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                           ToolTip.Tip="{local:Localize VerifyToken}">
-                    <mi:MaterialIcon Kind="CheckCircle" />
+                    <mi:MaterialIcon Kind="ShieldCheck" Width="18" Height="18" />
                   </Button>
                   <Button Grid.Column="3" Classes="action-button primary"
                           Command="{Binding GitHubConnectCommand}"
