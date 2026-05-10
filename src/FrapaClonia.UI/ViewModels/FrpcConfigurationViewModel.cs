@@ -76,6 +76,9 @@ public partial class FrpcConfigurationViewModel : ObservableObject
     [ObservableProperty] private List<DownloadedFrpcVersion> _downloadedVersions = [];
     [ObservableProperty] private bool _isLoadingDownloadedVersions;
 
+    public bool HasDownloadedVersions => !IsLoadingDownloadedVersions && DownloadedVersions.Count > 0;
+    public bool HasNoDownloadedVersions => !IsLoadingDownloadedVersions && DownloadedVersions.Count == 0;
+
     // Dialog result
     public bool DialogResult { get; private set; }
     public event EventHandler? CloseRequested;
@@ -428,6 +431,20 @@ public partial class FrpcConfigurationViewModel : ObservableObject
             _logger?.LogError(ex, "Error browsing for frpc path");
             _toastService?.Error(L("Toast_Error"), L("Toast_CouldNotSelectFile"));
         }
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnDownloadedVersionsChanged(List<DownloadedFrpcVersion> value)
+    {
+        OnPropertyChanged(nameof(HasDownloadedVersions));
+        OnPropertyChanged(nameof(HasNoDownloadedVersions));
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnIsLoadingDownloadedVersionsChanged(bool value)
+    {
+        OnPropertyChanged(nameof(HasDownloadedVersions));
+        OnPropertyChanged(nameof(HasNoDownloadedVersions));
     }
 
     partial void OnFrpcBinaryPathChanged(string value)
