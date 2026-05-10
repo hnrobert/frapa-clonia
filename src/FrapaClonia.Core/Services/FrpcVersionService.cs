@@ -15,6 +15,7 @@ public class FrpcVersionService(ILogger<FrpcVersionService> logger, ICacheServic
     private readonly GitHubClient _gitHubClient = new(new ProductHeaderValue("FrapaClonia"));
 
     public bool WasRateLimited { get; private set; }
+    public bool UsedCache { get; private set; }
 
     // Default constructor for design-time
     public FrpcVersionService() : this(
@@ -52,17 +53,18 @@ public class FrpcVersionService(ILogger<FrpcVersionService> logger, ICacheServic
 
     private static readonly TimeSpan CacheDuration = TimeSpan.FromHours(1);
 
-    public async Task<IReadOnlyList<FrpcVersionInfo>> GetAvailableVersionsAsync()
+    public async Task<IReadOnlyList<FrpcVersionInfo>> GetAvailableVersionsAsync(bool forceRefresh = false)
     {
         WasRateLimited = false;
 
-        // Return cached versions if still fresh
-        if (cacheService?.FrpcVersions.Count > 0 && cacheService.LastFrpcVersionCheck.HasValue)
+        // Return cached versions if still fresh and not forced
+        if (!forceRefresh && cacheService?.FrpcVersions.Count > 0 && cacheService.LastFrpcVersionCheck.HasValue)
         {
             var age = DateTime.UtcNow - cacheService.LastFrpcVersionCheck.Value;
             if (age < CacheDuration)
             {
                 logger.LogInformation("Using cached frpc versions (age: {Age})", age);
+                UsedCache = true;
                 return cacheService.FrpcVersions.Select(v => new FrpcVersionInfo
                 {
                     Version = v.Version,
@@ -73,6 +75,8 @@ public class FrpcVersionService(ILogger<FrpcVersionService> logger, ICacheServic
                 }).ToList();
             }
         }
+
+        UsedCache = false;
 
         try
         {

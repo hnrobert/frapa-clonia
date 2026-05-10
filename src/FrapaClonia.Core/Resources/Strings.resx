@@ -1437,7 +1437,7 @@
     <value>Connect</value>
   </data>
   <data name="Toast_GitHubRateLimited" xml:space="preserve">
-    <value>GitHub API rate limit exceeded. Go to Settings to connect your GitHub account for higher limits.</value>
+    <value>Rate Limited</value>
   </data>
   <data name="Toast_GitHubConnected" xml:space="preserve">
     <value>Successfully connected to GitHub</value>
@@ -1450,5 +1450,23 @@
   </data>
   <data name="GitHubLoginUrl" xml:space="preserve">
     <value>https://github.com/settings/tokens/new?description=FrapaClonia&amp;scopes=public_repo</value>
+  </data>
+  <data name="Toast_FrpcVersionsLoaded" xml:space="preserve">
+    <value>Loaded {0} frpc versions</value>
+  </data>
+  <data name="Toast_FrpcVersionsFetched" xml:space="preserve">
+    <value>Versions Updated</value>
+  </data>
+  <data name="Toast_FrpcVersionsFetchedDesc" xml:space="preserve">
+    <value>Fetched {0} frpc versions from GitHub</value>
+  </data>
+  <data name="Toast_FrpcVersionsFetchFailed" xml:space="preserve">
+    <value>Fetch Failed</value>
+  </data>
+  <data name="Toast_FrpcVersionsFetchFailedDesc" xml:space="preserve">
+    <value>Could not fetch frpc versions from GitHub</value>
+  </data>
+  <data name="Toast_GitHubRateLimitedDesc" xml:space="preserve">
+    <value>GitHub API rate limit exceeded. Go to Settings to connect your GitHub account for higher limits.</value>
   </data>
 </root>

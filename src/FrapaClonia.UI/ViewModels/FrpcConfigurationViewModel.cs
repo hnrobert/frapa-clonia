@@ -500,7 +500,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         }
     }
 
-    private async Task RefreshGitHubVersionsAsync()
+    private async Task RefreshGitHubVersionsAsync(bool forceRefresh = false)
     {
         try
         {
@@ -509,7 +509,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
 
             if (_frpcVersionService != null)
             {
-                var versions = await _frpcVersionService.GetAvailableVersionsAsync();
+                var versions = await _frpcVersionService.GetAvailableVersionsAsync(forceRefresh);
                 GitHubVersions = versions.ToList();
 
                 // Select latest by default
@@ -517,9 +517,27 @@ public partial class FrpcConfigurationViewModel : ObservableObject
 
                 _logger?.LogInformation("Found {Count} frpc versions from GitHub", GitHubVersions.Count);
 
-                if (GitHubVersions.Count == 0 && _frpcVersionService.WasRateLimited)
+                // Only show toast when fetched from GitHub (not from cache)
+                if (!_frpcVersionService.UsedCache)
                 {
-                    _toastService?.Warning(L("Toast_Warning"), L("Toast_GitHubRateLimited"));
+                    if (GitHubVersions.Count > 0)
+                    {
+                        _toastService?.Success(
+                            L("Toast_FrpcVersionsFetched"),
+                            L("Toast_FrpcVersionsFetchedDesc", GitHubVersions.Count));
+                    }
+                    else if (_frpcVersionService.WasRateLimited)
+                    {
+                        _toastService?.Warning(
+                            L("Toast_GitHubRateLimited"),
+                            L("Toast_GitHubRateLimitedDesc"));
+                    }
+                    else if (GitHubVersions.Count == 0)
+                    {
+                        _toastService?.Error(
+                            L("Toast_FrpcVersionsFetchFailed"),
+                            L("Toast_FrpcVersionsFetchFailedDesc"));
+                    }
                 }
             }
         }
@@ -543,7 +561,9 @@ public partial class FrpcConfigurationViewModel : ObservableObject
     {
         if (IsWebDownloadMode)
         {
-            await RefreshGitHubVersionsAsync();
+            SelectedGitHubVersion = null;
+            SelectedVersion = null;
+            await RefreshGitHubVersionsAsync(forceRefresh: true);
         }
         // For package manager mode, no need to refresh - always "latest"
     }
