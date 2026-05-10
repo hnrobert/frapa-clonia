@@ -222,9 +222,19 @@
             <TextBlock Text="{local:Localize ConfigurationLocation}"
                        Classes="section-title"
                        Margin="{StaticResource ThicknessBottomM}" />
-            <TextBlock Text="{Binding ConfigLocation}"
-                       Classes="readonly-value"
-                       AutomationProperties.Name="Configuration Location" />
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+              <TextBlock Grid.Column="0" Text="{Binding ConfigLocation}"
+                         Classes="readonly-value"
+                         VerticalAlignment="Center"
+                         AutomationProperties.Name="Configuration Location" />
+              <Button Grid.Column="1"
+                      Command="{Binding OpenConfigFolderCommand}"
+                      Classes="icon-button"
+                      ToolTip.Tip="{local:Localize OpenInFileManager}"
+                      VerticalAlignment="Center">
+                <mi:MaterialIcon Kind="FolderOpen" Width="18" Height="18" />
+              </Button>
+            </Grid>
           </StackPanel>
         </Border>
 

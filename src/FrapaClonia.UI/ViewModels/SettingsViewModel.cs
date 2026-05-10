@@ -52,6 +52,7 @@ public partial class SettingsViewModel : ObservableObject
 
     public IRelayCommand SaveCommand { get; }
     public IRelayCommand ResetCommand { get; }
+    public IRelayCommand OpenConfigFolderCommand { get; }
     public IRelayCommand GitHubLoginCommand { get; }
     public IRelayCommand GitHubConnectCommand { get; }
     public IRelayCommand GitHubLogoutCommand { get; }
@@ -134,6 +135,7 @@ public partial class SettingsViewModel : ObservableObject
                 _logger?.LogError(e, "Error loading settings");
             }
         });
+        OpenConfigFolderCommand = new RelayCommand(OpenConfigFolder);
         GitHubLoginCommand = new RelayCommand(OpenGitHubTokenPage);
         GitHubConnectCommand = new RelayCommand(async void () =>
         {
@@ -365,6 +367,30 @@ public partial class SettingsViewModel : ObservableObject
     {
         var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         return Path.Combine(appData, "FrapaClonia");
+    }
+
+    private void OpenConfigFolder()
+    {
+        try
+        {
+            var path = ConfigLocation;
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            using var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = path,
+                UseShellExecute = true
+            });
+            _logger?.LogInformation("Opened config folder: {Path}", path);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error opening config folder");
+            _toastService?.Error(L("Toast_Error"), L("Toast_CouldNotOpenFolder"));
+        }
     }
 
     #region GitHub Integration

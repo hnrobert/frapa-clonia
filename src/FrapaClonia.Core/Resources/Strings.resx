@@ -1508,4 +1508,10 @@
   <data name="Hide" xml:space="preserve">
     <value>Hide</value>
   </data>
+  <data name="OpenInFileManager" xml:space="preserve">
+    <value>Open in file manager</value>
+  </data>
+  <data name="Toast_CouldNotOpenFolder" xml:space="preserve">
+    <value>Could not open folder in file manager</value>
+  </data>
 </root>
