@@ -505,6 +505,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         try
         {
             IsLoadingGitHubVersions = true;
+            IsLoadingVersions = true;
             _logger?.LogInformation("Refreshing available frpc versions from GitHub");
 
             if (_frpcVersionService != null)
@@ -549,11 +550,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         finally
         {
             IsLoadingGitHubVersions = false;
-            // Update the displayed versions if we're in web download mode
-            if (IsWebDownloadMode)
-            {
-                UpdateAvailableVersionsForMode();
-            }
+            UpdateAvailableVersionsForMode();
         }
     }
 

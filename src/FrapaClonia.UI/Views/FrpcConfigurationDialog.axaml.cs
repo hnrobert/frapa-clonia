@@ -6,6 +6,7 @@ namespace FrapaClonia.UI.Views;
 
 public partial class FrpcConfigurationDialog : Window
 {
+
     public FrpcConfigurationDialog()
     {
         InitializeComponent();
@@ -18,5 +19,11 @@ public partial class FrpcConfigurationDialog : Window
 
         ToastService.Instance?.PushChildWindow();
         Closed += (_, _) => ToastService.Instance?.PopChildWindow();
+
+        var toastContainer = this.FindControl<ItemsControl>("ToastContainer");
+        if (toastContainer != null && ToastService.Instance != null)
+        {
+            toastContainer.ItemsSource = ToastService.Instance.ChildToasts;
+        }
     }
 }
