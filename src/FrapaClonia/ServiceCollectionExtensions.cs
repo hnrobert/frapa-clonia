@@ -35,6 +35,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ISystemServiceManager, SystemServiceManager>();
         services.AddSingleton<ITomlSerializer, TomlSerializer>();
         services.AddSingleton<IProcessManager, ProcessManager>();
+        services.AddSingleton<IUpdateService, UpdateService>();
 
         // Services
         services.AddSingleton<NavigationService>();

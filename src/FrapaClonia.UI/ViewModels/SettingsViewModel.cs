@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Shared.Interfaces;
 using FrapaClonia.Shared.Models;
+using FrapaClonia.Shared.Utils;
 using FrapaClonia.UI.Services;
 using Microsoft.Extensions.Logging;
 
@@ -13,6 +14,9 @@ namespace FrapaClonia.UI.ViewModels;
 /// </summary>
 public partial class SettingsViewModel : ObservableObject
 {
+    private const string Owner = "hnrobert";
+    private const string Repo = "frapa-clonia";
+
     private readonly ILogger<SettingsViewModel>? _logger;
     private readonly ILocalizationService? _localizationService;
     private readonly IAutoStartService? _autoStartService;
@@ -22,6 +26,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly INativeDeploymentService? _nativeDeploymentService;
     private readonly IPresetService? _presetService;
     private readonly ICacheService? _cacheService;
+    private readonly IUpdateService? _updateService;
 
     [ObservableProperty] private LanguageOption? _selectedLanguage;
 
@@ -45,6 +50,14 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _isTokenVisible;
     [ObservableProperty] private bool _isVerifyingToken;
 
+    // Updates
+    [ObservableProperty] private string _currentVersion = AppVersion.Version;
+    [ObservableProperty] private string _latestVersion = "";
+    [ObservableProperty] private bool _isCheckingForUpdates;
+    [ObservableProperty] private bool _updateAvailable;
+    [ObservableProperty] private string _updateReleaseNotes = "";
+    [ObservableProperty] private string _updateDownloadUrl = "";
+
     public bool IsGitHubLoggedIn => GitHubTokenStatus != GitHubTokenStatus.None;
     public bool IsGitHubConnected => GitHubTokenStatus == GitHubTokenStatus.Connected;
     public bool IsGitHubTokenInvalid => GitHubTokenStatus == GitHubTokenStatus.Invalid;
@@ -61,6 +74,9 @@ public partial class SettingsViewModel : ObservableObject
     public IRelayCommand GitHubVerifyCachedCommand { get; }
     public IRelayCommand GitHubToggleTokenVisibilityCommand { get; }
     public IRelayCommand GitHubCancelUpdateCommand { get; }
+    public IRelayCommand CheckForUpdatesCommand { get; }
+    public IRelayCommand DownloadUpdateCommand { get; }
+    public IRelayCommand OpenReleasePageCommand { get; }
 
     public List<LanguageOption> AvailableLanguages { get; }
 
@@ -69,6 +85,7 @@ public partial class SettingsViewModel : ObservableObject
     // Default constructor for design-time support
     public SettingsViewModel() : this(
         Microsoft.Extensions.Logging.Abstractions.NullLogger<SettingsViewModel>.Instance,
+        null!,
         null!,
         null!,
         null!,
@@ -89,7 +106,8 @@ public partial class SettingsViewModel : ObservableObject
         ToastService? toastService,
         INativeDeploymentService? nativeDeploymentService,
         IPresetService? presetService,
-        ICacheService? cacheService)
+        ICacheService? cacheService,
+        IUpdateService? updateService)
     {
         _logger = logger;
         _localizationService = localizationService;
@@ -100,6 +118,7 @@ public partial class SettingsViewModel : ObservableObject
         _nativeDeploymentService = nativeDeploymentService;
         _presetService = presetService;
         _cacheService = cacheService;
+        _updateService = updateService;
 
         AvailableLanguages =
         [
@@ -197,6 +216,21 @@ public partial class SettingsViewModel : ObservableObject
             GitHubTokenInput = "";
             IsTokenVisible = false;
         });
+        CheckForUpdatesCommand = new RelayCommand(async void () =>
+        {
+            try { await CheckForUpdatesAsync(); }
+            catch (Exception e) { _logger?.LogError(e, "Error checking for updates"); }
+        });
+        DownloadUpdateCommand = new RelayCommand(() => OpenUrl(_updateDownloadUrl));
+        OpenReleasePageCommand = new RelayCommand(() =>
+        {
+            if (UpdateAvailable && !string.IsNullOrEmpty(_updateDownloadUrl))
+            {
+                // Open the release page (strip the asset download URL to get the release page)
+                var tag = $"releases/tag/{LatestVersion}";
+                OpenUrl($"https://github.com/{Owner}/{Repo}/{tag}");
+            }
+        });
 
         // Initialize theme from ThemeService
         ThemeIndex = _themeService.CurrentTheme.ToString() switch
@@ -226,9 +260,29 @@ public partial class SettingsViewModel : ObservableObject
         {
             await LoadSettingsAsync();
             await RefreshDownloadedVersionsAsync();
+
+            // Token validation with throttling
             if (!string.IsNullOrEmpty(_cacheService?.GitHubToken))
             {
-                await ValidateGitHubTokenAsync();
+                var lastValidation = _cacheService.LastGitHubTokenValidation;
+                if (lastValidation == null || (DateTime.UtcNow - lastValidation.Value).TotalHours > 24)
+                {
+                    await ValidateGitHubTokenAsync();
+                }
+                else
+                {
+                    GitHubTokenStatus = GitHubTokenStatus.Connected;
+                }
+            }
+
+            // Auto-check for updates (>24h since last check)
+            if (_updateService != null)
+            {
+                var lastCheck = _cacheService?.LastSelfUpdateCheck;
+                if (lastCheck == null || (DateTime.UtcNow - lastCheck.Value).TotalHours > 24)
+                {
+                    await CheckForUpdatesAsync();
+                }
             }
         });
     }
@@ -393,6 +447,63 @@ public partial class SettingsViewModel : ObservableObject
         }
     }
 
+    private void OpenUrl(string? url)
+    {
+        if (string.IsNullOrEmpty(url)) return;
+        try
+        {
+            using var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error opening URL: {Url}", url);
+        }
+    }
+
+    private async Task CheckForUpdatesAsync()
+    {
+        if (_updateService == null) return;
+
+        try
+        {
+            IsCheckingForUpdates = true;
+            var update = await _updateService.CheckForUpdatesAsync();
+
+            if (_cacheService != null)
+            {
+                _cacheService.LastSelfUpdateCheck = DateTime.UtcNow;
+                await _cacheService.SaveAsync();
+            }
+
+            if (update != null)
+            {
+                UpdateAvailable = true;
+                LatestVersion = update.Version;
+                UpdateReleaseNotes = update.ReleaseNotes ?? "";
+                UpdateDownloadUrl = update.DownloadUrl ?? update.HtmlUrl ?? "";
+                _logger?.LogInformation("Update available: {Version}", update.Version);
+            }
+            else
+            {
+                UpdateAvailable = false;
+                _toastService?.Success(L("UpToDate"), L("UpToDateDesc"));
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error checking for updates");
+            _toastService?.Error(L("UpdateCheckFailed"), L("UpdateCheckFailedDesc"));
+        }
+        finally
+        {
+            IsCheckingForUpdates = false;
+        }
+    }
+
     #region GitHub Integration
 
     private async Task ValidateGitHubTokenAsync()
@@ -410,6 +521,12 @@ public partial class SettingsViewModel : ObservableObject
             GitHubTokenStatus = GitHubTokenStatus.Connected;
             _logger?.LogInformation("GitHub token validated successfully");
             _toastService?.Success(L("Toast_GitHubTokenValid"), L("Toast_GitHubTokenValidDesc"));
+
+            if (_cacheService != null)
+            {
+                _cacheService.LastGitHubTokenValidation = DateTime.UtcNow;
+                await _cacheService.SaveAsync();
+            }
         }
         catch (Octokit.AuthorizationException)
         {

@@ -30,6 +30,18 @@ public class CacheService : ICacheService
         set => _cache.App.LastFrpcVersionCheck = value;
     }
 
+    public DateTime? LastSelfUpdateCheck
+    {
+        get => _cache.App.LastSelfUpdateCheck;
+        set => _cache.App.LastSelfUpdateCheck = value;
+    }
+
+    public DateTime? LastGitHubTokenValidation
+    {
+        get => _cache.App.LastGitHubTokenValidation;
+        set => _cache.App.LastGitHubTokenValidation = value;
+    }
+
     public CacheService(ILogger<CacheService> logger, ITomlConfigSerializer tomlSerializer)
     {
         _logger = logger;

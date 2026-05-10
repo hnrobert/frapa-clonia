@@ -110,6 +110,51 @@
           </StackPanel>
         </Border>
 
+        <!-- Updates -->
+        <Border Classes="settings-card">
+          <StackPanel Spacing="0">
+            <TextBlock Text="{local:Localize Updates}"
+                       Classes="section-title"
+                       Margin="{StaticResource ThicknessBottomM}" />
+
+            <!-- Current version -->
+            <TextBlock Text="{Binding CurrentVersion, StringFormat='v{0}'}"
+                       Classes="readonly-value" />
+
+            <!-- Update available -->
+            <StackPanel IsVisible="{Binding UpdateAvailable}" Spacing="8" Margin="0,8,0,0">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="⬆" Foreground="#4CAF50" VerticalAlignment="Center" />
+                <TextBlock Text="{local:Localize UpdateAvailable}" Classes="field-label"
+                           Foreground="#4CAF50" />
+              </StackPanel>
+              <TextBlock Text="{Binding LatestVersion, StringFormat='v{0}'}" />
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Command="{Binding DownloadUpdateCommand}"
+                        Classes="action-button primary"
+                        Content="{local:Localize DownloadUpdate}" />
+                <Button Command="{Binding OpenReleasePageCommand}"
+                        Classes="action-button"
+                        Content="{local:Localize ViewReleaseNotes}" />
+              </StackPanel>
+            </StackPanel>
+
+            <!-- Check for updates button -->
+            <Button Command="{Binding CheckForUpdatesCommand}"
+                    Classes="action-button"
+                    IsEnabled="{Binding !IsCheckingForUpdates}"
+                    Margin="0,8,0,0">
+              <StackPanel Orientation="Horizontal" Spacing="4">
+                <mi:MaterialIcon Kind="Refresh" Width="18" Height="18"
+                                 IsVisible="{Binding !IsCheckingForUpdates}" />
+                <mi:MaterialIcon Kind="Loading" Width="18" Height="18"
+                                 IsVisible="{Binding IsCheckingForUpdates}" />
+                <TextBlock Text="{local:Localize CheckForUpdates}" />
+              </StackPanel>
+            </Button>
+          </StackPanel>
+        </Border>
+
         <!-- GitHub Integration -->
         <Border Classes="settings-card">
           <StackPanel Spacing="0">

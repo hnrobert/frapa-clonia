@@ -41,4 +41,14 @@ public interface ICacheService
     /// When frpc versions were last fetched from GitHub
     /// </summary>
     DateTime? LastFrpcVersionCheck { get; set; }
+
+    /// <summary>
+    /// When the app last checked for self-updates
+    /// </summary>
+    DateTime? LastSelfUpdateCheck { get; set; }
+
+    /// <summary>
+    /// When the GitHub token was last validated
+    /// </summary>
+    DateTime? LastGitHubTokenValidation { get; set; }
 }

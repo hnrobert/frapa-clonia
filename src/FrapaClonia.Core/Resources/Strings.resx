@@ -1514,4 +1514,31 @@
   <data name="Toast_CouldNotOpenFolder" xml:space="preserve">
     <value>Could not open folder in file manager</value>
   </data>
+  <data name="Updates" xml:space="preserve">
+    <value>Updates</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>A new version is available!</value>
+  </data>
+  <data name="CheckForUpdates" xml:space="preserve">
+    <value>Check for Updates</value>
+  </data>
+  <data name="DownloadUpdate" xml:space="preserve">
+    <value>Download Update</value>
+  </data>
+  <data name="ViewReleaseNotes" xml:space="preserve">
+    <value>Release Notes</value>
+  </data>
+  <data name="UpToDate" xml:space="preserve">
+    <value>Up to Date</value>
+  </data>
+  <data name="UpToDateDesc" xml:space="preserve">
+    <value>FrapaClonia is running the latest version.</value>
+  </data>
+  <data name="UpdateCheckFailed" xml:space="preserve">
+    <value>Update Check Failed</value>
+  </data>
+  <data name="UpdateCheckFailedDesc" xml:space="preserve">
+    <value>Could not check for updates. Please try again later.</value>
+  </data>
 </root>
