@@ -23,7 +23,6 @@
 
   <Window.Resources>
     <converters:StringEqualsConverter x:Key="StringEqualsConverter" />
-    <converters:CountToEmptyVisibilityConverter x:Key="CountToEmptyVisibilityConverter" />
     <converters:BoolToOpacityConverter x:Key="BoolToOpacityConverter" />
   </Window.Resources>
 

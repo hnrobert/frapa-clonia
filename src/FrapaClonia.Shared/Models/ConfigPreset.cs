@@ -278,9 +278,9 @@ public partial class DeploymentSettings : ObservableObject
 /// </summary>
 public class PresetItem(string name, bool isNewPresetOption)
 {
-    public Guid? Id { get; init; }
+    public Guid? Id { get; }
     public string Name { get; init; } = name;
-    public bool IsNewPresetOption { get; init; } = isNewPresetOption;
+    public bool IsNewPresetOption { get; } = isNewPresetOption;
 
     public PresetItem(ConfigPreset preset) : this(preset.Name, false)
     {
