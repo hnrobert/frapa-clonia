@@ -519,7 +519,13 @@ public partial class FrpcConfigurationViewModel : ObservableObject
                 _logger?.LogInformation("Found {Count} frpc versions from GitHub", GitHubVersions.Count);
 
                 // Only show toast when fetched from GitHub (not from cache)
-                if (!_frpcVersionService.UsedCache)
+                if (_frpcVersionService.WasRateLimited)
+                {
+                    _toastService?.Warning(
+                        L("Toast_GitHubRateLimited"),
+                        L("Toast_GitHubRateLimitedDesc"));
+                }
+                else if (!_frpcVersionService.UsedCache)
                 {
                     if (GitHubVersions.Count > 0)
                     {
@@ -527,13 +533,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
                             L("Toast_FrpcVersionsFetched"),
                             L("Toast_FrpcVersionsFetchedDesc", GitHubVersions.Count));
                     }
-                    else if (_frpcVersionService.WasRateLimited)
-                    {
-                        _toastService?.Warning(
-                            L("Toast_GitHubRateLimited"),
-                            L("Toast_GitHubRateLimitedDesc"));
-                    }
-                    else if (GitHubVersions.Count == 0)
+                    else
                     {
                         _toastService?.Error(
                             L("Toast_FrpcVersionsFetchFailed"),
