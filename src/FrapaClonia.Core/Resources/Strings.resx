@@ -1419,7 +1419,7 @@
     <value>GitHub Integration</value>
   </data>
   <data name="GitHubConnectDescription" xml:space="preserve">
-    <value>Connect your GitHub account for higher API rate limits when fetching frpc versions.</value>
+    <value>Connect your GitHub account to increase API rate limits for actions such as fetching frpc versions.</value>
   </data>
   <data name="GenerateGitHubPAT" xml:space="preserve">
     <value>Generate GitHub PAT</value>
