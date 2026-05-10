@@ -39,14 +39,27 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private DownloadedFrpcVersion? _selectedVersion;
 
     // GitHub Integration
-    [ObservableProperty] private bool _isGitHubLoggedIn;
+    [ObservableProperty] private GitHubTokenStatus _gitHubTokenStatus;
     [ObservableProperty] private string _gitHubTokenInput = "";
+    [ObservableProperty] private bool _isGitHubUpdating;
+    [ObservableProperty] private bool _isTokenVisible;
+    [ObservableProperty] private bool _isVerifyingToken;
+
+    public bool IsGitHubLoggedIn => GitHubTokenStatus != GitHubTokenStatus.None;
+    public bool IsGitHubConnected => GitHubTokenStatus == GitHubTokenStatus.Connected;
+    public bool IsGitHubTokenInvalid => GitHubTokenStatus == GitHubTokenStatus.Invalid;
+    public char TokenPasswordChar => IsTokenVisible ? '\0' : '•';
 
     public IRelayCommand SaveCommand { get; }
     public IRelayCommand ResetCommand { get; }
     public IRelayCommand GitHubLoginCommand { get; }
     public IRelayCommand GitHubConnectCommand { get; }
     public IRelayCommand GitHubLogoutCommand { get; }
+    public IRelayCommand GitHubUpdateCommand { get; }
+    public IRelayCommand GitHubVerifyCommand { get; }
+    public IRelayCommand GitHubVerifyCachedCommand { get; }
+    public IRelayCommand GitHubToggleTokenVisibilityCommand { get; }
+    public IRelayCommand GitHubCancelUpdateCommand { get; }
 
     public List<LanguageOption> AvailableLanguages { get; }
 
@@ -144,6 +157,44 @@ public partial class SettingsViewModel : ObservableObject
                 _logger?.LogError(e, "Error disconnecting GitHub");
             }
         });
+        GitHubUpdateCommand = new RelayCommand(() =>
+        {
+            IsGitHubUpdating = true;
+            IsTokenVisible = false;
+            GitHubTokenInput = _cacheService?.GitHubToken ?? "";
+        });
+        GitHubVerifyCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await VerifyTokenAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error verifying GitHub token");
+            }
+        });
+        GitHubVerifyCachedCommand = new RelayCommand(async void () =>
+        {
+            try
+            {
+                await ValidateGitHubTokenAsync();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error verifying cached GitHub token");
+            }
+        });
+        GitHubToggleTokenVisibilityCommand = new RelayCommand(() =>
+        {
+            IsTokenVisible = !IsTokenVisible;
+        });
+        GitHubCancelUpdateCommand = new RelayCommand(() =>
+        {
+            IsGitHubUpdating = false;
+            GitHubTokenInput = "";
+            IsTokenVisible = false;
+        });
 
         // Initialize theme from ThemeService
         ThemeIndex = _themeService.CurrentTheme.ToString() switch
@@ -173,12 +224,26 @@ public partial class SettingsViewModel : ObservableObject
         {
             await LoadSettingsAsync();
             await RefreshDownloadedVersionsAsync();
-            IsGitHubLoggedIn = !string.IsNullOrEmpty(_cacheService?.GitHubToken);
+            if (!string.IsNullOrEmpty(_cacheService?.GitHubToken))
+            {
+                await ValidateGitHubTokenAsync();
+            }
         });
     }
 
     private string L(string key, params object[] args) =>
         _localizationService?.GetString(key, args) ?? key;
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnGitHubTokenStatusChanged(GitHubTokenStatus value)
+    {
+        OnPropertyChanged(nameof(IsGitHubLoggedIn));
+        OnPropertyChanged(nameof(IsGitHubConnected));
+        OnPropertyChanged(nameof(IsGitHubTokenInvalid));
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnIsTokenVisibleChanged(bool value) => OnPropertyChanged(nameof(TokenPasswordChar));
 
     partial void OnThemeIndexChanged(int value)
     {
@@ -304,6 +369,36 @@ public partial class SettingsViewModel : ObservableObject
 
     #region GitHub Integration
 
+    private async Task ValidateGitHubTokenAsync()
+    {
+        var token = _cacheService?.GitHubToken;
+        if (string.IsNullOrEmpty(token)) return;
+
+        try
+        {
+            var client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("FrapaClonia"))
+            {
+                Credentials = new Octokit.Credentials(token)
+            };
+            await client.User.Current();
+            GitHubTokenStatus = GitHubTokenStatus.Connected;
+            _logger?.LogInformation("GitHub token validated successfully");
+            _toastService?.Success(L("Toast_GitHubTokenValid"), L("Toast_GitHubTokenValidDesc"));
+        }
+        catch (Octokit.AuthorizationException)
+        {
+            GitHubTokenStatus = GitHubTokenStatus.Invalid;
+            _logger?.LogWarning("GitHub token is invalid or expired");
+            _toastService?.Warning(L("Toast_GitHubTokenExpired"), L("Toast_GitHubTokenExpiredDesc"));
+        }
+        catch (Exception ex)
+        {
+            // Network errors — assume still valid, don't notify
+            GitHubTokenStatus = GitHubTokenStatus.Connected;
+            _logger?.LogDebug(ex, "Could not validate GitHub token (network error)");
+        }
+    }
+
     private void OpenGitHubTokenPage()
     {
         try
@@ -334,12 +429,12 @@ public partial class SettingsViewModel : ObservableObject
 
         try
         {
-            // Validate token by trying to use it
-            var gitHubClient = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("FrapaClonia"))
+            IsVerifyingToken = true;
+            var client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("FrapaClonia"))
             {
                 Credentials = new Octokit.Credentials(token)
             };
-            await gitHubClient.User.Current(); // Throws if token is invalid
+            await client.User.Current();
 
             if (_cacheService != null)
             {
@@ -347,15 +442,58 @@ public partial class SettingsViewModel : ObservableObject
                 await _cacheService.SaveAsync();
             }
 
-            IsGitHubLoggedIn = true;
+            GitHubTokenStatus = GitHubTokenStatus.Connected;
+            IsGitHubUpdating = false;
             GitHubTokenInput = "";
             _logger?.LogInformation("GitHub token saved successfully");
             _toastService?.Success(L("Toast_Success"), L("Toast_GitHubConnected"));
+        }
+        catch (Octokit.AuthorizationException)
+        {
+            _toastService?.Error(L("Toast_GitHubTokenInvalid"), L("Toast_GitHubTokenInvalid"));
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "GitHub token validation failed");
             _toastService?.Error(L("Toast_Error"), L("Toast_GitHubTokenInvalid"));
+        }
+        finally
+        {
+            IsVerifyingToken = false;
+        }
+    }
+
+    private async Task VerifyTokenAsync()
+    {
+        var token = GitHubTokenInput.Trim();
+        if (string.IsNullOrEmpty(token))
+        {
+            _toastService?.Warning(L("Toast_Warning"), L("Toast_GitHubTokenInvalid"));
+            return;
+        }
+
+        try
+        {
+            IsVerifyingToken = true;
+            var client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("FrapaClonia"))
+            {
+                Credentials = new Octokit.Credentials(token)
+            };
+            await client.User.Current();
+            _toastService?.Success(L("Toast_GitHubTokenValid"), L("Toast_GitHubTokenValidDesc"));
+        }
+        catch (Octokit.AuthorizationException)
+        {
+            _toastService?.Error(L("Toast_GitHubTokenInvalid"), L("Toast_GitHubTokenInvalid"));
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "GitHub token verification failed");
+            _toastService?.Error(L("Toast_Error"), L("Toast_CouldNotVerifyToken"));
+        }
+        finally
+        {
+            IsVerifyingToken = false;
         }
     }
 
@@ -369,7 +507,9 @@ public partial class SettingsViewModel : ObservableObject
                 await _cacheService.SaveAsync();
             }
 
-            IsGitHubLoggedIn = false;
+            GitHubTokenStatus = GitHubTokenStatus.None;
+            IsGitHubUpdating = false;
+            GitHubTokenInput = "";
             _logger?.LogInformation("GitHub token removed");
             _toastService?.Success(L("Toast_Success"), L("Toast_GitHubDisconnected"));
         }
@@ -477,6 +617,16 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     #endregion
+}
+
+/// <summary>
+/// GitHub token connection status
+/// </summary>
+public enum GitHubTokenStatus
+{
+    None,
+    Connected,
+    Invalid
 }
 
 /// <summary>

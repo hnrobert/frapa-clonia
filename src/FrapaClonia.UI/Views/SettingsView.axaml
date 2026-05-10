@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
              xmlns:local="clr-namespace:FrapaClonia.UI.MarkupExtensions;assembly=FrapaClonia.UI"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="600"
@@ -147,17 +148,70 @@
 
             <!-- Logged in state -->
             <StackPanel IsVisible="{Binding IsGitHubLoggedIn}" Spacing="8">
+              <!-- Status indicator -->
               <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBlock Text="✔"
+                <TextBlock Text="✔" Foreground="#4CAF50" VerticalAlignment="Center"
+                           IsVisible="{Binding IsGitHubConnected}" />
+                <TextBlock Text="{local:Localize ConnectedToGitHub}" Classes="field-label"
                            Foreground="#4CAF50"
-                           VerticalAlignment="Center" />
-                <TextBlock Text="{local:Localize ConnectedToGitHub}"
-                           Classes="field-label"
-                           Foreground="#4CAF50" />
+                           IsVisible="{Binding IsGitHubConnected}" />
+                <TextBlock Text="⚠" Foreground="#FFA000" VerticalAlignment="Center"
+                           IsVisible="{Binding IsGitHubTokenInvalid}" />
+                <TextBlock Text="{local:Localize GitHubTokenInvalid}" Classes="field-label"
+                           Foreground="#FFA000"
+                           IsVisible="{Binding IsGitHubTokenInvalid}" />
               </StackPanel>
-              <Button Command="{Binding GitHubLogoutCommand}"
-                      Classes="action-button"
-                      Content="{local:Localize Disconnect}" />
+
+              <!-- Action buttons -->
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Command="{Binding GitHubLogoutCommand}"
+                        Classes="action-button"
+                        Content="{local:Localize Disconnect}" />
+                <Button Command="{Binding GitHubUpdateCommand}"
+                        Classes="action-button"
+                        Content="{local:Localize UpdateToken}"
+                        IsVisible="{Binding !IsGitHubUpdating}" />
+                <Button Classes="action-button"
+                        Command="{Binding GitHubVerifyCachedCommand}"
+                        IsVisible="{Binding !IsGitHubUpdating}"
+                        ToolTip.Tip="{local:Localize VerifyToken}">
+                  <StackPanel Orientation="Horizontal" Spacing="4">
+                    <mi:MaterialIcon Kind="CheckCircle" />
+                    <TextBlock Text="{local:Localize Verify}" />
+                  </StackPanel>
+                </Button>
+              </StackPanel>
+
+              <!-- Update token panel -->
+              <StackPanel IsVisible="{Binding IsGitHubUpdating}" Spacing="8">
+                <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+                  <TextBox Grid.Column="0"
+                           Text="{Binding GitHubTokenInput}"
+                           PasswordChar="{Binding TokenPasswordChar}"
+                           Watermark="{local:Localize GitHubTokenLabel}" />
+                  <Button Grid.Column="1" Classes="action-button"
+                          Command="{Binding GitHubToggleTokenVisibilityCommand}"
+                          ToolTip.Tip="{local:Localize ToggleTokenVisibility}">
+                    <Panel>
+                      <mi:MaterialIcon Kind="Eye" IsVisible="{Binding !IsTokenVisible}" />
+                      <mi:MaterialIcon Kind="EyeOff" IsVisible="{Binding IsTokenVisible}" />
+                    </Panel>
+                  </Button>
+                  <Button Grid.Column="2" Classes="action-button"
+                          Command="{Binding GitHubVerifyCommand}"
+                          IsEnabled="{Binding GitHubTokenInput, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                          ToolTip.Tip="{local:Localize VerifyToken}">
+                    <mi:MaterialIcon Kind="CheckCircle" />
+                  </Button>
+                  <Button Grid.Column="3" Classes="action-button primary"
+                          Command="{Binding GitHubConnectCommand}"
+                          Content="{local:Localize Save}"
+                          IsEnabled="{Binding GitHubTokenInput, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  <Button Grid.Column="4" Classes="action-button"
+                          Command="{Binding GitHubCancelUpdateCommand}"
+                          Content="{local:Localize Cancel}" />
+                </Grid>
+              </StackPanel>
             </StackPanel>
           </StackPanel>
         </Border>

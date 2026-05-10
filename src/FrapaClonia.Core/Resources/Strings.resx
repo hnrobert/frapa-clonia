@@ -1469,4 +1469,34 @@
   <data name="Toast_GitHubRateLimitedDesc" xml:space="preserve">
     <value>GitHub API rate limit exceeded. Go to Settings to connect your GitHub account for higher limits.</value>
   </data>
+  <data name="GitHubTokenInvalid" xml:space="preserve">
+    <value>Token Invalid</value>
+  </data>
+  <data name="UpdateToken" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="VerifyToken" xml:space="preserve">
+    <value>Verify token validity</value>
+  </data>
+  <data name="Toast_GitHubTokenExpired" xml:space="preserve">
+    <value>Token Expired</value>
+  </data>
+  <data name="Toast_GitHubTokenExpiredDesc" xml:space="preserve">
+    <value>Your GitHub token has expired or been revoked. Go to Settings to update it.</value>
+  </data>
+  <data name="Toast_GitHubTokenValid" xml:space="preserve">
+    <value>Token Valid</value>
+  </data>
+  <data name="Toast_GitHubTokenValidDesc" xml:space="preserve">
+    <value>GitHub token is valid and working.</value>
+  </data>
+  <data name="Toast_CouldNotVerifyToken" xml:space="preserve">
+    <value>Could not verify token. Please check your network connection.</value>
+  </data>
+  <data name="Verify" xml:space="preserve">
+    <value>Verify</value>
+  </data>
+  <data name="ToggleTokenVisibility" xml:space="preserve">
+    <value>Show/hide token</value>
+  </data>
 </root>
