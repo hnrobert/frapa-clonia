@@ -125,7 +125,7 @@
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <Button Command="{Binding GitHubLoginCommand}"
                         Classes="action-button"
-                        Content="{local:Localize LoginToGitHub}" />
+                        Content="{local:Localize GenerateGitHubPAT}" />
               </StackPanel>
               <TextBlock Text="{local:Localize GitHubTokenPrompt}"
                          Classes="field-label"
