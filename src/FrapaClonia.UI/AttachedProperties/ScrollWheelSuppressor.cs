@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 
 namespace FrapaClonia.UI.AttachedProperties;
 
@@ -29,7 +30,17 @@ public static class ScrollWheelSuppressor
 
     private static void OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
     {
-        if (sender is ComboBox or TextBox)
-            e.Handled = true;
+        // Let open ComboBox dropdown scroll its own list
+        if (sender is ComboBox { IsDropDownOpen: true }) return;
+        if (sender is not (ComboBox or TextBox)) return;
+
+        e.Handled = true;
+
+        var scrollViewer = (sender as Control)?.FindAncestorOfType<ScrollViewer>();
+        if (scrollViewer == null) return;
+
+        scrollViewer.Offset = new Vector(
+            scrollViewer.Offset.X,
+            scrollViewer.Offset.Y - e.Delta.Y * 50);
     }
 }
