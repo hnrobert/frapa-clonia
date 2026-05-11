@@ -218,7 +218,7 @@ public partial class SettingsViewModel : ObservableObject
         });
         CheckForUpdatesCommand = new RelayCommand(async void () =>
         {
-            try { await CheckForUpdatesAsync(); }
+            try { await CheckForUpdatesAsync(isManual: true); }
             catch (Exception e) { _logger?.LogError(e, "Error checking for updates"); }
         });
         DownloadUpdateCommand = new RelayCommand(() => OpenUrl(_updateDownloadUrl));
@@ -464,7 +464,7 @@ public partial class SettingsViewModel : ObservableObject
         }
     }
 
-    private async Task CheckForUpdatesAsync()
+    private async Task CheckForUpdatesAsync(bool isManual = false)
     {
         if (_updateService == null) return;
 
@@ -486,8 +486,9 @@ public partial class SettingsViewModel : ObservableObject
                 UpdateReleaseNotes = update.ReleaseNotes ?? "";
                 UpdateDownloadUrl = update.DownloadUrl ?? update.HtmlUrl ?? "";
                 _logger?.LogInformation("Update available: {Version}", update.Version);
+                _toastService?.Info(L("UpdateAvailable"), $"v{update.Version}");
             }
-            else
+            else if (isManual)
             {
                 UpdateAvailable = false;
                 _toastService?.Success(L("UpToDate"), L("UpToDateDesc"));
@@ -496,7 +497,8 @@ public partial class SettingsViewModel : ObservableObject
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error checking for updates");
-            _toastService?.Error(L("UpdateCheckFailed"), L("UpdateCheckFailedDesc"));
+            if (isManual)
+                _toastService?.Error(L("UpdateCheckFailed"), L("UpdateCheckFailedDesc"));
         }
         finally
         {

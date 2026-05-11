@@ -73,7 +73,7 @@ public class UpdateService : IUpdateService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error checking for updates");
-            return null;
+            throw;
         }
     }
 
