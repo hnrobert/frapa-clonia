@@ -1,4 +1,5 @@
-<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
   <Package
     Name="FrapaClonia"
     Manufacturer="hnrobert"
@@ -11,8 +12,7 @@
     <Icon Id="AppIcon" SourceFile="src/FrapaClonia/Assets/favicon.ico" />
     <Property Id="ARPPRODUCTICON" Value="AppIcon" />
 
-    <UIRef Id="WixUI_InstallDir" />
-    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
 
     <!-- Directories -->
     <StandardDirectory Id="ProgramFiles6432Folder">
