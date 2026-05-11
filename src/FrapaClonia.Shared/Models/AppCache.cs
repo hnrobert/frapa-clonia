@@ -8,12 +8,12 @@ public class AppCache
     /// <summary>
     /// Current preset information
     /// </summary>
-    public CurrentPresetInfo CurrentPreset { get; } = new();
+    public CurrentPresetInfo CurrentPreset { get; set; } = new();
 
     /// <summary>
     /// Application information
     /// </summary>
-    public AppInfo App { get; } = new();
+    public AppInfo App { get; set; } = new();
 }
 
 /// <summary>
@@ -55,7 +55,7 @@ public class AppInfo
     /// <summary>
     /// Cached frpc version list from GitHub
     /// </summary>
-    public List<CachedFrpcVersion> FrpcVersions { get; } = [];
+    public List<CachedFrpcVersion> FrpcVersions { get; set; } = [];
 }
 
 /// <summary>
@@ -63,9 +63,9 @@ public class AppInfo
 /// </summary>
 public class CachedFrpcVersion
 {
-    public string Version { get; init; } = "";
-    public string TagName { get; init; } = "";
-    public DateTimeOffset PublishedAt { get; init; }
-    public string? DownloadUrl { get; init; }
-    public bool IsLatest { get; init; }
+    public string Version { get; set; } = "";
+    public string TagName { get; set; } = "";
+    public DateTimeOffset PublishedAt { get; set; }
+    public string? DownloadUrl { get; set; }
+    public bool IsLatest { get; set; }
 }
