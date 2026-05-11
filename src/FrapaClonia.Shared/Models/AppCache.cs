@@ -22,9 +22,9 @@ public class AppCache
 public class CurrentPresetInfo
 {
     /// <summary>
-    /// Name of the current preset
+    /// ID of the current preset
     /// </summary>
-    public string Name { get; set; } = "";
+    public Guid Id { get; set; }
 }
 
 /// <summary>
@@ -33,12 +33,39 @@ public class CurrentPresetInfo
 public class AppInfo
 {
     /// <summary>
-    /// Current language setting
-    /// </summary>
-    public string Language { get; set; } = "en";
-
-    /// <summary>
     /// Last update check timestamp
     /// </summary>
-    public DateTime? LastCheck { get; set; }
+    public DateTime? LastSelfUpdateCheck { get; set; }
+
+    /// <summary>
+    /// Last Frpc version check timestamp
+    /// </summary>
+    public DateTime? LastFrpcVersionCheck { get; set; }
+
+    /// <summary>
+    /// GitHub personal access token for higher API rate limits
+    /// </summary>
+    public string? GitHubToken { get; set; }
+
+    /// <summary>
+    /// Last GitHub Token validation timestamp
+    /// </summary>
+    public DateTime? LastGitHubTokenValidation { get; set; }
+
+    /// <summary>
+    /// Cached frpc version list from GitHub
+    /// </summary>
+    public List<CachedFrpcVersion> FrpcVersions { get; set; } = [];
+}
+
+/// <summary>
+/// Cached frpc version entry for TOML serialization
+/// </summary>
+public class CachedFrpcVersion
+{
+    public string Version { get; set; } = "";
+    public string TagName { get; set; } = "";
+    public DateTimeOffset PublishedAt { get; set; }
+    public string? DownloadUrl { get; set; }
+    public bool IsLatest { get; set; }
 }

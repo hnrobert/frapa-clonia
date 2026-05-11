@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:FrapaClonia.UI.ViewModels;assembly=FrapaClonia.UI"
              xmlns:local="clr-namespace:FrapaClonia.UI.MarkupExtensions;assembly=FrapaClonia.UI"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="600"
@@ -109,15 +110,194 @@
           </StackPanel>
         </Border>
 
+        <!-- Updates -->
+        <Border Classes="settings-card">
+          <StackPanel Spacing="0">
+            <TextBlock Text="{local:Localize Updates}"
+                       Classes="section-title"
+                       Margin="{StaticResource ThicknessBottomM}" />
+
+            <!-- Current version -->
+            <TextBlock Text="{Binding CurrentVersion, StringFormat='v{0}'}"
+                       Classes="readonly-value" />
+
+            <!-- Update available -->
+            <StackPanel IsVisible="{Binding UpdateAvailable}" Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="⬆" Foreground="#4CAF50" VerticalAlignment="Center" />
+                <TextBlock Text="{local:Localize UpdateAvailable}" Classes="field-label"
+                           Foreground="#4CAF50" />
+              </StackPanel>
+              <TextBlock Text="{Binding LatestVersion, StringFormat='v{0}'}" />
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Command="{Binding DownloadUpdateCommand}"
+                        Classes="action-button"
+                        Content="{local:Localize DownloadUpdate}" />
+                <Button Command="{Binding OpenReleasePageCommand}"
+                        Classes="action-button"
+                        Content="{local:Localize ViewReleaseNotes}" />
+              </StackPanel>
+            </StackPanel>
+
+            <!-- Prerelease available -->
+            <StackPanel IsVisible="{Binding PrereleaseAvailable}" Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="⬆" Foreground="#FF9800" VerticalAlignment="Center" />
+                <TextBlock Text="{local:Localize PrereleaseAvailable}" Classes="field-label"
+                           Foreground="#FF9800" />
+                <TextBlock Text="{Binding LatestPrereleaseVersion, StringFormat='v{0}'}" Classes="field-label" />
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Command="{Binding DownloadPrereleaseCommand}"
+                        Classes="action-button"
+                        Content="{local:Localize DownloadPrerelease}" />
+                <Button Command="{Binding OpenPrereleasePageCommand}"
+                        Classes="action-button"
+                        Content="{local:Localize ViewReleaseNotes}" />
+              </StackPanel>
+            </StackPanel>
+
+            <!-- Check for updates button -->
+            <Button Command="{Binding CheckForUpdatesCommand}"
+                    Classes="action-button"
+                    IsEnabled="{Binding !IsCheckingForUpdates}"
+                    Margin="0,8,0,0">
+              <StackPanel Orientation="Horizontal" Spacing="4">
+                <mi:MaterialIcon Kind="Refresh" Width="18" Height="18"
+                                 IsVisible="{Binding !IsCheckingForUpdates}" />
+                <mi:MaterialIcon Kind="Loading" Width="18" Height="18"
+                                 IsVisible="{Binding IsCheckingForUpdates}" />
+                <TextBlock Text="{local:Localize CheckForUpdates}" />
+              </StackPanel>
+            </Button>
+          </StackPanel>
+        </Border>
+
+        <!-- GitHub Integration -->
+        <Border Classes="settings-card">
+          <StackPanel Spacing="0">
+            <TextBlock Text="{local:Localize GitHubIntegration}"
+                       Classes="section-title"
+                       Margin="{StaticResource ThicknessBottomM}" />
+
+            <!-- Logged out state -->
+            <StackPanel IsVisible="{Binding !IsGitHubLoggedIn}" Spacing="8">
+              <TextBlock Text="{local:Localize GitHubConnectDescription}"
+                         Classes="field-label"
+                         TextWrapping="Wrap"
+                         Opacity="0.7" />
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Command="{Binding GitHubLoginCommand}"
+                        Classes="action-button"
+                        Content="{local:Localize GenerateGitHubPAT}" />
+              </StackPanel>
+              <TextBlock Text="{local:Localize GitHubTokenPrompt}"
+                         Classes="field-label"
+                         TextWrapping="Wrap"
+                         Opacity="0.5"
+                         Margin="0,4,0,0" />
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <TextBox Grid.Column="0"
+                         Text="{Binding GitHubTokenInput}"
+                         PasswordChar="•"
+                         Watermark="{local:Localize GitHubTokenLabel}" />
+                <Button Grid.Column="1"
+                        Command="{Binding GitHubConnectCommand}"
+                        Classes="action-button primary"
+                        Content="{local:Localize Connect}"
+                        IsEnabled="{Binding GitHubTokenInput, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+              </Grid>
+            </StackPanel>
+
+            <!-- Logged in state -->
+            <StackPanel IsVisible="{Binding IsGitHubLoggedIn}" Spacing="8">
+              <!-- Status indicator -->
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="✔" Foreground="#4CAF50" VerticalAlignment="Center"
+                           IsVisible="{Binding IsGitHubConnected}" />
+                <TextBlock Text="{local:Localize ConnectedToGitHub}" Classes="field-label"
+                           Foreground="#4CAF50"
+                           IsVisible="{Binding IsGitHubConnected}" />
+                <TextBlock Text="⚠" Foreground="#FFA000" VerticalAlignment="Center"
+                           IsVisible="{Binding IsGitHubTokenInvalid}" />
+                <TextBlock Text="{local:Localize GitHubTokenInvalid}" Classes="field-label"
+                           Foreground="#FFA000"
+                           IsVisible="{Binding IsGitHubTokenInvalid}" />
+              </StackPanel>
+
+              <!-- Action buttons -->
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Command="{Binding GitHubLogoutCommand}"
+                        Classes="action-button"
+                        Content="{local:Localize Disconnect}" />
+                <Button Command="{Binding GitHubUpdateCommand}"
+                        Classes="action-button"
+                        Content="{local:Localize UpdateToken}"
+                        IsVisible="{Binding !IsGitHubUpdating}" />
+                <Button Classes="action-button"
+                        Command="{Binding GitHubVerifyCachedCommand}"
+                        IsVisible="{Binding !IsGitHubUpdating}"
+                        ToolTip.Tip="{local:Localize VerifyToken}">
+                  <StackPanel Orientation="Horizontal" Spacing="4">
+                    <mi:MaterialIcon Kind="ShieldCheck" />
+                    <TextBlock Text="{local:Localize Verify}" />
+                  </StackPanel>
+                </Button>
+              </StackPanel>
+
+              <!-- Update token panel -->
+              <StackPanel IsVisible="{Binding IsGitHubUpdating}" Spacing="8">
+                <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+                  <TextBox Grid.Column="0"
+                           Text="{Binding GitHubTokenInput}"
+                           PasswordChar="{Binding TokenPasswordChar}"
+                           Watermark="{local:Localize GitHubTokenLabel}" />
+                  <Button Grid.Column="1" Classes="icon-button"
+                          Command="{Binding GitHubToggleTokenVisibilityCommand}"
+                          ToolTip.Tip="{local:Localize ToggleTokenVisibility}">
+                    <Panel>
+                      <mi:MaterialIcon Kind="Eye" IsVisible="{Binding !IsTokenVisible}" Width="18" Height="18" />
+                      <mi:MaterialIcon Kind="EyeOff" IsVisible="{Binding IsTokenVisible}" Width="18" Height="18" />
+                    </Panel>
+                  </Button>
+                  <Button Grid.Column="2" Classes="icon-button"
+                          Command="{Binding GitHubVerifyCommand}"
+                          IsEnabled="{Binding GitHubTokenInput, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                          ToolTip.Tip="{local:Localize VerifyToken}">
+                    <mi:MaterialIcon Kind="ShieldCheck" Width="18" Height="18" />
+                  </Button>
+                  <Button Grid.Column="3" Classes="action-button primary"
+                          Command="{Binding GitHubConnectCommand}"
+                          Content="{local:Localize Save}"
+                          IsEnabled="{Binding GitHubTokenInput, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  <Button Grid.Column="4" Classes="action-button"
+                          Command="{Binding GitHubCancelUpdateCommand}"
+                          Content="{local:Localize Cancel}" />
+                </Grid>
+              </StackPanel>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
         <!-- Config Location -->
         <Border Classes="settings-card">
           <StackPanel Spacing="0">
             <TextBlock Text="{local:Localize ConfigurationLocation}"
                        Classes="section-title"
                        Margin="{StaticResource ThicknessBottomM}" />
-            <TextBlock Text="{Binding ConfigLocation}"
-                       Classes="readonly-value"
-                       AutomationProperties.Name="Configuration Location" />
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+              <TextBlock Grid.Column="0" Text="{Binding ConfigLocation}"
+                         Classes="readonly-value"
+                         VerticalAlignment="Center"
+                         AutomationProperties.Name="Configuration Location" />
+              <Button Grid.Column="1"
+                      Command="{Binding OpenConfigFolderCommand}"
+                      Classes="icon-button"
+                      ToolTip.Tip="{local:Localize OpenInFileManager}"
+                      VerticalAlignment="Center">
+                <mi:MaterialIcon Kind="FolderOpen" Width="18" Height="18" />
+              </Button>
+            </Grid>
           </StackPanel>
         </Border>
 

@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using FrapaClonia.Shared.Interfaces;
+using FrapaClonia.Shared.Models;
 using Microsoft.Extensions.Logging;
 using Octokit;
 
@@ -8,18 +9,81 @@ namespace FrapaClonia.Core.Services;
 /// <summary>
 /// Service for managing frpc versions
 /// </summary>
-public class FrpcVersionService(ILogger<FrpcVersionService> logger) : IFrpcVersionService
+public class FrpcVersionService(ILogger<FrpcVersionService> logger, ICacheService? cacheService)
+    : IFrpcVersionService
 {
     private readonly GitHubClient _gitHubClient = new(new ProductHeaderValue("FrapaClonia"));
 
-    public async Task<IReadOnlyList<FrpcVersionInfo>> GetAvailableVersionsAsync()
+    public bool WasRateLimited { get; private set; }
+    public bool UsedCache { get; private set; }
+
+    // Default constructor for design-time
+    public FrpcVersionService() : this(
+        Microsoft.Extensions.Logging.Abstractions.NullLogger<FrpcVersionService>.Instance, null!)
     {
+    }
+
+    private void ApplyToken()
+    {
+        var token = cacheService?.GitHubToken;
+        if (!string.IsNullOrEmpty(token))
+        {
+            _gitHubClient.Credentials = new Credentials(token);
+        }
+    }
+
+    private async Task<IReadOnlyList<Release>> FetchReleasesWithRetryAsync()
+    {
+        ApplyToken();
+        try
+        {
+            return await _gitHubClient.Repository.Release.GetAll("fatedier", "frp");
+        }
+        catch (AuthorizationException)
+        {
+            logger.LogWarning("GitHub token invalid, retrying without credentials");
+            _gitHubClient.Credentials = Credentials.Anonymous;
+            if (cacheService == null) return await _gitHubClient.Repository.Release.GetAll("fatedier", "frp");
+            cacheService.GitHubToken = null;
+            await cacheService.SaveAsync();
+
+            return await _gitHubClient.Repository.Release.GetAll("fatedier", "frp");
+        }
+    }
+
+    private static readonly TimeSpan CacheDuration = TimeSpan.FromHours(1);
+
+    public async Task<IReadOnlyList<FrpcVersionInfo>> GetAvailableVersionsAsync(bool forceRefresh = false)
+    {
+        WasRateLimited = false;
+
+        // Return cached versions if still fresh and not forced
+        if (!forceRefresh && cacheService?.FrpcVersions.Count > 0 && cacheService.LastFrpcVersionCheck.HasValue)
+        {
+            var age = DateTime.UtcNow - cacheService.LastFrpcVersionCheck.Value;
+            if (age < CacheDuration)
+            {
+                logger.LogInformation("Using cached frpc versions (age: {Age})", age);
+                UsedCache = true;
+                return cacheService.FrpcVersions.Select(v => new FrpcVersionInfo
+                {
+                    Version = v.Version,
+                    TagName = v.TagName,
+                    PublishedAt = v.PublishedAt,
+                    DownloadUrl = v.DownloadUrl,
+                    IsLatest = v.IsLatest
+                }).ToList();
+            }
+        }
+
+        UsedCache = false;
+
         try
         {
             logger.LogInformation("Fetching available frpc versions from GitHub");
-            var releases = await _gitHubClient.Repository.Release.GetAll("fatedier", "frp");
+            var releases = await FetchReleasesWithRetryAsync();
 
-            return releases.Select((r, index) => new FrpcVersionInfo
+            var versions = releases.Select((r, index) => new FrpcVersionInfo
             {
                 TagName = r.TagName,
                 Version = r.TagName.TrimStart('v'),
@@ -27,10 +91,61 @@ public class FrpcVersionService(ILogger<FrpcVersionService> logger) : IFrpcVersi
                 DownloadUrl = GetPlatformDownloadUrl(r),
                 IsLatest = index == 0
             }).ToList();
+
+            // Update cache
+            if (cacheService == null) return versions;
+            cacheService.FrpcVersions.Clear();
+            cacheService.FrpcVersions.AddRange(versions.Select(v => new CachedFrpcVersion
+            {
+                Version = v.Version,
+                TagName = v.TagName,
+                PublishedAt = v.PublishedAt,
+                DownloadUrl = v.DownloadUrl,
+                IsLatest = v.IsLatest
+            }));
+            cacheService.LastFrpcVersionCheck = DateTime.UtcNow;
+            await cacheService.SaveAsync();
+
+            return versions;
+        }
+        catch (RateLimitExceededException ex)
+        {
+            WasRateLimited = true;
+            logger.LogWarning(ex, "GitHub API rate limit exceeded");
+
+            // Fall back to stale cache if available
+            if (cacheService?.FrpcVersions.Count > 0)
+            {
+                logger.LogInformation("Falling back to stale cached versions");
+                return cacheService.FrpcVersions.Select(v => new FrpcVersionInfo
+                {
+                    Version = v.Version,
+                    TagName = v.TagName,
+                    PublishedAt = v.PublishedAt,
+                    DownloadUrl = v.DownloadUrl,
+                    IsLatest = v.IsLatest
+                }).ToList();
+            }
+
+            return new List<FrpcVersionInfo>();
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error fetching available versions from GitHub");
+
+            // Fall back to stale cache if available
+            if (cacheService?.FrpcVersions.Count > 0)
+            {
+                return cacheService.FrpcVersions.Select(v => new FrpcVersionInfo
+                {
+                    Version = v.Version,
+                    TagName = v.TagName,
+                    PublishedAt = v.PublishedAt,
+                    DownloadUrl = v.DownloadUrl,
+                    IsLatest = v.IsLatest
+                }).ToList();
+            }
+
             return new List<FrpcVersionInfo>();
         }
     }

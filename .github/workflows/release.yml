@@ -60,12 +60,24 @@ jobs:
           version: ${{ needs.version.outputs.version }}
           rids: win-x64
 
-      - name: Upload build artifacts (Windows)
+      - name: Package MSI (win-x64)
+        uses: ./.github/actions/package-windows-msi
+        with:
+          version: ${{ needs.version.outputs.version }}
+          rid: win-x64
+
+      - name: Upload build artifacts (Windows ZIP)
         uses: actions/upload-artifact@main
         with:
           name: release-${{ needs.version.outputs.version }}-win-x64
-          path: |
-            FrapaClonia-*.zip
+          path: FrapaClonia-${{ needs.version.outputs.version }}-win-x64.zip
+          retention-days: 7
+
+      - name: Upload build artifacts (Windows MSI)
+        uses: actions/upload-artifact@main
+        with:
+          name: release-${{ needs.version.outputs.version }}-win-x64-msi
+          path: FrapaClonia-${{ needs.version.outputs.version }}-win-x64.msi
           retention-days: 7
 
   build-linux:
@@ -81,6 +93,13 @@ jobs:
           version: ${{ needs.version.outputs.version }}
           rids: linux-x64 linux-arm64 linux-musl-x64 linux-musl-arm64
 
+      - name: Package DEB (Debian linux)
+        uses: ./.github/actions/package-linux-deb
+        with:
+          version: ${{ needs.version.outputs.version }}
+          publish_root: out
+          rids: linux-x64 linux-arm64
+
       - name: Upload build artifacts (linux-x64)
         uses: actions/upload-artifact@main
         with:
@@ -88,11 +107,25 @@ jobs:
           path: FrapaClonia-${{ needs.version.outputs.version }}-linux-x64.tar.gz
           retention-days: 7
 
+      - name: Upload build artifacts (linux-x64 DEB)
+        uses: actions/upload-artifact@main
+        with:
+          name: release-${{ needs.version.outputs.version }}-linux-x64-deb
+          path: FrapaClonia-${{ needs.version.outputs.version }}-linux-x64.deb
+          retention-days: 7
+
       - name: Upload build artifacts (linux-arm64)
         uses: actions/upload-artifact@main
         with:
           name: release-${{ needs.version.outputs.version }}-linux-arm64
           path: FrapaClonia-${{ needs.version.outputs.version }}-linux-arm64.tar.gz
+          retention-days: 7
+
+      - name: Upload build artifacts (linux-arm64 DEB)
+        uses: actions/upload-artifact@main
+        with:
+          name: release-${{ needs.version.outputs.version }}-linux-arm64-deb
+          path: FrapaClonia-${{ needs.version.outputs.version }}-linux-arm64.deb
           retention-days: 7
 
       - name: Upload build artifacts (linux-musl-x64)
@@ -168,8 +201,11 @@ jobs:
           VERSION="${{ needs.version.outputs.version }}"
           gh release upload "$TAG" \
             dist/FrapaClonia-${VERSION}-win-x64.zip \
+            dist/FrapaClonia-${VERSION}-win-x64.msi \
             dist/FrapaClonia-${VERSION}-linux-x64.tar.gz \
+            dist/FrapaClonia-${VERSION}-linux-x64.deb \
             dist/FrapaClonia-${VERSION}-linux-arm64.tar.gz \
+            dist/FrapaClonia-${VERSION}-linux-arm64.deb \
             dist/FrapaClonia-${VERSION}-linux-musl-x64.tar.gz \
             dist/FrapaClonia-${VERSION}-linux-musl-arm64.tar.gz \
             dist/FrapaClonia-${VERSION}-macos-x64.dmg \

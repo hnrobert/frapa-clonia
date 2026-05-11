@@ -13,12 +13,12 @@ public class FrpClientConfig
     /// <summary>
     /// Proxy configurations
     /// </summary>
-    public List<ProxyConfig> Proxies { get; set; } = [];
+    public List<ProxyConfig> Proxies { get; init; } = [];
 
     /// <summary>
     /// Visitor configurations (for STCP/XTCP/SUDP)
     /// </summary>
-    public List<VisitorConfig> Visitors { get; set; } = [];
+    public List<VisitorConfig> Visitors { get; init; } = [];
 }
 
 /// <summary>
@@ -120,11 +120,11 @@ public class LogConfig
 public class WebServerConfig
 {
     public required string Addr { get; init; }
-    public int Port { get; init; }
-    public string? User { get; init; }
-    public string? Password { get; init; }
-    public string? Token { get; init; }
-    public bool PprofEnable { get; init; }
+    public static int Port => 0;
+    public static string? User => null;
+    public static string? Password => null;
+    public static string? Token => null;
+    public static bool PprofEnable => false;
 }
 
 /// <summary>
@@ -153,9 +153,9 @@ public class ClientTransportConfig
 /// </summary>
 public class QUICOptions
 {
-    public int? KeepaliveInterval { get; init; }
-    public int? MaxIdleTimeout { get; init; }
-    public int? MaxIncomingStreams { get; init; }
+    public static int? KeepaliveInterval => null;
+    public static int? MaxIdleTimeout => null;
+    public static int? MaxIncomingStreams => null;
 }
 
 /// <summary>
@@ -177,6 +177,6 @@ public class TLSClientConfig
 public class VirtualNetConfig
 {
     public required string Address { get; init; }  // CIDR format, e.g., "100.86.0.1/24"
-    public int? Mtu { get; init; }
-    public List<string>? Routes { get; init; }
+    public static int? Mtu => null;
+    public static List<string>? Routes => null;
 }

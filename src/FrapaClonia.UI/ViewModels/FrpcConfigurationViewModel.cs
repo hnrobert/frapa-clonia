@@ -76,6 +76,9 @@ public partial class FrpcConfigurationViewModel : ObservableObject
     [ObservableProperty] private List<DownloadedFrpcVersion> _downloadedVersions = [];
     [ObservableProperty] private bool _isLoadingDownloadedVersions;
 
+    public bool HasDownloadedVersions => !IsLoadingDownloadedVersions && DownloadedVersions.Count > 0;
+    public bool HasNoDownloadedVersions => !IsLoadingDownloadedVersions && DownloadedVersions.Count == 0;
+
     // Dialog result
     public bool DialogResult { get; private set; }
     public event EventHandler? CloseRequested;
@@ -430,6 +433,20 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         }
     }
 
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnDownloadedVersionsChanged(List<DownloadedFrpcVersion> value)
+    {
+        OnPropertyChanged(nameof(HasDownloadedVersions));
+        OnPropertyChanged(nameof(HasNoDownloadedVersions));
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnIsLoadingDownloadedVersionsChanged(bool value)
+    {
+        OnPropertyChanged(nameof(HasDownloadedVersions));
+        OnPropertyChanged(nameof(HasNoDownloadedVersions));
+    }
+
     partial void OnFrpcBinaryPathChanged(string value)
     {
         // Validate when path changes (with debounce would be better, but keeping simple)
@@ -500,22 +517,46 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         }
     }
 
-    private async Task RefreshGitHubVersionsAsync()
+    private async Task RefreshGitHubVersionsAsync(bool forceRefresh = false)
     {
         try
         {
             IsLoadingGitHubVersions = true;
+            IsLoadingVersions = true;
             _logger?.LogInformation("Refreshing available frpc versions from GitHub");
 
             if (_frpcVersionService != null)
             {
-                var versions = await _frpcVersionService.GetAvailableVersionsAsync();
+                var versions = await _frpcVersionService.GetAvailableVersionsAsync(forceRefresh);
                 GitHubVersions = versions.ToList();
 
                 // Select latest by default
                 SelectedGitHubVersion = GitHubVersions.FirstOrDefault();
 
                 _logger?.LogInformation("Found {Count} frpc versions from GitHub", GitHubVersions.Count);
+
+                // Only show toast when fetched from GitHub (not from cache)
+                if (_frpcVersionService.WasRateLimited)
+                {
+                    _toastService?.Warning(
+                        L("Toast_GitHubRateLimited"),
+                        L("Toast_GitHubRateLimitedDesc"));
+                }
+                else if (!_frpcVersionService.UsedCache)
+                {
+                    if (GitHubVersions.Count > 0)
+                    {
+                        _toastService?.Success(
+                            L("Toast_FrpcVersionsFetched"),
+                            L("Toast_FrpcVersionsFetchedDesc", GitHubVersions.Count));
+                    }
+                    else
+                    {
+                        _toastService?.Error(
+                            L("Toast_FrpcVersionsFetchFailed"),
+                            L("Toast_FrpcVersionsFetchFailedDesc"));
+                    }
+                }
             }
         }
         catch (Exception ex)
@@ -526,11 +567,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         finally
         {
             IsLoadingGitHubVersions = false;
-            // Update the displayed versions if we're in web download mode
-            if (IsWebDownloadMode)
-            {
-                UpdateAvailableVersionsForMode();
-            }
+            UpdateAvailableVersionsForMode();
         }
     }
 
@@ -538,7 +575,9 @@ public partial class FrpcConfigurationViewModel : ObservableObject
     {
         if (IsWebDownloadMode)
         {
-            await RefreshGitHubVersionsAsync();
+            SelectedGitHubVersion = null;
+            SelectedVersion = null;
+            await RefreshGitHubVersionsAsync(forceRefresh: true);
         }
         // For package manager mode, no need to refresh - always "latest"
     }

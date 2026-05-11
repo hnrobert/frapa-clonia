@@ -8,7 +8,7 @@ public interface IFrpcVersionService
     /// <summary>
     /// Gets available frpc versions from GitHub
     /// </summary>
-    Task<IReadOnlyList<FrpcVersionInfo>> GetAvailableVersionsAsync();
+    Task<IReadOnlyList<FrpcVersionInfo>> GetAvailableVersionsAsync(bool forceRefresh = false);
 
     /// <summary>
     /// Gets the version of a frpc binary
@@ -19,6 +19,16 @@ public interface IFrpcVersionService
     /// Gets the platform-specific download URL for a version
     /// </summary>
     string? GetDownloadUrl(FrpcVersionInfo version);
+
+    /// <summary>
+    /// Whether the last GitHub API call was rate limited
+    /// </summary>
+    bool WasRateLimited { get; }
+
+    /// <summary>
+    /// Whether the last result came from local cache
+    /// </summary>
+    bool UsedCache { get; }
 }
 
 /// <summary>

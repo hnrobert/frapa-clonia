@@ -1217,6 +1217,9 @@
   <data name="Toast_ServiceStartFailedVerification" xml:space="preserve">
     <value>Service started but verification failed. Check logs for details.</value>
   </data>
+  <data name="Toast_Success" xml:space="preserve">
+    <value>Success</value>
+  </data>
   <data name="Toast_Warning" xml:space="preserve">
     <value>Warning</value>
   </data>
@@ -1411,5 +1414,137 @@
   </data>
   <data name="NotRunning" xml:space="preserve">
     <value>Not Running</value>
+  </data>
+  <data name="GitHubIntegration" xml:space="preserve">
+    <value>GitHub Integration</value>
+  </data>
+  <data name="GitHubConnectDescription" xml:space="preserve">
+    <value>Connect your GitHub account to increase API rate limits for actions such as fetching frpc versions.</value>
+  </data>
+  <data name="GenerateGitHubPAT" xml:space="preserve">
+    <value>Generate GitHub PAT</value>
+  </data>
+  <data name="ConnectedToGitHub" xml:space="preserve">
+    <value>Connected to GitHub</value>
+  </data>
+  <data name="Disconnect" xml:space="preserve">
+    <value>Disconnect</value>
+  </data>
+  <data name="GitHubTokenPrompt" xml:space="preserve">
+    <value>A browser tab will open to create a Personal Access Token. Paste the token below:</value>
+  </data>
+  <data name="GitHubTokenLabel" xml:space="preserve">
+    <value>GitHub Personal Access Token</value>
+  </data>
+  <data name="Connect" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="Toast_GitHubRateLimited" xml:space="preserve">
+    <value>Rate Limited</value>
+  </data>
+  <data name="Toast_GitHubConnected" xml:space="preserve">
+    <value>Successfully connected to GitHub</value>
+  </data>
+  <data name="Toast_GitHubDisconnected" xml:space="preserve">
+    <value>Disconnected from GitHub</value>
+  </data>
+  <data name="Toast_GitHubTokenInvalid" xml:space="preserve">
+    <value>Invalid GitHub token. Please check and try again.</value>
+  </data>
+  <data name="GitHubLoginUrl" xml:space="preserve">
+    <value>https://github.com/settings/tokens/new?description=FrapaClonia&amp;scopes=public_repo</value>
+  </data>
+  <data name="Toast_FrpcVersionsLoaded" xml:space="preserve">
+    <value>Loaded {0} frpc versions</value>
+  </data>
+  <data name="Toast_FrpcVersionsFetched" xml:space="preserve">
+    <value>Versions Updated</value>
+  </data>
+  <data name="Toast_FrpcVersionsFetchedDesc" xml:space="preserve">
+    <value>Fetched {0} frpc versions from GitHub</value>
+  </data>
+  <data name="Toast_FrpcVersionsFetchFailed" xml:space="preserve">
+    <value>Fetch Failed</value>
+  </data>
+  <data name="Toast_FrpcVersionsFetchFailedDesc" xml:space="preserve">
+    <value>Could not fetch frpc versions from GitHub</value>
+  </data>
+  <data name="Toast_GitHubRateLimitedDesc" xml:space="preserve">
+    <value>GitHub API rate limit exceeded. Go to Settings to connect your GitHub account for higher limits.</value>
+  </data>
+  <data name="GitHubTokenInvalid" xml:space="preserve">
+    <value>Token Invalid</value>
+  </data>
+  <data name="UpdateToken" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="VerifyToken" xml:space="preserve">
+    <value>Verify token validity</value>
+  </data>
+  <data name="Toast_GitHubTokenExpired" xml:space="preserve">
+    <value>Token Expired</value>
+  </data>
+  <data name="Toast_GitHubTokenExpiredDesc" xml:space="preserve">
+    <value>Your GitHub token has expired or been revoked. Go to Settings to update it.</value>
+  </data>
+  <data name="Toast_GitHubTokenValid" xml:space="preserve">
+    <value>Token Valid</value>
+  </data>
+  <data name="Toast_GitHubTokenValidDesc" xml:space="preserve">
+    <value>GitHub token is valid and working.</value>
+  </data>
+  <data name="Toast_CouldNotVerifyToken" xml:space="preserve">
+    <value>Could not verify token. Please check your network connection.</value>
+  </data>
+  <data name="Verify" xml:space="preserve">
+    <value>Verify</value>
+  </data>
+  <data name="ToggleTokenVisibility" xml:space="preserve">
+    <value>Show/hide token</value>
+  </data>
+  <data name="Show" xml:space="preserve">
+    <value>Show</value>
+  </data>
+  <data name="Hide" xml:space="preserve">
+    <value>Hide</value>
+  </data>
+  <data name="OpenInFileManager" xml:space="preserve">
+    <value>Open in file manager</value>
+  </data>
+  <data name="Toast_CouldNotOpenFolder" xml:space="preserve">
+    <value>Could not open folder in file manager</value>
+  </data>
+  <data name="Updates" xml:space="preserve">
+    <value>Updates</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>A new version is available!</value>
+  </data>
+  <data name="CheckForUpdates" xml:space="preserve">
+    <value>Check for Updates</value>
+  </data>
+  <data name="DownloadUpdate" xml:space="preserve">
+    <value>Download Update</value>
+  </data>
+  <data name="ViewReleaseNotes" xml:space="preserve">
+    <value>Release Notes</value>
+  </data>
+  <data name="UpToDate" xml:space="preserve">
+    <value>Up to Date</value>
+  </data>
+  <data name="UpToDateDesc" xml:space="preserve">
+    <value>FrapaClonia is running the latest version.</value>
+  </data>
+  <data name="UpdateCheckFailed" xml:space="preserve">
+    <value>Update Check Failed</value>
+  </data>
+  <data name="UpdateCheckFailedDesc" xml:space="preserve">
+    <value>Could not check for updates. Please try again later.</value>
+  </data>
+  <data name="PrereleaseAvailable" xml:space="preserve">
+    <value>A prerelease version is available</value>
+  </data>
+  <data name="DownloadPrerelease" xml:space="preserve">
+    <value>Download Prerelease</value>
   </data>
 </root>

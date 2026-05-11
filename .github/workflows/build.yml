@@ -13,10 +13,13 @@ on:
       - "**.cs"
       - "**.csproj"
       - "**.sln"
-      - "CLAUDE.md"
-      - "assets/images/favicon.icns"
+      - "**.wxs"
+      - "**.ico"
+      - "**.icns"
       - ".github/actions/build-and-pack/**"
       - ".github/actions/package-macos-dmg/**"
+      - ".github/actions/package-windows-msi/**"
+      - ".github/actions/package-linux-deb/**"
       - ".github/workflows/build.yml"
 
 jobs:
@@ -48,12 +51,24 @@ jobs:
           version: ${{ needs.version.outputs.version }}
           rids: win-x64
 
-      - name: Upload Artifacts (Windows)
+      - name: Package MSI (win-x64)
+        uses: ./.github/actions/package-windows-msi
+        with:
+          version: ${{ needs.version.outputs.version }}
+          rid: win-x64
+
+      - name: Upload Artifacts (Windows ZIP)
         uses: actions/upload-artifact@main
         with:
-          name: frapaclonia-${{ needs.version.outputs.version }}-windows
-          path: |
-            FrapaClonia-*.zip
+          name: FrapaClonia-${{ needs.version.outputs.version }}-win-x64
+          path: FrapaClonia-${{ needs.version.outputs.version }}-win-x64.zip
+          retention-days: 30
+
+      - name: Upload Artifacts (Windows MSI)
+        uses: actions/upload-artifact@main
+        with:
+          name: FrapaClonia-${{ needs.version.outputs.version }}-win-x64-msi
+          path: FrapaClonia-${{ needs.version.outputs.version }}-win-x64.msi
           retention-days: 30
 
   build-linux:
@@ -69,31 +84,52 @@ jobs:
           version: ${{ needs.version.outputs.version }}
           rids: linux-x64 linux-arm64 linux-musl-x64 linux-musl-arm64
 
+      - name: Package DEB (linux)
+        uses: ./.github/actions/package-linux-deb
+        with:
+          version: ${{ needs.version.outputs.version }}
+          publish_root: out
+          rids: linux-x64 linux-arm64
+
       - name: Upload Artifacts (linux-x64)
         uses: actions/upload-artifact@main
         with:
-          name: frapaclonia-${{ needs.version.outputs.version }}-linux-x64
+          name: FrapaClonia-${{ needs.version.outputs.version }}-linux-x64
           path: FrapaClonia-${{ needs.version.outputs.version }}-linux-x64.tar.gz
+          retention-days: 30
+
+      - name: Upload Artifacts (linux-x64 DEB)
+        uses: actions/upload-artifact@main
+        with:
+          name: FrapaClonia-${{ needs.version.outputs.version }}-linux-x64-deb
+          path: FrapaClonia-${{ needs.version.outputs.version }}-linux-x64.deb
           retention-days: 30
 
       - name: Upload Artifacts (linux-arm64)
         uses: actions/upload-artifact@main
         with:
-          name: frapaclonia-${{ needs.version.outputs.version }}-linux-arm64
+          name: FrapaClonia-${{ needs.version.outputs.version }}-linux-arm64
           path: FrapaClonia-${{ needs.version.outputs.version }}-linux-arm64.tar.gz
+          retention-days: 30
+
+      - name: Upload Artifacts (linux-arm64 DEB)
+        uses: actions/upload-artifact@main
+        with:
+          name: FrapaClonia-${{ needs.version.outputs.version }}-linux-arm64-deb
+          path: FrapaClonia-${{ needs.version.outputs.version }}-linux-arm64.deb
           retention-days: 30
 
       - name: Upload Artifacts (linux-musl-x64)
         uses: actions/upload-artifact@main
         with:
-          name: frapaclonia-${{ needs.version.outputs.version }}-linux-musl-x64
+          name: FrapaClonia-${{ needs.version.outputs.version }}-linux-musl-x64
           path: FrapaClonia-${{ needs.version.outputs.version }}-linux-musl-x64.tar.gz
           retention-days: 30
 
       - name: Upload Artifacts (linux-musl-arm64)
         uses: actions/upload-artifact@main
         with:
-          name: frapaclonia-${{ needs.version.outputs.version }}-linux-musl-arm64
+          name: FrapaClonia-${{ needs.version.outputs.version }}-linux-musl-arm64
           path: FrapaClonia-${{ needs.version.outputs.version }}-linux-musl-arm64.tar.gz
           retention-days: 30
 
@@ -121,13 +157,13 @@ jobs:
       - name: Upload DMG artifacts
         uses: actions/upload-artifact@main
         with:
-          name: frapaclonia-${{ needs.version.outputs.version }}-macos-x64
+          name: FrapaClonia-${{ needs.version.outputs.version }}-macos-x64
           path: FrapaClonia-${{ needs.version.outputs.version }}-macos-x64.dmg
           retention-days: 30
 
       - name: Upload DMG artifacts (arm64)
         uses: actions/upload-artifact@main
         with:
-          name: frapaclonia-${{ needs.version.outputs.version }}-macos-arm64
+          name: FrapaClonia-${{ needs.version.outputs.version }}-macos-arm64
           path: FrapaClonia-${{ needs.version.outputs.version }}-macos-arm64.dmg
           retention-days: 30

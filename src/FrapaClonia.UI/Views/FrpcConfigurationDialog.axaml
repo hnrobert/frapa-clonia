@@ -4,6 +4,7 @@
         xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         xmlns:converters="clr-namespace:FrapaClonia.UI.Converters;assembly=FrapaClonia.UI"
         xmlns:local="clr-namespace:FrapaClonia.UI.MarkupExtensions;assembly=FrapaClonia.UI"
+        xmlns:controls="clr-namespace:FrapaClonia.UI.Controls"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="700"
@@ -22,7 +23,6 @@
 
   <Window.Resources>
     <converters:StringEqualsConverter x:Key="StringEqualsConverter" />
-    <converters:CountToEmptyVisibilityConverter x:Key="CountToEmptyVisibilityConverter" />
     <converters:BoolToOpacityConverter x:Key="BoolToOpacityConverter" />
   </Window.Resources>
 
@@ -30,6 +30,7 @@
     <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
   </Window.Styles>
 
+  <Panel>
   <ScrollViewer HorizontalScrollBarVisibility="Disabled">
     <Panel Margin="24">
       <StackPanel Spacing="{StaticResource SpacingL}">
@@ -103,6 +104,179 @@
               <TextBlock Text="{local:Localize DetectingFrpc}"
                          VerticalAlignment="Center" />
             </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <!-- Detected Frpc Installations (before Get Frpc) -->
+        <Border Classes="settings-card">
+          <StackPanel Spacing="0">
+            <Grid ColumnDefinitions="*,Auto" Margin="{StaticResource ThicknessBottomM}">
+              <TextBlock Grid.Column="0"
+                         Text="{local:Localize DetectedFrpcInstallations}"
+                         Classes="section-title"
+                         VerticalAlignment="Top" />
+              <Button Grid.Column="1"
+                      Command="{Binding RefreshDownloadedVersionsCommand}"
+                      Classes="action-button"
+                      IsEnabled="{Binding !IsLoadingDownloadedVersions}">
+                <TextBlock Text="{local:Localize Refresh}" />
+              </Button>
+            </Grid>
+
+            <!-- Version list -->
+            <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                    CornerRadius="6"
+                    Padding="0"
+                    MinHeight="100">
+              <Grid RowDefinitions="Auto,*">
+                <!-- Header -->
+                <Border Grid.Row="0"
+                        Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                        CornerRadius="6,6,0,0"
+                        Padding="12,8">
+                  <Grid ColumnDefinitions="70,70,100,*,50,50">
+                    <TextBlock Grid.Column="0" Text="{local:Localize Version}"
+                               FontWeight="{StaticResource FontWeightSemiBold}"
+                               FontSize="{StaticResource FontSizeS}" />
+                    <TextBlock Grid.Column="1" Text="{local:Localize Platform}"
+                               FontWeight="{StaticResource FontWeightSemiBold}"
+                               FontSize="{StaticResource FontSizeS}" />
+                    <TextBlock Grid.Column="2" Text="{local:Localize Architecture}"
+                               FontWeight="{StaticResource FontWeightSemiBold}"
+                               FontSize="{StaticResource FontSizeS}" />
+                    <TextBlock Grid.Column="3" Text="{local:Localize Source}"
+                               FontWeight="{StaticResource FontWeightSemiBold}"
+                               FontSize="{StaticResource FontSizeS}" />
+                    <TextBlock Grid.Column="4" Text="{local:Localize Use}"
+                               FontWeight="{StaticResource FontWeightSemiBold}"
+                               FontSize="{StaticResource FontSizeS}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Grid.Column="5" Text="{local:Localize Delete}"
+                               FontWeight="{StaticResource FontWeightSemiBold}"
+                               FontSize="{StaticResource FontSizeS}"
+                               HorizontalAlignment="Center" />
+                  </Grid>
+                </Border>
+
+                <!-- Loading indicator -->
+                <StackPanel Grid.Row="1"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Spacing="8"
+                            IsVisible="{Binding IsLoadingDownloadedVersions}">
+                  <ProgressBar IsIndeterminate="True" Width="100" />
+                  <TextBlock Text="{local:Localize LoadingVersions}"
+                             FontSize="{StaticResource FontSizeS}"
+                             Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                </StackPanel>
+
+                <!-- Empty state -->
+                <StackPanel Grid.Row="1"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Spacing="8"
+                            IsVisible="{Binding HasNoDownloadedVersions}">
+                  <TextBlock Text="{local:Localize NoVersionsDownloaded}"
+                             FontSize="{StaticResource FontSizeS}"
+                             Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                </StackPanel>
+
+                <!-- Version list -->
+                <ItemsControl Grid.Row="1"
+                              ItemsSource="{Binding DownloadedVersions}"
+                              IsVisible="{Binding HasDownloadedVersions}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <Border Background="Transparent"
+                              Padding="12,8"
+                              BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                              BorderThickness="0,0,0,1">
+                        <Border.Styles>
+                          <Style Selector="Border:pointerover /template/ ContentPresenter">
+                            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListLowBrush}" />
+                          </Style>
+                        </Border.Styles>
+                        <Grid ColumnDefinitions="70,70,100,*,50,50">
+                          <!-- Content with opacity binding -->
+                          <Panel Grid.ColumnSpan="6"
+                                 Opacity="{Binding IsPendingDeletion, Converter={StaticResource BoolToOpacityConverter}}">
+                            <Grid ColumnDefinitions="70,70,100,*,50,50">
+                              <TextBlock Grid.Column="0"
+                                         Text="{Binding Version}"
+                                         VerticalAlignment="Center"
+                                         FontSize="{StaticResource FontSizeS}" />
+                              <TextBlock Grid.Column="1"
+                                         Text="{Binding Platform}"
+                                         VerticalAlignment="Center"
+                                         FontSize="{StaticResource FontSizeS}" />
+                              <TextBlock Grid.Column="2"
+                                         Text="{Binding Architecture}"
+                                         VerticalAlignment="Center"
+                                         FontSize="{StaticResource FontSizeS}" />
+                              <TextBlock Grid.Column="3"
+                                         Text="{Binding SourceDisplayText}"
+                                         VerticalAlignment="Center"
+                                         FontSize="{StaticResource FontSizeS}" />
+                            </Grid>
+                          </Panel>
+                          <!-- Use Button -->
+                          <Button Grid.Column="4"
+                                  Command="{Binding $parent[ItemsControl].((vm:FrpcConfigurationViewModel)DataContext).UseVersionCommand, FallbackValue={x:Null}}"
+                                  CommandParameter="{Binding}"
+                                  Classes="icon-button"
+                                  Width="32"
+                                  Height="24"
+                                  Padding="0"
+                                  HorizontalAlignment="Center"
+                                  ToolTip.Tip="{local:Localize Use}">
+                            <mi:MaterialIcon Kind="Check"
+                                             Width="14" Height="14"
+                                             Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                          </Button>
+                          <!-- Delete/Undo Button -->
+                          <Button Grid.Column="5"
+                                  Command="{Binding $parent[ItemsControl].((vm:FrpcConfigurationViewModel)DataContext).DeleteVersionCommand, FallbackValue={x:Null}}"
+                                  CommandParameter="{Binding}"
+                                  Classes="icon-button"
+                                  Width="32"
+                                  Height="24"
+                                  Padding="0"
+                                  HorizontalAlignment="Center">
+                            <ToolTip.Tip>
+                              <Panel>
+                                <TextBlock Text="{local:Localize CannotDeleteNotManaged}"
+                                           IsVisible="{Binding !CanDelete}" />
+                                <TextBlock Text="{local:Localize Delete}" IsVisible="{Binding CanDelete}" />
+                              </Panel>
+                            </ToolTip.Tip>
+                            <Panel
+                              Opacity="{Binding CanDelete, Converter={StaticResource BoolToOpacityConverter}, ConverterParameter=Invert}">
+                              <!-- Delete Icon -->
+                              <mi:MaterialIcon Kind="Delete"
+                                               IsVisible="{Binding !IsPendingDeletion}"
+                                               Width="14" Height="14"
+                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                              <!-- Undo Icon -->
+                              <mi:MaterialIcon Kind="Undo"
+                                               IsVisible="{Binding IsPendingDeletion}"
+                                               Width="14" Height="14"
+                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                            </Panel>
+                          </Button>
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </Grid>
+            </Border>
+
+            <!-- Info text -->
+            <TextBlock Text="{local:Localize VersionManagementHint}"
+                       FontSize="{StaticResource FontSizeS}"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       TextWrapping="Wrap"
+                       Margin="{StaticResource ThicknessTopS}" />
           </StackPanel>
         </Border>
 
@@ -308,190 +482,6 @@
           </StackPanel>
         </Border>
 
-        <!-- Downloaded Frpc Versions -->
-        <Border Classes="settings-card">
-          <StackPanel Spacing="0">
-            <Grid ColumnDefinitions="*,Auto" Margin="{StaticResource ThicknessBottomM}">
-              <TextBlock Grid.Column="0"
-                         Text="{local:Localize DetectedFrpcInstallations}"
-                         Classes="section-title"
-                         VerticalAlignment="Top" />
-              <Button Grid.Column="1"
-                      Command="{Binding RefreshDownloadedVersionsCommand}"
-                      Classes="action-button"
-                      IsEnabled="{Binding !IsLoadingDownloadedVersions}">
-                <TextBlock Text="{local:Localize Refresh}" />
-              </Button>
-            </Grid>
-
-            <!-- Version list -->
-            <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
-                    CornerRadius="6"
-                    Padding="0"
-                    MinHeight="100">
-              <Grid RowDefinitions="Auto,*">
-                <!-- Header -->
-                <Border Grid.Row="0"
-                        Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
-                        CornerRadius="6,6,0,0"
-                        Padding="12,8">
-                  <Grid ColumnDefinitions="70,70,100,*,50,50">
-                    <TextBlock Grid.Column="0" Text="{local:Localize Version}"
-                               FontWeight="{StaticResource FontWeightSemiBold}"
-                               FontSize="{StaticResource FontSizeS}" />
-                    <TextBlock Grid.Column="1" Text="{local:Localize Platform}"
-                               FontWeight="{StaticResource FontWeightSemiBold}"
-                               FontSize="{StaticResource FontSizeS}" />
-                    <TextBlock Grid.Column="2" Text="{local:Localize Architecture}"
-                               FontWeight="{StaticResource FontWeightSemiBold}"
-                               FontSize="{StaticResource FontSizeS}" />
-                    <TextBlock Grid.Column="3" Text="{local:Localize Source}"
-                               FontWeight="{StaticResource FontWeightSemiBold}"
-                               FontSize="{StaticResource FontSizeS}" />
-                    <TextBlock Grid.Column="4" Text="{local:Localize Use}"
-                               FontWeight="{StaticResource FontWeightSemiBold}"
-                               FontSize="{StaticResource FontSizeS}"
-                               HorizontalAlignment="Center" />
-                    <TextBlock Grid.Column="5" Text="{local:Localize Delete}"
-                               FontWeight="{StaticResource FontWeightSemiBold}"
-                               FontSize="{StaticResource FontSizeS}"
-                               HorizontalAlignment="Center" />
-                  </Grid>
-                </Border>
-
-                <!-- Loading indicator -->
-                <StackPanel Grid.Row="1"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Center"
-                            Spacing="8"
-                            IsVisible="{Binding IsLoadingDownloadedVersions}">
-                  <ProgressBar IsIndeterminate="True" Width="100" />
-                  <TextBlock Text="{local:Localize LoadingVersions}"
-                             FontSize="{StaticResource FontSizeS}"
-                             Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-                </StackPanel>
-
-                <!-- Empty state -->
-                <StackPanel Grid.Row="1"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Center"
-                            Spacing="8">
-                  <StackPanel.IsVisible>
-                    <MultiBinding Converter="{x:Static BoolConverters.And}">
-                      <Binding Path="!IsLoadingDownloadedVersions" />
-                      <Binding Path="DownloadedVersions.Count"
-                               Converter="{StaticResource CountToEmptyVisibilityConverter}" />
-                    </MultiBinding>
-                  </StackPanel.IsVisible>
-                  <TextBlock Text="{local:Localize NoVersionsDownloaded}"
-                             FontSize="{StaticResource FontSizeS}"
-                             Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-                </StackPanel>
-
-                <!-- Version list (no internal scroll viewer, full height) -->
-                <ItemsControl Grid.Row="1"
-                              ItemsSource="{Binding DownloadedVersions}">
-                  <ItemsControl.IsVisible>
-                    <MultiBinding Converter="{x:Static BoolConverters.And}">
-                      <Binding Path="!IsLoadingDownloadedVersions" />
-                      <Binding Path="DownloadedVersions.Count" Converter="{x:Static ObjectConverters.IsNotNull}" />
-                    </MultiBinding>
-                  </ItemsControl.IsVisible>
-                  <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                      <Border Background="Transparent"
-                              Padding="12,8"
-                              BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                              BorderThickness="0,0,0,1">
-                        <Border.Styles>
-                          <Style Selector="Border:pointerover /template/ ContentPresenter">
-                            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListLowBrush}" />
-                          </Style>
-                        </Border.Styles>
-                        <Grid ColumnDefinitions="70,70,100,*,50,50">
-                          <!-- Content with opacity binding -->
-                          <Panel Grid.ColumnSpan="6"
-                                 Opacity="{Binding IsPendingDeletion, Converter={StaticResource BoolToOpacityConverter}}">
-                            <Grid ColumnDefinitions="70,70,100,*,50,50">
-                              <TextBlock Grid.Column="0"
-                                         Text="{Binding Version}"
-                                         VerticalAlignment="Center"
-                                         FontSize="{StaticResource FontSizeS}" />
-                              <TextBlock Grid.Column="1"
-                                         Text="{Binding Platform}"
-                                         VerticalAlignment="Center"
-                                         FontSize="{StaticResource FontSizeS}" />
-                              <TextBlock Grid.Column="2"
-                                         Text="{Binding Architecture}"
-                                         VerticalAlignment="Center"
-                                         FontSize="{StaticResource FontSizeS}" />
-                              <TextBlock Grid.Column="3"
-                                         Text="{Binding SourceDisplayText}"
-                                         VerticalAlignment="Center"
-                                         FontSize="{StaticResource FontSizeS}" />
-                            </Grid>
-                          </Panel>
-                          <!-- Use Button -->
-                          <Button Grid.Column="4"
-                                  Command="{Binding $parent[ItemsControl].((vm:FrpcConfigurationViewModel)DataContext).UseVersionCommand, FallbackValue={x:Null}}"
-                                  CommandParameter="{Binding}"
-                                  Classes="icon-button"
-                                  Width="32"
-                                  Height="24"
-                                  Padding="0"
-                                  HorizontalAlignment="Center"
-                                  ToolTip.Tip="{local:Localize Use}">
-                            <mi:MaterialIcon Kind="Check"
-                                             Width="14" Height="14"
-                                             Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-                          </Button>
-                          <!-- Delete/Undo Button -->
-                          <Button Grid.Column="5"
-                                  Command="{Binding $parent[ItemsControl].((vm:FrpcConfigurationViewModel)DataContext).DeleteVersionCommand, FallbackValue={x:Null}}"
-                                  CommandParameter="{Binding}"
-                                  Classes="icon-button"
-                                  Width="32"
-                                  Height="24"
-                                  Padding="0"
-                                  HorizontalAlignment="Center">
-                            <ToolTip.Tip>
-                              <Panel>
-                                <TextBlock Text="{local:Localize CannotDeleteNotManaged}"
-                                           IsVisible="{Binding !CanDelete}" />
-                                <TextBlock Text="{local:Localize Delete}" IsVisible="{Binding CanDelete}" />
-                              </Panel>
-                            </ToolTip.Tip>
-                            <Panel
-                              Opacity="{Binding CanDelete, Converter={StaticResource BoolToOpacityConverter}, ConverterParameter=Invert}">
-                              <!-- Delete Icon -->
-                              <mi:MaterialIcon Kind="Delete"
-                                               IsVisible="{Binding !IsPendingDeletion}"
-                                               Width="14" Height="14"
-                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-                              <!-- Undo Icon -->
-                              <mi:MaterialIcon Kind="Undo"
-                                               IsVisible="{Binding IsPendingDeletion}"
-                                               Width="14" Height="14"
-                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-                            </Panel>
-                          </Button>
-                        </Grid>
-                      </Border>
-                    </DataTemplate>
-                  </ItemsControl.ItemTemplate>
-                </ItemsControl>
-              </Grid>
-            </Border>
-
-            <!-- Info text -->
-            <TextBlock Text="{local:Localize VersionManagementHint}"
-                       FontSize="{StaticResource FontSizeS}"
-                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                       TextWrapping="Wrap"
-                       Margin="{StaticResource ThicknessTopS}" />
-          </StackPanel>
-        </Border>
-
         <!-- Action Buttons -->
         <StackPanel Orientation="Horizontal"
                     Spacing="{StaticResource SpacingM}"
@@ -511,4 +501,25 @@
       </StackPanel>
     </Panel>
   </ScrollViewer>
+
+  <!-- Toast Notification Container -->
+  <Panel>
+    <ItemsControl x:Name="ToastContainer"
+                  Margin="20"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Top"
+                  IsHitTestVisible="True">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <StackPanel Orientation="Vertical" Spacing="8" />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      <ItemsControl.ItemTemplate>
+        <DataTemplate>
+          <controls:ToastNotification />
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </Panel>
+  </Panel>
 </Window>

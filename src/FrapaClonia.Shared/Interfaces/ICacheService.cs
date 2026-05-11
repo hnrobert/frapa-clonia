@@ -1,3 +1,5 @@
+using FrapaClonia.Shared.Models;
+
 namespace FrapaClonia.Shared.Interfaces;
 
 /// <summary>
@@ -6,9 +8,9 @@ namespace FrapaClonia.Shared.Interfaces;
 public interface ICacheService
 {
     /// <summary>
-    /// Gets the name of the currently selected preset
+    /// Gets the ID of the currently selected preset
     /// </summary>
-    string? CurrentPresetName { get; }
+    Guid CurrentPresetId { get; }
 
     /// <summary>
     /// Initializes the cache service, loading cache data from storage
@@ -16,12 +18,37 @@ public interface ICacheService
     Task InitializeAsync();
 
     /// <summary>
-    /// Sets the current preset by name
+    /// Sets the current preset by ID
     /// </summary>
-    Task SetCurrentPresetAsync(string presetName);
+    Task SetCurrentPresetAsync(Guid presetId);
 
     /// <summary>
     /// Saves the cache to storage
     /// </summary>
     Task SaveAsync();
+
+    /// <summary>
+    /// GitHub personal access token for higher API rate limits
+    /// </summary>
+    string? GitHubToken { get; set; }
+
+    /// <summary>
+    /// Cached frpc versions from GitHub
+    /// </summary>
+    List<CachedFrpcVersion> FrpcVersions { get; }
+
+    /// <summary>
+    /// When frpc versions were last fetched from GitHub
+    /// </summary>
+    DateTime? LastFrpcVersionCheck { get; set; }
+
+    /// <summary>
+    /// When the app last checked for self-updates
+    /// </summary>
+    DateTime? LastSelfUpdateCheck { get; set; }
+
+    /// <summary>
+    /// When the GitHub token was last validated
+    /// </summary>
+    DateTime? LastGitHubTokenValidation { get; set; }
 }

@@ -9,17 +9,40 @@ namespace FrapaClonia.Core.Services;
 /// <summary>
 /// Service for downloading frpc binaries
 /// </summary>
-public class FrpcDownloadService(ILogger<FrpcDownloadService> logger) : IFrpcDownloadService
+public class FrpcDownloadService : IFrpcDownloadService
 {
+    private readonly ILogger<FrpcDownloadService> _logger;
+    private readonly ICacheService? _cacheService;
     private static readonly HttpClient HttpClient = new();
     private static readonly HttpClient HTTPClient = new();
     private readonly GitHubClient _gitHubClient = new(new ProductHeaderValue("FrapaClonia"));
+
+    public FrpcDownloadService() : this(
+        Microsoft.Extensions.Logging.Abstractions.NullLogger<FrpcDownloadService>.Instance, null!)
+    {
+    }
+
+    public FrpcDownloadService(ILogger<FrpcDownloadService> logger, ICacheService? cacheService)
+    {
+        _logger = logger;
+        _cacheService = cacheService;
+    }
+
+    private void ApplyToken()
+    {
+        var token = _cacheService?.GitHubToken;
+        if (!string.IsNullOrEmpty(token))
+        {
+            _gitHubClient.Credentials = new Credentials(token);
+        }
+    }
 
     public async Task<IReadOnlyList<FrpRelease>> GetAvailableVersionsAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            logger.LogInformation("Fetching available frpc versions from GitHub");
+            _logger.LogInformation("Fetching available frpc versions from GitHub");
+            ApplyToken();
             var releases = await _gitHubClient.Repository.Release.GetAll("fatedier", "frp");
 
             return releases.Select(r => new FrpRelease
@@ -40,7 +63,7 @@ public class FrpcDownloadService(ILogger<FrpcDownloadService> logger) : IFrpcDow
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error fetching available versions from GitHub");
+            _logger.LogError(ex, "Error fetching available versions from GitHub");
             return new List<FrpRelease>();
         }
     }
@@ -56,7 +79,7 @@ public class FrpcDownloadService(ILogger<FrpcDownloadService> logger) : IFrpcDow
 
         if (asset == null)
         {
-            logger.LogWarning("Could not find matching asset for platform {Platform} and architecture {Arch}", platform, arch);
+            _logger.LogWarning("Could not find matching asset for platform {Platform} and architecture {Arch}", platform, arch);
             // Try to find any compatible asset
             asset = release.Assets.FirstOrDefault(a => a.Platform == platform)
                 ?? release.Assets.FirstOrDefault();
@@ -67,7 +90,7 @@ public class FrpcDownloadService(ILogger<FrpcDownloadService> logger) : IFrpcDow
             throw new InvalidOperationException($"No suitable asset found in release {release.TagName}");
         }
 
-        logger.LogInformation("Downloading frpc {Version} for {Platform}-{Arch} from {Url}",
+        _logger.LogInformation("Downloading frpc {Version} for {Platform}-{Arch} from {Url}",
             release.Version, platform, arch, asset.DownloadUrl);
 
         // Ensure target directory exists
@@ -99,7 +122,7 @@ public class FrpcDownloadService(ILogger<FrpcDownloadService> logger) : IFrpcDow
             }
         }
 
-        logger.LogInformation("Downloaded frpc to {FilePath}", filePath);
+        _logger.LogInformation("Downloaded frpc to {FilePath}", filePath);
         return filePath;
     }
 
@@ -107,7 +130,8 @@ public class FrpcDownloadService(ILogger<FrpcDownloadService> logger) : IFrpcDow
     {
         try
         {
-            logger.LogInformation("Fetching latest frpc version from GitHub");
+            _logger.LogInformation("Fetching latest frpc version from GitHub");
+            ApplyToken();
             var latest = await _gitHubClient.Repository.Release.GetLatest("fatedier", "frp");
 
             return new FrpRelease
@@ -128,7 +152,7 @@ public class FrpcDownloadService(ILogger<FrpcDownloadService> logger) : IFrpcDow
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error fetching latest version from GitHub");
+            _logger.LogError(ex, "Error fetching latest version from GitHub");
             return null;
         }
     }
@@ -137,7 +161,7 @@ public class FrpcDownloadService(ILogger<FrpcDownloadService> logger) : IFrpcDow
     {
         try
         {
-            logger.LogInformation("Downloading frpc from mirror {MirrorUrl}", mirrorUrl);
+            _logger.LogInformation("Downloading frpc from mirror {MirrorUrl}", mirrorUrl);
 
             // Ensure target directory exists
             Directory.CreateDirectory(targetDirectory);
@@ -168,12 +192,12 @@ public class FrpcDownloadService(ILogger<FrpcDownloadService> logger) : IFrpcDow
                 }
             }
 
-            logger.LogInformation("Downloaded frpc from mirror to {FilePath}", filePath);
+            _logger.LogInformation("Downloaded frpc from mirror to {FilePath}", filePath);
             return filePath;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error downloading frpc from mirror {MirrorUrl}", mirrorUrl);
+            _logger.LogError(ex, "Error downloading frpc from mirror {MirrorUrl}", mirrorUrl);
             throw;
         }
     }

@@ -845,23 +845,23 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
         {
             sb.AppendLine("[webServer]");
             sb.AppendLine($"addr = \"{EscapeString(config.WebServer.Addr)}\"");
-            sb.AppendLine($"port = {config.WebServer.Port}");
-            if (config.WebServer.User != null)
+            sb.AppendLine($"port = {WebServerConfig.Port}");
+            if (WebServerConfig.User != null)
             {
-                sb.AppendLine($"user = \"{EscapeString(config.WebServer.User)}\"");
+                sb.AppendLine($"user = \"{EscapeString(WebServerConfig.User)}\"");
             }
 
-            if (config.WebServer.Password != null)
+            if (WebServerConfig.Password != null)
             {
-                sb.AppendLine($"password = \"{EscapeString(config.WebServer.Password)}\"");
+                sb.AppendLine($"password = \"{EscapeString(WebServerConfig.Password)}\"");
             }
 
-            if (config.WebServer.Token != null)
+            if (WebServerConfig.Token != null)
             {
-                sb.AppendLine($"token = \"{EscapeString(config.WebServer.Token)}\"");
+                sb.AppendLine($"token = \"{EscapeString(WebServerConfig.Token)}\"");
             }
 
-            if (config.WebServer.PprofEnable)
+            if (WebServerConfig.PprofEnable)
             {
                 sb.AppendLine("pprofEnable = true");
             }
@@ -880,11 +880,11 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
         {
             sb.AppendLine("[virtualNet]");
             sb.AppendLine($"address = \"{EscapeString(config.VirtualNet.Address)}\"");
-            if (config.VirtualNet.Mtu.HasValue)
-                sb.AppendLine($"mtu = {config.VirtualNet.Mtu.Value}");
-            if (config.VirtualNet.Routes is { Count: > 0 })
+            if (VirtualNetConfig.Mtu.HasValue)
+                sb.AppendLine($"mtu = {VirtualNetConfig.Mtu.Value}");
+            if (VirtualNetConfig.Routes is { Count: > 0 })
                 sb.AppendLine(
-                    $"routes = [{string.Join(", ", config.VirtualNet.Routes.Select(r => $"\"{r}\""))}]");
+                    $"routes = [{string.Join(", ", VirtualNetConfig.Routes.Select(r => $"\"{r}\""))}]");
         }
 
         // Metadata
@@ -943,9 +943,9 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
                                                transport.Tls.CertFile != null
                                                || transport.Tls.KeyFile != null || transport.Tls.CaFile != null ||
                                                transport.Tls.ServerName != null);
-        var hasQuic = transport.Quic != null && (transport.Quic.KeepaliveInterval.HasValue
-                                                 || transport.Quic.MaxIdleTimeout.HasValue ||
-                                                 transport.Quic.MaxIncomingStreams.HasValue);
+        var hasQuic = transport.Quic != null && (QUICOptions.KeepaliveInterval.HasValue
+                                                 || QUICOptions.MaxIdleTimeout.HasValue ||
+                                                 QUICOptions.MaxIncomingStreams.HasValue);
 
         if (!hasTransportFields && !hasTls && !hasQuic)
             return "";
@@ -974,12 +974,12 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
         if (transport.Quic == null || !hasQuic) return sb.ToString().TrimEnd();
 
         sb.AppendLine("[transport.quic]");
-        if (transport.Quic.KeepaliveInterval.HasValue)
-            sb.AppendLine($"keepaliveInterval = {transport.Quic.KeepaliveInterval.Value}");
-        if (transport.Quic.MaxIdleTimeout.HasValue)
-            sb.AppendLine($"maxIdleTimeout = {transport.Quic.MaxIdleTimeout.Value}");
-        if (transport.Quic.MaxIncomingStreams.HasValue)
-            sb.AppendLine($"maxIncomingStreams = {transport.Quic.MaxIncomingStreams.Value}");
+        if (QUICOptions.KeepaliveInterval.HasValue)
+            sb.AppendLine($"keepaliveInterval = {QUICOptions.KeepaliveInterval.Value}");
+        if (QUICOptions.MaxIdleTimeout.HasValue)
+            sb.AppendLine($"maxIdleTimeout = {QUICOptions.MaxIdleTimeout.Value}");
+        if (QUICOptions.MaxIncomingStreams.HasValue)
+            sb.AppendLine($"maxIncomingStreams = {QUICOptions.MaxIncomingStreams.Value}");
 
         return sb.ToString().TrimEnd();
     }
@@ -1231,12 +1231,12 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
 
         if (transport.Quic == null) return sb.ToString().TrimEnd();
         sb.AppendLine("[visitors.transport.quic]");
-        if (transport.Quic.KeepaliveInterval.HasValue)
-            sb.AppendLine($"keepaliveInterval = {transport.Quic.KeepaliveInterval.Value}");
-        if (transport.Quic.MaxIdleTimeout.HasValue)
-            sb.AppendLine($"maxIdleTimeout = {transport.Quic.MaxIdleTimeout.Value}");
-        if (transport.Quic.MaxIncomingStreams.HasValue)
-            sb.AppendLine($"maxIncomingStreams = {transport.Quic.MaxIncomingStreams.Value}");
+        if (QUICOptions.KeepaliveInterval.HasValue)
+            sb.AppendLine($"keepaliveInterval = {QUICOptions.KeepaliveInterval.Value}");
+        if (QUICOptions.MaxIdleTimeout.HasValue)
+            sb.AppendLine($"maxIdleTimeout = {QUICOptions.MaxIdleTimeout.Value}");
+        if (QUICOptions.MaxIncomingStreams.HasValue)
+            sb.AppendLine($"maxIncomingStreams = {QUICOptions.MaxIncomingStreams.Value}");
 
         return sb.ToString().TrimEnd();
     }

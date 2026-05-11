@@ -9,6 +9,12 @@
   <!-- Global TextBox behavior: Lose focus on Escape key -->
   <Style Selector="TextBox">
     <Setter Property="attached:TextBoxBehaviors.LoseFocusOnEscape" Value="True" />
+    <Setter Property="attached:ScrollWheelSuppressor.IsEnabled" Value="True" />
+  </Style>
+
+  <!-- Prevent ComboBox from changing selection on scroll wheel -->
+  <Style Selector="ComboBox">
+    <Setter Property="attached:ScrollWheelSuppressor.IsEnabled" Value="True" />
   </Style>
 
   <!-- Fix text clipping at right edge in Fluent theme -->
