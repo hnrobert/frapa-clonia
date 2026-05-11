@@ -15,7 +15,6 @@ public static class ScrollWheelSuppressor
         IsEnabledProperty.Changed.AddClassHandler<Control>(OnIsEnabledChanged);
     }
 
-    public static bool GetIsEnabled(Control obj) => obj.GetValue(IsEnabledProperty);
     public static void SetIsEnabled(Control obj, bool value) => obj.SetValue(IsEnabledProperty, value);
 
     private static void OnIsEnabledChanged(Control control, AvaloniaPropertyChangedEventArgs e)
