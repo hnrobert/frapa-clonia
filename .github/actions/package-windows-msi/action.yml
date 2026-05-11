@@ -43,6 +43,6 @@ runs:
         $SourceDir = "${{ inputs.publish_root }}/$Rid"
         $Output = "${AppName}-${Version}-${Rid}.msi"
 
-        wix build Assets/manifests/installer.wxs Components.wxs -d Version=$Version -d SourceDir=$SourceDir -o $Output
+        wix build -acceptEula wix7 Assets/manifests/installer.wxs Components.wxs -d Version=$Version -d SourceDir=$SourceDir -o $Output
 
         Write-Host "Built MSI: $Output"
