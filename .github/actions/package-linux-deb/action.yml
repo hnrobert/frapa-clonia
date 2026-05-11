@@ -1,0 +1,117 @@
+name: "Package Linux DEB"
+description: "Create .deb packages from published Linux builds"
+
+inputs:
+  version:
+    description: "Version string for the package"
+    required: true
+
+  publish_root:
+    description: "Root directory containing published outputs"
+    required: false
+    default: "out"
+
+  rids:
+    description: "Space-separated list of Linux RIDs to package (only non-musl)"
+    required: false
+    default: "linux-x64 linux-arm64"
+
+  app_name:
+    description: "Application name"
+    required: false
+    default: "FrapaClonia"
+
+  maintainer:
+    description: "Package maintainer"
+    required: false
+    default: "hnrobert"
+
+  description:
+    description: "Package description"
+    required: false
+    default: "A modern frpc configuration manager"
+
+  arch_exec:
+    description: "Path to executable relative to install dir"
+    required: false
+    default: "usr/bin"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Build DEB packages
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        APP_NAME="${{ inputs.app_name }}"
+        VERSION="${{ inputs.version }}"
+        PUBLISH_ROOT="${{ inputs.publish_root }}"
+        MAINTAINER="${{ inputs.maintainer }}"
+        DESC="${{ inputs.description }}"
+        RIDS="${{ inputs.rids }}"
+
+        for RID in $RIDS; do
+          SRC_DIR="$PUBLISH_ROOT/$RID"
+          if [ ! -d "$SRC_DIR" ]; then
+            echo "Missing publish directory: $SRC_DIR" >&2
+            exit 1
+          fi
+
+          case "$RID" in
+            linux-arm64) DEB_SUFFIX="linux-arm64"; DEB_ARCH="arm64" ;;
+            *) DEB_SUFFIX="linux-x64"; DEB_ARCH="amd64" ;;
+          esac
+
+          PKG_NAME="${APP_NAME}-${VERSION}-${DEB_SUFFIX}"
+          PKG_DIR="deb-work/$PKG_NAME"
+
+          rm -rf "deb-work"
+          mkdir -p "$PKG_DIR/DEBIAN"
+          mkdir -p "$PKG_DIR/usr/bin"
+          mkdir -p "$PKG_DIR/usr/share/applications"
+          mkdir -p "$PKG_DIR/usr/share/icons/hicolor/256x256/apps"
+
+          # Copy published files
+          cp -R "$SRC_DIR/"* "$PKG_DIR/usr/bin/"
+
+          # Ensure executable
+          chmod +x "$PKG_DIR/usr/bin/$APP_NAME" || true
+
+          # Remove debug artifacts
+          find "$PKG_DIR" -name '*.pdb' -type f -delete || true
+          find "$PKG_DIR" -name '*.dbg' -type f -delete || true
+
+          # Generate control file
+          cat > "$PKG_DIR/DEBIAN/control" <<EOF
+        Package: ${APP_NAME,,}
+        Version: $VERSION
+        Architecture: $DEB_ARCH
+        Maintainer: $MAINTAINER
+        Description: $DESC
+        Section: utils
+        Priority: optional
+        EOF
+
+          # Generate desktop entry
+          cat > "$PKG_DIR/usr/share/applications/${APP_NAME,,}.desktop" <<EOF
+        [Desktop Entry]
+        Name=$APP_NAME
+        Comment=$DESC
+        Exec=/usr/bin/$APP_NAME
+        Icon=${APP_NAME,,}
+        Terminal=false
+        Type=Application
+        Categories=Network;Utility;
+        EOF
+
+          # Copy icon if available
+          if [ -f "assets/images/favicon.png" ]; then
+            cp "assets/images/favicon.png" "$PKG_DIR/usr/share/icons/hicolor/256x256/apps/${APP_NAME,,}.png"
+          fi
+
+          # Build the deb
+          dpkg-deb --build "$PKG_DIR" "${PKG_NAME}.deb"
+
+          echo "Built: ${PKG_NAME}.deb"
+        done
