@@ -123,7 +123,7 @@ public class UpdateService : IUpdateService
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             var arch = RuntimeInformation.OSArchitecture == Architecture.Arm64 ? "arm64" : "x64";
-            return ($"win-{arch}", ".zip");
+            return ($"win-{arch}", ".msi");
         }
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))

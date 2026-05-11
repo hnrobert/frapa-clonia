@@ -60,12 +60,19 @@ jobs:
           version: ${{ needs.version.outputs.version }}
           rids: win-x64
 
+      - name: Package MSI (win-x64)
+        uses: ./.github/actions/package-windows-msi
+        with:
+          version: ${{ needs.version.outputs.version }}
+          rid: win-x64
+
       - name: Upload build artifacts (Windows)
         uses: actions/upload-artifact@main
         with:
           name: release-${{ needs.version.outputs.version }}-win-x64
           path: |
             FrapaClonia-*.zip
+            FrapaClonia-*.msi
           retention-days: 7
 
   build-linux:
@@ -168,6 +175,7 @@ jobs:
           VERSION="${{ needs.version.outputs.version }}"
           gh release upload "$TAG" \
             dist/FrapaClonia-${VERSION}-win-x64.zip \
+            dist/FrapaClonia-${VERSION}-win-x64.msi \
             dist/FrapaClonia-${VERSION}-linux-x64.tar.gz \
             dist/FrapaClonia-${VERSION}-linux-arm64.tar.gz \
             dist/FrapaClonia-${VERSION}-linux-musl-x64.tar.gz \

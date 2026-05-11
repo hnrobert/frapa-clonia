@@ -1,0 +1,58 @@
+name: "Package Windows MSI"
+description: "Build MSI installer for Windows using WiX Toolset"
+
+inputs:
+  version:
+    description: "Version string for the MSI"
+    required: true
+
+  publish_root:
+    description: "Root directory containing published outputs"
+    required: false
+    default: "out"
+
+  rid:
+    description: "Runtime identifier (e.g. win-x64)"
+    required: false
+    default: "win-x64"
+
+  app_name:
+    description: "Application name"
+    required: false
+    default: "FrapaClonia"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install WiX Toolset
+      shell: pwsh
+      run: dotnet tool install --global wix
+
+    - name: Harvest published files
+      shell: pwsh
+      run: |
+        $PublishDir = "${{ inputs.publish_root }}/${{ inputs.rid }}"
+        wix harvest dir $PublishDir `
+          -o Components.wxs `
+          -cg AppComponents `
+          -dr INSTALLFOLDER `
+          -var "var.SourceDir" `
+          -t ag
+
+    - name: Build MSI
+      shell: pwsh
+      run: |
+        $Version = '${{ inputs.version }}'
+        $Rid = '${{ inputs.rid }}'
+        $AppName = '${{ inputs.app_name }}'
+        $SourceDir = "${{ inputs.publish_root }}/$Rid"
+        $Output = "${AppName}-${Version}-${Rid}.msi"
+
+        wix build `
+          Assets/manifests/installer.wxs `
+          Components.wxs `
+          -d Version=$Version `
+          -d SourceDir=$SourceDir `
+          -o $Output
+
+        Write-Host "Built MSI: $Output"

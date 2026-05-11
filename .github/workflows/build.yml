@@ -13,10 +13,12 @@ on:
       - "**.cs"
       - "**.csproj"
       - "**.sln"
-      - "CLAUDE.md"
-      - "assets/images/favicon.icns"
+      - "**.wxs"
+      - "**.ico"
+      - "**.icns"
       - ".github/actions/build-and-pack/**"
       - ".github/actions/package-macos-dmg/**"
+      - ".github/actions/package-windows-msi/**"
       - ".github/workflows/build.yml"
 
 jobs:
@@ -48,12 +50,19 @@ jobs:
           version: ${{ needs.version.outputs.version }}
           rids: win-x64
 
+      - name: Package MSI (win-x64)
+        uses: ./.github/actions/package-windows-msi
+        with:
+          version: ${{ needs.version.outputs.version }}
+          rid: win-x64
+
       - name: Upload Artifacts (Windows)
         uses: actions/upload-artifact@main
         with:
           name: frapaclonia-${{ needs.version.outputs.version }}-windows
           path: |
             FrapaClonia-*.zip
+            FrapaClonia-*.msi
           retention-days: 30
 
   build-linux:
