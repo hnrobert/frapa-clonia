@@ -32,37 +32,7 @@ runs:
       shell: pwsh
       run: |
         $SourceDir = "${{ inputs.publish_root }}/${{ inputs.rid }}"
-        $Files = Get-ChildItem -Path $SourceDir -File -Recurse
-        $Id = 0
-
-        $Wxs = @(
-          '<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">'
-          '<Fragment>'
-          '<ComponentGroup Id="AppComponents">'
-        )
-
-        foreach ($File in $Files) {
-          $Id++
-          $RelPath = $File.FullName.Substring($SourceDir.Length).TrimStart('\','/')
-          $FileId = "File_$Id"
-          $CompId = "Comp_$Id"
-          $EscapedRelPath = $RelPath -replace '\\','/' -replace '([&<>])','&$1'
-
-          $Wxs += @"
-            <Component Id="$CompId" Directory="INSTALLFOLDER">
-              <File Id="$FileId" Source="$(var.SourceDir)/$EscapedRelPath" />
-            </Component>
-"@
-        }
-
-        $Wxs += @(
-          '</ComponentGroup>'
-          '</Fragment>'
-          '</Wix>'
-        )
-
-        $Wxs | Set-Content -Path "Components.wxs" -Encoding UTF8
-        Write-Host "Generated Components.wxs with $($Files.Count) files"
+        ./.github/actions/package-windows-msi/generate-components.ps1 -SourceDir $SourceDir
 
     - name: Build MSI
       shell: pwsh
@@ -73,11 +43,6 @@ runs:
         $SourceDir = "${{ inputs.publish_root }}/$Rid"
         $Output = "${AppName}-${Version}-${Rid}.msi"
 
-        wix build `
-          Assets/manifests/installer.wxs `
-          Components.wxs `
-          -d Version=$Version `
-          -d SourceDir=$SourceDir `
-          -o $Output
+        wix build Assets/manifests/installer.wxs Components.wxs -d Version=$Version -d SourceDir=$SourceDir -o $Output
 
         Write-Host "Built MSI: $Output"
