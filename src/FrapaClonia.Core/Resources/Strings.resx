@@ -1541,4 +1541,10 @@
   <data name="UpdateCheckFailedDesc" xml:space="preserve">
     <value>Could not check for updates. Please try again later.</value>
   </data>
+  <data name="PrereleaseAvailable" xml:space="preserve">
+    <value>A prerelease version is available</value>
+  </data>
+  <data name="DownloadPrerelease" xml:space="preserve">
+    <value>Download Prerelease</value>
+  </data>
 </root>

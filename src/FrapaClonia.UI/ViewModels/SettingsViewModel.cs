@@ -57,6 +57,9 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _updateAvailable;
     [ObservableProperty] private string _updateReleaseNotes = "";
     [ObservableProperty] private string _updateDownloadUrl = "";
+    [ObservableProperty] private bool _prereleaseAvailable;
+    [ObservableProperty] private string _latestPrereleaseVersion = "";
+    [ObservableProperty] private string _prereleaseDownloadUrl = "";
 
     public bool IsGitHubLoggedIn => GitHubTokenStatus != GitHubTokenStatus.None;
     public bool IsGitHubConnected => GitHubTokenStatus == GitHubTokenStatus.Connected;
@@ -77,6 +80,8 @@ public partial class SettingsViewModel : ObservableObject
     public IRelayCommand CheckForUpdatesCommand { get; }
     public IRelayCommand DownloadUpdateCommand { get; }
     public IRelayCommand OpenReleasePageCommand { get; }
+    public IRelayCommand DownloadPrereleaseCommand { get; }
+    public IRelayCommand OpenPrereleasePageCommand { get; }
 
     public List<LanguageOption> AvailableLanguages { get; }
 
@@ -226,8 +231,16 @@ public partial class SettingsViewModel : ObservableObject
         {
             if (UpdateAvailable && !string.IsNullOrEmpty(_updateDownloadUrl))
             {
-                // Open the release page (strip the asset download URL to get the release page)
                 var tag = $"releases/tag/{LatestVersion}";
+                OpenUrl($"https://github.com/{Owner}/{Repo}/{tag}");
+            }
+        });
+        DownloadPrereleaseCommand = new RelayCommand(() => OpenUrl(_prereleaseDownloadUrl));
+        OpenPrereleasePageCommand = new RelayCommand(() =>
+        {
+            if (PrereleaseAvailable && !string.IsNullOrEmpty(_prereleaseDownloadUrl))
+            {
+                var tag = $"releases/tag/{LatestPrereleaseVersion}";
                 OpenUrl($"https://github.com/{Owner}/{Repo}/{tag}");
             }
         });
@@ -471,7 +484,7 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             IsCheckingForUpdates = true;
-            var update = await _updateService.CheckForUpdatesAsync();
+            var result = await _updateService.CheckForUpdatesAsync();
 
             if (_cacheService != null)
             {
@@ -479,18 +492,38 @@ public partial class SettingsViewModel : ObservableObject
                 await _cacheService.SaveAsync();
             }
 
-            if (update != null)
+            var stable = result.StableUpdate;
+            var pre = result.PrereleaseUpdate;
+
+            // Stable update
+            if (stable != null)
             {
                 UpdateAvailable = true;
-                LatestVersion = update.Version;
-                UpdateReleaseNotes = update.ReleaseNotes ?? "";
-                UpdateDownloadUrl = update.DownloadUrl ?? update.HtmlUrl ?? "";
-                _logger?.LogInformation("Update available: {Version}", update.Version);
-                _toastService?.Info(L("UpdateAvailable"), $"v{update.Version}");
+                LatestVersion = stable.Version;
+                UpdateReleaseNotes = stable.ReleaseNotes ?? "";
+                UpdateDownloadUrl = stable.DownloadUrl ?? stable.HtmlUrl ?? "";
+                _toastService?.Info(L("UpdateAvailable"), $"v{stable.Version}");
             }
-            else if (isManual)
+            else
             {
                 UpdateAvailable = false;
+            }
+
+            // Prerelease update
+            if (pre != null)
+            {
+                PrereleaseAvailable = true;
+                LatestPrereleaseVersion = pre.Version;
+                PrereleaseDownloadUrl = pre.DownloadUrl ?? pre.HtmlUrl ?? "";
+                _toastService?.Info(L("PrereleaseAvailable"), $"v{pre.Version}");
+            }
+            else
+            {
+                PrereleaseAvailable = false;
+            }
+
+            if (stable == null && pre == null && isManual)
+            {
                 _toastService?.Success(L("UpToDate"), L("UpToDateDesc"));
             }
         }

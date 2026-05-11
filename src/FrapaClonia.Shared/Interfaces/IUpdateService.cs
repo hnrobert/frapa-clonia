@@ -6,14 +6,23 @@ namespace FrapaClonia.Shared.Interfaces;
 public interface IUpdateService
 {
     /// <summary>
-    /// Checks GitHub for a newer release. Returns null if up-to-date.
+    /// Checks GitHub for newer releases. Returns stable and prerelease info.
     /// </summary>
-    Task<AppUpdateInfo?> CheckForUpdatesAsync();
+    Task<UpdateCheckResult> CheckForUpdatesAsync();
 
     /// <summary>
     /// The current application version
     /// </summary>
     string CurrentVersion { get; }
+}
+
+/// <summary>
+/// Result of checking for updates
+/// </summary>
+public class UpdateCheckResult
+{
+    public AppUpdateInfo? StableUpdate { get; init; }
+    public AppUpdateInfo? PrereleaseUpdate { get; init; }
 }
 
 /// <summary>
@@ -29,4 +38,5 @@ public class AppUpdateInfo
     public string? DownloadUrl { get; init; }
     public string? DownloadFileName { get; init; }
     public long DownloadSize { get; init; }
+    public bool IsPrerelease { get; init; }
 }

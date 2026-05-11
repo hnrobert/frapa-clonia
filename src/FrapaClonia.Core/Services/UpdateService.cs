@@ -29,45 +29,68 @@ public class UpdateService : IUpdateService
         CurrentVersion = AppVersion.Version;
     }
 
-    public async Task<AppUpdateInfo?> CheckForUpdatesAsync()
+    public async Task<UpdateCheckResult> CheckForUpdatesAsync()
     {
         try
         {
             _logger.LogInformation("Checking for updates (current: {Version})", CurrentVersion);
 
+            if (!Version.TryParse(CurrentVersion, out var current))
+            {
+                _logger.LogWarning("Could not parse current version: {Current}", CurrentVersion);
+                return new UpdateCheckResult();
+            }
+
             ApplyToken();
-            var release = await _gitHubClient.Repository.Release.GetLatest(Owner, Repo);
+            var releases = await _gitHubClient.Repository.Release.GetAll(Owner, Repo);
 
-            var latestVersion = release.TagName.TrimStart('v');
+            AppUpdateInfo? stableUpdate = null;
+            AppUpdateInfo? prereleaseUpdate = null;
 
-            if (!Version.TryParse(latestVersion, out var latest) ||
-                !Version.TryParse(CurrentVersion, out var current))
+            foreach (var release in releases)
             {
-                _logger.LogWarning("Could not parse versions: latest={Latest}, current={Current}", latestVersion,
-                    CurrentVersion);
-                return null;
+                var versionStr = release.TagName.TrimStart('v');
+                if (!Version.TryParse(versionStr, out var version)) continue;
+                if (version <= current) continue;
+
+                var asset = FindPlatformAsset(release);
+                var info = new AppUpdateInfo
+                {
+                    Version = versionStr,
+                    TagName = release.TagName,
+                    HtmlUrl = release.HtmlUrl,
+                    ReleaseNotes = release.Body,
+                    PublishedAt = release.PublishedAt ?? DateTimeOffset.MinValue,
+                    DownloadUrl = asset?.BrowserDownloadUrl,
+                    DownloadFileName = asset?.Name,
+                    DownloadSize = asset?.Size ?? 0,
+                    IsPrerelease = release.Prerelease
+                };
+
+                if (release.Prerelease)
+                {
+                    prereleaseUpdate ??= info;
+                }
+                else
+                {
+                    stableUpdate ??= info;
+                    // Found the latest stable, no need to look further for stable
+                    // But keep looking for prerelease if not found yet
+                    if (prereleaseUpdate != null) break;
+                }
             }
 
-            if (latest <= current)
-            {
+            if (stableUpdate != null)
+                _logger.LogInformation("Stable update available: {Version}", stableUpdate.Version);
+            if (prereleaseUpdate != null)
+                _logger.LogInformation("Prerelease update available: {Version}", prereleaseUpdate.Version);
+            if (stableUpdate == null && prereleaseUpdate == null)
                 _logger.LogInformation("App is up to date ({Current})", CurrentVersion);
-                return null;
-            }
 
-            var asset = FindPlatformAsset(release);
-
-            _logger.LogInformation("Update available: {Latest} (current: {Current})", latestVersion, CurrentVersion);
-
-            return new AppUpdateInfo
+            return new UpdateCheckResult
             {
-                Version = latestVersion,
-                TagName = release.TagName,
-                HtmlUrl = release.HtmlUrl,
-                ReleaseNotes = release.Body,
-                PublishedAt = release.PublishedAt ?? DateTimeOffset.MinValue,
-                DownloadUrl = asset?.BrowserDownloadUrl,
-                DownloadFileName = asset?.Name,
-                DownloadSize = asset?.Size ?? 0
+                StableUpdate = stableUpdate,
+                PrereleaseUpdate = prereleaseUpdate
             };
         }
         catch (Exception ex)
