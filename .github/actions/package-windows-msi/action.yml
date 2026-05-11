@@ -41,7 +41,7 @@ runs:
         $Rid = '${{ inputs.rid }}'
         $AppName = '${{ inputs.app_name }}'
         $SourceDir = "${{ inputs.publish_root }}/$Rid"
-        $Output = "${AppName}-${Version}-${Rid}.msi"
+        $Output = "${AppName}-${Version}-${Rid}-installer.msi"
 
         wix build -acceptEula wix7 Assets/manifests/installer.wxs Components.wxs -d Version=$Version -d SourceDir=$SourceDir -o $Output
 

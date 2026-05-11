@@ -67,8 +67,8 @@ jobs:
       - name: Upload Artifacts (Windows MSI)
         uses: actions/upload-artifact@main
         with:
-          name: FrapaClonia-${{ needs.version.outputs.version }}-win-x64-msi
-          path: FrapaClonia-${{ needs.version.outputs.version }}-win-x64.msi
+          name: FrapaClonia-${{ needs.version.outputs.version }}-win-x64-installer
+          path: FrapaClonia-${{ needs.version.outputs.version }}-win-x64-installer.msi
           retention-days: 30
 
   build-linux:
