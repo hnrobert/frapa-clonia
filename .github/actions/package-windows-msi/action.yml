@@ -26,7 +26,9 @@ runs:
   steps:
     - name: Install WiX Toolset
       shell: pwsh
-      run: dotnet tool install --global wix
+      run: |
+        dotnet tool install --global wix
+        wix extension add WixToolset.UI.wixext
 
     - name: Generate Components.wxs from published files
       shell: pwsh
@@ -43,6 +45,6 @@ runs:
         $SourceDir = "${{ inputs.publish_root }}/$Rid"
         $Output = "${AppName}-${Version}-${Rid}-installer.msi"
 
-        wix build -acceptEula wix7 Assets/manifests/installer.wxs Components.wxs -d Version=$Version -d SourceDir=$SourceDir -o $Output
+        wix build -acceptEula wix7 -ext WixToolset.UI.wixext Assets/manifests/installer.wxs Components.wxs -d Version=$Version -d SourceDir=$SourceDir -o $Output
 
         Write-Host "Built MSI: $Output"

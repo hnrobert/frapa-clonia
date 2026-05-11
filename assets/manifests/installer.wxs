@@ -11,6 +11,9 @@
     <Icon Id="AppIcon" SourceFile="src/FrapaClonia/Assets/favicon.ico" />
     <Property Id="ARPPRODUCTICON" Value="AppIcon" />
 
+    <UIRef Id="WixUI_InstallDir" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+
     <!-- Directories -->
     <StandardDirectory Id="ProgramFiles6432Folder">
       <Directory Id="INSTALLFOLDER" Name="FrapaClonia" />
