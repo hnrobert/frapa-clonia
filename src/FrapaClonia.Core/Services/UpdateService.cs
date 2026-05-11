@@ -35,7 +35,8 @@ public class UpdateService : IUpdateService
         {
             _logger.LogInformation("Checking for updates (current: {Version})", CurrentVersion);
 
-            if (!Version.TryParse(CurrentVersion, out var current))
+            var currentStr = CurrentVersion.Contains('+') ? CurrentVersion[..CurrentVersion.IndexOf('+')] : CurrentVersion;
+            if (!Version.TryParse(currentStr, out var current))
             {
                 _logger.LogWarning("Could not parse current version: {Current}", CurrentVersion);
                 return new UpdateCheckResult();

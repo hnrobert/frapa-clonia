@@ -122,7 +122,7 @@
                        Classes="readonly-value" />
 
             <!-- Update available -->
-            <StackPanel IsVisible="{Binding UpdateAvailable}" Spacing="8" Margin="0,8,0,0">
+            <StackPanel IsVisible="{Binding UpdateAvailable}" Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
               <StackPanel Orientation="Horizontal" Spacing="6">
                 <TextBlock Text="⬆" Foreground="#4CAF50" VerticalAlignment="Center" />
                 <TextBlock Text="{local:Localize UpdateAvailable}" Classes="field-label"
@@ -131,7 +131,7 @@
               <TextBlock Text="{Binding LatestVersion, StringFormat='v{0}'}" />
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <Button Command="{Binding DownloadUpdateCommand}"
-                        Classes="action-button primary"
+                        Classes="action-button"
                         Content="{local:Localize DownloadUpdate}" />
                 <Button Command="{Binding OpenReleasePageCommand}"
                         Classes="action-button"
@@ -140,16 +140,16 @@
             </StackPanel>
 
             <!-- Prerelease available -->
-            <StackPanel IsVisible="{Binding PrereleaseAvailable}" Spacing="8" Margin="0,8,0,0">
+            <StackPanel IsVisible="{Binding PrereleaseAvailable}" Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
               <StackPanel Orientation="Horizontal" Spacing="6">
                 <TextBlock Text="⬆" Foreground="#FF9800" VerticalAlignment="Center" />
                 <TextBlock Text="{local:Localize PrereleaseAvailable}" Classes="field-label"
                            Foreground="#FF9800" />
+                <TextBlock Text="{Binding LatestPrereleaseVersion, StringFormat='v{0}'}" Classes="field-label" />
               </StackPanel>
-              <TextBlock Text="{Binding LatestPrereleaseVersion, StringFormat='v{0}'}" />
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <Button Command="{Binding DownloadPrereleaseCommand}"
-                        Classes="action-button primary"
+                        Classes="action-button"
                         Content="{local:Localize DownloadPrerelease}" />
                 <Button Command="{Binding OpenPrereleasePageCommand}"
                         Classes="action-button"

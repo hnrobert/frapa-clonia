@@ -231,8 +231,8 @@ public partial class SettingsViewModel : ObservableObject
         {
             if (UpdateAvailable && !string.IsNullOrEmpty(_updateDownloadUrl))
             {
-                var tag = $"releases/tag/{LatestVersion}";
-                OpenUrl($"https://github.com/{Owner}/{Repo}/{tag}");
+                var tag = LatestVersion.StartsWith('v') ? LatestVersion : $"v{LatestVersion}";
+                OpenUrl($"https://github.com/{Owner}/{Repo}/releases/tag/{tag}");
             }
         });
         DownloadPrereleaseCommand = new RelayCommand(() => OpenUrl(_prereleaseDownloadUrl));
@@ -240,8 +240,8 @@ public partial class SettingsViewModel : ObservableObject
         {
             if (PrereleaseAvailable && !string.IsNullOrEmpty(_prereleaseDownloadUrl))
             {
-                var tag = $"releases/tag/{LatestPrereleaseVersion}";
-                OpenUrl($"https://github.com/{Owner}/{Repo}/{tag}");
+                var tag = LatestPrereleaseVersion.StartsWith('v') ? LatestPrereleaseVersion : $"v{LatestPrereleaseVersion}";
+                OpenUrl($"https://github.com/{Owner}/{Repo}/releases/tag/{tag}");
             }
         });
 
