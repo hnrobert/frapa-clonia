@@ -13,18 +13,15 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
 
     // Cached shell PATH, resolved once on first use
     private string? _shellPath;
-    private bool _shellPathResolved;
+    private Task<string?>? _shellPathTask;
 
-    /// <summary>
-    /// Gets the user's shell PATH by running a login shell.
-    /// Packaged apps (NativeAOT) don't inherit the user's shell PATH,
-    /// so we resolve it from the shell itself.
-    /// </summary>
-    private async Task<string?> GetShellPathAsync()
+    private Task<string?> GetShellPathAsync()
     {
-        if (_shellPathResolved) return _shellPath;
-        _shellPathResolved = true;
+        return _shellPathTask ??= ResolveShellPathAsync();
+    }
 
+    private async Task<string?> ResolveShellPathAsync()
+    {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX) &&
             !RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
@@ -38,7 +35,9 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
             process.StartInfo = new System.Diagnostics.ProcessStartInfo
             {
                 FileName = shell,
-                Arguments = "-l -c \"echo $PATH\"",
+                // -i loads ~/.zshrc (interactive), -l loads ~/.zprofile (login)
+                // Together they cover all common PATH customizations
+                Arguments = "-i -l -c \"echo $PATH\"",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
@@ -48,15 +47,24 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
             var output = await process.StandardOutput.ReadToEndAsync();
             await process.WaitForExitAsync();
 
-            _shellPath = output.Trim();
+            // Take the last non-empty line: interactive mode may print extra output
+            _shellPath = output.Split('\n')
+                .LastOrDefault(l => l.Contains('/') && !string.IsNullOrWhiteSpace(l))
+                ?.Trim();
+
             if (!string.IsNullOrEmpty(_shellPath))
             {
-                logger.LogDebug("Resolved shell PATH: {Path}", _shellPath);
+                logger.LogInformation("Resolved shell PATH ({Shell})", shell);
+                logger.LogDebug("Shell PATH: {Path}", _shellPath);
+            }
+            else
+            {
+                logger.LogWarning("Shell PATH resolution returned empty output");
             }
         }
         catch (Exception ex)
         {
-            logger.LogDebug(ex, "Failed to resolve shell PATH");
+            logger.LogWarning(ex, "Failed to resolve shell PATH");
         }
 
         return _shellPath;
@@ -98,11 +106,7 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
                 }
             }
 
-            // Apply shell PATH if available
-            if (_shellPathResolved && _shellPath != null)
-            {
-                ApplyShellPath(process.StartInfo);
-            }
+            ApplyShellPath(process.StartInfo);
 
             process.Start();
 
