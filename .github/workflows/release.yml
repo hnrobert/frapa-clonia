@@ -179,6 +179,7 @@ jobs:
 
   upload-release-assets:
     needs: [version, build-windows, build-linux, build-macos]
+    if: ${{ !cancelled() && needs.version.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -199,15 +200,11 @@ jobs:
           set -euo pipefail
           TAG="${{ needs.version.outputs.tag }}"
           VERSION="${{ needs.version.outputs.version }}"
-          gh release upload "$TAG" \
-            dist/FrapaClonia-${VERSION}-win-x64.zip \
-            dist/FrapaClonia-${VERSION}-win-x64-installer.msi \
-            dist/FrapaClonia-${VERSION}-linux-x64.tar.gz \
-            dist/FrapaClonia-${VERSION}-linux-x64.deb \
-            dist/FrapaClonia-${VERSION}-linux-arm64.tar.gz \
-            dist/FrapaClonia-${VERSION}-linux-arm64.deb \
-            dist/FrapaClonia-${VERSION}-linux-musl-x64.tar.gz \
-            dist/FrapaClonia-${VERSION}-linux-musl-arm64.tar.gz \
-            dist/FrapaClonia-${VERSION}-macos-x64.dmg \
-            dist/FrapaClonia-${VERSION}-macos-arm64.dmg \
-            --clobber
+          shopt -s nullglob
+          files=(dist/FrapaClonia-${VERSION}-*)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No release assets found in dist/"
+            exit 1
+          fi
+          echo "Uploading ${#files[@]} file(s): ${files[*]}"
+          gh release upload "$TAG" "${files[@]}" --clobber

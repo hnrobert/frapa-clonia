@@ -546,9 +546,12 @@ public partial class FrpcConfigurationViewModel : ObservableObject
                 {
                     if (GitHubVersions.Count > 0)
                     {
-                        _toastService?.Success(
-                            L("Toast_FrpcVersionsFetched"),
-                            L("Toast_FrpcVersionsFetchedDesc", GitHubVersions.Count));
+                        if (forceRefresh)
+                        {
+                            _toastService?.Success(
+                                L("Toast_FrpcVersionsFetched"),
+                                L("Toast_FrpcVersionsFetchedDesc", GitHubVersions.Count));
+                        }
                     }
                     else
                     {
