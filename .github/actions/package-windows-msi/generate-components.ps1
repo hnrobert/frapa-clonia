@@ -2,7 +2,8 @@ param(
   [string]$SourceDir
 )
 
-$Files = Get-ChildItem -Path $SourceDir -File -Recurse
+$AbsSourceDir = (Resolve-Path $SourceDir).Path.TrimEnd('\', '/')
+$Files = Get-ChildItem -Path $AbsSourceDir -File -Recurse
 $Id = 0
 
 $Lines = @()
@@ -12,7 +13,7 @@ $Lines += '<ComponentGroup Id="AppComponents">'
 
 foreach ($File in $Files) {
   $Id++
-  $RelPath = $File.FullName.Substring($SourceDir.Length).TrimStart('\', '/')
+  $RelPath = $File.FullName.Substring($AbsSourceDir.Length).TrimStart('\', '/')
   $FileId = "File_$Id"
   $CompId = "Comp_$Id"
   $NormalizedPath = $RelPath.Replace('\', '/')
