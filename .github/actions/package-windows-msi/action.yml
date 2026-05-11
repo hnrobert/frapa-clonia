@@ -28,7 +28,7 @@ runs:
       shell: pwsh
       run: |
         dotnet tool install --global wix
-        wix extension add WixToolset.UI.wixext
+        wix extension add -acceptEula wix7 WixToolset.UI.wixext
 
     - name: Generate Components.wxs from published files
       shell: pwsh
