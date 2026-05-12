@@ -777,6 +777,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
         sb.AppendLine("    restart: " + (string.Equals(restart, "no", StringComparison.OrdinalIgnoreCase)
             ? "\"no\""
             : restart));
+        sb.AppendLine("    command: -c /etc/frp/frpc.toml");
         sb.AppendLine("    volumes:");
         // Keep frpc config path simple and portable: always mount ./frpc.toml next to docker-compose.yml
         sb.AppendLine("      - ./frpc.toml:/etc/frp/frpc.toml:ro");
