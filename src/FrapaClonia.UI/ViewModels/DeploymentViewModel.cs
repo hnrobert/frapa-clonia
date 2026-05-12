@@ -1192,6 +1192,15 @@ public partial class DeploymentViewModel : ObservableObject
             var available = await _dockerDeploymentService.IsContainerNameAvailableAsync(containerName,
                 _dockerContainerNameCts.Token);
 
+            if (!available)
+            {
+                // A stopped container with this name is not a conflict — it can be recreated.
+                var isRunning = await _dockerDeploymentService.IsContainerRunningAsync(
+                    containerName, _dockerContainerNameCts.Token);
+                if (!isRunning)
+                    available = true;
+            }
+
             if (!available && !string.IsNullOrWhiteSpace(DockerComposePath))
             {
                 var composeDirectory = Path.GetDirectoryName(DockerComposePath);
