@@ -467,7 +467,7 @@
                   <!-- Container running or restarting: Compose Down + Stop + Restart + Recreate -->
                   <StackPanel Orientation="Horizontal"
                               Spacing="{StaticResource SpacingM}"
-                              IsVisible="{Binding IsContainerRunning}">
+                              IsVisible="{Binding IsContainerRunningOrRestarting}">
                     <Button Command="{Binding ComposeDownCommand}"
                             Classes="action-button icon-text-button">
                       <StackPanel Orientation="Horizontal" Spacing="4">
@@ -485,14 +485,14 @@
                     <Button Command="{Binding RestartContainerCommand}"
                             Classes="action-button icon-text-button">
                       <StackPanel Orientation="Horizontal" Spacing="4">
-                        <mi:MaterialIcon Kind="Restart" />
+                        <mi:MaterialIcon Kind="Refresh" />
                         <TextBlock Text="{local:Localize RestartContainer}" />
                       </StackPanel>
                     </Button>
                     <Button Command="{Binding RecreateContainerCommand}"
                             Classes="action-button icon-text-button">
                       <StackPanel Orientation="Horizontal" Spacing="4">
-                        <mi:MaterialIcon Kind="Refresh" />
+                        <mi:MaterialIcon Kind="Autorenew" />
                         <TextBlock Text="{local:Localize RecreateContainer}" />
                       </StackPanel>
                     </Button>
@@ -508,37 +508,37 @@
 
   <!-- Switch Mode Confirm Overlay -->
   <Border IsVisible="{Binding IsSwitchModeConfirmOpen}"
-          Background="#80000000"
-          HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch">
+Background="#80000000"
+HorizontalAlignment="Stretch"
+VerticalAlignment="Stretch">
     <Border Classes="card"
-            Width="500"
-            Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Padding="{StaticResource ContentPaddingCompact}">
+Width="500"
+Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
+HorizontalAlignment="Center"
+VerticalAlignment="Center"
+Padding="{StaticResource ContentPaddingCompact}">
       <StackPanel Spacing="{StaticResource SpacingL}">
         <TextBlock Text="{local:Localize SwitchMode_Title}"
-                   Classes="card-title"
-                   FontSize="18" />
+Classes="card-title"
+FontSize="18" />
         <TextBlock Text="{Binding SwitchModeMessage}"
-                   TextWrapping="Wrap" />
+TextWrapping="Wrap" />
         <TextBlock Text="{Binding SwitchModeSubMessage}"
-                   TextWrapping="Wrap"
-                   Opacity="0.7"
-                   FontSize="{StaticResource FontSizeS}" />
+TextWrapping="Wrap"
+Opacity="0.7"
+FontSize="{StaticResource FontSizeS}" />
         <StackPanel Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Spacing="{StaticResource SpacingS}">
+HorizontalAlignment="Right"
+Spacing="{StaticResource SpacingS}">
           <Button Command="{Binding SwitchModeCancelCommand}"
-                  Classes="action-button"
-                  Content="{local:Localize Cancel}" />
+Classes="action-button"
+Content="{local:Localize Cancel}" />
           <Button Command="{Binding SwitchModeContinueCommand}"
-                  Classes="action-button danger"
-                  Content="{local:Localize SwitchMode_Continue}" />
+Classes="action-button danger"
+Content="{local:Localize SwitchMode_Continue}" />
           <Button Command="{Binding SwitchModeStopAndContinueCommand}"
-                  Classes="action-button danger"
-                  Content="{Binding SwitchModeStopAndContinueText}" />
+Classes="action-button danger"
+Content="{Binding SwitchModeStopAndContinueText}" />
         </StackPanel>
       </StackPanel>
     </Border>

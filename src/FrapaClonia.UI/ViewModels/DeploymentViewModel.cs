@@ -222,6 +222,7 @@ public partial class DeploymentViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(IsContainerStopped))]
     [NotifyPropertyChangedFor(nameof(IsContainerExists))]
     [NotifyPropertyChangedFor(nameof(IsContainerRestarting))]
+    [NotifyPropertyChangedFor(nameof(IsContainerRunningOrRestarting))]
     [NotifyPropertyChangedFor(nameof(LocalizedContainerState))]
     [NotifyPropertyChangedFor(nameof(CanStopDockerContainer))]
     private DockerContainerStatus _containerStatus = DockerContainerStatus.NotFound;
@@ -230,6 +231,7 @@ public partial class DeploymentViewModel : ObservableObject
     public bool IsContainerStopped => ContainerStatus == DockerContainerStatus.Stopped;
     public bool IsContainerExists => ContainerStatus != DockerContainerStatus.NotFound;
     public bool IsContainerRestarting => ContainerStatus == DockerContainerStatus.Restarting;
+    public bool IsContainerRunningOrRestarting => IsContainerRunning || IsContainerRestarting;
 
     private DispatcherTimer? _containerPollTimer;
 
