@@ -118,15 +118,14 @@ public class ToastService : ObservableObject
         });
     }
 
+    // ReSharper disable once UnusedMember.Global
     public void RemoveToast(Guid toastId)
     {
-        var toast = Toasts.FirstOrDefault(t => t.Id == toastId) ?? ChildToasts.FirstOrDefault(t => t.Id == toastId);
-        if (toast != null)
-        {
+        if ((Toasts.FirstOrDefault(t => t.Id == toastId) ?? ChildToasts.FirstOrDefault(t => t.Id == toastId)) is { } toast)
             RemoveToast(toast);
-        }
     }
 
+    // ReSharper disable once UnusedMember.Global
     public void ClearAll()
     {
         Avalonia.Threading.Dispatcher.UIThread.Post(() =>

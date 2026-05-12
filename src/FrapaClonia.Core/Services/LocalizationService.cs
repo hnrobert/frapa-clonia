@@ -71,8 +71,7 @@ public class LocalizationService : ILocalizationService
 
                 if (!string.IsNullOrEmpty(languageCode))
                 {
-                    var culture = SupportedCultures.FirstOrDefault(c => c.Name == languageCode);
-                    if (culture != null)
+                    if (SupportedCultures.FirstOrDefault(c => c.Name == languageCode) is { } culture)
                     {
                         _logger.LogInformation("Loaded saved language: {Language}", languageCode);
                         return culture;
@@ -90,8 +89,7 @@ public class LocalizationService : ILocalizationService
 
     public void SetCulture(string cultureCode)
     {
-        var culture = SupportedCultures.FirstOrDefault(c => c.Name == cultureCode);
-        if (culture == null) return;
+        if (SupportedCultures.FirstOrDefault(c => c.Name == cultureCode) is not { } culture) return;
         CurrentCulture = culture;
         ApplyCulture(culture);
         CultureChanged?.Invoke(this, EventArgs.Empty);

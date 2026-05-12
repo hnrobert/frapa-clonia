@@ -83,19 +83,18 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
         {
             if (string.IsNullOrWhiteSpace(imageRepository))
             {
-                return Array.Empty<string>();
+                return [];
             }
 
             // Only support Docker Hub tags for now.
-            var normalized = NormalizeDockerHubRepository(imageRepository);
-            if (normalized == null)
+            if (NormalizeDockerHubRepository(imageRepository) is not { } normalized)
             {
                 logger.LogWarning("Image repository '{Image}' is not a supported Docker Hub repository",
                     imageRepository);
                 return [];
             }
 
-            var (namespaceName, repoName) = normalized.Value;
+            var (namespaceName, repoName) = normalized;
             var tags = new List<string>();
             var nextUrl = $"https://hub.docker.com/v2/repositories/{namespaceName}/{repoName}/tags?page_size=100";
 
@@ -137,12 +136,12 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
         }
         catch (OperationCanceledException)
         {
-            return Array.Empty<string>();
+            return [];
         }
         catch (Exception ex)
         {
             logger.LogWarning(ex, "Error fetching tags for image repository '{Image}'", imageRepository);
-            return Array.Empty<string>();
+            return [];
         }
     }
 

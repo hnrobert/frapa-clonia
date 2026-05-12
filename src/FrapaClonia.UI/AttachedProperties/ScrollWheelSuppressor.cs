@@ -36,8 +36,7 @@ public static class ScrollWheelSuppressor
 
         e.Handled = true;
 
-        var scrollViewer = (sender as Control)?.FindAncestorOfType<ScrollViewer>();
-        if (scrollViewer == null) return;
+        if ((sender as Control)?.FindAncestorOfType<ScrollViewer>() is not { } scrollViewer) return;
 
         scrollViewer.Offset = new Vector(
             scrollViewer.Offset.X,

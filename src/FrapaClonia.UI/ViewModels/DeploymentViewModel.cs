@@ -1026,7 +1026,9 @@ public partial class DeploymentViewModel : ObservableObject
             IsDockerChecking = true;
 
             if (_dockerDeploymentService != null)
+            {
                 IsDockerAvailable = await _dockerDeploymentService.IsDockerAvailableAsync();
+            }
 
             if (showToast)
             {
