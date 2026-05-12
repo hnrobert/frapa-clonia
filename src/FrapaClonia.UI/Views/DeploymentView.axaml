@@ -457,7 +457,7 @@
           HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">
     <Border Classes="card"
-            Width="420"
+            Width="500"
             Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
@@ -479,13 +479,11 @@
                   Classes="action-button"
                   Content="{local:Localize Cancel}" />
           <Button Command="{Binding SwitchModeContinueCommand}"
-                  Classes="action-button"
-                  IsVisible="{Binding !SwitchModeShowStopAndContinue}"
+                  Classes="action-button danger"
                   Content="{local:Localize SwitchMode_Continue}" />
           <Button Command="{Binding SwitchModeStopAndContinueCommand}"
                   Classes="action-button danger"
-                  IsVisible="{Binding SwitchModeShowStopAndContinue}"
-                  Content="{local:Localize SwitchMode_StopAndContinue}" />
+                  Content="{Binding SwitchModeStopAndContinueText}" />
         </StackPanel>
       </StackPanel>
     </Border>

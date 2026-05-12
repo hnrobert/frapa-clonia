@@ -1560,18 +1560,21 @@
     <value>The {mode} service is currently running.</value>
   </data>
   <data name="SwitchMode_InstalledMessage" xml:space="preserve">
-    <value>The {mode} service is installed but not running.</value>
+    <value>The {mode} service is currently installed.</value>
   </data>
   <data name="SwitchMode_RunningSubMessage" xml:space="preserve">
-    <value>Stop and remove the service before switching, or cancel to stay on the current mode.</value>
+    <value>It is recommended to purge the deployed service currently before switching, or cancel to stay on the current mode.</value>
   </data>
   <data name="SwitchMode_InstalledSubMessage" xml:space="preserve">
     <value>You can continue switching or cancel to stay on the current mode.</value>
   </data>
   <data name="SwitchMode_Continue" xml:space="preserve">
-    <value>Continue</value>
+    <value>Ignore &amp; Switch</value>
   </data>
-  <data name="SwitchMode_StopAndContinue" xml:space="preserve">
-    <value>Stop &amp; Switch</value>
+  <data name="SwitchMode_ComposeDownAndContinue" xml:space="preserve">
+    <value>Compose Down &amp; Switch</value>
+  </data>
+  <data name="SwitchMode_StopUninstallAndContinue" xml:space="preserve">
+    <value>Stop, Uninstall &amp; Switch</value>
   </data>
 </root>

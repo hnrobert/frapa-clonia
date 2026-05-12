@@ -35,9 +35,11 @@ public partial class DeploymentViewModel : ObservableObject
 
     private string _lastKnownDockerImageTag = "latest";
 
-    private bool
-        _suppressComposeAutoLoad; // prevents OnDockerComposePathChanged from double-loading during async LoadFromPresetAsync
-    private bool _suppressModeChange; // prevents re-entry when reverting mode on cancel
+    // prevents OnDockerComposePathChanged from double-loading during async LoadFromPresetAsync
+    private bool _suppressComposeAutoLoad;
+
+    // prevents re-entry when reverting mode on cancel
+    private bool _suppressModeChange;
 
     // Track the last value that was actually sent for remote validation so LostFocus is a no-op when unchanged.
     private string _lastValidatedContainerName = "";
@@ -71,10 +73,16 @@ public partial class DeploymentViewModel : ObservableObject
     [ObservableProperty] private string _switchModeMessage = "";
     [ObservableProperty] private string _switchModeSubMessage = "";
     [ObservableProperty] private bool _switchModeShowStopAndContinue;
+    [ObservableProperty] private string _switchModeStopAndContinueText = "";
 
     private TaskCompletionSource<SwitchModeConfirmResult>? _switchModeTcs;
 
-    public enum SwitchModeConfirmResult { Cancel, Continue, StopAndContinue }
+    public enum SwitchModeConfirmResult
+    {
+        Cancel,
+        Continue,
+        StopAndContinue
+    }
 
     public IRelayCommand SwitchModeCancelCommand => new RelayCommand(() =>
         _switchModeTcs?.TrySetResult(SwitchModeConfirmResult.Cancel));
@@ -436,6 +444,9 @@ public partial class DeploymentViewModel : ObservableObject
                 .Replace("{mode}", modeName);
             SwitchModeSubMessage = isRunning ? L("SwitchMode_RunningSubMessage") : L("SwitchMode_InstalledSubMessage");
             SwitchModeShowStopAndContinue = isRunning;
+            SwitchModeStopAndContinueText = previousMode == "native"
+                ? L("SwitchMode_StopUninstallAndContinue")
+                : L("SwitchMode_ComposeDownAndContinue");
 
             _switchModeTcs = new TaskCompletionSource<SwitchModeConfirmResult>();
             IsSwitchModeConfirmOpen = true;
@@ -460,6 +471,7 @@ public partial class DeploymentViewModel : ObservableObject
                     {
                         await StopDockerAsync();
                     }
+
                     break;
 
                 case SwitchModeConfirmResult.Continue:
@@ -987,7 +999,8 @@ public partial class DeploymentViewModel : ObservableObject
         {
             if (_systemServiceManager == null) return;
 
-            var serviceName = _activeServiceName ?? _systemServiceManager.GetServiceNameForPreset(_presetService!.CurrentPreset!.Id);
+            var serviceName = _activeServiceName ??
+                              _systemServiceManager.GetServiceNameForPreset(_presetService!.CurrentPreset!.Id);
             var success = await _systemServiceManager.UninstallServiceAsync(serviceName);
 
             if (success)
@@ -1015,7 +1028,8 @@ public partial class DeploymentViewModel : ObservableObject
         {
             if (_systemServiceManager == null) return;
 
-            var serviceName = _activeServiceName ?? _systemServiceManager.GetServiceNameForPreset(_presetService!.CurrentPreset!.Id);
+            var serviceName = _activeServiceName ??
+                              _systemServiceManager.GetServiceNameForPreset(_presetService!.CurrentPreset!.Id);
             var scope = GetServiceScopeEnum();
             var success = await _systemServiceManager.StartServiceAsync(serviceName, scope);
 
@@ -1063,7 +1077,8 @@ public partial class DeploymentViewModel : ObservableObject
         {
             if (_systemServiceManager == null) return;
 
-            var serviceName = _activeServiceName ?? _systemServiceManager.GetServiceNameForPreset(_presetService!.CurrentPreset!.Id);
+            var serviceName = _activeServiceName ??
+                              _systemServiceManager.GetServiceNameForPreset(_presetService!.CurrentPreset!.Id);
             var scope = GetServiceScopeEnum();
             var success = await _systemServiceManager.StopServiceAsync(serviceName, scope);
 

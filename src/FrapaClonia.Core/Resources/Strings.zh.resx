@@ -1431,9 +1431,12 @@
     <value>可以直接继续切换，或取消以保持当前模式。</value>
   </data>
   <data name="SwitchMode_Continue" xml:space="preserve">
-    <value>继续</value>
+    <value>忽略风险并切换</value>
   </data>
-  <data name="SwitchMode_StopAndContinue" xml:space="preserve">
-    <value>停止并切换</value>
+  <data name="SwitchMode_ComposeDownAndContinue" xml:space="preserve">
+    <value>Compose Down 并切换</value>
+  </data>
+  <data name="SwitchMode_StopUninstallAndContinue" xml:space="preserve">
+    <value>停止、卸载服务并切换</value>
   </data>
 </root>
