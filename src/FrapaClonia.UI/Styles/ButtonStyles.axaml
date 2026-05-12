@@ -104,7 +104,7 @@
     <Setter Property="ClipToBounds" Value="True" />
   </Style>
 
-  <Style Selector="Button.icon-button:pointerover">
+  <Style Selector="Button.icon-button:not(.danger):pointerover">
     <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
     <Setter Property="BorderBrush" Value="Transparent" />
   </Style>
@@ -210,13 +210,16 @@
     <Setter Property="Foreground" Value="#C0392B" />
   </Style>
 
-  <Style Selector="Button.icon-button.danger:pointerover">
-    <Setter Property="Background" Value="#1AC0392B" />
+  <Style Selector="Button.icon-button.danger:pointerover /template/ ContentPresenter">
+    <!-- <Setter Property="Background" Value="#1AC0392B" /> -->
     <Setter Property="BorderBrush" Value="#C0392B" />
+    <Setter Property="Foreground" Value="#C0392B" />
   </Style>
 
-  <Style Selector="Button.icon-button.danger:pressed">
+  <Style Selector="Button.icon-button.danger:pressed /template/ ContentPresenter">
     <Setter Property="Background" Value="#33C0392B" />
+    <Setter Property="BorderBrush" Value="#C0392B" />
+    <Setter Property="Foreground" Value="#C0392B" />
   </Style>
 
 </Styles>
