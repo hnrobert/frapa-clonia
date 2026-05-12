@@ -59,8 +59,11 @@
     <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
   </Style>
 
-  <Style Selector="Button.primary:pointerover">
+  <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource AppPrimaryHoverBrush}" />
+  </Style>
+
+  <Style Selector="Button.primary:pointerover">
     <Setter Property="BorderBrush" Value="{DynamicResource AppPrimaryHoverBrush}" />
   </Style>
 
@@ -178,8 +181,11 @@
     <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
   </Style>
 
-  <Style Selector="Button.action-button.primary:pointerover">
+  <Style Selector="Button.action-button.primary:pointerover /template/ ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource AppPrimaryHoverBrush}" />
+  </Style>
+
+  <Style Selector="Button.action-button.primary:pointerover">
     <Setter Property="BorderBrush" Value="{DynamicResource AppPrimaryHoverBrush}" />
   </Style>
 
@@ -190,9 +196,27 @@
     <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
   </Style>
 
+  <Style Selector="Button.action-button.danger:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="#AD3326" />
+  </Style>
+
   <Style Selector="Button.action-button.danger:pointerover">
-    <Setter Property="Background" Value="#E74C3C" />
-    <Setter Property="BorderBrush" Value="#E74C3C" />
+    <Setter Property="BorderBrush" Value="#AD3326" />
+  </Style>
+
+  <!-- Icon-Only Danger Variant -->
+  <Style Selector="Button.icon-button.danger">
+    <Setter Property="BorderBrush" Value="#C0392B" />
+    <Setter Property="Foreground" Value="#C0392B" />
+  </Style>
+
+  <Style Selector="Button.icon-button.danger:pointerover">
+    <Setter Property="Background" Value="#1AC0392B" />
+    <Setter Property="BorderBrush" Value="#C0392B" />
+  </Style>
+
+  <Style Selector="Button.icon-button.danger:pressed">
+    <Setter Property="Background" Value="#33C0392B" />
   </Style>
 
 </Styles>

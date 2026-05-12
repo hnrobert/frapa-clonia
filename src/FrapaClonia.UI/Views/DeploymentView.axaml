@@ -196,7 +196,7 @@
                       </Button>
                       <Button Command="{Binding UninstallServiceCommand}"
                               IsVisible="{Binding IsServiceInstalled}"
-                              Classes="action-button icon-text-button">
+                              Classes="action-button danger icon-text-button">
                         <StackPanel Orientation="Horizontal" Spacing="4">
                           <mi:MaterialIcon Kind="Delete" />
                           <TextBlock Text="{local:Localize UninstallService}" />
@@ -214,7 +214,7 @@
                       <Button Command="{Binding StopServiceCommand}"
                               IsVisible="{Binding IsServiceInstalled}"
                               IsEnabled="{Binding IsServiceRunning}"
-                              Classes="action-button icon-text-button">
+                              Classes="action-button danger icon-text-button">
                         <StackPanel Orientation="Horizontal" Spacing="4">
                           <mi:MaterialIcon Kind="Stop" />
                           <TextBlock Text="{local:Localize Stop}" />
@@ -441,7 +441,7 @@
                               Spacing="{StaticResource SpacingM}"
                               IsVisible="{Binding IsContainerStopped}">
                     <Button Command="{Binding ComposeDownCommand}"
-                            Classes="action-button icon-text-button">
+                            Classes="action-button danger icon-text-button">
                       <StackPanel Orientation="Horizontal" Spacing="4">
                         <mi:MaterialIcon Kind="Stop" />
                         <TextBlock Text="{local:Localize ComposeDown}" />
@@ -468,14 +468,14 @@
                               Spacing="{StaticResource SpacingM}"
                               IsVisible="{Binding IsContainerRunningOrRestarting}">
                     <Button Command="{Binding ComposeDownCommand}"
-                            Classes="action-button icon-text-button">
+                            Classes="action-button danger icon-text-button">
                       <StackPanel Orientation="Horizontal" Spacing="4">
                         <mi:MaterialIcon Kind="Stop" />
                         <TextBlock Text="{local:Localize ComposeDown}" />
                       </StackPanel>
                     </Button>
                     <Button Command="{Binding StopContainerCommand}"
-                            Classes="action-button icon-text-button">
+                            Classes="action-button danger icon-text-button">
                       <StackPanel Orientation="Horizontal" Spacing="4">
                         <mi:MaterialIcon Kind="StopCircle" />
                         <TextBlock Text="{local:Localize StopContainer}" />

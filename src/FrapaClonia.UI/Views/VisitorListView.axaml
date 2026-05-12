@@ -242,7 +242,7 @@
                           <mi:MaterialIcon Kind="ContentCopy" />
                         </Button>
                         <Button Click="OnDeleteClick"
-                                Classes="icon-button"
+                                Classes="icon-button danger"
                                 ToolTip.Tip="{local:Localize DeleteVisitor}">
                           <mi:MaterialIcon Kind="Delete" />
                         </Button>
