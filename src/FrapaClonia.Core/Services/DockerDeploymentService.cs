@@ -217,6 +217,9 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
     {
         var upArgs = forceRecreate ? "up -d --force-recreate" : "up -d";
         var operation = forceRecreate ? "recreate" : "start";
+        // --progress plain forces readable text output when stdout/stderr are redirected (non-TTY).
+        // Only supported by docker compose v2 plugin (argsPrefix == "compose").
+        var progressFlag = string.IsNullOrEmpty(argsPrefix) ? "" : "--progress plain ";
 
         const int maxAttempts = 3; // first try + 2 retries
         for (var attempt = 1; attempt <= maxAttempts; attempt++)
@@ -230,7 +233,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
                     FileName = fileName,
                     Arguments = string.IsNullOrEmpty(argsPrefix)
                         ? $"-f \"{composeFile}\" {upArgs}"
-                        : $"{argsPrefix} -f \"{composeFile}\" {upArgs}",
+                        : $"{argsPrefix} {progressFlag}-f \"{composeFile}\" {upArgs}",
                     WorkingDirectory = composeDirectory,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -299,6 +302,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             }
 
             var (fileName, argsPrefix) = await GetComposeInvocationAsync(cancellationToken);
+            var progressFlag = string.IsNullOrEmpty(argsPrefix) ? "" : "--progress plain ";
 
             var process = new System.Diagnostics.Process
             {
@@ -307,7 +311,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
                     FileName = fileName,
                     Arguments = string.IsNullOrEmpty(argsPrefix)
                         ? $"-f \"{composeFile}\" down"
-                        : $"{argsPrefix} -f \"{composeFile}\" down",
+                        : $"{argsPrefix} {progressFlag}-f \"{composeFile}\" down",
                     WorkingDirectory = composeDirectory,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
