@@ -33,7 +33,7 @@ public partial class DeploymentViewModel : ObservableObject
     private bool _suppressDockerImageTagIndexSync;
     private bool _pendingDockerImageTagResync;
 
-    private string _lastKnownDockerImageTag = "latest";
+    private string _lastKnownDockerImageTag = "";
 
     // prevents OnDockerComposePathChanged from double-loading during async LoadFromPresetAsync
     private bool _suppressComposeAutoLoad;
@@ -171,8 +171,8 @@ public partial class DeploymentViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(ShowDockerImageChecking))]
     private string _dockerImageName = "fatedier/frpc";
 
-    [ObservableProperty] private string _dockerImageTag = "latest";
-    [ObservableProperty] private List<string> _dockerImageTags = ["latest"];
+    [ObservableProperty] private string _dockerImageTag = "";
+    [ObservableProperty] private List<string> _dockerImageTags = [];
     [ObservableProperty] private int _dockerImageTagSelectedIndex;
 
     [ObservableProperty]
@@ -1528,6 +1528,22 @@ public partial class DeploymentViewModel : ObservableObject
             }
 
             var configuredTag = string.IsNullOrWhiteSpace(DockerImageTag) ? string.Empty : DockerImageTag.Trim();
+
+            // If no compose file exists (fresh setup) and the current tag isn't in the fetched list,
+            // auto-select the first (newest) fetched tag instead of keeping the "latest" placeholder.
+            if (string.IsNullOrWhiteSpace(configuredTagFromCompose) &&
+                !string.IsNullOrWhiteSpace(configuredTag) &&
+                remoteTagList.Count > 0 &&
+                !remoteTagList.Contains(configuredTag, StringComparer.OrdinalIgnoreCase))
+            {
+                var firstTag = remoteTagList[0];
+                var previousSuppressDirty = _suppressComposeDirtyTracking;
+                _suppressComposeDirtyTracking = true;
+                DockerImageTag = firstTag;
+                _suppressComposeDirtyTracking = previousSuppressDirty;
+                configuredTag = firstTag;
+                _lastKnownDockerImageTag = firstTag;
+            }
 
             // Keep configured tag visible in ComboBox even when Docker Hub response doesn't include it.
             // This matches the restore flow behavior (seeded list retains configured version display).
