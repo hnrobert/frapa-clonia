@@ -37,6 +37,7 @@ public partial class DeploymentViewModel : ObservableObject
 
     private bool
         _suppressComposeAutoLoad; // prevents OnDockerComposePathChanged from double-loading during async LoadFromPresetAsync
+    private bool _suppressModeChange; // prevents re-entry when reverting mode on cancel
 
     // Track the last value that was actually sent for remote validation so LostFocus is a no-op when unchanged.
     private string _lastValidatedContainerName = "";
@@ -395,14 +396,61 @@ public partial class DeploymentViewModel : ObservableObject
     // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnSelectedDeploymentModeChanged(string value)
     {
+        if (_suppressModeChange) return;
+
         OnPropertyChanged(nameof(IsNativeMode));
         OnPropertyChanged(nameof(IsDockerMode));
+
+        _ = HandleDeploymentModeChangedAsync(value);
+    }
+
+    private async Task HandleDeploymentModeChangedAsync(string newMode)
+    {
+        var previousMode = newMode == "native" ? "docker" : "native";
+        var isRunning = previousMode == "native" ? IsServiceRunning : IsContainerRunning;
+        var isInstalled = previousMode == "native" ? IsServiceInstalled : IsContainerRunning;
+
+        if (isInstalled || isRunning)
+        {
+            var mainWindow = _serviceProvider?.GetService<Window>();
+            var result = await SwitchModeConfirmDialog.ShowAsync(
+                mainWindow,
+                previousMode,
+                isRunning,
+                key => L(key));
+
+            switch (result)
+            {
+                case SwitchModeConfirmDialog.Result.Cancel:
+                    _suppressModeChange = true;
+                    SelectedDeploymentMode = previousMode;
+                    _suppressModeChange = false;
+                    return;
+
+                case SwitchModeConfirmDialog.Result.StopAndContinue:
+                    if (previousMode == "native")
+                    {
+                        await StopServiceAsync();
+                        await UninstallServiceAsync();
+                    }
+                    else
+                    {
+                        await StopDockerAsync();
+                    }
+                    break;
+
+                case SwitchModeConfirmDialog.Result.Continue:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(newMode), result, null);
+            }
+        }
 
         // Persist selection immediately so Native/Docker mode is remembered per preset.
         if (_presetService?.CurrentPreset != null)
         {
             var currentPresetMode = _presetService.CurrentPreset.Deployment.DeploymentMode;
-            if (!string.Equals(currentPresetMode, value, StringComparison.Ordinal))
+            if (!string.Equals(currentPresetMode, newMode, StringComparison.Ordinal))
             {
                 _ = PersistCurrentPresetAsync();
             }
@@ -411,7 +459,7 @@ public partial class DeploymentViewModel : ObservableObject
         if (_suppressDockerAutoRefresh) return;
 
         // Auto-check Docker availability when switching to Docker mode
-        if (value != "docker" || IsDockerChecking) return;
+        if (newMode != "docker" || IsDockerChecking) return;
         _ = CheckDockerAsync(showToast: false);
         _ = RefreshDockerImageTagsAsync(showToast: false);
     }

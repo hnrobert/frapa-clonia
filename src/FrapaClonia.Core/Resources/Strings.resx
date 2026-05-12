@@ -1547,4 +1547,31 @@
   <data name="DownloadPrerelease" xml:space="preserve">
     <value>Download Prerelease</value>
   </data>
+  <data name="DeploymentMode_Native" xml:space="preserve">
+    <value>Native</value>
+  </data>
+  <data name="DeploymentMode_Docker" xml:space="preserve">
+    <value>Docker</value>
+  </data>
+  <data name="SwitchMode_Title" xml:space="preserve">
+    <value>Switch Deployment Mode</value>
+  </data>
+  <data name="SwitchMode_RunningMessage" xml:space="preserve">
+    <value>The {mode} service is currently running.</value>
+  </data>
+  <data name="SwitchMode_InstalledMessage" xml:space="preserve">
+    <value>The {mode} service is installed but not running.</value>
+  </data>
+  <data name="SwitchMode_RunningSubMessage" xml:space="preserve">
+    <value>Stop and remove the service before switching, or cancel to stay on the current mode.</value>
+  </data>
+  <data name="SwitchMode_InstalledSubMessage" xml:space="preserve">
+    <value>You can continue switching or cancel to stay on the current mode.</value>
+  </data>
+  <data name="SwitchMode_Continue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="SwitchMode_StopAndContinue" xml:space="preserve">
+    <value>Stop &amp; Switch</value>
+  </data>
 </root>

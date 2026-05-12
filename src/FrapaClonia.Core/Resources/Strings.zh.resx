@@ -1409,4 +1409,31 @@
   <data name="NotRunning" xml:space="preserve">
     <value>未运行</value>
   </data>
+  <data name="DeploymentMode_Native" xml:space="preserve">
+    <value>原生</value>
+  </data>
+  <data name="DeploymentMode_Docker" xml:space="preserve">
+    <value>Docker</value>
+  </data>
+  <data name="SwitchMode_Title" xml:space="preserve">
+    <value>切换部署模式</value>
+  </data>
+  <data name="SwitchMode_RunningMessage" xml:space="preserve">
+    <value>{mode} 服务当前正在运行。</value>
+  </data>
+  <data name="SwitchMode_InstalledMessage" xml:space="preserve">
+    <value>{mode} 服务已安装但未运行。</value>
+  </data>
+  <data name="SwitchMode_RunningSubMessage" xml:space="preserve">
+    <value>请先停止并移除服务再切换，或取消以保持当前模式。</value>
+  </data>
+  <data name="SwitchMode_InstalledSubMessage" xml:space="preserve">
+    <value>可以直接继续切换，或取消以保持当前模式。</value>
+  </data>
+  <data name="SwitchMode_Continue" xml:space="preserve">
+    <value>继续</value>
+  </data>
+  <data name="SwitchMode_StopAndContinue" xml:space="preserve">
+    <value>停止并切换</value>
+  </data>
 </root>
