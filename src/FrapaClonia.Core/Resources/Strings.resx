@@ -824,6 +824,12 @@
   <data name="StatusStopped" xml:space="preserve">
     <value>Stopped</value>
   </data>
+  <data name="StatusRestarting" xml:space="preserve">
+    <value>Restarting</value>
+  </data>
+  <data name="StatusNotFound" xml:space="preserve">
+    <value>Not Created</value>
+  </data>
   <data name="StatusUnknown" xml:space="preserve">
     <value>Unknown</value>
   </data>
@@ -844,6 +850,15 @@
   </data>
   <data name="RecreateContainer" xml:space="preserve">
     <value>Recreate</value>
+  </data>
+  <data name="RestartContainer" xml:space="preserve">
+    <value>Restart</value>
+  </data>
+  <data name="ComposeUp" xml:space="preserve">
+    <value>Compose Up</value>
+  </data>
+  <data name="ComposeDown" xml:space="preserve">
+    <value>Compose Down</value>
   </data>
   <data name="Toast_RecreatingContainer" xml:space="preserve">
     <value>Recreating Docker container...</value>

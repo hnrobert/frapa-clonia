@@ -337,6 +337,124 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
         }
     }
 
+    public async Task<DockerContainerStatus> GetContainerStatusAsync(string containerName,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var process = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = GetDockerCommand(),
+                    Arguments = $"inspect --format {{{{.State.Status}}}} {containerName}",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false
+                }
+            };
+            process.Start();
+            await process.WaitForExitAsync(cancellationToken);
+            if (process.ExitCode != 0)
+                return DockerContainerStatus.NotFound;
+            var status = (await process.StandardOutput.ReadToEndAsync(cancellationToken)).Trim();
+            return status switch
+            {
+                "running" => DockerContainerStatus.Running,
+                "exited" or "created" => DockerContainerStatus.Stopped,
+                "restarting" => DockerContainerStatus.Restarting,
+                _ => string.IsNullOrEmpty(status) ? DockerContainerStatus.NotFound : DockerContainerStatus.Other
+            };
+        }
+        catch (OperationCanceledException) { return DockerContainerStatus.NotFound; }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Error getting container status for {ContainerName}", containerName);
+            return DockerContainerStatus.NotFound;
+        }
+    }
+
+    public async Task<bool> StartContainerAsync(string containerName, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var process = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = GetDockerCommand(),
+                    Arguments = $"start {containerName}",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false
+                }
+            };
+            process.Start();
+            await process.WaitForExitAsync(cancellationToken);
+            return process.ExitCode == 0;
+        }
+        catch (OperationCanceledException) { return false; }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Error starting container {ContainerName}", containerName);
+            return false;
+        }
+    }
+
+    public async Task<bool> StopContainerAsync(string containerName, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var process = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = GetDockerCommand(),
+                    Arguments = $"stop {containerName}",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false
+                }
+            };
+            process.Start();
+            await process.WaitForExitAsync(cancellationToken);
+            return process.ExitCode == 0;
+        }
+        catch (OperationCanceledException) { return false; }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Error stopping container {ContainerName}", containerName);
+            return false;
+        }
+    }
+
+    public async Task<bool> RestartContainerAsync(string containerName, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var process = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = GetDockerCommand(),
+                    Arguments = $"restart {containerName}",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false
+                }
+            };
+            process.Start();
+            await process.WaitForExitAsync(cancellationToken);
+            return process.ExitCode == 0;
+        }
+        catch (OperationCanceledException) { return false; }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Error restarting container {ContainerName}", containerName);
+            return false;
+        }
+    }
+
     public async Task<bool> IsContainerRunningAsync(string containerName, CancellationToken cancellationToken = default)
     {
         try

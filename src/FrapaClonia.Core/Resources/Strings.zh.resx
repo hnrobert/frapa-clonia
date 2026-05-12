@@ -818,6 +818,12 @@
   <data name="StatusStopped" xml:space="preserve">
     <value>已停止</value>
   </data>
+  <data name="StatusRestarting" xml:space="preserve">
+    <value>重启中</value>
+  </data>
+  <data name="StatusNotFound" xml:space="preserve">
+    <value>未创建</value>
+  </data>
   <data name="StatusUnknown" xml:space="preserve">
     <value>未知</value>
   </data>
@@ -837,7 +843,16 @@
     <value>启动容器</value>
   </data>
   <data name="RecreateContainer" xml:space="preserve">
-    <value>重建</value>
+    <value>重建容器</value>
+  </data>
+  <data name="RestartContainer" xml:space="preserve">
+    <value>重启容器</value>
+  </data>
+  <data name="ComposeUp" xml:space="preserve">
+    <value>创建容器</value>
+  </data>
+  <data name="ComposeDown" xml:space="preserve">
+    <value>清除容器</value>
   </data>
   <data name="Toast_RecreatingContainer" xml:space="preserve">
     <value>正在重建 Docker 容器...</value>

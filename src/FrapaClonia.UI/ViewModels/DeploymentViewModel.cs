@@ -218,10 +218,20 @@ public partial class DeploymentViewModel : ObservableObject
         IsDockerComposeDirty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsContainerRunning))]
+    [NotifyPropertyChangedFor(nameof(IsContainerStopped))]
+    [NotifyPropertyChangedFor(nameof(IsContainerExists))]
+    [NotifyPropertyChangedFor(nameof(IsContainerRestarting))]
     [NotifyPropertyChangedFor(nameof(LocalizedContainerState))]
-    [NotifyPropertyChangedFor(nameof(DockerPrimaryActionText))]
     [NotifyPropertyChangedFor(nameof(CanStopDockerContainer))]
-    private bool _isContainerRunning;
+    private DockerContainerStatus _containerStatus = DockerContainerStatus.NotFound;
+
+    public bool IsContainerRunning => ContainerStatus == DockerContainerStatus.Running;
+    public bool IsContainerStopped => ContainerStatus == DockerContainerStatus.Stopped;
+    public bool IsContainerExists => ContainerStatus != DockerContainerStatus.NotFound;
+    public bool IsContainerRestarting => ContainerStatus == DockerContainerStatus.Restarting;
+
+    private DispatcherTimer? _containerPollTimer;
 
     private CancellationTokenSource? _dockerTagsCts;
 
@@ -250,11 +260,19 @@ public partial class DeploymentViewModel : ObservableObject
     public bool ShowDockerImageChecking =>
         IsDockerAvailable && !string.IsNullOrWhiteSpace(DockerImageName) && IsDockerImageTagsLoading;
 
-    public string LocalizedContainerState => IsContainerRunning ? L("StatusRunning") : L("StatusStopped");
+    public string LocalizedContainerState => ContainerStatus switch
+    {
+        DockerContainerStatus.Running => L("StatusRunning"),
+        DockerContainerStatus.Stopped => L("StatusStopped"),
+        DockerContainerStatus.Restarting => L("StatusRestarting"),
+        DockerContainerStatus.NotFound => L("StatusNotFound"),
+        _ => L("StatusUnknown")
+    };
 
+    // kept for backward compat with existing bindings
     public string DockerPrimaryActionText => IsContainerRunning ? L("RecreateContainer") : L("StartContainer");
 
-    public bool CanStopDockerContainer => IsContainerRunning;
+    public bool CanStopDockerContainer => IsContainerRunning || IsContainerRestarting;
 
     #endregion
 
@@ -272,6 +290,12 @@ public partial class DeploymentViewModel : ObservableObject
     public IRelayCommand StartDockerCommand { get; }
     public IRelayCommand StopDockerCommand { get; }
     public IRelayCommand RefreshContainerStatusCommand { get; }
+    public IRelayCommand ComposeUpCommand { get; }
+    public IRelayCommand ComposeDownCommand { get; }
+    public IRelayCommand StartContainerCommand { get; }
+    public IRelayCommand StopContainerCommand { get; }
+    public IRelayCommand RestartContainerCommand { get; }
+    public IRelayCommand RecreateContainerCommand { get; }
     public IRelayCommand RefreshDockerImageTagsCommand { get; }
     public IRelayCommand ValidateDockerContainerNameCommand { get; }
     public IRelayCommand ValidateDockerImageCommand { get; }
@@ -325,6 +349,12 @@ public partial class DeploymentViewModel : ObservableObject
         StopDockerCommand = CreateAsyncCommand(StopDockerAsync, "Error stopping docker");
         RefreshContainerStatusCommand =
             CreateAsyncCommand(RefreshContainerStatusAsync, "Error refreshing docker container status");
+        ComposeUpCommand = CreateAsyncCommand(ComposeUpAsync, "Error running compose up");
+        ComposeDownCommand = CreateAsyncCommand(ComposeDownAsync, "Error running compose down");
+        StartContainerCommand = CreateAsyncCommand(StartContainerOnlyAsync, "Error starting container");
+        StopContainerCommand = CreateAsyncCommand(StopContainerOnlyAsync, "Error stopping container");
+        RestartContainerCommand = CreateAsyncCommand(RestartContainerOnlyAsync, "Error restarting container");
+        RecreateContainerCommand = CreateAsyncCommand(RecreateContainerAsync, "Error recreating container");
         RefreshDockerImageTagsCommand =
             CreateAsyncCommand(() => RefreshDockerImageTagsAsync(showToast: true), "Error refreshing docker tags");
         ValidateDockerContainerNameCommand =
@@ -1302,17 +1332,38 @@ public partial class DeploymentViewModel : ObservableObject
         {
             if (!IsDockerAvailable || _dockerDeploymentService == null)
             {
-                IsContainerRunning = false;
+                ContainerStatus = DockerContainerStatus.NotFound;
+                StopContainerPolling();
                 return;
             }
 
-            IsContainerRunning = await _dockerDeploymentService.IsContainerRunningAsync(DockerContainerName);
+            var status = await _dockerDeploymentService.GetContainerStatusAsync(DockerContainerName);
+            ContainerStatus = status;
+
+            if (status == DockerContainerStatus.NotFound)
+                StopContainerPolling();
+            else
+                EnsureContainerPolling();
         }
         catch (Exception ex)
         {
             _logger?.LogWarning(ex, "Error refreshing docker container status");
-            IsContainerRunning = false;
+            ContainerStatus = DockerContainerStatus.NotFound;
         }
+    }
+
+    private void EnsureContainerPolling()
+    {
+        if (_containerPollTimer != null) return;
+        _containerPollTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+        _containerPollTimer.Tick += async (_, _) => await RefreshContainerStatusAsync();
+        _containerPollTimer.Start();
+    }
+
+    private void StopContainerPolling()
+    {
+        _containerPollTimer?.Stop();
+        _containerPollTimer = null;
     }
 
     private async Task LoadDockerComposeFromFileAsync(string composePath)
@@ -1657,12 +1708,7 @@ public partial class DeploymentViewModel : ObservableObject
                 if (recreateSuccess)
                 {
                     _toastService?.Success(L("Toast_ContainerStarted"), L("Toast_DockerContainerRunning"));
-                    if (_dockerDeploymentService != null)
-                    {
-                        IsContainerRunning = await _dockerDeploymentService.IsContainerRunningAsync(
-                            DockerContainerName);
-                    }
-
+                    await RefreshContainerStatusAsync();
                     return;
                 }
 
@@ -1677,8 +1723,7 @@ public partial class DeploymentViewModel : ObservableObject
             if (success)
             {
                 _toastService?.Success(L("Toast_ContainerStarted"), L("Toast_DockerContainerRunning"));
-                if (_dockerDeploymentService != null)
-                    IsContainerRunning = await _dockerDeploymentService.IsContainerRunningAsync(DockerContainerName);
+                await RefreshContainerStatusAsync();
             }
             else
             {
@@ -1696,7 +1741,7 @@ public partial class DeploymentViewModel : ObservableObject
     {
         try
         {
-            if (!IsContainerRunning)
+            if (!IsContainerExists)
             {
                 return;
             }
@@ -1721,7 +1766,8 @@ public partial class DeploymentViewModel : ObservableObject
             if (success)
             {
                 _toastService?.Success(L("Toast_ContainerStopped"), L("Toast_DockerContainerStopped"));
-                IsContainerRunning = false;
+                ContainerStatus = DockerContainerStatus.NotFound;
+                StopContainerPolling();
             }
             else
             {
@@ -1733,6 +1779,108 @@ public partial class DeploymentViewModel : ObservableObject
             _logger?.LogError(ex, "Error stopping Docker container");
             _toastService?.Error(L("Toast_Error"), L("Toast_FailedToStopContainer", ex.Message));
         }
+    }
+
+    private async Task ComposeUpAsync()
+    {
+        var dir = await GetComposeDirectoryAsync();
+        if (dir == null) return;
+        _toastService?.Info(L("ComposeUp"), L("Toast_StartingContainer"));
+        var ok = _dockerDeploymentService != null && await _dockerDeploymentService.StartDockerComposeAsync(dir);
+        if (ok)
+        {
+            _toastService?.Success(L("Toast_ContainerStarted"), L("Toast_DockerContainerRunning"));
+            await RefreshContainerStatusAsync();
+        }
+        else
+            _toastService?.Error(L("Toast_StartFailed"), L("Toast_CouldNotStartContainer"));
+    }
+
+    private async Task ComposeDownAsync()
+    {
+        var dir = await GetComposeDirectoryAsync();
+        if (dir == null) return;
+        _toastService?.Info(L("ComposeDown"), L("Toast_StoppingContainer"));
+        var ok = _dockerDeploymentService != null && await _dockerDeploymentService.StopDockerComposeAsync(dir);
+        if (ok)
+        {
+            _toastService?.Success(L("Toast_ContainerStopped"), L("Toast_DockerContainerStopped"));
+            ContainerStatus = DockerContainerStatus.NotFound;
+            StopContainerPolling();
+        }
+        else
+            _toastService?.Error(L("Toast_StopFailed"), L("Toast_CouldNotStopContainer"));
+    }
+
+    private async Task StartContainerOnlyAsync()
+    {
+        if (_dockerDeploymentService == null) return;
+        _toastService?.Info(L("StartContainer"), L("Toast_StartingContainer"));
+        var ok = await _dockerDeploymentService.StartContainerAsync(DockerContainerName);
+        if (ok)
+        {
+            _toastService?.Success(L("Toast_ContainerStarted"), L("Toast_DockerContainerRunning"));
+            await RefreshContainerStatusAsync();
+        }
+        else
+            _toastService?.Error(L("Toast_StartFailed"), L("Toast_CouldNotStartContainer"));
+    }
+
+    private async Task StopContainerOnlyAsync()
+    {
+        if (_dockerDeploymentService == null) return;
+        _toastService?.Info(L("StopContainer"), L("Toast_StoppingContainer"));
+        var ok = await _dockerDeploymentService.StopContainerAsync(DockerContainerName);
+        if (ok)
+        {
+            _toastService?.Success(L("Toast_ContainerStopped"), L("Toast_DockerContainerStopped"));
+            await RefreshContainerStatusAsync();
+        }
+        else
+            _toastService?.Error(L("Toast_StopFailed"), L("Toast_CouldNotStopContainer"));
+    }
+
+    private async Task RestartContainerOnlyAsync()
+    {
+        if (_dockerDeploymentService == null) return;
+        _toastService?.Info(L("RestartContainer"), L("Toast_StartingContainer"));
+        var ok = await _dockerDeploymentService.RestartContainerAsync(DockerContainerName);
+        if (ok)
+        {
+            _toastService?.Success(L("Toast_ContainerStarted"), L("Toast_DockerContainerRunning"));
+            await RefreshContainerStatusAsync();
+        }
+        else
+            _toastService?.Error(L("Toast_StartFailed"), L("Toast_CouldNotStartContainer"));
+    }
+
+    private async Task RecreateContainerAsync()
+    {
+        var dir = await GetComposeDirectoryAsync();
+        if (dir == null) return;
+        _toastService?.Info(L("RecreateContainer"), L("Toast_RecreatingContainer"));
+        var ok = _dockerDeploymentService != null &&
+                 await _dockerDeploymentService.RecreateDockerComposeAsync(dir);
+        if (ok)
+        {
+            _toastService?.Success(L("Toast_ContainerStarted"), L("Toast_DockerContainerRunning"));
+            await RefreshContainerStatusAsync();
+        }
+        else
+            _toastService?.Error(L("Toast_StartFailed"), L("Toast_CouldNotStartContainer"));
+    }
+
+    private Task<string?> GetComposeDirectoryAsync()
+    {
+        if (string.IsNullOrEmpty(DockerComposePath))
+        {
+            _toastService?.Warning(L("Toast_NoConfiguration"), L("Toast_GenerateDockerComposeFirst"));
+            return Task.FromResult<string?>(null);
+        }
+        var dir = Path.GetDirectoryName(DockerComposePath);
+        if (dir == null)
+            _toastService?.Error(L("Toast_InvalidPath"), L("Toast_CouldNotDetermineDirectory"));
+        return Task.FromResult(dir);
     }
 
     #endregion
