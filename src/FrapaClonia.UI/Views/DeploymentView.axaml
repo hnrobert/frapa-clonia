@@ -23,6 +23,7 @@
     <StyleInclude Source="avares://FrapaClonia.UI/Styles/SharedStyles.axaml" />
   </UserControl.Styles>
 
+  <Panel>
   <Grid RowDefinitions="Auto,*">
     <!-- Page Header -->
     <Border Grid.Row="0" Classes="page-header">
@@ -449,4 +450,46 @@
       </Border>
     </ScrollViewer>
   </Grid>
+
+  <!-- Switch Mode Confirm Overlay -->
+  <Border IsVisible="{Binding IsSwitchModeConfirmOpen}"
+          Background="#80000000"
+          HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch">
+    <Border Classes="card"
+            Width="420"
+            Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Padding="{StaticResource ContentPaddingCompact}">
+      <StackPanel Spacing="{StaticResource SpacingL}">
+        <TextBlock Text="{local:Localize SwitchMode_Title}"
+                   Classes="card-title"
+                   FontSize="18" />
+        <TextBlock Text="{Binding SwitchModeMessage}"
+                   TextWrapping="Wrap" />
+        <TextBlock Text="{Binding SwitchModeSubMessage}"
+                   TextWrapping="Wrap"
+                   Opacity="0.7"
+                   FontSize="{StaticResource FontSizeS}" />
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="{StaticResource SpacingS}">
+          <Button Command="{Binding SwitchModeCancelCommand}"
+                  Classes="action-button"
+                  Content="{local:Localize Cancel}" />
+          <Button Command="{Binding SwitchModeContinueCommand}"
+                  Classes="action-button"
+                  IsVisible="{Binding !SwitchModeShowStopAndContinue}"
+                  Content="{local:Localize SwitchMode_Continue}" />
+          <Button Command="{Binding SwitchModeStopAndContinueCommand}"
+                  Classes="action-button danger"
+                  IsVisible="{Binding SwitchModeShowStopAndContinue}"
+                  Content="{local:Localize SwitchMode_StopAndContinue}" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+  </Border>
+
+  </Panel>
 </UserControl>

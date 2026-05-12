@@ -66,6 +66,25 @@ public partial class DeploymentViewModel : ObservableObject
     public bool IsNativeMode => SelectedDeploymentMode == "native";
     public bool IsDockerMode => SelectedDeploymentMode == "docker";
 
+    // Switch mode confirm overlay
+    [ObservableProperty] private bool _isSwitchModeConfirmOpen;
+    [ObservableProperty] private string _switchModeMessage = "";
+    [ObservableProperty] private string _switchModeSubMessage = "";
+    [ObservableProperty] private bool _switchModeShowStopAndContinue;
+
+    private TaskCompletionSource<SwitchModeConfirmResult>? _switchModeTcs;
+
+    public enum SwitchModeConfirmResult { Cancel, Continue, StopAndContinue }
+
+    public IRelayCommand SwitchModeCancelCommand => new RelayCommand(() =>
+        _switchModeTcs?.TrySetResult(SwitchModeConfirmResult.Cancel));
+
+    public IRelayCommand SwitchModeContinueCommand => new RelayCommand(() =>
+        _switchModeTcs?.TrySetResult(SwitchModeConfirmResult.Continue));
+
+    public IRelayCommand SwitchModeStopAndContinueCommand => new RelayCommand(() =>
+        _switchModeTcs?.TrySetResult(SwitchModeConfirmResult.StopAndContinue));
+
     #endregion
 
     #region Native - Service Configuration
@@ -412,22 +431,26 @@ public partial class DeploymentViewModel : ObservableObject
 
         if (isInstalled || isRunning)
         {
-            var mainWindow = _serviceProvider?.GetService<Window>();
-            var result = await SwitchModeConfirmDialog.ShowAsync(
-                mainWindow,
-                previousMode,
-                isRunning,
-                key => L(key));
+            var modeName = previousMode == "native" ? L("DeploymentMode_Native") : L("DeploymentMode_Docker");
+            SwitchModeMessage = (isRunning ? L("SwitchMode_RunningMessage") : L("SwitchMode_InstalledMessage"))
+                .Replace("{mode}", modeName);
+            SwitchModeSubMessage = isRunning ? L("SwitchMode_RunningSubMessage") : L("SwitchMode_InstalledSubMessage");
+            SwitchModeShowStopAndContinue = isRunning;
+
+            _switchModeTcs = new TaskCompletionSource<SwitchModeConfirmResult>();
+            IsSwitchModeConfirmOpen = true;
+            var result = await _switchModeTcs.Task;
+            IsSwitchModeConfirmOpen = false;
 
             switch (result)
             {
-                case SwitchModeConfirmDialog.Result.Cancel:
+                case SwitchModeConfirmResult.Cancel:
                     _suppressModeChange = true;
                     SelectedDeploymentMode = previousMode;
                     _suppressModeChange = false;
                     return;
 
-                case SwitchModeConfirmDialog.Result.StopAndContinue:
+                case SwitchModeConfirmResult.StopAndContinue:
                     if (previousMode == "native")
                     {
                         await StopServiceAsync();
@@ -439,7 +462,7 @@ public partial class DeploymentViewModel : ObservableObject
                     }
                     break;
 
-                case SwitchModeConfirmDialog.Result.Continue:
+                case SwitchModeConfirmResult.Continue:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(newMode), result, null);

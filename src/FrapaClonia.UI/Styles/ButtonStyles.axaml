@@ -183,4 +183,16 @@
     <Setter Property="BorderBrush" Value="{DynamicResource AppPrimaryHoverBrush}" />
   </Style>
 
+  <Style Selector="Button.action-button.danger">
+    <Setter Property="Background" Value="#C0392B" />
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="BorderBrush" Value="#C0392B" />
+    <Setter Property="FontWeight" Value="{StaticResource FontWeightSemiBold}" />
+  </Style>
+
+  <Style Selector="Button.action-button.danger:pointerover">
+    <Setter Property="Background" Value="#E74C3C" />
+    <Setter Property="BorderBrush" Value="#E74C3C" />
+  </Style>
+
 </Styles>
