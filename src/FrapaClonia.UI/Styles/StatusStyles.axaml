@@ -20,6 +20,10 @@
     <Setter Property="Background" Value="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
   </Style>
 
+  <Style Selector="Border.status-indicator.restarting">
+    <Setter Property="Background" Value="{DynamicResource AppWarningBrush}" />
+  </Style>
+
   <Style Selector="Border.status-indicator.error">
     <Setter Property="Background" Value="{DynamicResource AppErrorBrush}" />
   </Style>

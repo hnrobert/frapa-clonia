@@ -1,55 +1,49 @@
 namespace FrapaClonia.Shared.Interfaces;
 
+public enum DockerContainerStatus
+{
+    NotFound,
+    Running,
+    Stopped,
+    Restarting,
+    Other
+}
+
 /// <summary>
 /// Service for Docker deployment of frpc
 /// </summary>
 public interface IDockerDeploymentService
 {
-    /// <summary>
-    /// Checks if Docker is available
-    /// </summary>
     Task<bool> IsDockerAvailableAsync(CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Generates a docker-compose.yml file for frpc
-    /// </summary>
     Task<string> GenerateDockerComposeAsync(string outputPath, FrpcDockerConfig config,
         CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Gets available image tags for the given image repository (currently supports Docker Hub).
-    /// </summary>
     Task<IReadOnlyList<string>> GetAvailableImageTagsAsync(string imageRepository,
         CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Starts frpc using Docker Compose
-    /// </summary>
-    Task<bool> StartDockerComposeAsync(string composeDirectory, CancellationToken cancellationToken = default);
+    Task<(bool Success, string Output)> StartDockerComposeAsync(string composeDirectory, CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Recreates frpc using Docker Compose (`up -d --force-recreate`)
-    /// </summary>
-    Task<bool> RecreateDockerComposeAsync(string composeDirectory, CancellationToken cancellationToken = default);
+    Task<(bool Success, string Output)> RecreateDockerComposeAsync(string composeDirectory, CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Stops frpc using Docker Compose
-    /// </summary>
-    Task<bool> StopDockerComposeAsync(string composeDirectory, CancellationToken cancellationToken = default);
+    Task<(bool Success, string Output)> StopDockerComposeAsync(string composeDirectory, CancellationToken cancellationToken = default);
+
+    Task<DockerContainerStatus> GetContainerStatusAsync(string containerName,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> StartContainerAsync(string containerName, CancellationToken cancellationToken = default);
+
+    Task<bool> StopContainerAsync(string containerName, CancellationToken cancellationToken = default);
+
+    Task<bool> RestartContainerAsync(string containerName, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets whether frpc Docker container is running
     /// </summary>
     Task<bool> IsContainerRunningAsync(string containerName, CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Checks whether the given container name is available (no existing containers with this name).
-    /// </summary>
     Task<bool> IsContainerNameAvailableAsync(string containerName, CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Checks whether the given container belongs to the specified docker-compose directory.
-    /// </summary>
     Task<bool> IsContainerOwnedByComposeAsync(string composeDirectory, string containerName,
         CancellationToken cancellationToken = default);
 }

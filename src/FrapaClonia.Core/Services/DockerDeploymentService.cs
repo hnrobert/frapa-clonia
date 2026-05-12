@@ -145,7 +145,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
         }
     }
 
-    public async Task<bool> StartDockerComposeAsync(string composeDirectory,
+    public async Task<(bool Success, string Output)> StartDockerComposeAsync(string composeDirectory,
         CancellationToken cancellationToken = default)
     {
         try
@@ -156,7 +156,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             if (!File.Exists(composeFile))
             {
                 logger.LogError("docker-compose.yml not found in {Directory}", composeDirectory);
-                return false;
+                return (false, "docker-compose.yml not found");
             }
 
             var (fileName, argsPrefix) = await GetComposeInvocationAsync(cancellationToken);
@@ -172,11 +172,11 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
         catch (Exception ex)
         {
             logger.LogError(ex, "Error starting docker-compose in {Directory}", composeDirectory);
-            return false;
+            return (false, ex.Message);
         }
     }
 
-    public async Task<bool> RecreateDockerComposeAsync(string composeDirectory,
+    public async Task<(bool Success, string Output)> RecreateDockerComposeAsync(string composeDirectory,
         CancellationToken cancellationToken = default)
     {
         try
@@ -187,7 +187,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             if (!File.Exists(composeFile))
             {
                 logger.LogError("docker-compose.yml not found in {Directory}", composeDirectory);
-                return false;
+                return (false, "docker-compose.yml not found");
             }
 
             var (fileName, argsPrefix) = await GetComposeInvocationAsync(cancellationToken);
@@ -203,11 +203,11 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
         catch (Exception ex)
         {
             logger.LogError(ex, "Error recreating docker-compose in {Directory}", composeDirectory);
-            return false;
+            return (false, ex.Message);
         }
     }
 
-    private async Task<bool> ExecuteComposeUpWithRetryAsync(
+    private async Task<(bool Success, string Output)> ExecuteComposeUpWithRetryAsync(
         string fileName,
         string argsPrefix,
         string composeFile,
@@ -217,6 +217,9 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
     {
         var upArgs = forceRecreate ? "up -d --force-recreate" : "up -d";
         var operation = forceRecreate ? "recreate" : "start";
+        // --progress plain forces readable text output when stdout/stderr are redirected (non-TTY).
+        // Only supported by docker compose v2 plugin (argsPrefix == "compose").
+        var progressFlag = string.IsNullOrEmpty(argsPrefix) ? "" : "--progress plain ";
 
         const int maxAttempts = 3; // first try + 2 retries
         for (var attempt = 1; attempt <= maxAttempts; attempt++)
@@ -230,7 +233,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
                     FileName = fileName,
                     Arguments = string.IsNullOrEmpty(argsPrefix)
                         ? $"-f \"{composeFile}\" {upArgs}"
-                        : $"{argsPrefix} -f \"{composeFile}\" {upArgs}",
+                        : $"{argsPrefix} {progressFlag}-f \"{composeFile}\" {upArgs}",
                     WorkingDirectory = composeDirectory,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -260,7 +263,8 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
                     logger.LogInformation("docker-compose {Operation} succeeded", operation);
                 }
 
-                return true;
+                var successOutput = string.Join('\n', new[] { stdout, stderr }.Where(s => !string.IsNullOrWhiteSpace(s)));
+                return (true, successOutput);
             }
 
             var combinedError =
@@ -270,7 +274,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             if (!shouldRetry)
             {
                 logger.LogError("docker-compose {Operation} failed: {Error}", operation, combinedError);
-                return false;
+                return (false, combinedError);
             }
 
             logger.LogWarning(
@@ -280,10 +284,10 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             await Task.Delay(TimeSpan.FromSeconds(attempt), cancellationToken);
         }
 
-        return false;
+        return (false, "Max retry attempts exceeded");
     }
 
-    public async Task<bool> StopDockerComposeAsync(string composeDirectory,
+    public async Task<(bool Success, string Output)> StopDockerComposeAsync(string composeDirectory,
         CancellationToken cancellationToken = default)
     {
         try
@@ -294,10 +298,11 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             if (!File.Exists(composeFile))
             {
                 logger.LogWarning("docker-compose.yml not found in {Directory}", composeDirectory);
-                return false;
+                return (false, "docker-compose.yml not found");
             }
 
             var (fileName, argsPrefix) = await GetComposeInvocationAsync(cancellationToken);
+            var progressFlag = string.IsNullOrEmpty(argsPrefix) ? "" : "--progress plain ";
 
             var process = new System.Diagnostics.Process
             {
@@ -306,7 +311,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
                     FileName = fileName,
                     Arguments = string.IsNullOrEmpty(argsPrefix)
                         ? $"-f \"{composeFile}\" down"
-                        : $"{argsPrefix} -f \"{composeFile}\" down",
+                        : $"{argsPrefix} {progressFlag}-f \"{composeFile}\" down",
                     WorkingDirectory = composeDirectory,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -315,24 +320,143 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             };
 
             process.Start();
+
+            var stdOutTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
+            var stdErrTask = process.StandardError.ReadToEndAsync(cancellationToken);
             await process.WaitForExitAsync(cancellationToken);
+            var stdout = await stdOutTask;
+            var stderr = await stdErrTask;
+            var output = string.Join('\n', new[] { stdout, stderr }.Where(s => !string.IsNullOrWhiteSpace(s)));
 
             var success = process.ExitCode == 0;
             if (success)
-            {
                 logger.LogInformation("docker-compose stopped successfully");
-            }
             else
-            {
-                logger.LogWarning("docker-compose stop failed: {Error}",
-                    await process.StandardError.ReadToEndAsync(cancellationToken));
-            }
+                logger.LogWarning("docker-compose stop failed: {Error}", stderr);
 
-            return success;
+            return (success, output);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error stopping docker-compose in {Directory}", composeDirectory);
+            return (false, ex.Message);
+        }
+    }
+
+    public async Task<DockerContainerStatus> GetContainerStatusAsync(string containerName,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var process = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = GetDockerCommand(),
+                    Arguments = $"inspect --format {{{{.State.Status}}}} {containerName}",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false
+                }
+            };
+            process.Start();
+            await process.WaitForExitAsync(cancellationToken);
+            if (process.ExitCode != 0)
+                return DockerContainerStatus.NotFound;
+            var status = (await process.StandardOutput.ReadToEndAsync(cancellationToken)).Trim();
+            return status switch
+            {
+                "running" => DockerContainerStatus.Running,
+                "exited" or "created" => DockerContainerStatus.Stopped,
+                "restarting" => DockerContainerStatus.Restarting,
+                _ => string.IsNullOrEmpty(status) ? DockerContainerStatus.NotFound : DockerContainerStatus.Other
+            };
+        }
+        catch (OperationCanceledException) { return DockerContainerStatus.NotFound; }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Error getting container status for {ContainerName}", containerName);
+            return DockerContainerStatus.NotFound;
+        }
+    }
+
+    public async Task<bool> StartContainerAsync(string containerName, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var process = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = GetDockerCommand(),
+                    Arguments = $"start {containerName}",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false
+                }
+            };
+            process.Start();
+            await process.WaitForExitAsync(cancellationToken);
+            return process.ExitCode == 0;
+        }
+        catch (OperationCanceledException) { return false; }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Error starting container {ContainerName}", containerName);
+            return false;
+        }
+    }
+
+    public async Task<bool> StopContainerAsync(string containerName, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var process = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = GetDockerCommand(),
+                    Arguments = $"stop {containerName}",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false
+                }
+            };
+            process.Start();
+            await process.WaitForExitAsync(cancellationToken);
+            return process.ExitCode == 0;
+        }
+        catch (OperationCanceledException) { return false; }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Error stopping container {ContainerName}", containerName);
+            return false;
+        }
+    }
+
+    public async Task<bool> RestartContainerAsync(string containerName, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var process = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = GetDockerCommand(),
+                    Arguments = $"restart {containerName}",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false
+                }
+            };
+            process.Start();
+            await process.WaitForExitAsync(cancellationToken);
+            return process.ExitCode == 0;
+        }
+        catch (OperationCanceledException) { return false; }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Error restarting container {ContainerName}", containerName);
             return false;
         }
     }
@@ -366,6 +490,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
 
             return isRunning;
         }
+        catch (OperationCanceledException) { return false; }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error checking container {ContainerName} status", containerName);
@@ -652,6 +777,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
         sb.AppendLine("    restart: " + (string.Equals(restart, "no", StringComparison.OrdinalIgnoreCase)
             ? "\"no\""
             : restart));
+        sb.AppendLine("    command: -c /etc/frp/frpc.toml");
         sb.AppendLine("    volumes:");
         // Keep frpc config path simple and portable: always mount ./frpc.toml next to docker-compose.yml
         sb.AppendLine("      - ./frpc.toml:/etc/frp/frpc.toml:ro");

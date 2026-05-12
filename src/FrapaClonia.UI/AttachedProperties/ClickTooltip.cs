@@ -78,7 +78,7 @@ public static class ClickTooltip
     }
 
     // Tunnel: fires before ToolTipService's bubble PointerPressed handler.
-    // If the hover tooltip is already open, pin immediately so the coerce blocks the close.
+    // If the hover tooltip is already open, pin immediately so the coerce callback blocks the close.
     private static void OnButtonPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (sender is not Button button) return;

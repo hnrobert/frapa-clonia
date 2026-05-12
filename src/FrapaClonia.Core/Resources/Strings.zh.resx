@@ -206,6 +206,9 @@
   <data name="ContainerName" xml:space="preserve">
     <value>容器名称</value>
   </data>
+  <data name="ContainerNameConflictTooltip" xml:space="preserve">
+    <value>已存在同名容器且属于其他 Compose 项目，请更换名称。</value>
+  </data>
   <data name="CreateProxy" xml:space="preserve">
     <value>创建代理</value>
   </data>
@@ -277,6 +280,9 @@
   </data>
   <data name="DockerImage" xml:space="preserve">
     <value>Docker 镜像</value>
+  </data>
+  <data name="DockerImageConflictTooltip" xml:space="preserve">
+    <value>在 Docker Hub 上未找到所配置的镜像标签，请检查镜像名称或刷新版本列表。</value>
   </data>
   <data name="DockerStatus" xml:space="preserve">
     <value>Docker 状态</value>
@@ -818,6 +824,12 @@
   <data name="StatusStopped" xml:space="preserve">
     <value>已停止</value>
   </data>
+  <data name="StatusRestarting" xml:space="preserve">
+    <value>重启中</value>
+  </data>
+  <data name="StatusNotFound" xml:space="preserve">
+    <value>未创建</value>
+  </data>
   <data name="StatusUnknown" xml:space="preserve">
     <value>未知</value>
   </data>
@@ -837,7 +849,16 @@
     <value>启动容器</value>
   </data>
   <data name="RecreateContainer" xml:space="preserve">
-    <value>重建</value>
+    <value>重建容器</value>
+  </data>
+  <data name="RestartContainer" xml:space="preserve">
+    <value>重启容器</value>
+  </data>
+  <data name="ComposeUp" xml:space="preserve">
+    <value>创建容器</value>
+  </data>
+  <data name="ComposeDown" xml:space="preserve">
+    <value>清除容器</value>
   </data>
   <data name="Toast_RecreatingContainer" xml:space="preserve">
     <value>正在重建 Docker 容器...</value>

@@ -296,19 +296,19 @@
                                   HorizontalAlignment="Right"
                                   VerticalAlignment="Center"
                                   Margin="0,0,10,0"
-                                  Spacing="6"
-                                  IsHitTestVisible="False">
+                                  Spacing="6">
                         <mi:MaterialIcon Kind="Loading"
                                          Width="18" Height="18"
-                                         IsVisible="{Binding ShowDockerContainerNameChecking}" />
+                                         IsVisible="{Binding ShowDockerContainerNameChecking}"
+                                         IsHitTestVisible="False" />
                         <mi:MaterialIcon Kind="CheckCircle"
                                          Foreground="Green"
                                          Width="18" Height="18"
-                                         IsVisible="{Binding ShowDockerContainerNameOk}" />
-                        <mi:MaterialIcon Kind="AlertCircle"
-                                         Foreground="Orange"
-                                         Width="18" Height="18"
-                                         IsVisible="{Binding ShowDockerContainerNameConflict}" />
+                                         IsVisible="{Binding ShowDockerContainerNameOk}"
+                                         IsHitTestVisible="False" />
+                        <Button Classes="warning-icon"
+                                IsVisible="{Binding ShowDockerContainerNameConflict}"
+                                ToolTip.Tip="{Binding DockerContainerNameConflictTooltip}" />
                       </StackPanel>
                     </Grid>
 
@@ -325,19 +325,19 @@
                                   HorizontalAlignment="Right"
                                   VerticalAlignment="Center"
                                   Margin="0,0,10,0"
-                                  Spacing="6"
-                                  IsHitTestVisible="False">
+                                  Spacing="6">
                         <mi:MaterialIcon Kind="Loading"
                                          Width="18" Height="18"
-                                         IsVisible="{Binding ShowDockerImageChecking}" />
+                                         IsVisible="{Binding ShowDockerImageChecking}"
+                                         IsHitTestVisible="False" />
                         <mi:MaterialIcon Kind="CheckCircle"
                                          Foreground="Green"
                                          Width="18" Height="18"
-                                         IsVisible="{Binding ShowDockerImageOk}" />
-                        <mi:MaterialIcon Kind="AlertCircle"
-                                         Foreground="Orange"
-                                         Width="18" Height="18"
-                                         IsVisible="{Binding ShowDockerImageConflict}" />
+                                         IsVisible="{Binding ShowDockerImageOk}"
+                                         IsHitTestVisible="False" />
+                        <Button Classes="warning-icon"
+                                IsVisible="{Binding ShowDockerImageConflict}"
+                                ToolTip.Tip="{Binding DockerImageConflictTooltip}" />
                       </StackPanel>
                     </Grid>
 
@@ -408,40 +408,104 @@
                     <StackPanel Grid.Row="0" Grid.Column="1"
                                 Orientation="Horizontal"
                                 Spacing="{StaticResource SpacingM}">
-                      <Border Classes="status-indicator running" IsVisible="{Binding IsContainerRunning}" />
-                      <Border Classes="status-indicator stopped" IsVisible="{Binding !IsContainerRunning}" />
+                      <Border Classes="status-indicator running"
+                              IsVisible="{Binding IsContainerRunning}" />
+                      <Border Classes="status-indicator restarting"
+                              IsVisible="{Binding IsContainerRestarting}" />
+                      <Border Classes="status-indicator stopped"
+                              IsVisible="{Binding IsContainerStopped}" />
+                      <Border Classes="status-indicator stopped"
+                              IsVisible="{Binding !IsContainerExists}"
+                              Opacity="0.3" />
                       <TextBlock Text="{Binding LocalizedContainerState}"
                                  VerticalAlignment="Center"
                                  FontFamily="{DynamicResource MonoFontFamily}" />
                     </StackPanel>
                   </Grid>
 
+                  <!-- No container: only Compose Up -->
                   <StackPanel Orientation="Horizontal"
-                              Spacing="{StaticResource SpacingM}">
-                    <Button Command="{Binding StartDockerCommand}"
+                              Spacing="{StaticResource SpacingM}"
+                              IsVisible="{Binding !IsContainerExists}">
+                    <Button Command="{Binding ComposeUpCommand}"
                             Classes="action-button primary icon-text-button">
                       <StackPanel Orientation="Horizontal" Spacing="4">
-                        <mi:MaterialIcon Kind="Play" IsVisible="{Binding !IsContainerRunning}" />
-                        <mi:MaterialIcon Kind="Restart" IsVisible="{Binding IsContainerRunning}" />
-                        <TextBlock Text="{Binding DockerPrimaryActionText}" />
-                      </StackPanel>
-                    </Button>
-                    <Button Command="{Binding StopDockerCommand}"
-                            IsEnabled="{Binding CanStopDockerContainer}"
-                            Classes="action-button icon-text-button">
-                      <StackPanel Orientation="Horizontal" Spacing="4">
-                        <mi:MaterialIcon Kind="Stop" />
-                        <TextBlock Text="{local:Localize StopContainer}" />
-                      </StackPanel>
-                    </Button>
-                    <Button Command="{Binding RefreshContainerStatusCommand}"
-                            Classes="action-button icon-text-button">
-                      <StackPanel Orientation="Horizontal" Spacing="4">
-                        <mi:MaterialIcon Kind="Refresh" />
-                        <TextBlock Text="{local:Localize Refresh}" />
+                        <mi:MaterialIcon Kind="Play" />
+                        <TextBlock Text="{local:Localize ComposeUp}" />
                       </StackPanel>
                     </Button>
                   </StackPanel>
+
+                  <!-- Container stopped: Compose Down + Start + Recreate -->
+                  <StackPanel Orientation="Horizontal"
+                              Spacing="{StaticResource SpacingM}"
+                              IsVisible="{Binding IsContainerStopped}">
+                    <Button Command="{Binding ComposeDownCommand}"
+                            Classes="action-button icon-text-button">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="Stop" />
+                        <TextBlock Text="{local:Localize ComposeDown}" />
+                      </StackPanel>
+                    </Button>
+                    <Button Command="{Binding StartContainerCommand}"
+                            Classes="action-button primary icon-text-button">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="Play" />
+                        <TextBlock Text="{local:Localize StartContainer}" />
+                      </StackPanel>
+                    </Button>
+                    <Button Command="{Binding RecreateContainerCommand}"
+                            Classes="action-button icon-text-button">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="Refresh" />
+                        <TextBlock Text="{local:Localize RecreateContainer}" />
+                      </StackPanel>
+                    </Button>
+                  </StackPanel>
+
+                  <!-- Container running or restarting: Compose Down + Stop + Restart + Recreate -->
+                  <StackPanel Orientation="Horizontal"
+                              Spacing="{StaticResource SpacingM}"
+                              IsVisible="{Binding IsContainerRunningOrRestarting}">
+                    <Button Command="{Binding ComposeDownCommand}"
+                            Classes="action-button icon-text-button">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="Stop" />
+                        <TextBlock Text="{local:Localize ComposeDown}" />
+                      </StackPanel>
+                    </Button>
+                    <Button Command="{Binding StopContainerCommand}"
+                            Classes="action-button icon-text-button">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="StopCircle" />
+                        <TextBlock Text="{local:Localize StopContainer}" />
+                      </StackPanel>
+                    </Button>
+                    <Button Command="{Binding RestartContainerCommand}"
+                            Classes="action-button icon-text-button">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="Refresh" />
+                        <TextBlock Text="{local:Localize RestartContainer}" />
+                      </StackPanel>
+                    </Button>
+                    <Button Command="{Binding RecreateContainerCommand}"
+                            Classes="action-button icon-text-button">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="Autorenew" />
+                        <TextBlock Text="{local:Localize RecreateContainer}" />
+                      </StackPanel>
+                    </Button>
+                  </StackPanel>
+
+                  <!-- Operation log output -->
+                  <TextBox IsVisible="{Binding DockerOperationLog, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                           Text="{Binding DockerOperationLog}"
+                           IsReadOnly="True"
+                           AcceptsReturn="True"
+                           MaxHeight="200"
+                           FontFamily="{DynamicResource MonoFontFamily}"
+                           FontSize="{StaticResource FontSizeS}"
+                           TextWrapping="Wrap" />
                 </StackPanel>
               </Border>
             </StackPanel>
@@ -453,37 +517,37 @@
 
   <!-- Switch Mode Confirm Overlay -->
   <Border IsVisible="{Binding IsSwitchModeConfirmOpen}"
-          Background="#80000000"
-          HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch">
+Background="#80000000"
+HorizontalAlignment="Stretch"
+VerticalAlignment="Stretch">
     <Border Classes="card"
-            Width="500"
-            Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Padding="{StaticResource ContentPaddingCompact}">
+Width="500"
+Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
+HorizontalAlignment="Center"
+VerticalAlignment="Center"
+Padding="{StaticResource ContentPaddingCompact}">
       <StackPanel Spacing="{StaticResource SpacingL}">
         <TextBlock Text="{local:Localize SwitchMode_Title}"
-                   Classes="card-title"
-                   FontSize="18" />
+Classes="card-title"
+FontSize="18" />
         <TextBlock Text="{Binding SwitchModeMessage}"
-                   TextWrapping="Wrap" />
+TextWrapping="Wrap" />
         <TextBlock Text="{Binding SwitchModeSubMessage}"
-                   TextWrapping="Wrap"
-                   Opacity="0.7"
-                   FontSize="{StaticResource FontSizeS}" />
+TextWrapping="Wrap"
+Opacity="0.7"
+FontSize="{StaticResource FontSizeS}" />
         <StackPanel Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Spacing="{StaticResource SpacingS}">
+HorizontalAlignment="Right"
+Spacing="{StaticResource SpacingS}">
           <Button Command="{Binding SwitchModeCancelCommand}"
-                  Classes="action-button"
-                  Content="{local:Localize Cancel}" />
+Classes="action-button"
+Content="{local:Localize Cancel}" />
           <Button Command="{Binding SwitchModeContinueCommand}"
-                  Classes="action-button danger"
-                  Content="{local:Localize SwitchMode_Continue}" />
+Classes="action-button danger"
+Content="{local:Localize SwitchMode_Continue}" />
           <Button Command="{Binding SwitchModeStopAndContinueCommand}"
-                  Classes="action-button danger"
-                  Content="{Binding SwitchModeStopAndContinueText}" />
+Classes="action-button danger"
+Content="{Binding SwitchModeStopAndContinueText}" />
         </StackPanel>
       </StackPanel>
     </Border>

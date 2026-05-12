@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FrapaClonia.Shared.Interfaces;
@@ -64,6 +65,11 @@ public partial class LogsViewModel : ObservableObject
     private long _logFilePosition;
     private string? _serviceLogPath;
     private bool _isServiceLogActive;
+
+    // Docker container log tailing
+    private System.Diagnostics.Process? _dockerLogProcess;
+    private CancellationTokenSource? _dockerLogCts;
+    private bool _isDockerLogActive;
 
     // Loading timeout
     private readonly System.Timers.Timer _loadingTimer;
@@ -204,10 +210,20 @@ public partial class LogsViewModel : ObservableObject
     {
         LoadSettingsFromPreset();
         StopFileLogTailing();
+        StopDockerLogTailing();
         Avalonia.Threading.Dispatcher.UIThread.Post(() =>
         {
-            lock (_logBuffer) { _logBuffer.Clear(); }
-            lock (_textLock) { _logTextBuilder.Clear(); LogText = ""; }
+            lock (_logBuffer)
+            {
+                _logBuffer.Clear();
+            }
+
+            lock (_textLock)
+            {
+                _logTextBuilder.Clear();
+                LogText = "";
+            }
+
             IsLoading = true;
             _loadingTimer.Start();
             _ = UpdateLogSourceAsync();
@@ -317,6 +333,15 @@ public partial class LogsViewModel : ObservableObject
 
     private void UpdateStatus()
     {
+        var isDocker = _presetService?.CurrentPreset?.Deployment.DeploymentMode == "docker";
+        if (isDocker)
+        {
+            StatusMessage = _isDockerLogActive
+                ? "Streaming docker container logs..."
+                : "Docker container not running - Start the container to see logs";
+            return;
+        }
+
         StatusMessage = _frpcProcessService?.IsRunning == true
             ? $"Connected to frpc (PID: {_frpcProcessService.ProcessId}) - Receiving logs..."
             : "frpc is not running - Start frpc to see logs";
@@ -524,6 +549,7 @@ public partial class LogsViewModel : ObservableObject
             if (settings.DeploymentMode == "docker")
             {
                 StopFileLogTailing();
+                await StartDockerLogTailingAsync();
                 return;
             }
 
@@ -564,6 +590,115 @@ public partial class LogsViewModel : ObservableObject
         _isServiceLogActive = false;
         _serviceLogPath = null;
         _logFilePosition = 0;
+    }
+
+    // --- Docker container log tailing ---
+
+    private Task StartDockerLogTailingAsync()
+    {
+        try
+        {
+            if (_isDockerLogActive) return Task.CompletedTask;
+
+            var preset = _presetService?.CurrentPreset;
+            if (preset == null) return Task.CompletedTask;
+
+            var containerName = GetDockerContainerName(preset.Id);
+            if (string.IsNullOrEmpty(containerName)) return Task.CompletedTask;
+
+            _isDockerLogActive = true;
+            UpdateStatus();
+
+            _dockerLogCts = new CancellationTokenSource();
+            var cts = _dockerLogCts;
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    var dockerCmd = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "docker.exe" : "docker";
+                    var process = new System.Diagnostics.Process
+                    {
+                        StartInfo = new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = dockerCmd,
+                            Arguments = $"logs -f --tail 200 {containerName}",
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                            UseShellExecute = false
+                        }
+                    };
+
+                    _dockerLogProcess = process;
+                    process.Start();
+
+                    var stdoutTask = ReadDockerLogStreamAsync(process.StandardOutput, cts.Token);
+                    var stderrTask = ReadDockerLogStreamAsync(process.StandardError, cts.Token);
+                    await Task.WhenAll(stdoutTask, stderrTask);
+                }
+                catch (OperationCanceledException)
+                {
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogDebug(ex, "Docker log tailing ended");
+                }
+                finally
+                {
+                    _isDockerLogActive = false;
+                    _dockerLogProcess = null;
+                    Avalonia.Threading.Dispatcher.UIThread.Post(UpdateStatus);
+                }
+            }, cts.Token);
+            return Task.CompletedTask;
+        }
+        catch (Exception exception)
+        {
+            return Task.FromException(exception);
+        }
+    }
+
+    private void StopDockerLogTailing()
+    {
+        if (!_isDockerLogActive) return;
+
+        _dockerLogCts?.Cancel();
+        try
+        {
+            _dockerLogProcess?.Kill();
+        }
+        catch
+        {
+            /* process may have already exited */
+        }
+
+        _dockerLogProcess = null;
+        _isDockerLogActive = false;
+    }
+
+    private async Task ReadDockerLogStreamAsync(StreamReader reader, CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            var line = await reader.ReadLineAsync(cancellationToken).ConfigureAwait(false);
+            if (line == null) break;
+
+            var (level, message) = ParseFrpcLogLine(line);
+            AddLogEntry(new LogEntry { Timestamp = DateTimeOffset.Now, Level = level, Message = message });
+        }
+    }
+
+    private static string? GetDockerContainerName(Guid presetId)
+    {
+        var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        var composePath = Path.Combine(appData, "FrapaClonia", "presets", presetId.ToString("N"), "docker-compose.yml");
+        if (!File.Exists(composePath)) return null;
+
+        return (from line in File.ReadLines(composePath)
+            select line.TrimStart()
+            into trimmed
+            where trimmed.StartsWith("container_name:", StringComparison.Ordinal)
+            select trimmed["container_name:".Length..].Trim()).FirstOrDefault(name => !string.IsNullOrEmpty(name));
     }
 
     private void OnFileLogTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
