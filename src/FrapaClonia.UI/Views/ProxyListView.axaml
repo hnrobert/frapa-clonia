@@ -225,7 +225,7 @@
                       </Button>
 
                       <Button Click="OnDeleteClick"
-                              Classes="icon-button"
+                              Classes="icon-button danger"
                               ToolTip.Tip="{local:Localize DeleteProxyToolTip}">
                         <mi:MaterialIcon Kind="Delete" />
                       </Button>

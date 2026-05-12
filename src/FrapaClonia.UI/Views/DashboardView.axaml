@@ -117,7 +117,7 @@
                 </Button>
                 <Button Command="{Binding DeletePresetCommand}"
                         ToolTip.Tip="{local:Localize DeletePreset}"
-                        Classes="icon-button"
+                        Classes="icon-button danger"
                         IsEnabled="{Binding !IsRenaming}">
                   <mi:MaterialIcon Kind="Delete" Width="18" Height="18" />
                 </Button>
@@ -180,7 +180,7 @@
               </Button>
 
               <Button Command="{Binding StopFrpcCommand}"
-                      Classes="action-button icon-text-button">
+                      Classes="action-button danger icon-text-button">
                 <StackPanel>
                   <mi:MaterialIcon Kind="Stop" />
                   <TextBlock Text="{local:Localize StopFrpc}" />

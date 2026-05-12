@@ -42,7 +42,7 @@
               </Button>
               <Button Command="{Binding ClearLogsCommand}"
                       ToolTip.Tip="{local:Localize ClearAll}"
-                      Classes="icon-button"
+                      Classes="icon-button danger"
                       IsEnabled="{Binding !IsClearing}"
                       VerticalAlignment="Center">
                 <mi:MaterialIcon Kind="DeleteVariant" Width="18" Height="18" />
@@ -267,10 +267,10 @@
                     Classes="action-button"
                     Content="Cancel" />
             <Button Command="{Binding ConfirmClearCommand}"
-                    Classes="action-button"
+                    Classes="action-button danger"
                     Content="Clear Panel" />
             <Button Command="{Binding ConfirmClearWithFileCommand}"
-                    Classes="action-button primary"
+                    Classes="action-button danger"
                     Content="Clear All" />
           </StackPanel>
         </StackPanel>
