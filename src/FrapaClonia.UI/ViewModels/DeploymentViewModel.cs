@@ -35,8 +35,11 @@ public partial class DeploymentViewModel : ObservableObject
 
     private string _lastKnownDockerImageTag = "latest";
 
-    private bool
-        _suppressComposeAutoLoad; // prevents OnDockerComposePathChanged from double-loading during async LoadFromPresetAsync
+    // prevents OnDockerComposePathChanged from double-loading during async LoadFromPresetAsync
+    private bool _suppressComposeAutoLoad;
+
+    // prevents re-entry when reverting mode on cancel
+    private bool _suppressModeChange;
 
     // Track the last value that was actually sent for remote validation so LostFocus is a no-op when unchanged.
     private string _lastValidatedContainerName = "";
@@ -64,6 +67,31 @@ public partial class DeploymentViewModel : ObservableObject
 
     public bool IsNativeMode => SelectedDeploymentMode == "native";
     public bool IsDockerMode => SelectedDeploymentMode == "docker";
+
+    // Switch mode confirm overlay
+    [ObservableProperty] private bool _isSwitchModeConfirmOpen;
+    [ObservableProperty] private string _switchModeMessage = "";
+    [ObservableProperty] private string _switchModeSubMessage = "";
+    [ObservableProperty] private bool _switchModeShowStopAndContinue;
+    [ObservableProperty] private string _switchModeStopAndContinueText = "";
+
+    private TaskCompletionSource<SwitchModeConfirmResult>? _switchModeTcs;
+
+    public enum SwitchModeConfirmResult
+    {
+        Cancel,
+        Continue,
+        StopAndContinue
+    }
+
+    public IRelayCommand SwitchModeCancelCommand => new RelayCommand(() =>
+        _switchModeTcs?.TrySetResult(SwitchModeConfirmResult.Cancel));
+
+    public IRelayCommand SwitchModeContinueCommand => new RelayCommand(() =>
+        _switchModeTcs?.TrySetResult(SwitchModeConfirmResult.Continue));
+
+    public IRelayCommand SwitchModeStopAndContinueCommand => new RelayCommand(() =>
+        _switchModeTcs?.TrySetResult(SwitchModeConfirmResult.StopAndContinue));
 
     #endregion
 
@@ -395,14 +423,69 @@ public partial class DeploymentViewModel : ObservableObject
     // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnSelectedDeploymentModeChanged(string value)
     {
+        if (_suppressModeChange) return;
+
         OnPropertyChanged(nameof(IsNativeMode));
         OnPropertyChanged(nameof(IsDockerMode));
+
+        _ = HandleDeploymentModeChangedAsync(value);
+    }
+
+    private async Task HandleDeploymentModeChangedAsync(string newMode)
+    {
+        var previousMode = newMode == "native" ? "docker" : "native";
+        var isRunning = previousMode == "native" ? IsServiceRunning : IsContainerRunning;
+        var isInstalled = previousMode == "native" ? IsServiceInstalled : IsContainerRunning;
+
+        if (isInstalled || isRunning)
+        {
+            var modeName = previousMode == "native" ? L("DeploymentMode_Native") : L("DeploymentMode_Docker");
+            SwitchModeMessage = (isRunning ? L("SwitchMode_RunningMessage") : L("SwitchMode_InstalledMessage"))
+                .Replace("{mode}", modeName);
+            SwitchModeSubMessage = isRunning ? L("SwitchMode_RunningSubMessage") : L("SwitchMode_InstalledSubMessage");
+            SwitchModeShowStopAndContinue = isRunning;
+            SwitchModeStopAndContinueText = previousMode == "native"
+                ? L("SwitchMode_StopUninstallAndContinue")
+                : L("SwitchMode_ComposeDownAndContinue");
+
+            _switchModeTcs = new TaskCompletionSource<SwitchModeConfirmResult>();
+            IsSwitchModeConfirmOpen = true;
+            var result = await _switchModeTcs.Task;
+            IsSwitchModeConfirmOpen = false;
+
+            switch (result)
+            {
+                case SwitchModeConfirmResult.Cancel:
+                    _suppressModeChange = true;
+                    SelectedDeploymentMode = previousMode;
+                    _suppressModeChange = false;
+                    return;
+
+                case SwitchModeConfirmResult.StopAndContinue:
+                    if (previousMode == "native")
+                    {
+                        await StopServiceAsync();
+                        await UninstallServiceAsync();
+                    }
+                    else
+                    {
+                        await StopDockerAsync();
+                    }
+
+                    break;
+
+                case SwitchModeConfirmResult.Continue:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(newMode), result, null);
+            }
+        }
 
         // Persist selection immediately so Native/Docker mode is remembered per preset.
         if (_presetService?.CurrentPreset != null)
         {
             var currentPresetMode = _presetService.CurrentPreset.Deployment.DeploymentMode;
-            if (!string.Equals(currentPresetMode, value, StringComparison.Ordinal))
+            if (!string.Equals(currentPresetMode, newMode, StringComparison.Ordinal))
             {
                 _ = PersistCurrentPresetAsync();
             }
@@ -411,7 +494,7 @@ public partial class DeploymentViewModel : ObservableObject
         if (_suppressDockerAutoRefresh) return;
 
         // Auto-check Docker availability when switching to Docker mode
-        if (value != "docker" || IsDockerChecking) return;
+        if (newMode != "docker" || IsDockerChecking) return;
         _ = CheckDockerAsync(showToast: false);
         _ = RefreshDockerImageTagsAsync(showToast: false);
     }
@@ -916,7 +999,8 @@ public partial class DeploymentViewModel : ObservableObject
         {
             if (_systemServiceManager == null) return;
 
-            var serviceName = _activeServiceName ?? _systemServiceManager.GetServiceNameForPreset(_presetService!.CurrentPreset!.Id);
+            var serviceName = _activeServiceName ??
+                              _systemServiceManager.GetServiceNameForPreset(_presetService!.CurrentPreset!.Id);
             var success = await _systemServiceManager.UninstallServiceAsync(serviceName);
 
             if (success)
@@ -944,7 +1028,8 @@ public partial class DeploymentViewModel : ObservableObject
         {
             if (_systemServiceManager == null) return;
 
-            var serviceName = _activeServiceName ?? _systemServiceManager.GetServiceNameForPreset(_presetService!.CurrentPreset!.Id);
+            var serviceName = _activeServiceName ??
+                              _systemServiceManager.GetServiceNameForPreset(_presetService!.CurrentPreset!.Id);
             var scope = GetServiceScopeEnum();
             var success = await _systemServiceManager.StartServiceAsync(serviceName, scope);
 
@@ -992,7 +1077,8 @@ public partial class DeploymentViewModel : ObservableObject
         {
             if (_systemServiceManager == null) return;
 
-            var serviceName = _activeServiceName ?? _systemServiceManager.GetServiceNameForPreset(_presetService!.CurrentPreset!.Id);
+            var serviceName = _activeServiceName ??
+                              _systemServiceManager.GetServiceNameForPreset(_presetService!.CurrentPreset!.Id);
             var scope = GetServiceScopeEnum();
             var success = await _systemServiceManager.StopServiceAsync(serviceName, scope);
 
@@ -1026,7 +1112,9 @@ public partial class DeploymentViewModel : ObservableObject
             IsDockerChecking = true;
 
             if (_dockerDeploymentService != null)
+            {
                 IsDockerAvailable = await _dockerDeploymentService.IsDockerAvailableAsync();
+            }
 
             if (showToast)
             {
@@ -1546,12 +1634,17 @@ public partial class DeploymentViewModel : ObservableObject
                 return;
             }
 
+            if (_dockerDeploymentService != null &&
+                !(IsDockerAvailable = await _dockerDeploymentService.IsDockerAvailableAsync()))
+            {
+                _toastService?.Error(L("Toast_DockerNotAvailable"), L("Toast_DockerNotInstalled"));
+                return;
+            }
+
             if (IsContainerRunning)
             {
                 _toastService?.Info(L("RecreateContainer"), L("Toast_RecreatingContainer"));
-
-                var recreateSuccess = _dockerDeploymentService != null &&
-                                      await _dockerDeploymentService.RecreateDockerComposeAsync(composeDirectory);
+                var recreateSuccess = await _dockerDeploymentService!.RecreateDockerComposeAsync(composeDirectory);
                 if (recreateSuccess)
                 {
                     _toastService?.Success(L("Toast_ContainerStarted"), L("Toast_DockerContainerRunning"));

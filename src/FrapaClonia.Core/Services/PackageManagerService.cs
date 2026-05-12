@@ -54,8 +54,7 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
         logger.LogInformation("Installing frpc via {PackageManager}, version: {Version}", packageManager,
             version ?? "latest");
 
-        var installCommand = GetInstallCommand(packageManager, version);
-        if (installCommand == null)
+        if (GetInstallCommand(packageManager, version) is not { } installCommand)
         {
             logger.LogWarning("No install command for package manager: {PackageManager}", packageManager);
             return false;
@@ -133,8 +132,7 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
     {
         logger.LogInformation("Uninstalling frpc via {PackageManager}", packageManager);
 
-        var uninstallCommand = GetUninstallCommand(packageManager);
-        if (uninstallCommand == null)
+        if (GetUninstallCommand(packageManager) is not { } uninstallCommand)
         {
             logger.LogWarning("No uninstall command for package manager: {PackageManager}", packageManager);
             return false;

@@ -34,13 +34,16 @@ public static class ScrollWheelSuppressor
         if (sender is ComboBox { IsDropDownOpen: true }) return;
         if (sender is not (ComboBox or TextBox)) return;
 
+        // TextBox: allow pure horizontal scroll within the control;
+        // if vertical component exists it's a page-scroll gesture, pass everything to parent
+        if (sender is TextBox && e.Delta.X != 0 && e.Delta.Y == 0) return;
+
         e.Handled = true;
 
-        var scrollViewer = (sender as Control)?.FindAncestorOfType<ScrollViewer>();
-        if (scrollViewer == null) return;
+        if ((sender as Control)?.FindAncestorOfType<ScrollViewer>() is not { } scrollViewer) return;
 
         scrollViewer.Offset = new Vector(
-            scrollViewer.Offset.X,
+            scrollViewer.Offset.X - e.Delta.X * 50,
             scrollViewer.Offset.Y - e.Delta.Y * 50);
     }
 }
