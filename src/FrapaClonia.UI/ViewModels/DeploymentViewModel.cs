@@ -1546,12 +1546,17 @@ public partial class DeploymentViewModel : ObservableObject
                 return;
             }
 
+            if (_dockerDeploymentService != null &&
+                !(IsDockerAvailable = await _dockerDeploymentService.IsDockerAvailableAsync()))
+            {
+                _toastService?.Error(L("Toast_DockerNotAvailable"), L("Toast_DockerNotInstalled"));
+                return;
+            }
+
             if (IsContainerRunning)
             {
                 _toastService?.Info(L("RecreateContainer"), L("Toast_RecreatingContainer"));
-
-                var recreateSuccess = _dockerDeploymentService != null &&
-                                      await _dockerDeploymentService.RecreateDockerComposeAsync(composeDirectory);
+                var recreateSuccess = await _dockerDeploymentService!.RecreateDockerComposeAsync(composeDirectory);
                 if (recreateSuccess)
                 {
                     _toastService?.Success(L("Toast_ContainerStarted"), L("Toast_DockerContainerRunning"));
