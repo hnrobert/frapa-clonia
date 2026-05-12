@@ -145,7 +145,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
         }
     }
 
-    public async Task<bool> StartDockerComposeAsync(string composeDirectory,
+    public async Task<(bool Success, string Output)> StartDockerComposeAsync(string composeDirectory,
         CancellationToken cancellationToken = default)
     {
         try
@@ -156,7 +156,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             if (!File.Exists(composeFile))
             {
                 logger.LogError("docker-compose.yml not found in {Directory}", composeDirectory);
-                return false;
+                return (false, "docker-compose.yml not found");
             }
 
             var (fileName, argsPrefix) = await GetComposeInvocationAsync(cancellationToken);
@@ -172,11 +172,11 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
         catch (Exception ex)
         {
             logger.LogError(ex, "Error starting docker-compose in {Directory}", composeDirectory);
-            return false;
+            return (false, ex.Message);
         }
     }
 
-    public async Task<bool> RecreateDockerComposeAsync(string composeDirectory,
+    public async Task<(bool Success, string Output)> RecreateDockerComposeAsync(string composeDirectory,
         CancellationToken cancellationToken = default)
     {
         try
@@ -187,7 +187,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             if (!File.Exists(composeFile))
             {
                 logger.LogError("docker-compose.yml not found in {Directory}", composeDirectory);
-                return false;
+                return (false, "docker-compose.yml not found");
             }
 
             var (fileName, argsPrefix) = await GetComposeInvocationAsync(cancellationToken);
@@ -203,11 +203,11 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
         catch (Exception ex)
         {
             logger.LogError(ex, "Error recreating docker-compose in {Directory}", composeDirectory);
-            return false;
+            return (false, ex.Message);
         }
     }
 
-    private async Task<bool> ExecuteComposeUpWithRetryAsync(
+    private async Task<(bool Success, string Output)> ExecuteComposeUpWithRetryAsync(
         string fileName,
         string argsPrefix,
         string composeFile,
@@ -260,7 +260,8 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
                     logger.LogInformation("docker-compose {Operation} succeeded", operation);
                 }
 
-                return true;
+                var successOutput = string.Join('\n', new[] { stdout, stderr }.Where(s => !string.IsNullOrWhiteSpace(s)));
+                return (true, successOutput);
             }
 
             var combinedError =
@@ -270,7 +271,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             if (!shouldRetry)
             {
                 logger.LogError("docker-compose {Operation} failed: {Error}", operation, combinedError);
-                return false;
+                return (false, combinedError);
             }
 
             logger.LogWarning(
@@ -280,10 +281,10 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             await Task.Delay(TimeSpan.FromSeconds(attempt), cancellationToken);
         }
 
-        return false;
+        return (false, "Max retry attempts exceeded");
     }
 
-    public async Task<bool> StopDockerComposeAsync(string composeDirectory,
+    public async Task<(bool Success, string Output)> StopDockerComposeAsync(string composeDirectory,
         CancellationToken cancellationToken = default)
     {
         try
@@ -294,7 +295,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             if (!File.Exists(composeFile))
             {
                 logger.LogWarning("docker-compose.yml not found in {Directory}", composeDirectory);
-                return false;
+                return (false, "docker-compose.yml not found");
             }
 
             var (fileName, argsPrefix) = await GetComposeInvocationAsync(cancellationToken);
@@ -315,25 +316,26 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             };
 
             process.Start();
+
+            var stdOutTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
+            var stdErrTask = process.StandardError.ReadToEndAsync(cancellationToken);
             await process.WaitForExitAsync(cancellationToken);
+            var stdout = await stdOutTask;
+            var stderr = await stdErrTask;
+            var output = string.Join('\n', new[] { stdout, stderr }.Where(s => !string.IsNullOrWhiteSpace(s)));
 
             var success = process.ExitCode == 0;
             if (success)
-            {
                 logger.LogInformation("docker-compose stopped successfully");
-            }
             else
-            {
-                logger.LogWarning("docker-compose stop failed: {Error}",
-                    await process.StandardError.ReadToEndAsync(cancellationToken));
-            }
+                logger.LogWarning("docker-compose stop failed: {Error}", stderr);
 
-            return success;
+            return (success, output);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error stopping docker-compose in {Directory}", composeDirectory);
-            return false;
+            return (false, ex.Message);
         }
     }
 

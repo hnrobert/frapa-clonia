@@ -410,9 +410,8 @@
                                 Spacing="{StaticResource SpacingM}">
                       <Border Classes="status-indicator running"
                               IsVisible="{Binding IsContainerRunning}" />
-                      <Border Classes="status-indicator running"
-                              IsVisible="{Binding IsContainerRestarting}"
-                              Opacity="0.5" />
+                      <Border Classes="status-indicator restarting"
+                              IsVisible="{Binding IsContainerRestarting}" />
                       <Border Classes="status-indicator stopped"
                               IsVisible="{Binding IsContainerStopped}" />
                       <Border Classes="status-indicator stopped"
@@ -497,6 +496,16 @@
                       </StackPanel>
                     </Button>
                   </StackPanel>
+
+                  <!-- Operation log output -->
+                  <TextBox IsVisible="{Binding DockerOperationLog, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                           Text="{Binding DockerOperationLog}"
+                           IsReadOnly="True"
+                           AcceptsReturn="True"
+                           MaxHeight="200"
+                           FontFamily="{DynamicResource MonoFontFamily}"
+                           FontSize="{StaticResource FontSizeS}"
+                           TextWrapping="Wrap" />
                 </StackPanel>
               </Border>
             </StackPanel>

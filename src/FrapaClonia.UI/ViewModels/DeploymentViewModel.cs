@@ -233,6 +233,8 @@ public partial class DeploymentViewModel : ObservableObject
     public bool IsContainerRestarting => ContainerStatus == DockerContainerStatus.Restarting;
     public bool IsContainerRunningOrRestarting => IsContainerRunning || IsContainerRestarting;
 
+    [ObservableProperty] private string _dockerOperationLog = "";
+
     private DispatcherTimer? _containerPollTimer;
 
     private CancellationTokenSource? _dockerTagsCts;
@@ -1706,7 +1708,7 @@ public partial class DeploymentViewModel : ObservableObject
             if (IsContainerRunning)
             {
                 _toastService?.Info(L("RecreateContainer"), L("Toast_RecreatingContainer"));
-                var recreateSuccess = await _dockerDeploymentService!.RecreateDockerComposeAsync(composeDirectory);
+                var (recreateSuccess, _) = await _dockerDeploymentService!.RecreateDockerComposeAsync(composeDirectory);
                 if (recreateSuccess)
                 {
                     _toastService?.Success(L("Toast_ContainerStarted"), L("Toast_DockerContainerRunning"));
@@ -1720,8 +1722,10 @@ public partial class DeploymentViewModel : ObservableObject
 
             _toastService?.Info(L("StartContainer"), L("Toast_StartingContainer"));
 
-            var success = _dockerDeploymentService != null &&
-                          await _dockerDeploymentService.StartDockerComposeAsync(composeDirectory);
+            var (startSuccess, _) = _dockerDeploymentService != null
+                ? await _dockerDeploymentService.StartDockerComposeAsync(composeDirectory)
+                : (false, "");
+            var success = startSuccess;
             if (success)
             {
                 _toastService?.Success(L("Toast_ContainerStarted"), L("Toast_DockerContainerRunning"));
@@ -1763,8 +1767,10 @@ public partial class DeploymentViewModel : ObservableObject
 
             _toastService?.Info(L("StopContainer"), L("Toast_StoppingContainer"));
 
-            var success = _dockerDeploymentService != null &&
-                          await _dockerDeploymentService.StopDockerComposeAsync(composeDirectory);
+            var (stopSuccess, _) = _dockerDeploymentService != null
+                ? await _dockerDeploymentService.StopDockerComposeAsync(composeDirectory)
+                : (false, "");
+            var success = stopSuccess;
             if (success)
             {
                 _toastService?.Success(L("Toast_ContainerStopped"), L("Toast_DockerContainerStopped"));
@@ -1788,7 +1794,11 @@ public partial class DeploymentViewModel : ObservableObject
         var dir = await GetComposeDirectoryAsync();
         if (dir == null) return;
         _toastService?.Info(L("ComposeUp"), L("Toast_StartingContainer"));
-        var ok = _dockerDeploymentService != null && await _dockerDeploymentService.StartDockerComposeAsync(dir);
+        DockerOperationLog = "";
+        var (ok, output) = _dockerDeploymentService != null
+            ? await _dockerDeploymentService.StartDockerComposeAsync(dir)
+            : (false, "");
+        DockerOperationLog = output;
         if (ok)
         {
             _toastService?.Success(L("Toast_ContainerStarted"), L("Toast_DockerContainerRunning"));
@@ -1803,7 +1813,11 @@ public partial class DeploymentViewModel : ObservableObject
         var dir = await GetComposeDirectoryAsync();
         if (dir == null) return;
         _toastService?.Info(L("ComposeDown"), L("Toast_StoppingContainer"));
-        var ok = _dockerDeploymentService != null && await _dockerDeploymentService.StopDockerComposeAsync(dir);
+        DockerOperationLog = "";
+        var (ok, output) = _dockerDeploymentService != null
+            ? await _dockerDeploymentService.StopDockerComposeAsync(dir)
+            : (false, "");
+        DockerOperationLog = output;
         if (ok)
         {
             _toastService?.Success(L("Toast_ContainerStopped"), L("Toast_DockerContainerStopped"));
@@ -1861,8 +1875,11 @@ public partial class DeploymentViewModel : ObservableObject
         var dir = await GetComposeDirectoryAsync();
         if (dir == null) return;
         _toastService?.Info(L("RecreateContainer"), L("Toast_RecreatingContainer"));
-        var ok = _dockerDeploymentService != null &&
-                 await _dockerDeploymentService.RecreateDockerComposeAsync(dir);
+        DockerOperationLog = "";
+        var (ok, output) = _dockerDeploymentService != null
+            ? await _dockerDeploymentService.RecreateDockerComposeAsync(dir)
+            : (false, "");
+        DockerOperationLog = output;
         if (ok)
         {
             _toastService?.Success(L("Toast_ContainerStarted"), L("Toast_DockerContainerRunning"));

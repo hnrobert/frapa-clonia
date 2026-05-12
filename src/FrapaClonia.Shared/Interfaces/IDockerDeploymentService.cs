@@ -22,11 +22,11 @@ public interface IDockerDeploymentService
     Task<IReadOnlyList<string>> GetAvailableImageTagsAsync(string imageRepository,
         CancellationToken cancellationToken = default);
 
-    Task<bool> StartDockerComposeAsync(string composeDirectory, CancellationToken cancellationToken = default);
+    Task<(bool Success, string Output)> StartDockerComposeAsync(string composeDirectory, CancellationToken cancellationToken = default);
 
-    Task<bool> RecreateDockerComposeAsync(string composeDirectory, CancellationToken cancellationToken = default);
+    Task<(bool Success, string Output)> RecreateDockerComposeAsync(string composeDirectory, CancellationToken cancellationToken = default);
 
-    Task<bool> StopDockerComposeAsync(string composeDirectory, CancellationToken cancellationToken = default);
+    Task<(bool Success, string Output)> StopDockerComposeAsync(string composeDirectory, CancellationToken cancellationToken = default);
 
     Task<DockerContainerStatus> GetContainerStatusAsync(string containerName,
         CancellationToken cancellationToken = default);
