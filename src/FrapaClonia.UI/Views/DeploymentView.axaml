@@ -296,19 +296,19 @@
                                   HorizontalAlignment="Right"
                                   VerticalAlignment="Center"
                                   Margin="0,0,10,0"
-                                  Spacing="6"
-                                  IsHitTestVisible="False">
+                                  Spacing="6">
                         <mi:MaterialIcon Kind="Loading"
                                          Width="18" Height="18"
-                                         IsVisible="{Binding ShowDockerContainerNameChecking}" />
+                                         IsVisible="{Binding ShowDockerContainerNameChecking}"
+                                         IsHitTestVisible="False" />
                         <mi:MaterialIcon Kind="CheckCircle"
                                          Foreground="Green"
                                          Width="18" Height="18"
-                                         IsVisible="{Binding ShowDockerContainerNameOk}" />
-                        <mi:MaterialIcon Kind="AlertCircle"
-                                         Foreground="Orange"
-                                         Width="18" Height="18"
-                                         IsVisible="{Binding ShowDockerContainerNameConflict}" />
+                                         IsVisible="{Binding ShowDockerContainerNameOk}"
+                                         IsHitTestVisible="False" />
+                        <Button Classes="warning-icon"
+                                IsVisible="{Binding ShowDockerContainerNameConflict}"
+                                ToolTip.Tip="{Binding DockerContainerNameConflictTooltip}" />
                       </StackPanel>
                     </Grid>
 
@@ -325,19 +325,19 @@
                                   HorizontalAlignment="Right"
                                   VerticalAlignment="Center"
                                   Margin="0,0,10,0"
-                                  Spacing="6"
-                                  IsHitTestVisible="False">
+                                  Spacing="6">
                         <mi:MaterialIcon Kind="Loading"
                                          Width="18" Height="18"
-                                         IsVisible="{Binding ShowDockerImageChecking}" />
+                                         IsVisible="{Binding ShowDockerImageChecking}"
+                                         IsHitTestVisible="False" />
                         <mi:MaterialIcon Kind="CheckCircle"
                                          Foreground="Green"
                                          Width="18" Height="18"
-                                         IsVisible="{Binding ShowDockerImageOk}" />
-                        <mi:MaterialIcon Kind="AlertCircle"
-                                         Foreground="Orange"
-                                         Width="18" Height="18"
-                                         IsVisible="{Binding ShowDockerImageConflict}" />
+                                         IsVisible="{Binding ShowDockerImageOk}"
+                                         IsHitTestVisible="False" />
+                        <Button Classes="warning-icon"
+                                IsVisible="{Binding ShowDockerImageConflict}"
+                                ToolTip.Tip="{Binding DockerImageConflictTooltip}" />
                       </StackPanel>
                     </Grid>
 

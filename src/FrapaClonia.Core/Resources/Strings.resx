@@ -203,6 +203,9 @@
   <data name="ContainerName" xml:space="preserve">
     <value>Container Name</value>
   </data>
+  <data name="ContainerNameConflictTooltip" xml:space="preserve">
+    <value>A container with this name already exists and is owned by another compose project. Choose a different name.</value>
+  </data>
   <data name="CreateProxy" xml:space="preserve">
     <value>Create Proxy</value>
   </data>
@@ -274,6 +277,9 @@
   </data>
   <data name="DockerImage" xml:space="preserve">
     <value>Docker Image</value>
+  </data>
+  <data name="DockerImageConflictTooltip" xml:space="preserve">
+    <value>The configured image tag was not found on Docker Hub. Check the image name or refresh the version list.</value>
   </data>
   <data name="DockerStatus" xml:space="preserve">
     <value>Docker Status</value>

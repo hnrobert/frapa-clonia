@@ -251,6 +251,8 @@ public partial class DeploymentViewModel : ObservableObject
 
     public bool ShowDockerContainerNameChecking => IsDockerAvailable && IsDockerContainerNameChecking;
 
+    public string DockerContainerNameConflictTooltip => L("ContainerNameConflictTooltip");
+
     public bool ShowDockerImageOk =>
         IsDockerAvailable && !string.IsNullOrWhiteSpace(DockerImageName) && HasDockerImageChecked &&
         IsDockerImageAvailable &&
@@ -264,6 +266,8 @@ public partial class DeploymentViewModel : ObservableObject
     public bool ShowDockerImageChecking =>
         IsDockerAvailable && !string.IsNullOrWhiteSpace(DockerImageName) && IsDockerImageTagsLoading;
 
+    public string DockerImageConflictTooltip => L("DockerImageConflictTooltip");
+
     public string LocalizedContainerState => ContainerStatus switch
     {
         DockerContainerStatus.Running => L("StatusRunning"),
@@ -272,9 +276,6 @@ public partial class DeploymentViewModel : ObservableObject
         DockerContainerStatus.NotFound => L("StatusNotFound"),
         _ => L("StatusUnknown")
     };
-
-    // kept for backward compat with existing bindings
-    public string DockerPrimaryActionText => IsContainerRunning ? L("RecreateContainer") : L("StartContainer");
 
     public bool CanStopDockerContainer => IsContainerRunning || IsContainerRestarting;
 
@@ -1209,6 +1210,9 @@ public partial class DeploymentViewModel : ObservableObject
             return;
         }
 
+        // Hide any stale conflict state while the new check runs.
+        HasDockerContainerNameChecked = false;
+
         _lastValidatedContainerName = containerName;
         _lastValidatedContainerComposePath = composePathForValidation;
 
@@ -1487,6 +1491,9 @@ public partial class DeploymentViewModel : ObservableObject
         {
             return;
         }
+
+        // Hide any stale conflict state while the new check runs.
+        HasDockerImageChecked = false;
 
         _lastValidatedImageName = imageName;
 

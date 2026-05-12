@@ -78,6 +78,35 @@
     <Setter Property="Background" Value="Transparent" />
   </Style>
 
+  <!-- Warning icon button - AlertCircle with ClickTooltip, same layout as hint-icon -->
+  <Style Selector="Button.warning-icon">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="2" />
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="Width" Value="20" />
+    <Setter Property="Height" Value="20" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="ap:ClickTooltip.IsEnabled" Value="True" />
+    <Setter Property="Content">
+      <Template>
+        <mi:MaterialIcon Kind="AlertCircle"
+                         Width="16" Height="16"
+                         Foreground="{DynamicResource AppWarningBrush}" />
+      </Template>
+    </Setter>
+  </Style>
+
+  <Style Selector="Button.warning-icon:pointerover">
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+
+  <Style Selector="Button.warning-icon /template/ ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+
   <!-- Label with hint icon container -->
   <Style Selector="StackPanel.label-with-hint">
     <Setter Property="Orientation" Value="Horizontal" />

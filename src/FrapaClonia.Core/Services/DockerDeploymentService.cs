@@ -486,6 +486,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
 
             return isRunning;
         }
+        catch (OperationCanceledException) { return false; }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error checking container {ContainerName} status", containerName);
