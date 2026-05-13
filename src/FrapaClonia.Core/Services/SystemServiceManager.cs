@@ -536,7 +536,11 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
     {
         try
         {
-            var binPath = $"\"{config.BinaryPath}\" -c \"{config.ConfigPath}\"";
+            // sc create requires the entire command line (binary + args) as a single binPath= value.
+            // Outer quotes make it one argument; inner \" are literal quotes inside that argument.
+            var innerBin = config.BinaryPath.Replace("\"", "\\\"");
+            var innerCfg = config.ConfigPath.Replace("\"", "\\\"");
+            var binPath = $"\"\\\"{ innerBin}\\\" -c \\\"{innerCfg}\\\"\"";
             var startType = config.AutoStart ? "auto" : "demand";
             var args =
                 $"create \"{config.ServiceName}\" binPath= {binPath} start= {startType} DisplayName= \"{config.Description}\"";
