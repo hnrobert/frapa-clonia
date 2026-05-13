@@ -427,9 +427,9 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
 /// </summary>
 internal class WindowsServiceManager(ILogger logger, IProcessManager processManager) : IPlatformServiceManager
 {
-    private const string TaskFolder = "FrapaClonia";
-
-    private static string GetTaskName(string serviceName) => $@"{TaskFolder}\{serviceName}";
+    // No subfolder — Register-ScheduledTask silently fails when the folder doesn't exist.
+    // The service name already contains the preset GUID so it's globally unique.
+    private static string GetTaskName(string serviceName) => serviceName;
 
     // Run a PowerShell script encoded as Base64 to avoid quote-escaping issues.
     private async Task<(int ExitCode, string Output, string Error)> RunPowerShellAsync(
@@ -477,14 +477,13 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
             var triggerArg = config.AutoStart ? "-Trigger $trigger" : "";
 
             var script = $"""
-
+                          $ErrorActionPreference = 'Stop'
                           {triggerLine}
                           $action   = New-ScheduledTaskAction -Execute '{binPath}' -Argument "-c `"{cfgPath}`""
                           $settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit 0 -MultipleInstances IgnoreNew -StopIfGoingOnBatteries $false
                           $principal = New-ScheduledTaskPrincipal -UserId ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name) -LogonType Interactive -RunLevel Limited
                           Register-ScheduledTask -TaskName '{taskName}' -Action $action -Principal $principal -Settings $settings {triggerArg} -Force | Out-Null
                           Write-Output 'OK'
-
                           """;
             var (exitCode, output, error) = await RunPowerShellAsync(script, cancellationToken);
             if (exitCode == 0 && output.Contains("OK")) return true;
