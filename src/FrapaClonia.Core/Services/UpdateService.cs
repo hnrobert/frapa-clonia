@@ -38,12 +38,28 @@ public class UpdateService(ILogger<UpdateService> logger, ICacheService? cacheSe
             }
 
             ApplyToken();
-            var releases = await _gitHubClient.Repository.Release.GetAll(Owner, Repo);
+
+            // GetLatest() returns the newest non-prerelease release.
+            // GetAll(PageSize=1) returns the single newest release of any type (may be prerelease).
+            // Together these cover both channels with at most 2 API calls and 2 releases checked.
+            var latestStableTask = _gitHubClient.Repository.Release.GetLatest(Owner, Repo);
+            var latestAnyTask = _gitHubClient.Repository.Release.GetAll(Owner, Repo,
+                new ApiOptions { PageSize = 1, PageCount = 1 });
+
+            Release? latestStableRelease = null;
+            try { latestStableRelease = await latestStableTask; }
+            catch (NotFoundException) { }
+
+            var latestAny = await latestAnyTask;
+            var latestRelease = latestAny.Count > 0 ? latestAny[0] : null;
 
             AppUpdateInfo? stableUpdate = null;
             AppUpdateInfo? prereleaseUpdate = null;
 
-            foreach (var release in releases)
+            foreach (var release in new[] { latestRelease, latestStableRelease }
+                         .Where(r => r != null)
+                         .DistinctBy(r => r!.TagName)
+                         .Cast<Release>())
             {
                 var versionStr = release.TagName.TrimStart('v');
                 if (!Version.TryParse(versionStr, out var version)) continue;
@@ -70,16 +86,9 @@ public class UpdateService(ILogger<UpdateService> logger, ICacheService? cacheSe
                 };
 
                 if (release.Prerelease)
-                {
-                    prereleaseUpdate ??= info;
-                }
+                    prereleaseUpdate = info;
                 else
-                {
-                    stableUpdate ??= info;
-                    // Found the latest stable, no need to look further for stable
-                    // But keep looking for prerelease if not found yet
-                    if (prereleaseUpdate != null) break;
-                }
+                    stableUpdate = info;
             }
 
             if (stableUpdate != null)
