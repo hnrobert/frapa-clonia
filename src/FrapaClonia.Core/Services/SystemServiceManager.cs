@@ -34,14 +34,14 @@ public class SystemServiceManager(ILogger<SystemServiceManager> logger, IProcess
     public async Task<bool> StartServiceAsync(string serviceName, ServiceScope scope = ServiceScope.User,
         CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Starting service {ServiceName}", serviceName);
+        logger.LogDebug("Starting service {ServiceName}", serviceName);
         return await _platformManager.StartServiceAsync(serviceName, scope, cancellationToken);
     }
 
     public async Task<bool> StopServiceAsync(string serviceName, ServiceScope scope = ServiceScope.User,
         CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Stopping service {ServiceName}", serviceName);
+        logger.LogDebug("Stopping service {ServiceName}", serviceName);
         return await _platformManager.StopServiceAsync(serviceName, scope, cancellationToken);
     }
 
@@ -60,7 +60,7 @@ public class SystemServiceManager(ILogger<SystemServiceManager> logger, IProcess
     public async Task<bool> SetAutoStartAsync(string serviceName, bool autoStart,
         ServiceScope scope = ServiceScope.User, CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Setting auto-start for {ServiceName} to {AutoStart}", serviceName, autoStart);
+        logger.LogDebug("Setting auto-start for {ServiceName} to {AutoStart}", serviceName, autoStart);
         return await _platformManager.SetAutoStartAsync(serviceName, autoStart, scope, cancellationToken);
     }
 
@@ -571,7 +571,7 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
             ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "sc.exe")
             : fileName;
 
-        logger.LogInformation("Requesting elevation for: {FileName} {Arguments}", fullPath, arguments);
+        logger.LogDebug("Requesting elevation for: {FileName} {Arguments}", fullPath, arguments);
 
         var psi = new System.Diagnostics.ProcessStartInfo
         {
@@ -590,7 +590,7 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
                 return false;
             }
             await process.WaitForExitAsync(cancellationToken);
-            logger.LogInformation("Elevated process exited with code {ExitCode}", process.ExitCode);
+            logger.LogDebug("Elevated process exited with code {ExitCode}", process.ExitCode);
             return process.ExitCode == 0;
         }
         catch (System.ComponentModel.Win32Exception ex) when (ex.NativeErrorCode == 1223)

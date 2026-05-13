@@ -54,7 +54,7 @@ public class AutoStartService(ILogger<AutoStartService> logger) : IAutoStartServ
                 logger.LogWarning("Auto-start is not supported on this platform");
             }
 
-            logger.LogInformation("Auto-start enabled successfully");
+            logger.LogDebug("Auto-start enabled successfully");
         }
         catch (Exception ex)
         {
@@ -86,7 +86,7 @@ public class AutoStartService(ILogger<AutoStartService> logger) : IAutoStartServ
                 logger.LogWarning("Auto-start is not supported on this platform");
             }
 
-            logger.LogInformation("Auto-start disabled successfully");
+            logger.LogDebug("Auto-start disabled successfully");
         }
         catch (Exception ex)
         {

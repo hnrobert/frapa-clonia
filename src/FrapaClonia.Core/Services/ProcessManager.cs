@@ -54,7 +54,7 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
 
             if (!string.IsNullOrEmpty(_shellPath))
             {
-                logger.LogInformation("Resolved shell PATH ({Shell})", shell);
+                logger.LogDebug("Resolved shell PATH ({Shell})", shell);
                 logger.LogDebug("Shell PATH: {Path}", _shellPath);
             }
             else
@@ -82,7 +82,7 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
     {
         try
         {
-            logger.LogInformation("Starting process: {FileName} {Arguments}", startInfo.FileName, startInfo.Arguments);
+            logger.LogDebug("Starting process: {FileName} {Arguments}", startInfo.FileName, startInfo.Arguments);
 
             var process = new System.Diagnostics.Process
             {
@@ -130,7 +130,7 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
                 }
             }, cancellationToken);
 
-            logger.LogInformation("Process started with PID {ProcessId}", handle.ProcessId);
+            logger.LogDebug("Process started with PID {ProcessId}", handle.ProcessId);
             return Task.FromResult<ProcessHandle?>(handle);
         }
         catch (Exception ex)
@@ -144,7 +144,7 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
     {
         try
         {
-            logger.LogInformation("Stopping process {ProcessId}", processId);
+            logger.LogDebug("Stopping process {ProcessId}", processId);
 
             var process = System.Diagnostics.Process.GetProcessById(processId);
             process.Kill(entireProcessTree: true);
@@ -155,7 +155,7 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
             var stopped = process.HasExited;
             if (stopped)
             {
-                logger.LogInformation("Process {ProcessId} stopped successfully", processId);
+                logger.LogDebug("Process {ProcessId} stopped successfully", processId);
             }
             else
             {
@@ -204,7 +204,7 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
     {
         try
         {
-            logger.LogInformation("Executing command: {FileName} {Arguments}", fileName, arguments);
+            logger.LogDebug("Executing command: {FileName} {Arguments}", fileName, arguments);
 
             // Ensure shell PATH is resolved for packaged apps
             _ = await GetShellPathAsync();
@@ -237,7 +237,7 @@ public class ProcessManager(ILogger<ProcessManager> logger) : IProcessManager
                 StandardError = standardError
             };
 
-            logger.LogInformation("Command completed with exit code {ExitCode}", process.ExitCode);
+            logger.LogDebug("Command completed with exit code {ExitCode}", process.ExitCode);
             return result;
         }
         catch (Exception ex)

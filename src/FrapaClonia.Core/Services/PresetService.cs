@@ -46,7 +46,7 @@ public class PresetService : IPresetService
     {
         try
         {
-            _logger.LogInformation("Initializing preset service...");
+            _logger.LogDebug("Initializing preset service...");
 
             // Initialize cache service first
             await _cacheService.InitializeAsync();
@@ -60,7 +60,7 @@ public class PresetService : IPresetService
             // If no presets exist, create a default one
             if (Presets.Count == 0)
             {
-                _logger.LogInformation("No presets found, creating default preset");
+                _logger.LogDebug("No presets found, creating default preset");
                 var defaultPreset = await CreatePresetAsync("Default");
                 await _cacheService.SetCurrentPresetAsync(defaultPreset.Id);
                 await _cacheService.SaveAsync();
@@ -88,7 +88,7 @@ public class PresetService : IPresetService
                 await _cacheService.SaveAsync();
             }
 
-            _logger.LogInformation("Preset service initialized with {Count} presets, current: {Name}",
+            _logger.LogDebug("Preset service initialized with {Count} presets, current: {Name}",
                 Presets.Count, CurrentPreset?.Name ?? "None");
         }
         catch (Exception ex)
@@ -102,7 +102,7 @@ public class PresetService : IPresetService
     {
         try
         {
-            _logger.LogInformation("Creating preset: {Name}", name);
+            _logger.LogDebug("Creating preset: {Name}", name);
 
             var preset = new ConfigPreset(name)
             {
@@ -115,7 +115,7 @@ public class PresetService : IPresetService
             await SavePresetToFileAsync(preset);
 
             Presets.Add(preset);
-            _logger.LogInformation("Created preset: {Name} ({Id})", name, preset.Id);
+            _logger.LogDebug("Created preset: {Name} ({Id})", name, preset.Id);
 
             return preset;
         }
@@ -143,7 +143,7 @@ public class PresetService : IPresetService
                 return;
             }
 
-            _logger.LogInformation("Deleting preset: {Name} ({Id})", preset.Name, presetId);
+            _logger.LogDebug("Deleting preset: {Name} ({Id})", preset.Name, presetId);
 
             // Delete preset folder
             var folderPath = GetPresetFolderPath(preset.Id);
@@ -161,7 +161,7 @@ public class PresetService : IPresetService
                 await SwitchPresetAsync(newCurrent.Id);
             }
 
-            _logger.LogInformation("Deleted preset: {Name}", preset.Name);
+            _logger.LogDebug("Deleted preset: {Name}", preset.Name);
         }
         catch (Exception ex)
         {
@@ -181,7 +181,7 @@ public class PresetService : IPresetService
                 return;
             }
 
-            _logger.LogInformation("Switching to preset: {Name} ({Id})", preset.Name, presetId);
+            _logger.LogDebug("Switching to preset: {Name} ({Id})", preset.Name, presetId);
 
             var previousId = CurrentPreset?.Id ?? Guid.Empty;
             CurrentPreset = preset;
@@ -196,7 +196,7 @@ public class PresetService : IPresetService
                 CurrentPreset = preset
             });
 
-            _logger.LogInformation("Switched to preset: {Name}", preset.Name);
+            _logger.LogDebug("Switched to preset: {Name}", preset.Name);
         }
         catch (Exception ex)
         {
@@ -215,13 +215,13 @@ public class PresetService : IPresetService
                 throw new InvalidOperationException($"Preset not found: {presetId}");
             }
 
-            _logger.LogInformation("Duplicating preset: {Name} ({Id})", preset.Name, presetId);
+            _logger.LogDebug("Duplicating preset: {Name} ({Id})", preset.Name, presetId);
 
             var clone = preset.Clone();
             await SavePresetToFileAsync(clone);
 
             Presets.Add(clone);
-            _logger.LogInformation("Duplicated preset: {Name} -> {CloneName}", preset.Name, clone.Name);
+            _logger.LogDebug("Duplicated preset: {Name} -> {CloneName}", preset.Name, clone.Name);
 
             return clone;
         }
@@ -242,7 +242,7 @@ public class PresetService : IPresetService
                 throw new InvalidOperationException($"Preset not found: {presetId}");
             }
 
-            _logger.LogInformation("Renaming preset: {OldName} -> {NewName}", preset.Name, newName);
+            _logger.LogDebug("Renaming preset: {OldName} -> {NewName}", preset.Name, newName);
 
             preset.Name = newName;
             preset.ModifiedAt = DateTime.Now;
@@ -263,7 +263,7 @@ public class PresetService : IPresetService
                 });
             }
 
-            _logger.LogInformation("Renamed preset to: {NewName}", newName);
+            _logger.LogDebug("Renamed preset to: {NewName}", newName);
         }
         catch (Exception ex)
         {
@@ -282,7 +282,7 @@ public class PresetService : IPresetService
                 throw new InvalidOperationException($"Preset not found: {presetId}");
             }
 
-            _logger.LogInformation("Exporting preset: {Name} to {Path} as {Format}",
+            _logger.LogDebug("Exporting preset: {Name} to {Path} as {Format}",
                 preset.Name, filePath, format);
 
             if (format == ExportFormat.Toml)
@@ -295,7 +295,7 @@ public class PresetService : IPresetService
                 await ExportAsIniAsync(filePath, preset.Configuration);
             }
 
-            _logger.LogInformation("Exported preset to: {Path}", filePath);
+            _logger.LogDebug("Exported preset to: {Path}", filePath);
         }
         catch (Exception ex)
         {
@@ -308,7 +308,7 @@ public class PresetService : IPresetService
     {
         try
         {
-            _logger.LogInformation("Importing preset from: {Path} as {Format}", filePath, format);
+            _logger.LogDebug("Importing preset from: {Path} as {Format}", filePath, format);
 
             FrpClientConfig? config;
 
@@ -339,7 +339,7 @@ public class PresetService : IPresetService
             await SavePresetToFileAsync(preset);
             Presets.Add(preset);
 
-            _logger.LogInformation("Imported preset: {Name}", preset.Name);
+            _logger.LogDebug("Imported preset: {Name}", preset.Name);
             return preset;
         }
         catch (Exception ex)
@@ -361,7 +361,7 @@ public class PresetService : IPresetService
         {
             CurrentPreset.ModifiedAt = DateTime.Now;
             await SavePresetToFileAsync(CurrentPreset);
-            _logger.LogInformation("Saved current preset: {Name}", CurrentPreset.Name);
+            _logger.LogDebug("Saved current preset: {Name}", CurrentPreset.Name);
         }
         catch (Exception ex)
         {
@@ -435,7 +435,7 @@ public class PresetService : IPresetService
                 }
             }
 
-            _logger.LogInformation("Loaded {Count} presets", Presets.Count);
+            _logger.LogDebug("Loaded {Count} presets", Presets.Count);
         }
         catch (Exception ex)
         {
@@ -468,7 +468,7 @@ public class PresetService : IPresetService
         var frpcPath = GetPresetFrpcPath(preset.Id);
         await _tomlSerializer.SerializeToFileAsync(frpcPath, preset.Configuration);
 
-        _logger.LogInformation("Saved preset '{Name}' to {FolderPath}", preset.Name, folderPath);
+        _logger.LogDebug("Saved preset '{Name}' to {FolderPath}", preset.Name, folderPath);
     }
 
     #endregion

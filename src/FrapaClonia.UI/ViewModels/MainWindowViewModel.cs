@@ -160,7 +160,7 @@ public partial class MainWindowViewModel : ObservableObject
         // Initialize with dashboard
         Navigate("dashboard");
 
-        _logger.LogInformation("MainWindowViewModel initialized");
+        _logger.LogDebug("MainWindowViewModel initialized");
     }
 
     /// <summary>
@@ -178,7 +178,7 @@ public partial class MainWindowViewModel : ObservableObject
             OnPropertyChanged(nameof(SelectedPresetItem));
         }
 
-        _logger?.LogInformation("Preset selector initialized with {Count} presets", PresetItems.Count);
+        _logger?.LogDebug("Preset selector initialized with {Count} presets", PresetItems.Count);
     }
 
     private void OnCurrentPresetChanged(object? sender, PresetChangedEventArgs e)
@@ -195,7 +195,7 @@ public partial class MainWindowViewModel : ObservableObject
             UpdatePresetItems();
         }
 
-        _logger?.LogInformation("Current preset changed to: {Name}", e.CurrentPreset?.Name);
+        _logger?.LogDebug("Current preset changed to: {Name}", e.CurrentPreset?.Name);
     }
 
     private void OnPresetsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -211,7 +211,7 @@ public partial class MainWindowViewModel : ObservableObject
             UpdatePresetItems();
         }
 
-        _logger?.LogInformation("Presets collection changed: {Action}", e.Action);
+        _logger?.LogDebug("Presets collection changed: {Action}", e.Action);
     }
 
     private void UpdatePresetItems()

@@ -162,7 +162,7 @@ public partial class ProxyListViewModel : ObservableObject
         try
         {
             IsLoading = true;
-            _logger?.LogInformation("LoadProxiesAsync: Starting, IsLoading={IsLoading}", IsLoading);
+            _logger?.LogDebug("LoadProxiesAsync: Starting, IsLoading={IsLoading}", IsLoading);
 
             if (_presetService?.CurrentPreset != null)
             {
@@ -183,12 +183,12 @@ public partial class ProxyListViewModel : ObservableObject
                 }
 
                 Proxies = filtered.ToList();
-                _logger?.LogInformation("Loaded {Count} proxies", Proxies.Count);
+                _logger?.LogDebug("Loaded {Count} proxies", Proxies.Count);
             }
             else
             {
                 Proxies = [];
-                _logger?.LogInformation("No current preset, setting Proxies to empty list");
+                _logger?.LogDebug("No current preset, setting Proxies to empty list");
             }
         }
         catch (Exception ex)
@@ -199,7 +199,7 @@ public partial class ProxyListViewModel : ObservableObject
         finally
         {
             IsLoading = false;
-            _logger?.LogInformation("LoadProxiesAsync: Completed, IsLoading={IsLoading}", IsLoading);
+            _logger?.LogDebug("LoadProxiesAsync: Completed, IsLoading={IsLoading}", IsLoading);
         }
 
         return Task.CompletedTask;
@@ -209,7 +209,7 @@ public partial class ProxyListViewModel : ObservableObject
     {
         try
         {
-            _logger?.LogInformation("Add proxy clicked");
+            _logger?.LogDebug("Add proxy clicked");
 
             if (WindowReuse.ActivateExisting<ProxyEditorView>() != null)
             {
@@ -259,7 +259,7 @@ public partial class ProxyListViewModel : ObservableObject
         try
         {
             if (SelectedProxy == null) return;
-            _logger?.LogInformation("Edit proxy: {ProxyName}", SelectedProxy.Name);
+            _logger?.LogDebug("Edit proxy: {ProxyName}", SelectedProxy.Name);
 
             if (WindowReuse.ActivateExisting<ProxyEditorView>() != null)
             {
@@ -350,7 +350,7 @@ public partial class ProxyListViewModel : ObservableObject
         if (SelectedProxy == null) return;
         if (_presetService?.CurrentPreset == null) return;
 
-        _logger?.LogInformation("Delete proxy: {ProxyName}", SelectedProxy.Name);
+        _logger?.LogDebug("Delete proxy: {ProxyName}", SelectedProxy.Name);
 
         try
         {
@@ -362,7 +362,7 @@ public partial class ProxyListViewModel : ObservableObject
             await LoadProxiesAsync();
             SelectedProxy = null;
 
-            _logger?.LogInformation("Proxy deleted successfully");
+            _logger?.LogDebug("Proxy deleted successfully");
         }
         catch (Exception ex)
         {
@@ -381,7 +381,7 @@ public partial class ProxyListViewModel : ObservableObject
             if (SelectedProxy == null) return;
             if (_presetService?.CurrentPreset == null) return;
 
-            _logger?.LogInformation("Duplicate proxy: {ProxyName}", SelectedProxy.Name);
+            _logger?.LogDebug("Duplicate proxy: {ProxyName}", SelectedProxy.Name);
 
             try
             {
@@ -395,7 +395,7 @@ public partial class ProxyListViewModel : ObservableObject
 
                 await LoadProxiesAsync();
 
-                _logger?.LogInformation("Proxy duplicated: {NewProxyName}", newProxy.Name);
+                _logger?.LogDebug("Proxy duplicated: {NewProxyName}", newProxy.Name);
             }
             catch (Exception ex)
             {
@@ -414,7 +414,7 @@ public partial class ProxyListViewModel : ObservableObject
 
     private async Task ClearAllAsync()
     {
-        _logger?.LogInformation("Clear all proxies");
+        _logger?.LogDebug("Clear all proxies");
 
         try
         {
@@ -427,7 +427,7 @@ public partial class ProxyListViewModel : ObservableObject
 
                 await LoadProxiesAsync();
 
-                _logger?.LogInformation("All proxies cleared");
+                _logger?.LogDebug("All proxies cleared");
             }
         }
         catch (Exception ex)

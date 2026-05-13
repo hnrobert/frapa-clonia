@@ -15,12 +15,12 @@ public class TomlConfigSerializer(ILogger<TomlConfigSerializer> logger) : ITomlC
         {
             if (!File.Exists(filePath))
             {
-                logger.LogInformation("TOML config file not found at {FilePath}, returning default", filePath);
+                logger.LogDebug("TOML config file not found at {FilePath}, returning default", filePath);
                 return Task.FromResult<T?>(null);
             }
 
             var result = Toml.ReadFile<T>(filePath);
-            logger.LogInformation("Loaded TOML config from {FilePath}", filePath);
+            logger.LogDebug("Loaded TOML config from {FilePath}", filePath);
             return Task.FromResult<T?>(result);
         }
         catch (Exception ex)
@@ -41,7 +41,7 @@ public class TomlConfigSerializer(ILogger<TomlConfigSerializer> logger) : ITomlC
             }
 
             Toml.WriteFile(obj, filePath);
-            logger.LogInformation("Saved TOML config to {FilePath}", filePath);
+            logger.LogDebug("Saved TOML config to {FilePath}", filePath);
             return Task.CompletedTask;
         }
         catch (Exception ex)

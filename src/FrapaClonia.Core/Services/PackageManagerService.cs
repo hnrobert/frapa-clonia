@@ -13,7 +13,7 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
     public async Task<IReadOnlyList<PackageManagerInfo>> DetectAvailablePackageManagersAsync(
         CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Detecting available package managers");
+        logger.LogDebug("Detecting available package managers");
         var packageManagers = new List<PackageManagerInfo>();
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -29,7 +29,7 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
             packageManagers.AddRange(await DetectLinuxPackageManagersAsync(cancellationToken));
         }
 
-        logger.LogInformation("Detected {Count} package managers", packageManagers.Count);
+        logger.LogDebug("Detected {Count} package managers", packageManagers.Count);
         return packageManagers;
     }
 
@@ -130,7 +130,7 @@ public class PackageManagerService(ILogger<PackageManagerService> logger, IProce
 
     public async Task<bool> UninstallFrpcAsync(string packageManager, CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Uninstalling frpc via {PackageManager}", packageManager);
+        logger.LogDebug("Uninstalling frpc via {PackageManager}", packageManager);
 
         if (GetUninstallCommand(packageManager) is not { } uninstallCommand)
         {
