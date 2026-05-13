@@ -440,19 +440,23 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
         var json = await File.ReadAllTextAsync(path);
         var doc = System.Text.Json.JsonDocument.Parse(json);
         return (doc.RootElement.GetProperty("BinaryPath").GetString()!,
-                doc.RootElement.GetProperty("ConfigPath").GetString()!);
+            doc.RootElement.GetProperty("ConfigPath").GetString()!);
     }
 
     private static bool IsProcessRunning(string binaryPath)
     {
         foreach (var p in System.Diagnostics.Process.GetProcesses())
         {
-            try { if (string.Equals(p.MainModule?.FileName, binaryPath, StringComparison.OrdinalIgnoreCase)) return true; }
+            try
+            {
+                if (string.Equals(p.MainModule?.FileName, binaryPath, StringComparison.OrdinalIgnoreCase)) return true;
+            }
             catch
             {
                 // ignored
             }
         }
+
         return false;
     }
 
@@ -460,7 +464,10 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
     {
         foreach (var p in System.Diagnostics.Process.GetProcesses())
         {
-            try { if (string.Equals(p.MainModule?.FileName, binaryPath, StringComparison.OrdinalIgnoreCase)) p.Kill(); }
+            try
+            {
+                if (string.Equals(p.MainModule?.FileName, binaryPath, StringComparison.OrdinalIgnoreCase)) p.Kill();
+            }
             catch
             {
                 // ignored
@@ -471,7 +478,8 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
     public async Task<bool> IsServiceInstalledAsync(string serviceName, CancellationToken cancellationToken = default)
     {
         if (File.Exists(GetUserConfigPath(serviceName))) return true;
-        var r = await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"", cancellationToken: cancellationToken);
+        var r = await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"",
+            cancellationToken: cancellationToken);
         return r.ExitCode == 0;
     }
 
@@ -506,7 +514,8 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
         }
     }
 
-    private async Task SetRunKeyAsync(string serviceName, string binaryPath, string configPath, bool enable, CancellationToken cancellationToken)
+    private async Task SetRunKeyAsync(string serviceName, string binaryPath, string configPath, bool enable,
+        CancellationToken cancellationToken)
     {
         if (enable)
         {
@@ -529,16 +538,50 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
         {
             var binPath = $"\"{config.BinaryPath}\" -c \"{config.ConfigPath}\"";
             var startType = config.AutoStart ? "auto" : "demand";
-            var result = await processManager.ExecuteAsync("sc",
-                $"create \"{config.ServiceName}\" binPath= {binPath} start= {startType} DisplayName= \"{config.Description}\"",
-                cancellationToken: cancellationToken);
-            if (result.ExitCode == 0) return true;
-            logger.LogError("Failed to create Windows service: {Error}", result.StandardError);
-            return false;
+            var args =
+                $"create \"{config.ServiceName}\" binPath= {binPath} start= {startType} DisplayName= \"{config.Description}\"";
+            var result = await processManager.ExecuteAsync("sc", args, cancellationToken: cancellationToken);
+            switch (result.ExitCode)
+            {
+                case 0:
+                    return true;
+                case 5:
+                    return await ExecuteElevatedAsync("sc", args, cancellationToken);
+                default:
+                    logger.LogError("Failed to create Windows service: {Error}", result.StandardError);
+                    return false;
+            }
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to install Windows service");
+            return false;
+        }
+    }
+
+    // Runs a command elevated via UAC (ShellExecute runas). Returns true if exit code is 0.
+    // Throws OperationCanceledException if the user cancels the UAC prompt.
+    private static async Task<bool> ExecuteElevatedAsync(string fileName, string arguments,
+        CancellationToken cancellationToken)
+    {
+        var psi = new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = fileName,
+            Arguments = arguments,
+            Verb = "runas",
+            UseShellExecute = true,
+            CreateNoWindow = false
+        };
+        try
+        {
+            var process = System.Diagnostics.Process.Start(psi);
+            if (process == null) return false;
+            await process.WaitForExitAsync(cancellationToken);
+            return process.ExitCode == 0;
+        }
+        catch (System.ComponentModel.Win32Exception ex) when (ex.NativeErrorCode == 1223)
+        {
+            // User cancelled the UAC prompt
             return false;
         }
     }
@@ -558,8 +601,14 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
             }
 
             await StopServiceAsync(serviceName, ServiceScope.System, cancellationToken);
-            var result = await processManager.ExecuteAsync("sc", $"delete \"{serviceName}\"", cancellationToken: cancellationToken);
-            return result.ExitCode == 0;
+            var result = await processManager.ExecuteAsync("sc", $"delete \"{serviceName}\"",
+                cancellationToken: cancellationToken);
+            return result.ExitCode switch
+            {
+                0 => true,
+                5 => await ExecuteElevatedAsync("sc", $"delete \"{serviceName}\"", cancellationToken),
+                _ => false
+            };
         }
         catch (Exception ex)
         {
@@ -568,7 +617,8 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
         }
     }
 
-    public async Task<bool> StartServiceAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<bool> StartServiceAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
         if (scope == ServiceScope.User)
         {
@@ -585,13 +635,20 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
                 });
                 return true;
             }
-            catch (Exception ex) { logger.LogError(ex, "Failed to start frpc process"); return false; }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to start frpc process");
+                return false;
+            }
         }
-        var r = await processManager.ExecuteAsync("sc", $"start \"{serviceName}\"", cancellationToken: cancellationToken);
+
+        var r = await processManager.ExecuteAsync("sc", $"start \"{serviceName}\"",
+            cancellationToken: cancellationToken);
         return r.ExitCode == 0;
     }
 
-    public async Task<bool> StopServiceAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<bool> StopServiceAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
         if (scope == ServiceScope.User)
         {
@@ -600,22 +657,28 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
             KillProcess(cfg.Value.BinaryPath);
             return true;
         }
-        var r = await processManager.ExecuteAsync("sc", $"stop \"{serviceName}\"", cancellationToken: cancellationToken);
+
+        var r = await processManager.ExecuteAsync("sc", $"stop \"{serviceName}\"",
+            cancellationToken: cancellationToken);
         return r.ExitCode == 0;
     }
 
-    public async Task<bool> IsServiceRunningAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<bool> IsServiceRunningAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
         if (scope == ServiceScope.User)
         {
             var cfg = await ReadUserConfigAsync(serviceName);
             return cfg.HasValue && IsProcessRunning(cfg.Value.BinaryPath);
         }
-        var r = await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"", cancellationToken: cancellationToken);
+
+        var r = await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"",
+            cancellationToken: cancellationToken);
         return r.ExitCode == 0 && r.StandardOutput.Contains("RUNNING");
     }
 
-    public async Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
         if (scope == ServiceScope.User)
         {
@@ -635,15 +698,21 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
         var isInstalled = await IsServiceInstalledAsync(serviceName, cancellationToken);
         if (!isInstalled) return new ServiceStatus { IsInstalled = false, State = "not_installed" };
 
-        var result = await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"", cancellationToken: cancellationToken);
+        var result =
+            await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"", cancellationToken: cancellationToken);
         var output = result.StandardOutput;
         var running = output.Contains("RUNNING");
         var state = running ? "running" : output.Contains("STOPPED") ? "stopped" : "unknown";
         var qc = await processManager.ExecuteAsync("sc", $"qc \"{serviceName}\"", cancellationToken: cancellationToken);
-        return new ServiceStatus { IsInstalled = true, IsRunning = running, IsAutoStartEnabled = qc.StandardOutput.Contains("AUTO_START"), State = state };
+        return new ServiceStatus
+        {
+            IsInstalled = true, IsRunning = running, IsAutoStartEnabled = qc.StandardOutput.Contains("AUTO_START"),
+            State = state
+        };
     }
 
-    public async Task<bool> SetAutoStartAsync(string serviceName, bool autoStart, ServiceScope scope, CancellationToken cancellationToken = default)
+    public async Task<bool> SetAutoStartAsync(string serviceName, bool autoStart, ServiceScope scope,
+        CancellationToken cancellationToken = default)
     {
         if (scope == ServiceScope.User)
         {
@@ -652,10 +721,14 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
             await SetRunKeyAsync(serviceName, cfg.Value.BinaryPath, cfg.Value.ConfigPath, autoStart, cancellationToken);
             return true;
         }
+
         var startType = autoStart ? "auto" : "demand";
-        var scResult = await processManager.ExecuteAsync("sc",
-            $"config \"{serviceName}\" start= {startType}", cancellationToken: cancellationToken);
-        return scResult.ExitCode == 0;
+        var args = $"config \"{serviceName}\" start= {startType}";
+        var scResult = await processManager.ExecuteAsync("sc", args, cancellationToken: cancellationToken);
+        if (scResult.ExitCode == 0) return true;
+        if (scResult.ExitCode == 5)
+            return await ExecuteElevatedAsync("sc", args, cancellationToken);
+        return false;
     }
 }
 
