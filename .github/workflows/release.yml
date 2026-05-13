@@ -9,26 +9,6 @@ permissions:
   actions: read
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@main
-
-      - name: Get release version from tag
-        id: version
-        run: |
-          TAG=${GITHUB_REF#refs/tags/}
-          VERSION=${TAG#v}
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Release tag: $TAG, version: $VERSION"
-
-      - name: Build and Pack
-        uses: ./.github/actions/build-and-pack
-        with:
-          version: ${{ steps.version.outputs.version }}
-
   version:
     runs-on: ubuntu-latest
     outputs:

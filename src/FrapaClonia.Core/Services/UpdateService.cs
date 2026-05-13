@@ -50,6 +50,12 @@ public class UpdateService(ILogger<UpdateService> logger, ICacheService? cacheSe
                 if (version <= current) continue;
 
                 var asset = FindPlatformAsset(release);
+                if (asset == null)
+                {
+                    logger.LogDebug("No platform asset found for release {Tag}, skipping", release.TagName);
+                    continue;
+                }
+
                 var info = new AppUpdateInfo
                 {
                     Version = versionStr,
@@ -57,9 +63,9 @@ public class UpdateService(ILogger<UpdateService> logger, ICacheService? cacheSe
                     HtmlUrl = release.HtmlUrl,
                     ReleaseNotes = release.Body,
                     PublishedAt = release.PublishedAt ?? DateTimeOffset.MinValue,
-                    DownloadUrl = asset?.BrowserDownloadUrl,
-                    DownloadFileName = asset?.Name,
-                    DownloadSize = asset?.Size ?? 0,
+                    DownloadUrl = asset.BrowserDownloadUrl,
+                    DownloadFileName = asset.Name,
+                    DownloadSize = asset.Size,
                     IsPrerelease = release.Prerelease
                 };
 
@@ -278,16 +284,19 @@ public class UpdateService(ILogger<UpdateService> logger, ICacheService? cacheSe
     {
         var (platform, extension) = GetPlatformInfo();
 
+        // Asset names end with "-{platform}.ext" or "-{platform}-installer.ext",
+        // so match Contains("-{platform}") rather than requiring a trailing dash.
         return release.Assets.FirstOrDefault(a =>
-            a.Name.Contains($"-{platform}-") && a.Name.EndsWith(extension));
+            a.Name.Contains($"-{platform}") && a.Name.EndsWith(extension));
     }
 
     private static (string platform, string extension) GetPlatformInfo()
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
+            // Artifacts are renamed win-x64 → windows-x64 in CI.
             var arch = RuntimeInformation.OSArchitecture == Architecture.Arm64 ? "arm64" : "x64";
-            return ($"win-{arch}", ".msi");
+            return ($"windows-{arch}", ".msi");
         }
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
