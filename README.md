@@ -25,7 +25,8 @@
 - **One-Click Start/Stop** — Start and stop frpc directly or as a system service
 - **Real-time Logs** — Live log viewer with search, level filtering, and auto-scroll
 - **Multi-Deployment** — Deploy frpc natively or via Docker
-- **System Service** — Install/uninstall frpc as a system service (launchd on macOS)
+- **System Service** — Install/uninstall frpc as a system service (launchd on macOS, systemd on Linux, Windows Service on Windows)
+- **Auto Update** — Checks GitHub releases and applies updates automatically (MSI on Windows, DMG on macOS, tar.gz on Linux)
 - **Dark/Light Theme** — Follows system theme with manual override
 - **i18n** — Multi-language support
 
@@ -42,13 +43,16 @@ Download the latest release from the [Releases](https://github.com/hnrobert/frap
 
 | Platform | File |
 |---|---|
-| Windows | `FrapaClonia-{version}-windows-x64.zip` |
+| Windows (installer) | `FrapaClonia-{version}-windows-x64-installer.msi` |
+| Windows (portable) | `FrapaClonia-{version}-windows-x64.zip` |
 | macOS (Apple Silicon) | `FrapaClonia-{version}-macos-arm64.dmg` |
 | macOS (Intel) | `FrapaClonia-{version}-macos-x64.dmg` |
 | Linux (x64) | `FrapaClonia-{version}-linux-x64.tar.gz` |
 | Linux (ARM64) | `FrapaClonia-{version}-linux-arm64.tar.gz` |
 | Linux (musl x64) | `FrapaClonia-{version}-linux-musl-x64.tar.gz` |
 | Linux (musl ARM64) | `FrapaClonia-{version}-linux-musl-arm64.tar.gz` |
+| Linux (x64 DEB) | `FrapaClonia-{version}-linux-x64.deb` |
+| Linux (ARM64 DEB) | `FrapaClonia-{version}-linux-arm64.deb` |
 
 ## Technology Stack
 
