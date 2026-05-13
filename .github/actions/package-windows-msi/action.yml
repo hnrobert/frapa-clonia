@@ -12,9 +12,9 @@ inputs:
     default: "out"
 
   rid:
-    description: "Runtime identifier (e.g. win-x64)"
+    description: "Runtime identifier (e.g. windows-x64)"
     required: false
-    default: "win-x64"
+    default: "windows-x64"
 
   app_name:
     description: "Application name"
