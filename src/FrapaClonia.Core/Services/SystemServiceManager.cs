@@ -537,7 +537,7 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
         try
         {
             // sc create requires the entire command line (binary + args) as a single binPath= value.
-            // Outer quotes make it one argument; inner \" are literal quotes inside that argument.
+            // Outer quotes make it one argument; inner double quotes are literal quotes inside that argument.
             var innerBin = config.BinaryPath.Replace("\"", "\\\"");
             var innerCfg = config.ConfigPath.Replace("\"", "\\\"");
             var binPath = $"\"\\\"{ innerBin}\\\" -c \\\"{innerCfg}\\\"\"";

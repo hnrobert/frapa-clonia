@@ -176,8 +176,8 @@
   <data name="ConfigurationIsValid" xml:space="preserve">
     <value>配置有效</value>
   </data>
-  <data name="ConfigurationLocation" xml:space="preserve">
-    <value>配置位置</value>
+  <data name="StorageLocation" xml:space="preserve">
+    <value>存储位置</value>
   </data>
   <data name="ConfigurationStoredInAppDir" xml:space="preserve">
     <value>配置存储在应用程序目录中（需要 portable.txt）</value>
@@ -484,6 +484,12 @@
   </data>
   <data name="InstallService" xml:space="preserve">
     <value>Install Service</value>
+  </data>
+  <data name="InstallPrerelease" xml:space="preserve">
+    <value>安装预发布版</value>
+  </data>
+  <data name="InstallUpdate" xml:space="preserve">
+    <value>安装更新</value>
   </data>
   <data name="InstallViaPackageManager" xml:space="preserve">
     <value>Install via package manager</value>
@@ -923,6 +929,12 @@
   <data name="Theme" xml:space="preserve">
     <value>主题</value>
   </data>
+  <data name="LogLevel" xml:space="preserve">
+    <value>日志级别</value>
+  </data>
+  <data name="Logging" xml:space="preserve">
+    <value>日志</value>
+  </data>
   <data name="TimeoutSeconds" xml:space="preserve">
     <value>超时（秒）</value>
   </data>
@@ -1048,6 +1060,12 @@
   </data>
   <data name="Toast_DownloadFailed" xml:space="preserve">
     <value>Download Failed</value>
+  </data>
+  <data name="Toast_UpdateDownloadFailed" xml:space="preserve">
+    <value>更新下载失败</value>
+  </data>
+  <data name="Toast_UpdateInstallFailed" xml:space="preserve">
+    <value>无法应用更新：{0}</value>
   </data>
   <data name="Toast_DownloadFrom" xml:space="preserve">
     <value>请从以下地址下载 frpc: {0}</value>
@@ -1459,5 +1477,11 @@
   </data>
   <data name="SwitchMode_StopUninstallAndContinue" xml:space="preserve">
     <value>停止、卸载服务并切换</value>
+  </data>
+  <data name="UpdateRestarting" xml:space="preserve">
+    <value>正在重启</value>
+  </data>
+  <data name="UpdateRestartingDesc" xml:space="preserve">
+    <value>更新已下载完成，应用即将重启。</value>
   </data>
 </root>

@@ -27,6 +27,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IPresetService? _presetService;
     private readonly ICacheService? _cacheService;
     private readonly IUpdateService? _updateService;
+    private readonly Action<string>? _setLogLevel;
 
     [ObservableProperty] private LanguageOption? _selectedLanguage;
 
@@ -37,6 +38,8 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _isSaving;
 
     [ObservableProperty] private int _themeIndex;
+
+    [ObservableProperty] private int _logLevelIndex;
 
     // Frpc Version Management
     [ObservableProperty] private List<DownloadedFrpcVersion> _downloadedVersions = [];
@@ -56,10 +59,15 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _isCheckingForUpdates;
     [ObservableProperty] private bool _updateAvailable;
     [ObservableProperty] private string _updateReleaseNotes = "";
-    [ObservableProperty] private string _updateDownloadUrl = "";
     [ObservableProperty] private bool _prereleaseAvailable;
     [ObservableProperty] private string _latestPrereleaseVersion = "";
-    [ObservableProperty] private string _prereleaseDownloadUrl = "";
+    [ObservableProperty] private bool _isDownloadingUpdate;
+    [ObservableProperty] private double _updateDownloadProgress;
+    [ObservableProperty] private bool _isDownloadingPrerelease;
+    [ObservableProperty] private double _prereleaseDownloadProgress;
+
+    private AppUpdateInfo? _stableUpdateInfo;
+    private AppUpdateInfo? _prereleaseUpdateInfo;
 
     public bool IsGitHubLoggedIn => GitHubTokenStatus != GitHubTokenStatus.None;
     public bool IsGitHubConnected => GitHubTokenStatus == GitHubTokenStatus.Connected;
@@ -78,9 +86,9 @@ public partial class SettingsViewModel : ObservableObject
     public IRelayCommand GitHubToggleTokenVisibilityCommand { get; }
     public IRelayCommand GitHubCancelUpdateCommand { get; }
     public IRelayCommand CheckForUpdatesCommand { get; }
-    public IRelayCommand DownloadUpdateCommand { get; }
+    public IRelayCommand InstallUpdateCommand { get; }
     public IRelayCommand OpenReleasePageCommand { get; }
-    public IRelayCommand DownloadPrereleaseCommand { get; }
+    public IRelayCommand InstallPrereleaseCommand { get; }
     public IRelayCommand OpenPrereleasePageCommand { get; }
 
     public List<LanguageOption> AvailableLanguages { get; }
@@ -98,7 +106,8 @@ public partial class SettingsViewModel : ObservableObject
         null!,
         null!,
         null!,
-        null!)
+        null!,
+        null)
     {
     }
 
@@ -112,7 +121,8 @@ public partial class SettingsViewModel : ObservableObject
         INativeDeploymentService? nativeDeploymentService,
         IPresetService? presetService,
         ICacheService? cacheService,
-        IUpdateService? updateService)
+        IUpdateService? updateService,
+        Action<string>? setLogLevel)
     {
         _logger = logger;
         _localizationService = localizationService;
@@ -124,6 +134,7 @@ public partial class SettingsViewModel : ObservableObject
         _presetService = presetService;
         _cacheService = cacheService;
         _updateService = updateService;
+        _setLogLevel = setLogLevel;
 
         AvailableLanguages =
         [
@@ -226,19 +237,27 @@ public partial class SettingsViewModel : ObservableObject
             try { await CheckForUpdatesAsync(isManual: true); }
             catch (Exception e) { _logger?.LogError(e, "Error checking for updates"); }
         });
-        DownloadUpdateCommand = new RelayCommand(() => OpenUrl(_updateDownloadUrl));
+        InstallUpdateCommand = new RelayCommand(async void () =>
+        {
+            try { await InstallUpdateAsync(_stableUpdateInfo, isPrerelease: false); }
+            catch (Exception e) { _logger?.LogError(e, "Error installing update"); }
+        });
         OpenReleasePageCommand = new RelayCommand(() =>
         {
-            if (UpdateAvailable && !string.IsNullOrEmpty(_updateDownloadUrl))
+            if (UpdateAvailable && _stableUpdateInfo != null)
             {
                 var tag = LatestVersion.StartsWith('v') ? LatestVersion : $"v{LatestVersion}";
                 OpenUrl($"https://github.com/{Owner}/{Repo}/releases/tag/{tag}");
             }
         });
-        DownloadPrereleaseCommand = new RelayCommand(() => OpenUrl(_prereleaseDownloadUrl));
+        InstallPrereleaseCommand = new RelayCommand(async void () =>
+        {
+            try { await InstallUpdateAsync(_prereleaseUpdateInfo, isPrerelease: true); }
+            catch (Exception e) { _logger?.LogError(e, "Error installing prerelease update"); }
+        });
         OpenPrereleasePageCommand = new RelayCommand(() =>
         {
-            if (PrereleaseAvailable && !string.IsNullOrEmpty(_prereleaseDownloadUrl))
+            if (PrereleaseAvailable && _prereleaseUpdateInfo != null)
             {
                 var tag = LatestPrereleaseVersion.StartsWith('v') ? LatestPrereleaseVersion : $"v{LatestPrereleaseVersion}";
                 OpenUrl($"https://github.com/{Owner}/{Repo}/releases/tag/{tag}");
@@ -325,6 +344,18 @@ public partial class SettingsViewModel : ObservableObject
         _themeService?.CurrentTheme = theme;
     }
 
+    partial void OnLogLevelIndexChanged(int value)
+    {
+        var level = value switch
+        {
+            0 => "Debug",
+            2 => "Warning",
+            3 => "Error",
+            _ => "Information"
+        };
+        _setLogLevel?.Invoke(level);
+    }
+
     partial void OnSelectedLanguageChanged(LanguageOption? value)
     {
         if (value == null || _localizationService == null ||
@@ -370,6 +401,16 @@ public partial class SettingsViewModel : ObservableObject
                 _ => 2
             };
 
+            // Set log level from settings
+            LogLevelIndex = settings.LogLevel switch
+            {
+                "Debug" => 0,
+                "Warning" => 2,
+                "Error" => 3,
+                _ => 1
+            };
+            _setLogLevel?.Invoke(settings.LogLevel);
+
             _logger?.LogDebug("Settings loaded: Language={Language}, Theme={Theme}", cultureCode, themeStr);
         }
         catch (Exception ex)
@@ -409,6 +450,13 @@ public partial class SettingsViewModel : ObservableObject
                     _ => "Default"
                 };
                 _settingsService.Settings.AutoStart = AutoStartEnabled;
+                _settingsService.Settings.LogLevel = LogLevelIndex switch
+                {
+                    0 => "Debug",
+                    2 => "Warning",
+                    3 => "Error",
+                    _ => "Information"
+                };
 
                 await _settingsService.SaveAsync();
             }
@@ -498,27 +546,29 @@ public partial class SettingsViewModel : ObservableObject
             // Stable update
             if (stable != null)
             {
+                _stableUpdateInfo = stable;
                 UpdateAvailable = true;
                 LatestVersion = stable.Version;
                 UpdateReleaseNotes = stable.ReleaseNotes ?? "";
-                UpdateDownloadUrl = stable.DownloadUrl ?? stable.HtmlUrl ?? "";
                 _toastService?.Info(L("UpdateAvailable"), $"v{stable.Version}");
             }
             else
             {
+                _stableUpdateInfo = null;
                 UpdateAvailable = false;
             }
 
             // Prerelease update
             if (pre != null)
             {
+                _prereleaseUpdateInfo = pre;
                 PrereleaseAvailable = true;
                 LatestPrereleaseVersion = pre.Version;
-                PrereleaseDownloadUrl = pre.DownloadUrl ?? pre.HtmlUrl ?? "";
                 _toastService?.Info(L("PrereleaseAvailable"), $"v{pre.Version}");
             }
             else
             {
+                _prereleaseUpdateInfo = null;
                 PrereleaseAvailable = false;
             }
 
@@ -536,6 +586,50 @@ public partial class SettingsViewModel : ObservableObject
         finally
         {
             IsCheckingForUpdates = false;
+        }
+    }
+
+    private async Task InstallUpdateAsync(AppUpdateInfo? info, bool isPrerelease)
+    {
+        if (info == null) return;
+        if (_updateService == null) return;
+
+        if (isPrerelease) IsDownloadingPrerelease = true;
+        else IsDownloadingUpdate = true;
+
+        try
+        {
+            var progress = new Progress<double>(v =>
+            {
+                if (isPrerelease) PrereleaseDownloadProgress = v * 100;
+                else UpdateDownloadProgress = v * 100;
+            });
+
+            var filePath = await _updateService.DownloadUpdateAsync(info, progress);
+            if (filePath == null)
+            {
+                _toastService?.Error(L("Toast_UpdateDownloadFailed"), "");
+                return;
+            }
+
+            await _updateService.ApplyUpdateAsync(filePath, info);
+            _toastService?.Info(L("UpdateRestarting"), L("UpdateRestartingDesc"));
+            await Task.Delay(1500);
+            Environment.Exit(0);
+        }
+        catch (OperationCanceledException)
+        {
+            // Ignore
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error installing update");
+            _toastService?.Error(L("Toast_UpdateDownloadFailed"), L("Toast_UpdateInstallFailed", ex.Message));
+        }
+        finally
+        {
+            if (isPrerelease) IsDownloadingPrerelease = false;
+            else IsDownloadingUpdate = false;
         }
     }
 

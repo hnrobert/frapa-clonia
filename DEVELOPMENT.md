@@ -64,8 +64,9 @@ Registered in `ServiceCollectionExtensions.cs`:
 | `IDockerDeploymentService` | `DockerDeploymentService` | Docker deployment |
 | `INativeDeploymentService` | `NativeDeploymentService` | Native deployment |
 | `IPackageManagerService` | `PackageManagerService` | Package management |
-| `ISystemServiceManager` | `SystemServiceManager` | System service management |
+| `ISystemServiceManager` | `SystemServiceManager` | System service management (launchd / systemd / Windows Service) |
 | `IProcessManager` | `ProcessManager` | Process management |
+| `IUpdateService` | `UpdateService` | Self-update: checks GitHub releases, downloads, and applies updates |
 
 **UI Services (`FrapaClonia.UI/Services/`):**
 
@@ -104,11 +105,18 @@ When adding reflection-dependent code, verify AOT compatibility.
 
 GitHub Actions workflows in `.github/workflows/`:
 
-- `build.yml` — Builds on main branch pushes for all platforms
-- `release.yml` — Publishes artifacts on GitHub release
+- `build.yml` — Builds on main branch pushes for all platforms, uploads artifacts
+- `release.yml` — Builds and uploads release assets on GitHub release creation
 - `sync-develop.yml` — Syncs develop branch with main
 
-Build uses composite action `.github/actions/build-and-pack/` which handles cross-platform compilation and packaging.
+Composite actions in `.github/actions/`:
+
+- `build-and-pack` — Cross-platform compile and package (zip / tar.gz)
+- `package-windows-msi` — Builds MSI installer via WiX Toolset v4
+- `package-macos-dmg` — Builds DMG disk image with app bundle and /Applications shortcut
+- `package-linux-deb` — Builds DEB package for Debian/Ubuntu
+
+Windows artifacts are built with RID `win-x64` and renamed to `windows-x64` for release naming consistency.
 
 ## UI Components
 

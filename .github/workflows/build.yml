@@ -57,6 +57,13 @@ jobs:
           version: ${{ needs.version.outputs.version }}
           rid: win-x64
 
+      - name: Rename artifacts (win-x64 → windows-x64)
+        shell: pwsh
+        run: |
+          $V = '${{ needs.version.outputs.version }}'
+          Rename-Item "FrapaClonia-$V-win-x64.zip"              "FrapaClonia-$V-windows-x64.zip"
+          Rename-Item "FrapaClonia-$V-win-x64-installer.msi"    "FrapaClonia-$V-windows-x64-installer.msi"
+
       - name: Upload Artifacts (Windows ZIP)
         uses: actions/upload-artifact@main
         with:

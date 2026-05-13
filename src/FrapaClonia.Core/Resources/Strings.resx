@@ -173,8 +173,8 @@
   <data name="ConfigurationIsValid" xml:space="preserve">
     <value>Configuration is valid</value>
   </data>
-  <data name="ConfigurationLocation" xml:space="preserve">
-    <value>Configuration Location</value>
+  <data name="StorageLocation" xml:space="preserve">
+    <value>Storage Location</value>
   </data>
   <data name="ConfigurationStoredInAppDir" xml:space="preserve">
     <value>Configuration stored in application directory (requires portable.txt)</value>
@@ -487,6 +487,12 @@
   </data>
   <data name="InstallService" xml:space="preserve">
     <value>Install Service</value>
+  </data>
+  <data name="InstallPrerelease" xml:space="preserve">
+    <value>Install Prerelease</value>
+  </data>
+  <data name="InstallUpdate" xml:space="preserve">
+    <value>Install Update</value>
   </data>
   <data name="InstallViaPackageManager" xml:space="preserve">
     <value>Install via package manager</value>
@@ -929,6 +935,12 @@
   <data name="Theme" xml:space="preserve">
     <value>Theme</value>
   </data>
+  <data name="LogLevel" xml:space="preserve">
+    <value>Log Level</value>
+  </data>
+  <data name="Logging" xml:space="preserve">
+    <value>Logging</value>
+  </data>
   <data name="TimeoutSeconds" xml:space="preserve">
     <value>Timeout (seconds)</value>
   </data>
@@ -1054,6 +1066,12 @@
   </data>
   <data name="Toast_DownloadFailed" xml:space="preserve">
     <value>Download Failed</value>
+  </data>
+  <data name="Toast_UpdateDownloadFailed" xml:space="preserve">
+    <value>Update Download Failed</value>
+  </data>
+  <data name="Toast_UpdateInstallFailed" xml:space="preserve">
+    <value>Could not apply the update: {0}</value>
   </data>
   <data name="Toast_DownloadFrom" xml:space="preserve">
     <value>Please download frpc from: {0}</value>
@@ -1561,6 +1579,12 @@
   </data>
   <data name="UpdateCheckFailedDesc" xml:space="preserve">
     <value>Could not check for updates. Please try again later.</value>
+  </data>
+  <data name="UpdateRestarting" xml:space="preserve">
+    <value>Restarting</value>
+  </data>
+  <data name="UpdateRestartingDesc" xml:space="preserve">
+    <value>The update has been downloaded. The app will restart shortly.</value>
   </data>
   <data name="PrereleaseAvailable" xml:space="preserve">
     <value>A prerelease version is available</value>

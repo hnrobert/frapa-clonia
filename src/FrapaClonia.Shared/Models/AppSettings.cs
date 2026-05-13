@@ -19,4 +19,9 @@ public class AppSettings
     /// Whether to start the application automatically on system boot
     /// </summary>
     public bool AutoStart { get; set; }
+
+    /// <summary>
+    /// Minimum log level: "Debug", "Information", "Warning", "Error"
+    /// </summary>
+    public string LogLevel { get; set; } = "Information";
 }
