@@ -938,6 +938,9 @@
   <data name="LogLevel" xml:space="preserve">
     <value>Log Level</value>
   </data>
+  <data name="Logging" xml:space="preserve">
+    <value>Logging</value>
+  </data>
   <data name="TimeoutSeconds" xml:space="preserve">
     <value>Timeout (seconds)</value>
   </data>

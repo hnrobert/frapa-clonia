@@ -932,6 +932,9 @@
   <data name="LogLevel" xml:space="preserve">
     <value>日志级别</value>
   </data>
+  <data name="Logging" xml:space="preserve">
+    <value>日志</value>
+  </data>
   <data name="TimeoutSeconds" xml:space="preserve">
     <value>超时（秒）</value>
   </data>
