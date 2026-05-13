@@ -108,9 +108,8 @@ public class App : Application
             // Close all child windows when main window is closing.
             _mainWindow.Closing += (_, _) =>
             {
-                foreach (var window in desktop.Windows.ToList())
+                foreach (var window in desktop.Windows.ToList().Where(window => !ReferenceEquals(window, _mainWindow)))
                 {
-                    if (ReferenceEquals(window, _mainWindow)) continue;
                     window.Close();
                 }
             };
@@ -186,7 +185,9 @@ public class App : Application
     private void QuitApp()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
             desktop.TryShutdown();
+        }
     }
 
     private void NavigateToSettings()
