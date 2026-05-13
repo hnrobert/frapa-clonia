@@ -559,29 +559,44 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
         }
     }
 
-    // Runs a command elevated via UAC (ShellExecute runas). Returns true if exit code is 0.
-    // Throws OperationCanceledException if the user cancels the UAC prompt.
-    private static async Task<bool> ExecuteElevatedAsync(string fileName, string arguments,
-        CancellationToken cancellationToken)
+    // Runs sc.exe elevated via UAC (ShellExecute runas). Returns true if exit code is 0.
+    private async Task<bool> ExecuteElevatedAsync(string fileName, string arguments, CancellationToken cancellationToken)
     {
+        // Use full path so ShellExecute can find the executable without PATH lookup.
+        var fullPath = fileName.Equals("sc", StringComparison.OrdinalIgnoreCase)
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "sc.exe")
+            : fileName;
+
+        logger.LogInformation("Requesting elevation for: {FileName} {Arguments}", fullPath, arguments);
+
         var psi = new System.Diagnostics.ProcessStartInfo
         {
-            FileName = fileName,
+            FileName = fullPath,
             Arguments = arguments,
             Verb = "runas",
             UseShellExecute = true,
-            CreateNoWindow = false
+            CreateNoWindow = true
         };
         try
         {
             var process = System.Diagnostics.Process.Start(psi);
-            if (process == null) return false;
+            if (process == null)
+            {
+                logger.LogError("Failed to start elevated process");
+                return false;
+            }
             await process.WaitForExitAsync(cancellationToken);
+            logger.LogInformation("Elevated process exited with code {ExitCode}", process.ExitCode);
             return process.ExitCode == 0;
         }
         catch (System.ComponentModel.Win32Exception ex) when (ex.NativeErrorCode == 1223)
         {
-            // User cancelled the UAC prompt
+            logger.LogWarning("User cancelled the UAC prompt");
+            return false;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Elevated execution failed");
             return false;
         }
     }
