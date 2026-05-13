@@ -425,21 +425,9 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
 /// </summary>
 internal class WindowsServiceManager(ILogger logger, IProcessManager processManager) : IPlatformServiceManager
 {
-    // No subfolder — Register-ScheduledTask silently fails when the folder doesn't exist.
+    // No subfolder — schtasks silently fails when the folder doesn't exist.
     // The service name already contains the preset GUID so it's globally unique.
     private static string GetTaskName(string serviceName) => serviceName;
-
-    // Run a PowerShell script encoded as Base64 to avoid quote-escaping issues.
-    private async Task<(int ExitCode, string Output, string Error)> RunPowerShellAsync(
-        string script, CancellationToken cancellationToken)
-    {
-        var bytes = System.Text.Encoding.Unicode.GetBytes(script);
-        var encoded = Convert.ToBase64String(bytes);
-        var result = await processManager.ExecuteAsync("powershell",
-            $"-NonInteractive -EncodedCommand {encoded}",
-            cancellationToken: cancellationToken);
-        return (result.ExitCode, result.StandardOutput, result.StandardError);
-    }
 
     public async Task<bool> IsServiceInstalledAsync(string serviceName, CancellationToken cancellationToken = default)
     {
@@ -467,26 +455,26 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
         try
         {
             var taskName = GetTaskName(config.ServiceName);
-            var binPath = config.BinaryPath.Replace("'", "''");
-            var cfgPath = config.ConfigPath.Replace("`", "``").Replace("\"", "`\"");
-            var triggerLine = config.AutoStart
-                ? "$trigger = New-ScheduledTaskTrigger -AtLogOn"
-                : "$trigger = $null";
-            var triggerArg = config.AutoStart ? "-Trigger $trigger" : "";
+            // schtasks /create does not require admin for current-user tasks.
+            // /tr value: inner quotes escaped as \"
+            var tr = $"\\\"{config.BinaryPath}\\\" -c \\\"{config.ConfigPath}\\\"";
+            var scheduleArgs = $"/create /tn \"{taskName}\" /tr \"{tr}\" /sc onlogon /ru \"\" /f";
 
-            var script = $"""
-                          $ErrorActionPreference = 'Stop'
-                          {triggerLine}
-                          $action   = New-ScheduledTaskAction -Execute '{binPath}' -Argument "-c `"{cfgPath}`""
-                          $settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit 0 -MultipleInstances IgnoreNew
-                          $principal = New-ScheduledTaskPrincipal -UserId ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name) -LogonType Interactive -RunLevel Limited
-                          Register-ScheduledTask -TaskName '{taskName}' -Action $action -Principal $principal -Settings $settings {triggerArg} -Force | Out-Null
-                          Write-Output 'OK'
-                          """;
-            var (exitCode, output, error) = await RunPowerShellAsync(script, cancellationToken);
-            if (exitCode == 0 && output.Contains("OK")) return true;
-            logger.LogError("Failed to create scheduled task: {Error}", error);
-            return false;
+            var result = await processManager.ExecuteAsync("schtasks", scheduleArgs, cancellationToken: cancellationToken);
+            if (result.ExitCode != 0)
+            {
+                logger.LogError("Failed to create scheduled task: {Error}", result.StandardError);
+                return false;
+            }
+
+            // If not auto-start, disable the task so it won't run at logon automatically.
+            if (!config.AutoStart)
+            {
+                await processManager.ExecuteAsync("schtasks",
+                    $"/change /tn \"{taskName}\" /disable", cancellationToken: cancellationToken);
+            }
+
+            return true;
         }
         catch (Exception ex)
         {
