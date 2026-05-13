@@ -45,17 +45,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@main
 
-      - name: Build and Pack (windows-x64)
+      - name: Build and Pack (win-x64)
         uses: ./.github/actions/build-and-pack
         with:
           version: ${{ needs.version.outputs.version }}
-          rids: windows-x64
+          rids: win-x64
 
-      - name: Package MSI (windows-x64)
+      - name: Package MSI (win-x64)
         uses: ./.github/actions/package-windows-msi
         with:
           version: ${{ needs.version.outputs.version }}
-          rid: windows-x64
+          rid: win-x64
+
+      - name: Rename artifacts (win-x64 → windows-x64)
+        shell: pwsh
+        run: |
+          $V = '${{ needs.version.outputs.version }}'
+          Rename-Item "FrapaClonia-$V-win-x64.zip"              "FrapaClonia-$V-windows-x64.zip"
+          Rename-Item "FrapaClonia-$V-win-x64-installer.msi"    "FrapaClonia-$V-windows-x64-installer.msi"
 
       - name: Upload Artifacts (Windows ZIP)
         uses: actions/upload-artifact@main
