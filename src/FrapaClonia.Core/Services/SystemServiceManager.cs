@@ -421,29 +421,92 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
 }
 
 /// <summary>
-/// Windows service manager using sc.exe
+/// Windows service manager.
+/// User scope uses Task Scheduler (no admin required).
+/// System scope uses sc.exe (requires admin).
 /// </summary>
 internal class WindowsServiceManager(ILogger logger, IProcessManager processManager) : IPlatformServiceManager
 {
+    private const string TaskFolder = "FrapaClonia";
+
+    private static string GetTaskName(string serviceName) => $@"{TaskFolder}\{serviceName}";
+
+    // Run a PowerShell script encoded as Base64 to avoid quote-escaping issues.
+    private async Task<(int ExitCode, string Output, string Error)> RunPowerShellAsync(
+        string script, CancellationToken cancellationToken)
+    {
+        var bytes = System.Text.Encoding.Unicode.GetBytes(script);
+        var encoded = Convert.ToBase64String(bytes);
+        var result = await processManager.ExecuteAsync("powershell",
+            $"-NonInteractive -EncodedCommand {encoded}",
+            cancellationToken: cancellationToken);
+        return (result.ExitCode, result.StandardOutput, result.StandardError);
+    }
+
     public async Task<bool> IsServiceInstalledAsync(string serviceName, CancellationToken cancellationToken = default)
     {
-        var result =
-            await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"", cancellationToken: cancellationToken);
-        return result.ExitCode == 0;
+        // Check Task Scheduler (User scope) first, then sc.exe (System scope).
+        var taskResult = await processManager.ExecuteAsync("schtasks",
+            $"""
+             /query /tn "{GetTaskName(serviceName)}"
+             """, cancellationToken: cancellationToken);
+        if (taskResult.ExitCode == 0) return true;
+
+        var scResult = await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"",
+            cancellationToken: cancellationToken);
+        return scResult.ExitCode == 0;
     }
 
     public async Task<bool> InstallServiceAsync(ServiceConfig config, CancellationToken cancellationToken = default)
     {
+        return config.Scope == ServiceScope.User
+            ? await InstallUserTaskAsync(config, cancellationToken)
+            : await InstallSystemServiceAsync(config, cancellationToken);
+    }
+
+    private async Task<bool> InstallUserTaskAsync(ServiceConfig config, CancellationToken cancellationToken)
+    {
         try
         {
-            // sc.exe requires admin rights for system-level services
+            var taskName = GetTaskName(config.ServiceName);
+            var binPath = config.BinaryPath.Replace("'", "''");
+            var cfgPath = config.ConfigPath.Replace("`", "``").Replace("\"", "`\"");
+            var triggerLine = config.AutoStart
+                ? "$trigger = New-ScheduledTaskTrigger -AtLogOn"
+                : "$trigger = $null";
+            var triggerArg = config.AutoStart ? "-Trigger $trigger" : "";
+
+            var script = $"""
+
+                          {triggerLine}
+                          $action   = New-ScheduledTaskAction -Execute '{binPath}' -Argument "-c `"{cfgPath}`""
+                          $settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit 0 -MultipleInstances IgnoreNew -StopIfGoingOnBatteries $false
+                          $principal = New-ScheduledTaskPrincipal -UserId ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name) -LogonType Interactive -RunLevel Limited
+                          Register-ScheduledTask -TaskName '{taskName}' -Action $action -Principal $principal -Settings $settings {triggerArg} -Force | Out-Null
+                          Write-Output 'OK'
+
+                          """;
+            var (exitCode, output, error) = await RunPowerShellAsync(script, cancellationToken);
+            if (exitCode == 0 && output.Contains("OK")) return true;
+            logger.LogError("Failed to create scheduled task: {Error}", error);
+            return false;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to install user task");
+            return false;
+        }
+    }
+
+    private async Task<bool> InstallSystemServiceAsync(ServiceConfig config, CancellationToken cancellationToken)
+    {
+        try
+        {
             var binPath = $"\"{config.BinaryPath}\" -c \"{config.ConfigPath}\"";
             var startType = config.AutoStart ? "auto" : "demand";
-
             var result = await processManager.ExecuteAsync("sc",
                 $"create \"{config.ServiceName}\" binPath= {binPath} start= {startType} DisplayName= \"{config.Description}\"",
                 cancellationToken: cancellationToken);
-
             if (result.ExitCode == 0) return true;
             logger.LogError("Failed to create Windows service: {Error}", result.StandardError);
             return false;
@@ -459,9 +522,23 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
     {
         try
         {
-            // Stop first
-            await StopServiceAsync(serviceName, ServiceScope.System, cancellationToken);
+            var taskName = GetTaskName(serviceName);
+            var taskCheck = await processManager.ExecuteAsync("schtasks",
+                $"""
+                 /query /tn "{taskName}"
+                 """, cancellationToken: cancellationToken);
+            if (taskCheck.ExitCode == 0)
+            {
+                await processManager.ExecuteAsync("schtasks",
+                    $"""
+                     /end /tn "{taskName}"
+                     """, cancellationToken: cancellationToken);
+                var del = await processManager.ExecuteAsync("schtasks",
+                    $"""/delete /tn "{taskName}" /f""", cancellationToken: cancellationToken);
+                return del.ExitCode == 0;
+            }
 
+            await StopServiceAsync(serviceName, ServiceScope.System, cancellationToken);
             var result = await processManager.ExecuteAsync("sc", $"delete \"{serviceName}\"",
                 cancellationToken: cancellationToken);
             return result.ExitCode == 0;
@@ -476,65 +553,113 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
     public async Task<bool> StartServiceAsync(string serviceName, ServiceScope scope,
         CancellationToken cancellationToken = default)
     {
-        var result =
-            await processManager.ExecuteAsync("sc", $"start \"{serviceName}\"", cancellationToken: cancellationToken);
+        if (scope == ServiceScope.User)
+        {
+            var r = await processManager.ExecuteAsync("schtasks",
+                $"""
+                 /run /tn "{GetTaskName(serviceName)}"
+                 """, cancellationToken: cancellationToken);
+            return r.ExitCode == 0;
+        }
+
+        var result = await processManager.ExecuteAsync("sc", $"start \"{serviceName}\"",
+            cancellationToken: cancellationToken);
         return result.ExitCode == 0;
     }
 
     public async Task<bool> StopServiceAsync(string serviceName, ServiceScope scope,
         CancellationToken cancellationToken = default)
     {
-        var result =
-            await processManager.ExecuteAsync("sc", $"stop \"{serviceName}\"", cancellationToken: cancellationToken);
+        if (scope == ServiceScope.User)
+        {
+            var r = await processManager.ExecuteAsync("schtasks",
+                $"""
+                 /end /tn "{GetTaskName(serviceName)}"
+                 """, cancellationToken: cancellationToken);
+            return r.ExitCode == 0;
+        }
+
+        var result = await processManager.ExecuteAsync("sc", $"stop \"{serviceName}\"",
+            cancellationToken: cancellationToken);
         return result.ExitCode == 0;
     }
 
     public async Task<bool> IsServiceRunningAsync(string serviceName, ServiceScope scope,
         CancellationToken cancellationToken = default)
     {
-        var result =
-            await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"", cancellationToken: cancellationToken);
+        if (scope == ServiceScope.User)
+        {
+            var r = await processManager.ExecuteAsync("schtasks",
+                $"""/query /tn "{GetTaskName(serviceName)}" /fo LIST""",
+                cancellationToken: cancellationToken);
+            return r.ExitCode == 0 && r.StandardOutput.Contains("Running");
+        }
+
+        var result = await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"",
+            cancellationToken: cancellationToken);
         return result.ExitCode == 0 && result.StandardOutput.Contains("RUNNING");
     }
 
     public async Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope,
         CancellationToken cancellationToken = default)
     {
+        if (scope == ServiceScope.User)
+            return await GetUserTaskStatusAsync(serviceName, cancellationToken);
+
         var isInstalled = await IsServiceInstalledAsync(serviceName, cancellationToken);
-
         if (!isInstalled)
-        {
             return new ServiceStatus { IsInstalled = false, State = "not_installed" };
-        }
 
-        var result =
-            await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"", cancellationToken: cancellationToken);
+        var result = await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"",
+            cancellationToken: cancellationToken);
         var output = result.StandardOutput;
-
         var isRunning = output.Contains("RUNNING");
         var state = isRunning ? "running" : output.Contains("STOPPED") ? "stopped" : "unknown";
 
-        // Check auto-start
-        var qcResult =
-            await processManager.ExecuteAsync("sc", $"qc \"{serviceName}\"", cancellationToken: cancellationToken);
+        var qcResult = await processManager.ExecuteAsync("sc", $"qc \"{serviceName}\"",
+            cancellationToken: cancellationToken);
         var autoStart = qcResult.StandardOutput.Contains("AUTO_START");
 
         return new ServiceStatus
-        {
-            IsInstalled = true,
-            IsRunning = isRunning,
-            IsAutoStartEnabled = autoStart,
-            State = state
-        };
+            { IsInstalled = true, IsRunning = isRunning, IsAutoStartEnabled = autoStart, State = state };
+    }
+
+    private async Task<ServiceStatus> GetUserTaskStatusAsync(string serviceName, CancellationToken cancellationToken)
+    {
+        var taskName = GetTaskName(serviceName);
+        var result = await processManager.ExecuteAsync("schtasks",
+            $"""/query /tn "{taskName}" /fo LIST""", cancellationToken: cancellationToken);
+
+        if (result.ExitCode != 0)
+            return new ServiceStatus { IsInstalled = false, State = "not_installed" };
+
+        var output = result.StandardOutput;
+        var isRunning = output.Contains("Running");
+        var state = isRunning ? "running" : "stopped";
+        // AtLogon trigger present = auto-start enabled
+        var autoStart = output.Contains("At log on") || output.Contains("AtLogon");
+
+        return new ServiceStatus
+            { IsInstalled = true, IsRunning = isRunning, IsAutoStartEnabled = autoStart, State = state };
     }
 
     public async Task<bool> SetAutoStartAsync(string serviceName, bool autoStart, ServiceScope scope,
         CancellationToken cancellationToken = default)
     {
+        if (scope == ServiceScope.User)
+        {
+            var taskName = GetTaskName(serviceName);
+            // Enable/disable the AtLogon trigger by toggling the task's enabled state.
+            var action = autoStart ? "/enable" : "/disable";
+            var result = await processManager.ExecuteAsync("schtasks",
+                $"""/change /tn "{taskName}" {action}""", cancellationToken: cancellationToken);
+            return result.ExitCode == 0;
+        }
+
         var startType = autoStart ? "auto" : "demand";
-        var result = await processManager.ExecuteAsync("sc", $"config \"{serviceName}\" start= {startType}",
-            cancellationToken: cancellationToken);
-        return result.ExitCode == 0;
+        var scResult = await processManager.ExecuteAsync("sc",
+            $"config \"{serviceName}\" start= {startType}", cancellationToken: cancellationToken);
+        return scResult.ExitCode == 0;
     }
 }
 
@@ -679,7 +804,7 @@ internal class LinuxServiceManager(ILogger logger, IProcessManager processManage
 
     private static string GenerateSystemdUnit(ServiceConfig config)
     {
-        return $""""
+        return $"""
                 [Unit]
                 Description={config.Description}
                 After=network.target
@@ -692,6 +817,6 @@ internal class LinuxServiceManager(ILogger logger, IProcessManager processManage
 
                 [Install]
                 WantedBy=default.target
-                """";
+                """;
     }
 }
