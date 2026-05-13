@@ -480,7 +480,7 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
                           $ErrorActionPreference = 'Stop'
                           {triggerLine}
                           $action   = New-ScheduledTaskAction -Execute '{binPath}' -Argument "-c `"{cfgPath}`""
-                          $settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit 0 -MultipleInstances IgnoreNew -StopIfGoingOnBatteries $false
+                          $settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit 0 -MultipleInstances IgnoreNew
                           $principal = New-ScheduledTaskPrincipal -UserId ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name) -LogonType Interactive -RunLevel Limited
                           Register-ScheduledTask -TaskName '{taskName}' -Action $action -Principal $principal -Settings $settings {triggerArg} -Force | Out-Null
                           Write-Output 'OK'
