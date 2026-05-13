@@ -59,6 +59,10 @@ public class App : Application
             {
                 menuItem.Click += (_, _) => NavigateToSettings();
             }
+            else if (menuItem.Header?.Contains("Quit") == true)
+            {
+                menuItem.Click += (_, _) => QuitApp();
+            }
         }
     }
 
@@ -92,6 +96,14 @@ public class App : Application
 
             // Ensure the app exits when the main window closes, even if child windows are still open.
             desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
+
+            // On macOS, handle the system Quit signal (Dock right-click → Quit, Cmd+Q)
+            // so the app shuts down cleanly instead of showing a crash report.
+            desktop.ShutdownRequested += (_, _) =>
+            {
+                foreach (var window in desktop.Windows.ToList())
+                    window.Close();
+            };
 
             // Close all child windows when main window is closing.
             _mainWindow.Closing += (_, _) =>
@@ -169,6 +181,12 @@ public class App : Application
                 ShowAboutDialog();
                 break;
         }
+    }
+
+    private void QuitApp()
+    {
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            desktop.TryShutdown();
     }
 
     private void NavigateToSettings()

@@ -13,6 +13,8 @@
       <NativeMenuItem Header="About FrapaClonia" />
       <NativeMenuItemSeparator />
       <NativeMenuItem Header="Settings..." />
+      <NativeMenuItemSeparator />
+      <NativeMenuItem Header="Quit FrapaClonia" />
     </NativeMenu>
   </NativeMenu.Menu>
 
