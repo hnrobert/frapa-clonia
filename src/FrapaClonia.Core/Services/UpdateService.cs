@@ -222,12 +222,16 @@ public class UpdateService(ILogger<UpdateService> logger, ICacheService? cacheSe
     {
         // macOS has no portable distribution — always a DMG that installs to /Applications.
         var scriptPath = Path.Combine(Path.GetTempPath(), "frapaclonia_update.sh");
+        var mountPoint = Path.Combine(Path.GetTempPath(), "frapaclonia_mount");
         var scriptContent = $$"""
                               #!/bin/bash
                               sleep 2
-                              MOUNT=$(hdiutil attach "{{filePath}}" | tail -1 | awk '{print $NF}')
+                              MOUNT="{{mountPoint}}"
+                              mkdir -p "$MOUNT"
+                              hdiutil attach "{{filePath}}" -mountpoint "$MOUNT" -nobrowse -quiet
                               cp -R "$MOUNT"/*.app /Applications/
-                              hdiutil detach "$MOUNT"
+                              hdiutil detach "$MOUNT" -quiet || true
+                              rmdir "$MOUNT" 2>/dev/null || true
                               open /Applications/FrapaClonia.app
                               rm -f "{{filePath}}"
                               rm -f "$0"
