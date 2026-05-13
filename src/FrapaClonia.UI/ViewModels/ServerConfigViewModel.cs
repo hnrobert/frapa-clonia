@@ -207,7 +207,7 @@ public partial class ServerConfigViewModel : ObservableObject
         try
         {
             IsLoading = true;
-            _logger?.LogInformation("LoadConfigurationAsync: Starting, IsLoading={IsLoading}", IsLoading);
+            _logger?.LogDebug("LoadConfigurationAsync: Starting, IsLoading={IsLoading}", IsLoading);
 
             if (_presetService?.CurrentPreset?.Configuration.CommonConfig != null)
             {
@@ -244,11 +244,11 @@ public partial class ServerConfigViewModel : ObservableObject
                 // Load DNS
                 DnsServer = cc.DnsServer;
 
-                _logger?.LogInformation("Configuration loaded successfully");
+                _logger?.LogDebug("Configuration loaded successfully");
             }
             else
             {
-                _logger?.LogInformation("No current preset or CommonConfig, using defaults");
+                _logger?.LogDebug("No current preset or CommonConfig, using defaults");
                 // Set default values
                 ServerAddr = "";
                 ServerPortText = "7000";
@@ -273,7 +273,7 @@ public partial class ServerConfigViewModel : ObservableObject
         finally
         {
             IsLoading = false;
-            _logger?.LogInformation("LoadConfigurationAsync: Completed, IsLoading={IsLoading}", IsLoading);
+            _logger?.LogDebug("LoadConfigurationAsync: Completed, IsLoading={IsLoading}", IsLoading);
         }
     }
 
@@ -318,7 +318,7 @@ public partial class ServerConfigViewModel : ObservableObject
             // Save to preset
             await _presetService.SaveCurrentPresetAsync();
 
-            _logger?.LogInformation("Configuration saved successfully");
+            _logger?.LogDebug("Configuration saved successfully");
             _toastService?.Success("Saved", "Configuration saved successfully");
         }
         catch (Exception ex)

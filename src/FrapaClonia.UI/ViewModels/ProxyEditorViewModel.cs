@@ -389,7 +389,7 @@ public partial class ProxyEditorViewModel : ObservableObject
 
             await _presetService.SaveCurrentPresetAsync();
 
-            _logger?.LogInformation("Proxy saved: {ProxyName}", proxy.Name);
+            _logger?.LogDebug("Proxy saved: {ProxyName}", proxy.Name);
             _toastService?.Success("Saved", $"Proxy '{proxy.Name}' saved successfully");
         }
         catch (Exception ex)

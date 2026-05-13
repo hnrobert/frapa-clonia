@@ -56,18 +56,18 @@ public class CacheService : ICacheService
     {
         try
         {
-            _logger.LogInformation("Initializing cache service...");
+            _logger.LogDebug("Initializing cache service...");
 
             var cache = await _tomlSerializer.DeserializeFromFileAsync<AppCache>(_cacheFilePath);
             if (cache != null)
             {
                 _cache = cache;
-                _logger.LogInformation("Cache loaded, current preset: {PresetId}", _cache.CurrentPreset.Id);
+                _logger.LogDebug("Cache loaded, current preset: {PresetId}", _cache.CurrentPreset.Id);
             }
             else
             {
                 _cache = new AppCache();
-                _logger.LogInformation("No existing cache found, using defaults");
+                _logger.LogDebug("No existing cache found, using defaults");
             }
         }
         catch (Exception ex)
@@ -80,7 +80,7 @@ public class CacheService : ICacheService
     public Task SetCurrentPresetAsync(Guid presetId)
     {
         _cache.CurrentPreset.Id = presetId;
-        _logger.LogInformation("Current preset set to: {PresetId}", presetId);
+        _logger.LogDebug("Current preset set to: {PresetId}", presetId);
         return Task.CompletedTask;
     }
 
@@ -89,7 +89,7 @@ public class CacheService : ICacheService
         try
         {
             await _tomlSerializer.SerializeToFileAsync(_cacheFilePath, _cache);
-            _logger.LogInformation("Cache saved to {FilePath}", _cacheFilePath);
+            _logger.LogDebug("Cache saved to {FilePath}", _cacheFilePath);
         }
         catch (Exception ex)
         {

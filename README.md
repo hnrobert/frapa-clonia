@@ -42,7 +42,7 @@ Download the latest release from the [Releases](https://github.com/hnrobert/frap
 
 | Platform | File |
 |---|---|
-| Windows | `FrapaClonia-{version}-win-x64.zip` |
+| Windows | `FrapaClonia-{version}-windows-x64.zip` |
 | macOS (Apple Silicon) | `FrapaClonia-{version}-macos-arm64.dmg` |
 | macOS (Intel) | `FrapaClonia-{version}-macos-x64.dmg` |
 | Linux (x64) | `FrapaClonia-{version}-linux-x64.tar.gz` |

@@ -34,7 +34,7 @@ public partial class ThemeService : ObservableObject
     {
         UpdateThemeFlags();
         ApplyTheme(value);
-        _logger.LogInformation("Theme changed to: {Theme}", value);
+        _logger.LogDebug("Theme changed to: {Theme}", value);
     }
 
     private void UpdateThemeFlags()

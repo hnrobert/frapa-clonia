@@ -15,7 +15,7 @@ public class ConfigurationService(ILogger<ConfigurationService> logger, ITomlSer
     {
         try
         {
-            logger.LogInformation("Saving configuration to {FilePath}", filePath);
+            logger.LogDebug("Saving configuration to {FilePath}", filePath);
             return tomlSerializer.SerializeToFileAsync(filePath, configuration, cancellationToken);
         }
         catch (Exception ex)

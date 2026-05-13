@@ -336,7 +336,7 @@ public partial class DashboardViewModel : ObservableObject
         {
             IsFrpcRunning = e.IsRunning;
             FrpcProcessId = e.ProcessId;
-            _logger?.LogInformation("Frpc process state changed: IsRunning={IsRunning}, ProcessId={ProcessId}",
+            _logger?.LogDebug("Frpc process state changed: IsRunning={IsRunning}, ProcessId={ProcessId}",
                 e.IsRunning, e.ProcessId);
             UpdateOverviewStats();
         });

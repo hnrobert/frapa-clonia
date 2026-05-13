@@ -33,7 +33,7 @@ public class UpdateService : IUpdateService
     {
         try
         {
-            _logger.LogInformation("Checking for updates (current: {Version})", CurrentVersion);
+            _logger.LogDebug("Checking for updates (current: {Version})", CurrentVersion);
 
             var currentStr = CurrentVersion.Contains('+') ? CurrentVersion[..CurrentVersion.IndexOf('+')] : CurrentVersion;
             if (!Version.TryParse(currentStr, out var current))
@@ -82,11 +82,11 @@ public class UpdateService : IUpdateService
             }
 
             if (stableUpdate != null)
-                _logger.LogInformation("Stable update available: {Version}", stableUpdate.Version);
+                _logger.LogDebug("Stable update available: {Version}", stableUpdate.Version);
             if (prereleaseUpdate != null)
-                _logger.LogInformation("Prerelease update available: {Version}", prereleaseUpdate.Version);
+                _logger.LogDebug("Prerelease update available: {Version}", prereleaseUpdate.Version);
             if (stableUpdate == null && prereleaseUpdate == null)
-                _logger.LogInformation("App is up to date ({Current})", CurrentVersion);
+                _logger.LogDebug("App is up to date ({Current})", CurrentVersion);
 
             return new UpdateCheckResult
             {

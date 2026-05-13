@@ -62,7 +62,7 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
                 if (File.Exists(archivePath))
                 {
                     File.Delete(archivePath);
-                    logger.LogInformation("Deleted archive file: {ArchivePath}", archivePath);
+                    logger.LogDebug("Deleted archive file: {ArchivePath}", archivePath);
                 }
             }
             catch (Exception ex)
@@ -91,7 +91,7 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
                 return false;
             }
 
-            logger.LogInformation("Verifying frpc binary at {BinaryPath}", binaryPath);
+            logger.LogDebug("Verifying frpc binary at {BinaryPath}", binaryPath);
 
             // If checksum provided, verify it
             if (!string.IsNullOrEmpty(expectedChecksum))
@@ -193,7 +193,7 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
                 return Task.CompletedTask;
             }
 
-            logger.LogInformation("Setting executable permissions on {BinaryPath}", binaryPath);
+            logger.LogDebug("Setting executable permissions on {BinaryPath}", binaryPath);
 
             // Use chmod +x to make the binary executable
             var process = new System.Diagnostics.Process
@@ -289,7 +289,7 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
             }
 
             Directory.Delete(folderPath, true);
-            logger.LogInformation("Deleted version folder: {FolderPath}", folderPath);
+            logger.LogDebug("Deleted version folder: {FolderPath}", folderPath);
             return Task.FromResult(true);
         }
         catch (Exception ex)
@@ -388,7 +388,7 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
                 try
                 {
                     Directory.Delete(tempDir, true);
-                    logger.LogInformation("Cleaned up temp extraction directory: {TempDir}", tempDir);
+                    logger.LogDebug("Cleaned up temp extraction directory: {TempDir}", tempDir);
                 }
                 catch
                 {
@@ -445,7 +445,7 @@ public class NativeDeploymentService(ILogger<NativeDeploymentService> logger) : 
                 try
                 {
                     Directory.Delete(tempDir, true);
-                    logger.LogInformation("Cleaned up temp extraction directory: {TempDir}", tempDir);
+                    logger.LogDebug("Cleaned up temp extraction directory: {TempDir}", tempDir);
                 }
                 catch
                 {

@@ -1071,19 +1071,19 @@
     <value>停止容器失败: {0}</value>
   </data>
   <data name="Toast_FilePickerNotAvailable" xml:space="preserve">
-    <value>File picker not available</value>
+    <value>无法找到系统文件资源管理器</value>
   </data>
   <data name="Toast_FrpcDetected" xml:space="preserve">
-    <value>Frpc Detected</value>
+    <value>检测到 frpc</value>
   </data>
   <data name="Toast_FrpcDownloaded" xml:space="preserve">
-    <value>Frpc downloaded to: {0}</value>
+    <value>Frpc 已被下载到: {0}</value>
   </data>
   <data name="Toast_FrpcFound" xml:space="preserve">
     <value>已找到 Frpc</value>
   </data>
   <data name="Toast_FrpcFoundAt" xml:space="preserve">
-    <value>Frpc found at: {0}</value>
+    <value>在下面位置找到了 frpc: {0}</value>
   </data>
   <data name="Toast_FrpcNotFound" xml:space="preserve">
     <value>未找到 Frpc</value>
@@ -1101,16 +1101,16 @@
     <value>生成失败</value>
   </data>
   <data name="Toast_InstallFailed" xml:space="preserve">
-    <value>Install Failed</value>
+    <value>安装失败</value>
   </data>
   <data name="Toast_InstallFailedWithError" xml:space="preserve">
-    <value>Install failed: {0}</value>
+    <value>安装失败: {0}</value>
   </data>
   <data name="Toast_Installing" xml:space="preserve">
-    <value>Installing...</value>
+    <value>正在安装...</value>
   </data>
   <data name="Toast_InstallingFrpcVia" xml:space="preserve">
-    <value>Installing frpc via {0}...</value>
+    <value>正在通过 {0} 安装 frpc...</value>
   </data>
   <data name="Toast_InvalidBinary" xml:space="preserve">
     <value>Invalid Binary</value>
@@ -1134,31 +1134,31 @@
     <value>未找到 docker-compose.yml</value>
   </data>
   <data name="Toast_NoPath" xml:space="preserve">
-    <value>No Path</value>
+    <value>没有路径</value>
   </data>
   <data name="Toast_NoSelection" xml:space="preserve">
-    <value>No Selection</value>
+    <value>没有被选中的选项</value>
   </data>
   <data name="Toast_NoVersion" xml:space="preserve">
-    <value>No Version Selected</value>
+    <value>没有版本被选择</value>
   </data>
   <data name="Toast_NotImplemented" xml:space="preserve">
     <value>未实现</value>
   </data>
   <data name="Toast_OpeningUrl" xml:space="preserve">
-    <value>Opening: {0}</value>
+    <value>正在打开: {0}</value>
   </data>
   <data name="Toast_PackageManagerNotAvailable" xml:space="preserve">
-    <value>Package manager not available for frpc installation</value>
+    <value>无法为安装 frpc 找到一个合适的包管理器</value>
   </data>
   <data name="Toast_SelectFrpcPath" xml:space="preserve">
-    <value>Please select a frpc executable path</value>
+    <value>请选择一个 frpc 可执行文件</value>
   </data>
   <data name="Toast_SelectVersionFirst" xml:space="preserve">
-    <value>Please select a frpc version first</value>
+    <value>请先选择一个 frpc 版本</value>
   </data>
   <data name="Toast_SelectVersionToDelete" xml:space="preserve">
-    <value>Please select a version to delete</value>
+    <value>请选择一个需要删除的版本</value>
   </data>
   <data name="Toast_ServiceManagerNotAvailable" xml:space="preserve">
     <value>Service manager not available</value>
@@ -1305,7 +1305,7 @@
     <value>类型</value>
   </data>
   <data name="UninstallService" xml:space="preserve">
-    <value>Uninstall Service</value>
+    <value>卸载服务</value>
   </data>
   <data name="Undo" xml:space="preserve">
     <value>撤销</value>
@@ -1431,10 +1431,10 @@
     <value>未运行</value>
   </data>
   <data name="DeploymentMode_Native" xml:space="preserve">
-    <value>原生</value>
+    <value>本地服务部署</value>
   </data>
   <data name="DeploymentMode_Docker" xml:space="preserve">
-    <value>Docker</value>
+    <value>Docker 容器部署</value>
   </data>
   <data name="SwitchMode_Title" xml:space="preserve">
     <value>切换部署模式</value>
@@ -1455,7 +1455,7 @@
     <value>忽略风险并切换</value>
   </data>
   <data name="SwitchMode_ComposeDownAndContinue" xml:space="preserve">
-    <value>Compose Down 并切换</value>
+    <value>清除容器并切换</value>
   </data>
   <data name="SwitchMode_StopUninstallAndContinue" xml:space="preserve">
     <value>停止、卸载服务并切换</value>

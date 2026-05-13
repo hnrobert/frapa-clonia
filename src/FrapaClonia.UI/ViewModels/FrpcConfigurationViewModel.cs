@@ -283,7 +283,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         try
         {
             IsDetecting = true;
-            _logger?.LogInformation("Auto-detecting frpc in PATH");
+            _logger?.LogDebug("Auto-detecting frpc in PATH");
 
             var whichCmd = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "where" : "which";
             var result = await _processManager!.ExecuteAsync(whichCmd, "frpc");
@@ -365,7 +365,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
             {
                 IsPathValid = true;
                 DetectedVersion = version.Version;
-                _logger?.LogInformation("Frpc version detected: {Version}", DetectedVersion);
+                _logger?.LogDebug("Frpc version detected: {Version}", DetectedVersion);
             }
             else
             {
@@ -523,7 +523,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         {
             IsLoadingGitHubVersions = true;
             IsLoadingVersions = true;
-            _logger?.LogInformation("Refreshing available frpc versions from GitHub");
+            _logger?.LogDebug("Refreshing available frpc versions from GitHub");
 
             if (_frpcVersionService != null)
             {
@@ -533,7 +533,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
                 // Select latest by default
                 SelectedGitHubVersion = GitHubVersions.FirstOrDefault();
 
-                _logger?.LogInformation("Found {Count} frpc versions from GitHub", GitHubVersions.Count);
+                _logger?.LogDebug("Found {Count} frpc versions from GitHub", GitHubVersions.Count);
 
                 // Only show toast when fetched from GitHub (not from cache)
                 if (_frpcVersionService.WasRateLimited)
@@ -590,7 +590,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         try
         {
             IsCheckingPackageManagers = true;
-            _logger?.LogInformation("Detecting available package managers");
+            _logger?.LogDebug("Detecting available package managers");
 
             if (_packageManagerService != null)
             {
@@ -602,7 +602,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
                                              .FirstOrDefault(m => m is { IsInstalled: true, CanInstallFrpc: true }) ??
                                          AvailablePackageManagers.FirstOrDefault(m => m.IsInstalled);
 
-                _logger?.LogInformation("Found {Count} package managers", AvailablePackageManagers.Count);
+                _logger?.LogDebug("Found {Count} package managers", AvailablePackageManagers.Count);
             }
         }
         catch (Exception ex)
@@ -829,7 +829,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
         try
         {
             IsLoadingDownloadedVersions = true;
-            _logger?.LogInformation("Refreshing all detected frpc installations");
+            _logger?.LogDebug("Refreshing all detected frpc installations");
 
             // Get all detected frpc installations (app downloads, package managers, PATH)
             var versions = await _nativeDeploymentService.GetAllDetectedFrpcAsync(
@@ -844,7 +844,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
             }
 
             DownloadedVersions = versions.ToList();
-            _logger?.LogInformation("Found {Count} frpc installations", DownloadedVersions.Count);
+            _logger?.LogDebug("Found {Count} frpc installations", DownloadedVersions.Count);
         }
         catch (Exception ex)
         {
@@ -916,7 +916,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
                             success = await _packageManagerService.UninstallFrpcAsync(version.PackageManagerName);
                             if (success)
                             {
-                                _logger?.LogInformation("Uninstalled frpc via package manager {PackageManager}",
+                                _logger?.LogDebug("Uninstalled frpc via package manager {PackageManager}",
                                     version.PackageManagerName);
                             }
                         }
@@ -958,7 +958,7 @@ public partial class FrpcConfigurationViewModel : ObservableObject
 
         if (deletedCount > 0)
         {
-            _logger?.LogInformation("Deleted {Count} frpc versions", deletedCount);
+            _logger?.LogDebug("Deleted {Count} frpc versions", deletedCount);
         }
     }
 

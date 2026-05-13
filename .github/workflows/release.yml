@@ -69,15 +69,15 @@ jobs:
       - name: Upload build artifacts (Windows ZIP)
         uses: actions/upload-artifact@main
         with:
-          name: release-${{ needs.version.outputs.version }}-win-x64
-          path: FrapaClonia-${{ needs.version.outputs.version }}-win-x64.zip
+          name: release-${{ needs.version.outputs.version }}-windows-x64
+          path: FrapaClonia-${{ needs.version.outputs.version }}-windows-x64.zip
           retention-days: 7
 
       - name: Upload build artifacts (Windows MSI)
         uses: actions/upload-artifact@main
         with:
-          name: release-${{ needs.version.outputs.version }}-win-x64-installer
-          path: FrapaClonia-${{ needs.version.outputs.version }}-win-x64-installer.msi
+          name: release-${{ needs.version.outputs.version }}-windows-x64-installer
+          path: FrapaClonia-${{ needs.version.outputs.version }}-windows-x64-installer.msi
           retention-days: 7
 
   build-linux:

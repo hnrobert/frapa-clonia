@@ -41,7 +41,7 @@ public class FrpcDownloadService : IFrpcDownloadService
     {
         try
         {
-            _logger.LogInformation("Fetching available frpc versions from GitHub");
+            _logger.LogDebug("Fetching available frpc versions from GitHub");
             ApplyToken();
             var releases = await _gitHubClient.Repository.Release.GetAll("fatedier", "frp");
 
@@ -90,7 +90,7 @@ public class FrpcDownloadService : IFrpcDownloadService
             throw new InvalidOperationException($"No suitable asset found in release {release.TagName}");
         }
 
-        _logger.LogInformation("Downloading frpc {Version} for {Platform}-{Arch} from {Url}",
+        _logger.LogDebug("Downloading frpc {Version} for {Platform}-{Arch} from {Url}",
             release.Version, platform, arch, asset.DownloadUrl);
 
         // Ensure target directory exists
@@ -122,7 +122,7 @@ public class FrpcDownloadService : IFrpcDownloadService
             }
         }
 
-        _logger.LogInformation("Downloaded frpc to {FilePath}", filePath);
+        _logger.LogDebug("Downloaded frpc to {FilePath}", filePath);
         return filePath;
     }
 
@@ -130,7 +130,7 @@ public class FrpcDownloadService : IFrpcDownloadService
     {
         try
         {
-            _logger.LogInformation("Fetching latest frpc version from GitHub");
+            _logger.LogDebug("Fetching latest frpc version from GitHub");
             ApplyToken();
             var latest = await _gitHubClient.Repository.Release.GetLatest("fatedier", "frp");
 
@@ -161,7 +161,7 @@ public class FrpcDownloadService : IFrpcDownloadService
     {
         try
         {
-            _logger.LogInformation("Downloading frpc from mirror {MirrorUrl}", mirrorUrl);
+            _logger.LogDebug("Downloading frpc from mirror {MirrorUrl}", mirrorUrl);
 
             // Ensure target directory exists
             Directory.CreateDirectory(targetDirectory);
@@ -192,7 +192,7 @@ public class FrpcDownloadService : IFrpcDownloadService
                 }
             }
 
-            _logger.LogInformation("Downloaded frpc from mirror to {FilePath}", filePath);
+            _logger.LogDebug("Downloaded frpc from mirror to {FilePath}", filePath);
             return filePath;
         }
         catch (Exception ex)

@@ -32,7 +32,7 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
         {
             if (!File.Exists(filePath))
             {
-                logger.LogInformation("TOML file not found at {FilePath}, returning empty config", filePath);
+                logger.LogDebug("TOML file not found at {FilePath}, returning empty config", filePath);
                 return Task.FromResult<FrpClientConfig?>(new FrpClientConfig
                 {
                     CommonConfig = new ClientCommonConfig(),
@@ -42,7 +42,7 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
             }
 
             var tomlContent = File.ReadAllText(filePath, Encoding.UTF8);
-            logger.LogInformation("Deserializing TOML file at {FilePath}", filePath);
+            logger.LogDebug("Deserializing TOML file at {FilePath}", filePath);
             return DeserializeAsync(tomlContent, cancellationToken);
         }
         catch (Exception ex)
@@ -104,7 +104,7 @@ public class TomlSerializer(ILogger<TomlSerializer> logger) : ITomlSerializer
 
             var content = SerializeAsync(configuration, cancellationToken).Result;
             File.WriteAllText(filePath, content);
-            logger.LogInformation("Serialized configuration to file at {FilePath}", filePath);
+            logger.LogDebug("Serialized configuration to file at {FilePath}", filePath);
             return Task.CompletedTask;
         }
         catch (Exception ex)

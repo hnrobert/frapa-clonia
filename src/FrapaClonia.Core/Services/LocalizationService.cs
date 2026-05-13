@@ -50,7 +50,7 @@ public class LocalizationService : ILocalizationService
         // Apply the culture immediately
         ApplyCulture(CurrentCulture);
 
-        _logger.LogInformation("Localization initialized with culture: {Culture}", CurrentCulture.Name);
+        _logger.LogDebug("Localization initialized with culture: {Culture}", CurrentCulture.Name);
     }
 
     private static void ApplyCulture(CultureInfo culture)
@@ -73,7 +73,7 @@ public class LocalizationService : ILocalizationService
                 {
                     if (SupportedCultures.FirstOrDefault(c => c.Name == languageCode) is { } culture)
                     {
-                        _logger.LogInformation("Loaded saved language: {Language}", languageCode);
+                        _logger.LogDebug("Loaded saved language: {Language}", languageCode);
                         return culture;
                     }
                 }
@@ -93,7 +93,7 @@ public class LocalizationService : ILocalizationService
         CurrentCulture = culture;
         ApplyCulture(culture);
         CultureChanged?.Invoke(this, EventArgs.Empty);
-        _logger.LogInformation("Culture changed to: {Culture}", culture.Name);
+        _logger.LogDebug("Culture changed to: {Culture}", culture.Name);
     }
 
     public string GetString(string key, params object[] args)

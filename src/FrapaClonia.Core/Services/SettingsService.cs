@@ -32,12 +32,12 @@ public class SettingsService : ISettingsService
             if (settings != null)
             {
                 Settings = settings;
-                _logger.LogInformation("Settings loaded from {FilePath}", _settingsFilePath);
+                _logger.LogDebug("Settings loaded from {FilePath}", _settingsFilePath);
             }
             else
             {
                 Settings = new AppSettings();
-                _logger.LogInformation("No settings file found, using defaults");
+                _logger.LogDebug("No settings file found, using defaults");
             }
         }
         catch (Exception ex)
@@ -52,7 +52,7 @@ public class SettingsService : ISettingsService
         try
         {
             await _tomlSerializer.SerializeToFileAsync(_settingsFilePath, Settings);
-            _logger.LogInformation("Settings saved to {FilePath}", _settingsFilePath);
+            _logger.LogDebug("Settings saved to {FilePath}", _settingsFilePath);
         }
         catch (Exception ex)
         {

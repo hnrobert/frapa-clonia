@@ -16,7 +16,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
     {
         try
         {
-            logger.LogInformation("Checking if Docker is available");
+            logger.LogDebug("Checking if Docker is available");
 
             var process = new System.Diagnostics.Process
             {
@@ -34,7 +34,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             await process.WaitForExitAsync(cancellationToken);
 
             var available = process.ExitCode == 0;
-            logger.LogInformation("Docker is {Status}", available ? "available" : "not available");
+            logger.LogDebug("Docker is {Status}", available ? "available" : "not available");
 
             return available;
         }
@@ -50,7 +50,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
     {
         try
         {
-            logger.LogInformation("Generating docker-compose.yml at {OutputPath}", outputPath);
+            logger.LogDebug("Generating docker-compose.yml at {OutputPath}", outputPath);
 
             var composeContent = GenerateDockerComposeContent(config);
 
@@ -65,7 +65,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             }
 
             await File.WriteAllTextAsync(composePath, composeContent, cancellationToken);
-            logger.LogInformation("docker-compose.yml generated successfully");
+            logger.LogDebug("docker-compose.yml generated successfully");
 
             return composePath;
         }
@@ -150,7 +150,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
     {
         try
         {
-            logger.LogInformation("Starting docker-compose in {Directory}", composeDirectory);
+            logger.LogDebug("Starting docker-compose in {Directory}", composeDirectory);
 
             var composeFile = Path.Combine(composeDirectory, "docker-compose.yml");
             if (!File.Exists(composeFile))
@@ -181,7 +181,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
     {
         try
         {
-            logger.LogInformation("Recreating docker-compose services in {Directory}", composeDirectory);
+            logger.LogDebug("Recreating docker-compose services in {Directory}", composeDirectory);
 
             var composeFile = Path.Combine(composeDirectory, "docker-compose.yml");
             if (!File.Exists(composeFile))
@@ -254,13 +254,13 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             {
                 if (attempt > 1)
                 {
-                    logger.LogInformation("docker-compose {Operation} succeeded on retry attempt {Attempt}",
+                    logger.LogDebug("docker-compose {Operation} succeeded on retry attempt {Attempt}",
                         operation,
                         attempt);
                 }
                 else
                 {
-                    logger.LogInformation("docker-compose {Operation} succeeded", operation);
+                    logger.LogDebug("docker-compose {Operation} succeeded", operation);
                 }
 
                 var successOutput = string.Join('\n', new[] { stdout, stderr }.Where(s => !string.IsNullOrWhiteSpace(s)));
@@ -292,7 +292,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
     {
         try
         {
-            logger.LogInformation("Stopping docker-compose in {Directory}", composeDirectory);
+            logger.LogDebug("Stopping docker-compose in {Directory}", composeDirectory);
 
             var composeFile = Path.Combine(composeDirectory, "docker-compose.yml");
             if (!File.Exists(composeFile))
@@ -330,7 +330,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
 
             var success = process.ExitCode == 0;
             if (success)
-                logger.LogInformation("docker-compose stopped successfully");
+                logger.LogDebug("docker-compose stopped successfully");
             else
                 logger.LogWarning("docker-compose stop failed: {Error}", stderr);
 
@@ -465,7 +465,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
     {
         try
         {
-            logger.LogInformation("Checking if container {ContainerName} is running", containerName);
+            logger.LogDebug("Checking if container {ContainerName} is running", containerName);
 
             var process = new System.Diagnostics.Process
             {
@@ -485,7 +485,7 @@ public class DockerDeploymentService(ILogger<DockerDeploymentService> logger) : 
             var output = (await process.StandardOutput.ReadToEndAsync(cancellationToken)).Trim();
             var isRunning = !string.IsNullOrEmpty(output);
 
-            logger.LogInformation("Container {ContainerName} is {Status}",
+            logger.LogDebug("Container {ContainerName} is {Status}",
                 containerName, isRunning ? "running" : "not running");
 
             return isRunning;

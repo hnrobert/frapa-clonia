@@ -350,7 +350,7 @@ public partial class LogsViewModel : ObservableObject
     private void ToggleFollow()
     {
         IsFollowEnabled = !IsFollowEnabled;
-        _logger?.LogInformation("Log follow {State}", IsFollowEnabled ? "enabled" : "disabled");
+        _logger?.LogDebug("Log follow {State}", IsFollowEnabled ? "enabled" : "disabled");
     }
 
     private void AddLogEntry(LogEntry entry)
@@ -452,7 +452,7 @@ public partial class LogsViewModel : ObservableObject
                 _toastService?.Success("Cleared", "Panel logs have been cleared");
             }
 
-            _logger?.LogInformation("Logs cleared (deleteFiles={DeleteFiles})", deleteFiles);
+            _logger?.LogDebug("Logs cleared (deleteFiles={DeleteFiles})", deleteFiles);
         }
         catch (Exception ex)
         {
@@ -503,7 +503,7 @@ public partial class LogsViewModel : ObservableObject
             await writer.WriteAsync(LogText);
 
             _toastService?.Success("Exported", $"Logs exported to {file.Name}");
-            _logger?.LogInformation("Logs exported to {Path}", file.Path.LocalPath);
+            _logger?.LogDebug("Logs exported to {Path}", file.Path.LocalPath);
         }
         catch (Exception ex)
         {
@@ -579,7 +579,7 @@ public partial class LogsViewModel : ObservableObject
         _logFilePosition = 0;
         _isServiceLogActive = true;
         _fileLogTimer?.Start();
-        _logger?.LogInformation("Started tailing service log file: {Path}", _serviceLogPath);
+        _logger?.LogDebug("Started tailing service log file: {Path}", _serviceLogPath);
     }
 
     private void StopFileLogTailing()

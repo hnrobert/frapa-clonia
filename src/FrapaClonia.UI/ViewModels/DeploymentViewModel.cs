@@ -428,7 +428,7 @@ public partial class DeploymentViewModel : ObservableObject
         if (_presetService?.CurrentPreset != null)
         {
             await LoadFromPresetAsync(_presetService.CurrentPreset);
-            _logger?.LogInformation("Loaded deployment settings from preset: {FrpcBinaryPath}", FrpcBinaryPath);
+            _logger?.LogDebug("Loaded deployment settings from preset: {FrpcBinaryPath}", FrpcBinaryPath);
         }
 
         // Only auto-detect if no saved path exists or the saved path is invalid
@@ -815,7 +815,7 @@ public partial class DeploymentViewModel : ObservableObject
             // Not found
             IsPathValid = false;
             DetectedVersion = null;
-            _logger?.LogInformation("Frpc not found in PATH or common locations");
+            _logger?.LogDebug("Frpc not found in PATH or common locations");
         }
         catch (Exception ex)
         {
@@ -851,7 +851,7 @@ public partial class DeploymentViewModel : ObservableObject
             {
                 IsPathValid = true;
                 DetectedVersion = version.Version;
-                _logger?.LogInformation("Frpc validated: {Path} v{Version}", path, DetectedVersion);
+                _logger?.LogDebug("Frpc validated: {Path} v{Version}", path, DetectedVersion);
             }
             else
             {
@@ -927,7 +927,7 @@ public partial class DeploymentViewModel : ObservableObject
                     {
                         SaveToPreset(_presetService.CurrentPreset);
                         await _presetService.SaveCurrentPresetAsync();
-                        _logger?.LogInformation("Saved frpc binary path to preset: {Path}", FrpcBinaryPath);
+                        _logger?.LogDebug("Saved frpc binary path to preset: {Path}", FrpcBinaryPath);
                     }
                 }
             }
@@ -1163,7 +1163,7 @@ public partial class DeploymentViewModel : ObservableObject
                 }
             }
 
-            _logger?.LogInformation("Docker availability check: {IsAvailable}", IsDockerAvailable);
+            _logger?.LogDebug("Docker availability check: {IsAvailable}", IsDockerAvailable);
 
             if (IsDockerAvailable)
             {
@@ -1320,7 +1320,7 @@ public partial class DeploymentViewModel : ObservableObject
             IsDockerComposeDirty = false;
 
             _toastService?.Success(L("Toast_Generated"), L("Toast_DockerComposeSaved", composePath));
-            _logger?.LogInformation("Saved docker-compose.yml at {Path}", composePath);
+            _logger?.LogDebug("Saved docker-compose.yml at {Path}", composePath);
 
             if (IsDockerAvailable)
             {

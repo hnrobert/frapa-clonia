@@ -330,7 +330,7 @@ public partial class SettingsViewModel : ObservableObject
         if (value == null || _localizationService == null ||
             value.Code == _localizationService.CurrentCulture.Name) return;
         _localizationService.SetCulture(value.Code);
-        _logger?.LogInformation("Language changed to: {Language}", value.Code);
+        _logger?.LogDebug("Language changed to: {Language}", value.Code);
     }
 
     private async Task LoadSettingsAsync()
@@ -355,7 +355,7 @@ public partial class SettingsViewModel : ObservableObject
             if (_localizationService != null && cultureCode != _localizationService.CurrentCulture.Name)
             {
                 _localizationService.SetCulture(cultureCode);
-                _logger?.LogInformation("Loaded language setting: {Language}", cultureCode);
+                _logger?.LogDebug("Loaded language setting: {Language}", cultureCode);
             }
 
             if (_autoStartService != null) AutoStartEnabled = await _autoStartService.IsAutoStartEnabledAsync();
@@ -370,7 +370,7 @@ public partial class SettingsViewModel : ObservableObject
                 _ => 2
             };
 
-            _logger?.LogInformation("Settings loaded: Language={Language}, Theme={Theme}", cultureCode, themeStr);
+            _logger?.LogDebug("Settings loaded: Language={Language}, Theme={Theme}", cultureCode, themeStr);
         }
         catch (Exception ex)
         {
@@ -416,7 +416,7 @@ public partial class SettingsViewModel : ObservableObject
             // Refresh version list after deletions
             await RefreshDownloadedVersionsAsync();
 
-            _logger?.LogInformation("Settings saved successfully");
+            _logger?.LogDebug("Settings saved successfully");
             _toastService?.Success("Saved", "Settings saved successfully");
         }
         catch (Exception ex)
@@ -451,7 +451,7 @@ public partial class SettingsViewModel : ObservableObject
                 FileName = path,
                 UseShellExecute = true
             });
-            _logger?.LogInformation("Opened config folder: {Path}", path);
+            _logger?.LogDebug("Opened config folder: {Path}", path);
         }
         catch (Exception ex)
         {
@@ -554,7 +554,7 @@ public partial class SettingsViewModel : ObservableObject
             };
             await client.User.Current();
             GitHubTokenStatus = GitHubTokenStatus.Connected;
-            _logger?.LogInformation("GitHub token validated successfully");
+            _logger?.LogDebug("GitHub token validated successfully");
             _toastService?.Success(L("Toast_GitHubTokenValid"), L("Toast_GitHubTokenValidDesc"));
 
             if (_cacheService != null)
@@ -587,7 +587,7 @@ public partial class SettingsViewModel : ObservableObject
                 FileName = url,
                 UseShellExecute = true
             });
-            _logger?.LogInformation("Opened GitHub token creation page");
+            _logger?.LogDebug("Opened GitHub token creation page");
         }
         catch (Exception ex)
         {
@@ -623,7 +623,7 @@ public partial class SettingsViewModel : ObservableObject
             GitHubTokenStatus = GitHubTokenStatus.Connected;
             IsGitHubUpdating = false;
             GitHubTokenInput = "";
-            _logger?.LogInformation("GitHub token saved successfully");
+            _logger?.LogDebug("GitHub token saved successfully");
             _toastService?.Success(L("Toast_Success"), L("Toast_GitHubConnected"));
         }
         catch (Octokit.AuthorizationException)
@@ -688,7 +688,7 @@ public partial class SettingsViewModel : ObservableObject
             GitHubTokenStatus = GitHubTokenStatus.None;
             IsGitHubUpdating = false;
             GitHubTokenInput = "";
-            _logger?.LogInformation("GitHub token removed");
+            _logger?.LogDebug("GitHub token removed");
             _toastService?.Success(L("Toast_Success"), L("Toast_GitHubDisconnected"));
         }
         catch (Exception ex)
@@ -708,7 +708,7 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             IsLoadingVersions = true;
-            _logger?.LogInformation("Refreshing downloaded frpc versions");
+            _logger?.LogDebug("Refreshing downloaded frpc versions");
 
             var versions = await _nativeDeploymentService.GetDownloadedVersionsAsync();
 
@@ -720,7 +720,7 @@ public partial class SettingsViewModel : ObservableObject
             }
 
             DownloadedVersions = versions.ToList();
-            _logger?.LogInformation("Found {Count} downloaded frpc versions", DownloadedVersions.Count);
+            _logger?.LogDebug("Found {Count} downloaded frpc versions", DownloadedVersions.Count);
         }
         catch (Exception ex)
         {
@@ -790,7 +790,7 @@ public partial class SettingsViewModel : ObservableObject
 
         if (deletedCount > 0)
         {
-            _logger?.LogInformation("Deleted {Count} frpc versions", deletedCount);
+            _logger?.LogDebug("Deleted {Count} frpc versions", deletedCount);
         }
     }
 

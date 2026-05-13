@@ -198,7 +198,7 @@ public partial class VisitorEditorViewModel : ObservableObject
 
             await _presetService.SaveCurrentPresetAsync();
 
-            _logger?.LogInformation("Visitor saved: {VisitorName}", visitor.Name);
+            _logger?.LogDebug("Visitor saved: {VisitorName}", visitor.Name);
             _toastService?.Success("Saved", $"Visitor '{visitor.Name}' saved successfully");
         }
         catch (Exception ex)

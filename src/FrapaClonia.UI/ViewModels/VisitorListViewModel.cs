@@ -139,17 +139,17 @@ public partial class VisitorListViewModel : ObservableObject
         try
         {
             IsLoading = true;
-            _logger?.LogInformation("LoadVisitorsAsync: Starting, IsLoading={IsLoading}", IsLoading);
+            _logger?.LogDebug("LoadVisitorsAsync: Starting, IsLoading={IsLoading}", IsLoading);
 
             if (_presetService?.CurrentPreset != null)
             {
                 Visitors = _presetService.CurrentPreset.Configuration.Visitors;
-                _logger?.LogInformation("Loaded {Count} visitors", Visitors.Count);
+                _logger?.LogDebug("Loaded {Count} visitors", Visitors.Count);
             }
             else
             {
                 Visitors = [];
-                _logger?.LogInformation("No current preset, setting Visitors to empty list");
+                _logger?.LogDebug("No current preset, setting Visitors to empty list");
             }
         }
         catch (Exception ex)
@@ -160,7 +160,7 @@ public partial class VisitorListViewModel : ObservableObject
         finally
         {
             IsLoading = false;
-            _logger?.LogInformation("LoadVisitorsAsync: Completed, IsLoading={IsLoading}", IsLoading);
+            _logger?.LogDebug("LoadVisitorsAsync: Completed, IsLoading={IsLoading}", IsLoading);
         }
 
         return Task.CompletedTask;
@@ -170,7 +170,7 @@ public partial class VisitorListViewModel : ObservableObject
     {
         try
         {
-            _logger?.LogInformation("Add visitor clicked");
+            _logger?.LogDebug("Add visitor clicked");
 
             if (WindowReuse.ActivateExisting<VisitorEditorView>() != null)
             {
@@ -217,7 +217,7 @@ public partial class VisitorListViewModel : ObservableObject
         try
         {
             if (SelectedVisitor == null) return;
-            _logger?.LogInformation("Edit visitor: {VisitorName}", SelectedVisitor.Name);
+            _logger?.LogDebug("Edit visitor: {VisitorName}", SelectedVisitor.Name);
 
             if (WindowReuse.ActivateExisting<VisitorEditorView>() != null)
             {
@@ -281,7 +281,7 @@ public partial class VisitorListViewModel : ObservableObject
         if (SelectedVisitor == null) return;
         if (_presetService?.CurrentPreset == null) return;
 
-        _logger?.LogInformation("Delete visitor: {VisitorName}", SelectedVisitor.Name);
+        _logger?.LogDebug("Delete visitor: {VisitorName}", SelectedVisitor.Name);
 
         try
         {
@@ -293,7 +293,7 @@ public partial class VisitorListViewModel : ObservableObject
             await LoadVisitorsAsync();
             SelectedVisitor = null;
 
-            _logger?.LogInformation("Visitor deleted successfully");
+            _logger?.LogDebug("Visitor deleted successfully");
         }
         catch (Exception ex)
         {
@@ -310,7 +310,7 @@ public partial class VisitorListViewModel : ObservableObject
         if (SelectedVisitor == null) return;
         if (_presetService?.CurrentPreset == null) return;
 
-        _logger?.LogInformation("Duplicate visitor: {VisitorName}", SelectedVisitor.Name);
+        _logger?.LogDebug("Duplicate visitor: {VisitorName}", SelectedVisitor.Name);
 
         try
         {
@@ -325,7 +325,7 @@ public partial class VisitorListViewModel : ObservableObject
 
             await LoadVisitorsAsync();
 
-            _logger?.LogInformation("Visitor duplicated successfully");
+            _logger?.LogDebug("Visitor duplicated successfully");
         }
         catch (Exception ex)
         {

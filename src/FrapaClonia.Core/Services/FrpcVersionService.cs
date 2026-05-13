@@ -63,7 +63,7 @@ public class FrpcVersionService(ILogger<FrpcVersionService> logger, ICacheServic
             var age = DateTime.UtcNow - cacheService.LastFrpcVersionCheck.Value;
             if (age < CacheDuration)
             {
-                logger.LogInformation("Using cached frpc versions (age: {Age})", age);
+                logger.LogDebug("Using cached frpc versions (age: {Age})", age);
                 UsedCache = true;
                 return cacheService.FrpcVersions.Select(v => new FrpcVersionInfo
                 {
@@ -80,7 +80,7 @@ public class FrpcVersionService(ILogger<FrpcVersionService> logger, ICacheServic
 
         try
         {
-            logger.LogInformation("Fetching available frpc versions from GitHub");
+            logger.LogDebug("Fetching available frpc versions from GitHub");
             var releases = await FetchReleasesWithRetryAsync();
 
             var versions = releases.Select((r, index) => new FrpcVersionInfo
@@ -116,7 +116,7 @@ public class FrpcVersionService(ILogger<FrpcVersionService> logger, ICacheServic
             // Fall back to stale cache if available
             if (cacheService?.FrpcVersions.Count > 0)
             {
-                logger.LogInformation("Falling back to stale cached versions");
+                logger.LogDebug("Falling back to stale cached versions");
                 return cacheService.FrpcVersions.Select(v => new FrpcVersionInfo
                 {
                     Version = v.Version,
