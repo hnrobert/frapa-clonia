@@ -488,6 +488,12 @@
   <data name="InstallService" xml:space="preserve">
     <value>Install Service</value>
   </data>
+  <data name="InstallPrerelease" xml:space="preserve">
+    <value>Install Prerelease</value>
+  </data>
+  <data name="InstallUpdate" xml:space="preserve">
+    <value>Install Update</value>
+  </data>
   <data name="InstallViaPackageManager" xml:space="preserve">
     <value>Install via package manager</value>
   </data>
@@ -1055,6 +1061,12 @@
   <data name="Toast_DownloadFailed" xml:space="preserve">
     <value>Download Failed</value>
   </data>
+  <data name="Toast_UpdateDownloadFailed" xml:space="preserve">
+    <value>Update Download Failed</value>
+  </data>
+  <data name="Toast_UpdateInstallFailed" xml:space="preserve">
+    <value>Could not apply the update: {0}</value>
+  </data>
   <data name="Toast_DownloadFrom" xml:space="preserve">
     <value>Please download frpc from: {0}</value>
   </data>
@@ -1561,6 +1573,12 @@
   </data>
   <data name="UpdateCheckFailedDesc" xml:space="preserve">
     <value>Could not check for updates. Please try again later.</value>
+  </data>
+  <data name="UpdateRestarting" xml:space="preserve">
+    <value>Restarting</value>
+  </data>
+  <data name="UpdateRestartingDesc" xml:space="preserve">
+    <value>The update has been downloaded. The app will restart shortly.</value>
   </data>
   <data name="PrereleaseAvailable" xml:space="preserve">
     <value>A prerelease version is available</value>
