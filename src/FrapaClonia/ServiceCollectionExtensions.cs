@@ -4,6 +4,8 @@ using FrapaClonia.Shared.Interfaces;
 using FrapaClonia.UI.Services;
 using FrapaClonia.UI.ViewModels;
 using Serilog;
+using Serilog.Core;
+using System;
 using System.IO;
 using System.Text;
 using FrapaClonia.Core.Services;
@@ -53,8 +55,19 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<SettingsViewModel>();
 
         // Logging
+        var levelSwitch = new LoggingLevelSwitch();
+        // Expose a delegate so UI-layer code can change the level without a Serilog dependency.
+        Action<string> setLogLevel = level => levelSwitch.MinimumLevel = level switch
+        {
+            "Debug" => LogEventLevel.Debug,
+            "Warning" => LogEventLevel.Warning,
+            "Error" => LogEventLevel.Error,
+            _ => LogEventLevel.Information
+        };
+        services.AddSingleton(setLogLevel);
+
         Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
+            .MinimumLevel.ControlledBy(levelSwitch)
             .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}", standardErrorFromLevel: LogEventLevel.Error)
             .WriteTo.File(Path.Combine(ConfigurationService.GetAppDataDirectory(), "logs", "frapa-clonia-.log"), rollingInterval: RollingInterval.Day, encoding: Encoding.UTF8)
             .CreateLogger();

@@ -27,6 +27,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IPresetService? _presetService;
     private readonly ICacheService? _cacheService;
     private readonly IUpdateService? _updateService;
+    private readonly Action<string>? _setLogLevel;
 
     [ObservableProperty] private LanguageOption? _selectedLanguage;
 
@@ -37,6 +38,8 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _isSaving;
 
     [ObservableProperty] private int _themeIndex;
+
+    [ObservableProperty] private int _logLevelIndex;
 
     // Frpc Version Management
     [ObservableProperty] private List<DownloadedFrpcVersion> _downloadedVersions = [];
@@ -103,7 +106,8 @@ public partial class SettingsViewModel : ObservableObject
         null!,
         null!,
         null!,
-        null!)
+        null!,
+        null)
     {
     }
 
@@ -117,7 +121,8 @@ public partial class SettingsViewModel : ObservableObject
         INativeDeploymentService? nativeDeploymentService,
         IPresetService? presetService,
         ICacheService? cacheService,
-        IUpdateService? updateService)
+        IUpdateService? updateService,
+        Action<string>? setLogLevel)
     {
         _logger = logger;
         _localizationService = localizationService;
@@ -129,6 +134,7 @@ public partial class SettingsViewModel : ObservableObject
         _presetService = presetService;
         _cacheService = cacheService;
         _updateService = updateService;
+        _setLogLevel = setLogLevel;
 
         AvailableLanguages =
         [
@@ -338,6 +344,18 @@ public partial class SettingsViewModel : ObservableObject
         _themeService?.CurrentTheme = theme;
     }
 
+    partial void OnLogLevelIndexChanged(int value)
+    {
+        var level = value switch
+        {
+            0 => "Debug",
+            2 => "Warning",
+            3 => "Error",
+            _ => "Information"
+        };
+        _setLogLevel?.Invoke(level);
+    }
+
     partial void OnSelectedLanguageChanged(LanguageOption? value)
     {
         if (value == null || _localizationService == null ||
@@ -383,6 +401,16 @@ public partial class SettingsViewModel : ObservableObject
                 _ => 2
             };
 
+            // Set log level from settings
+            LogLevelIndex = settings.LogLevel switch
+            {
+                "Debug" => 0,
+                "Warning" => 2,
+                "Error" => 3,
+                _ => 1
+            };
+            _setLogLevel?.Invoke(settings.LogLevel);
+
             _logger?.LogDebug("Settings loaded: Language={Language}, Theme={Theme}", cultureCode, themeStr);
         }
         catch (Exception ex)
@@ -422,6 +450,13 @@ public partial class SettingsViewModel : ObservableObject
                     _ => "Default"
                 };
                 _settingsService.Settings.AutoStart = AutoStartEnabled;
+                _settingsService.Settings.LogLevel = LogLevelIndex switch
+                {
+                    0 => "Debug",
+                    2 => "Warning",
+                    3 => "Error",
+                    _ => "Information"
+                };
 
                 await _settingsService.SaveAsync();
             }

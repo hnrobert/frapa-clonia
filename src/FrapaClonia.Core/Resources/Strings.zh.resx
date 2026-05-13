@@ -176,8 +176,8 @@
   <data name="ConfigurationIsValid" xml:space="preserve">
     <value>配置有效</value>
   </data>
-  <data name="ConfigurationLocation" xml:space="preserve">
-    <value>配置位置</value>
+  <data name="StorageLocation" xml:space="preserve">
+    <value>存储位置</value>
   </data>
   <data name="ConfigurationStoredInAppDir" xml:space="preserve">
     <value>配置存储在应用程序目录中（需要 portable.txt）</value>
@@ -928,6 +928,9 @@
   </data>
   <data name="Theme" xml:space="preserve">
     <value>主题</value>
+  </data>
+  <data name="LogLevel" xml:space="preserve">
+    <value>日志级别</value>
   </data>
   <data name="TimeoutSeconds" xml:space="preserve">
     <value>超时（秒）</value>
