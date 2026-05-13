@@ -170,17 +170,15 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
                 // Use osascript to prompt for credentials and run with elevated privileges
                 return await InstallSystemServiceAsync(plistPath, plistContent, cancellationToken);
             }
-            else
-            {
-                // User scope doesn't require elevation
-                Directory.CreateDirectory(plistDir);
-                await File.WriteAllTextAsync(plistPath, plistContent, cancellationToken);
 
-                // Load the service without starting it (use -w to disable RunAtLoad)
-                var result = await processManager.ExecuteAsync("launchctl", $"load -w \"{plistPath}\"",
-                    cancellationToken: cancellationToken);
-                return result.ExitCode == 0;
-            }
+            // User scope doesn't require elevation
+            Directory.CreateDirectory(plistDir);
+            await File.WriteAllTextAsync(plistPath, plistContent, cancellationToken);
+
+            // Load the service without starting it (use -w to disable RunAtLoad)
+            var result = await processManager.ExecuteAsync("launchctl", $"load -w \"{plistPath}\"",
+                cancellationToken: cancellationToken);
+            return result.ExitCode == 0;
         }
         catch (Exception ex)
         {
