@@ -420,59 +420,82 @@ internal class MacOsServiceManager(ILogger logger, IProcessManager processManage
 
 /// <summary>
 /// Windows service manager.
-/// User scope uses Task Scheduler (no admin required).
-/// System scope uses sc.exe (requires admin).
+/// User scope: Registry Run key for auto-start + direct process management (no admin required).
+/// System scope: sc.exe (requires admin).
 /// </summary>
 internal class WindowsServiceManager(ILogger logger, IProcessManager processManager) : IPlatformServiceManager
 {
-    // No subfolder — schtasks silently fails when the folder doesn't exist.
-    // The service name already contains the preset GUID so it's globally unique.
-    private static string GetTaskName(string serviceName) => serviceName;
+    private const string RunKeyPath = @"HKCU\Software\Microsoft\Windows\CurrentVersion\Run";
+
+    private static string GetUserConfigPath(string serviceName)
+    {
+        var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        return Path.Combine(appData, "FrapaClonia", "tasks", $"{serviceName}.json");
+    }
+
+    private static async Task<(string BinaryPath, string ConfigPath)?> ReadUserConfigAsync(string serviceName)
+    {
+        var path = GetUserConfigPath(serviceName);
+        if (!File.Exists(path)) return null;
+        var json = await File.ReadAllTextAsync(path);
+        var doc = System.Text.Json.JsonDocument.Parse(json);
+        return (doc.RootElement.GetProperty("BinaryPath").GetString()!,
+                doc.RootElement.GetProperty("ConfigPath").GetString()!);
+    }
+
+    private static bool IsProcessRunning(string binaryPath)
+    {
+        foreach (var p in System.Diagnostics.Process.GetProcesses())
+        {
+            try { if (string.Equals(p.MainModule?.FileName, binaryPath, StringComparison.OrdinalIgnoreCase)) return true; }
+            catch
+            {
+                // ignored
+            }
+        }
+        return false;
+    }
+
+    private static void KillProcess(string binaryPath)
+    {
+        foreach (var p in System.Diagnostics.Process.GetProcesses())
+        {
+            try { if (string.Equals(p.MainModule?.FileName, binaryPath, StringComparison.OrdinalIgnoreCase)) p.Kill(); }
+            catch
+            {
+                // ignored
+            }
+        }
+    }
 
     public async Task<bool> IsServiceInstalledAsync(string serviceName, CancellationToken cancellationToken = default)
     {
-        // Check Task Scheduler (User scope) first, then sc.exe (System scope).
-        var taskResult = await processManager.ExecuteAsync("schtasks",
-            $"""
-             /query /tn "{GetTaskName(serviceName)}"
-             """, cancellationToken: cancellationToken);
-        if (taskResult.ExitCode == 0) return true;
-
-        var scResult = await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"",
-            cancellationToken: cancellationToken);
-        return scResult.ExitCode == 0;
+        if (File.Exists(GetUserConfigPath(serviceName))) return true;
+        var r = await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"", cancellationToken: cancellationToken);
+        return r.ExitCode == 0;
     }
 
     public async Task<bool> InstallServiceAsync(ServiceConfig config, CancellationToken cancellationToken = default)
     {
         return config.Scope == ServiceScope.User
-            ? await InstallUserTaskAsync(config, cancellationToken)
+            ? await InstallUserAsync(config, cancellationToken)
             : await InstallSystemServiceAsync(config, cancellationToken);
     }
 
-    private async Task<bool> InstallUserTaskAsync(ServiceConfig config, CancellationToken cancellationToken)
+    private async Task<bool> InstallUserAsync(ServiceConfig config, CancellationToken cancellationToken)
     {
         try
         {
-            var taskName = GetTaskName(config.ServiceName);
-            // schtasks /create does not require admin for current-user tasks.
-            // /tr value: inner quotes escaped as \"
-            var tr = $"\\\"{config.BinaryPath}\\\" -c \\\"{config.ConfigPath}\\\"";
-            var scheduleArgs = $"/create /tn \"{taskName}\" /tr \"{tr}\" /sc onlogon /ru \"\" /f";
+            var cfgPath = GetUserConfigPath(config.ServiceName);
+            Directory.CreateDirectory(Path.GetDirectoryName(cfgPath)!);
+            // Manual JSON to avoid JsonSerializer AOT warnings — values are file paths (no special chars needed).
+            var binEsc = config.BinaryPath.Replace("\\", "\\\\").Replace("\"", "\\\"");
+            var cfgEsc = config.ConfigPath.Replace("\\", "\\\\").Replace("\"", "\\\"");
+            var json = $"{{\"BinaryPath\":\"{binEsc}\",\"ConfigPath\":\"{cfgEsc}\"}}";
+            await File.WriteAllTextAsync(cfgPath, json, cancellationToken);
 
-            var result = await processManager.ExecuteAsync("schtasks", scheduleArgs, cancellationToken: cancellationToken);
-            if (result.ExitCode != 0)
-            {
-                logger.LogError("Failed to create scheduled task: {Error}", result.StandardError);
-                return false;
-            }
-
-            // If not auto-start, disable the task so it won't run at logon automatically.
-            if (!config.AutoStart)
-            {
-                await processManager.ExecuteAsync("schtasks",
-                    $"/change /tn \"{taskName}\" /disable", cancellationToken: cancellationToken);
-            }
+            if (config.AutoStart)
+                await SetRunKeyAsync(config.ServiceName, config.BinaryPath, config.ConfigPath, true, cancellationToken);
 
             return true;
         }
@@ -480,6 +503,23 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
         {
             logger.LogError(ex, "Failed to install user task");
             return false;
+        }
+    }
+
+    private async Task SetRunKeyAsync(string serviceName, string binaryPath, string configPath, bool enable, CancellationToken cancellationToken)
+    {
+        if (enable)
+        {
+            var value = $"\\\"{binaryPath}\\\" -c \\\"{configPath}\\\"";
+            await processManager.ExecuteAsync("reg",
+                $"add \"{RunKeyPath}\" /v \"{serviceName}\" /t REG_SZ /d \"{value}\" /f",
+                cancellationToken: cancellationToken);
+        }
+        else
+        {
+            await processManager.ExecuteAsync("reg",
+                $"delete \"{RunKeyPath}\" /v \"{serviceName}\" /f",
+                cancellationToken: cancellationToken);
         }
     }
 
@@ -507,25 +547,18 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
     {
         try
         {
-            var taskName = GetTaskName(serviceName);
-            var taskCheck = await processManager.ExecuteAsync("schtasks",
-                $"""
-                 /query /tn "{taskName}"
-                 """, cancellationToken: cancellationToken);
-            if (taskCheck.ExitCode == 0)
+            var cfgPath = GetUserConfigPath(serviceName);
+            if (File.Exists(cfgPath))
             {
-                await processManager.ExecuteAsync("schtasks",
-                    $"""
-                     /end /tn "{taskName}"
-                     """, cancellationToken: cancellationToken);
-                var del = await processManager.ExecuteAsync("schtasks",
-                    $"""/delete /tn "{taskName}" /f""", cancellationToken: cancellationToken);
-                return del.ExitCode == 0;
+                var cfg = await ReadUserConfigAsync(serviceName);
+                if (cfg.HasValue) KillProcess(cfg.Value.BinaryPath);
+                await SetRunKeyAsync(serviceName, "", "", false, cancellationToken);
+                File.Delete(cfgPath);
+                return true;
             }
 
             await StopServiceAsync(serviceName, ServiceScope.System, cancellationToken);
-            var result = await processManager.ExecuteAsync("sc", $"delete \"{serviceName}\"",
-                cancellationToken: cancellationToken);
+            var result = await processManager.ExecuteAsync("sc", $"delete \"{serviceName}\"", cancellationToken: cancellationToken);
             return result.ExitCode == 0;
         }
         catch (Exception ex)
@@ -535,112 +568,90 @@ internal class WindowsServiceManager(ILogger logger, IProcessManager processMana
         }
     }
 
-    public async Task<bool> StartServiceAsync(string serviceName, ServiceScope scope,
-        CancellationToken cancellationToken = default)
+    public async Task<bool> StartServiceAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
     {
         if (scope == ServiceScope.User)
         {
-            var r = await processManager.ExecuteAsync("schtasks",
-                $"""
-                 /run /tn "{GetTaskName(serviceName)}"
-                 """, cancellationToken: cancellationToken);
-            return r.ExitCode == 0;
+            var cfg = await ReadUserConfigAsync(serviceName);
+            if (cfg == null) return false;
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = cfg.Value.BinaryPath,
+                    Arguments = $"-c \"{cfg.Value.ConfigPath}\"",
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                });
+                return true;
+            }
+            catch (Exception ex) { logger.LogError(ex, "Failed to start frpc process"); return false; }
         }
-
-        var result = await processManager.ExecuteAsync("sc", $"start \"{serviceName}\"",
-            cancellationToken: cancellationToken);
-        return result.ExitCode == 0;
+        var r = await processManager.ExecuteAsync("sc", $"start \"{serviceName}\"", cancellationToken: cancellationToken);
+        return r.ExitCode == 0;
     }
 
-    public async Task<bool> StopServiceAsync(string serviceName, ServiceScope scope,
-        CancellationToken cancellationToken = default)
+    public async Task<bool> StopServiceAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
     {
         if (scope == ServiceScope.User)
         {
-            var r = await processManager.ExecuteAsync("schtasks",
-                $"""
-                 /end /tn "{GetTaskName(serviceName)}"
-                 """, cancellationToken: cancellationToken);
-            return r.ExitCode == 0;
+            var cfg = await ReadUserConfigAsync(serviceName);
+            if (cfg == null) return false;
+            KillProcess(cfg.Value.BinaryPath);
+            return true;
         }
-
-        var result = await processManager.ExecuteAsync("sc", $"stop \"{serviceName}\"",
-            cancellationToken: cancellationToken);
-        return result.ExitCode == 0;
+        var r = await processManager.ExecuteAsync("sc", $"stop \"{serviceName}\"", cancellationToken: cancellationToken);
+        return r.ExitCode == 0;
     }
 
-    public async Task<bool> IsServiceRunningAsync(string serviceName, ServiceScope scope,
-        CancellationToken cancellationToken = default)
+    public async Task<bool> IsServiceRunningAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
     {
         if (scope == ServiceScope.User)
         {
-            var r = await processManager.ExecuteAsync("schtasks",
-                $"""/query /tn "{GetTaskName(serviceName)}" /fo LIST""",
-                cancellationToken: cancellationToken);
-            return r.ExitCode == 0 && r.StandardOutput.Contains("Running");
+            var cfg = await ReadUserConfigAsync(serviceName);
+            return cfg.HasValue && IsProcessRunning(cfg.Value.BinaryPath);
         }
-
-        var result = await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"",
-            cancellationToken: cancellationToken);
-        return result.ExitCode == 0 && result.StandardOutput.Contains("RUNNING");
+        var r = await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"", cancellationToken: cancellationToken);
+        return r.ExitCode == 0 && r.StandardOutput.Contains("RUNNING");
     }
 
-    public async Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope,
-        CancellationToken cancellationToken = default)
+    public async Task<ServiceStatus> GetServiceStatusAsync(string serviceName, ServiceScope scope, CancellationToken cancellationToken = default)
     {
         if (scope == ServiceScope.User)
-            return await GetUserTaskStatusAsync(serviceName, cancellationToken);
+        {
+            var cfg = await ReadUserConfigAsync(serviceName);
+            if (cfg == null) return new ServiceStatus { IsInstalled = false, State = "not_installed" };
+            var isRunning = IsProcessRunning(cfg.Value.BinaryPath);
+            var regResult = await processManager.ExecuteAsync("reg",
+                $"query \"{RunKeyPath}\" /v \"{serviceName}\"", cancellationToken: cancellationToken);
+            return new ServiceStatus
+            {
+                IsInstalled = true, IsRunning = isRunning,
+                IsAutoStartEnabled = regResult.ExitCode == 0,
+                State = isRunning ? "running" : "stopped"
+            };
+        }
 
         var isInstalled = await IsServiceInstalledAsync(serviceName, cancellationToken);
-        if (!isInstalled)
-            return new ServiceStatus { IsInstalled = false, State = "not_installed" };
+        if (!isInstalled) return new ServiceStatus { IsInstalled = false, State = "not_installed" };
 
-        var result = await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"",
-            cancellationToken: cancellationToken);
+        var result = await processManager.ExecuteAsync("sc", $"query \"{serviceName}\"", cancellationToken: cancellationToken);
         var output = result.StandardOutput;
-        var isRunning = output.Contains("RUNNING");
-        var state = isRunning ? "running" : output.Contains("STOPPED") ? "stopped" : "unknown";
-
-        var qcResult = await processManager.ExecuteAsync("sc", $"qc \"{serviceName}\"",
-            cancellationToken: cancellationToken);
-        var autoStart = qcResult.StandardOutput.Contains("AUTO_START");
-
-        return new ServiceStatus
-            { IsInstalled = true, IsRunning = isRunning, IsAutoStartEnabled = autoStart, State = state };
+        var running = output.Contains("RUNNING");
+        var state = running ? "running" : output.Contains("STOPPED") ? "stopped" : "unknown";
+        var qc = await processManager.ExecuteAsync("sc", $"qc \"{serviceName}\"", cancellationToken: cancellationToken);
+        return new ServiceStatus { IsInstalled = true, IsRunning = running, IsAutoStartEnabled = qc.StandardOutput.Contains("AUTO_START"), State = state };
     }
 
-    private async Task<ServiceStatus> GetUserTaskStatusAsync(string serviceName, CancellationToken cancellationToken)
-    {
-        var taskName = GetTaskName(serviceName);
-        var result = await processManager.ExecuteAsync("schtasks",
-            $"""/query /tn "{taskName}" /fo LIST""", cancellationToken: cancellationToken);
-
-        if (result.ExitCode != 0)
-            return new ServiceStatus { IsInstalled = false, State = "not_installed" };
-
-        var output = result.StandardOutput;
-        var isRunning = output.Contains("Running");
-        var state = isRunning ? "running" : "stopped";
-        // AtLogon trigger present = auto-start enabled
-        var autoStart = output.Contains("At log on") || output.Contains("AtLogon");
-
-        return new ServiceStatus
-            { IsInstalled = true, IsRunning = isRunning, IsAutoStartEnabled = autoStart, State = state };
-    }
-
-    public async Task<bool> SetAutoStartAsync(string serviceName, bool autoStart, ServiceScope scope,
-        CancellationToken cancellationToken = default)
+    public async Task<bool> SetAutoStartAsync(string serviceName, bool autoStart, ServiceScope scope, CancellationToken cancellationToken = default)
     {
         if (scope == ServiceScope.User)
         {
-            var taskName = GetTaskName(serviceName);
-            // Enable/disable the AtLogon trigger by toggling the task's enabled state.
-            var action = autoStart ? "/enable" : "/disable";
-            var result = await processManager.ExecuteAsync("schtasks",
-                $"""/change /tn "{taskName}" {action}""", cancellationToken: cancellationToken);
-            return result.ExitCode == 0;
+            var cfg = await ReadUserConfigAsync(serviceName);
+            if (cfg == null) return false;
+            await SetRunKeyAsync(serviceName, cfg.Value.BinaryPath, cfg.Value.ConfigPath, autoStart, cancellationToken);
+            return true;
         }
-
         var startType = autoStart ? "auto" : "demand";
         var scResult = await processManager.ExecuteAsync("sc",
             $"config \"{serviceName}\" start= {startType}", cancellationToken: cancellationToken);
